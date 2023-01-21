@@ -1,0 +1,129 @@
+[gd_scene load_steps=4 format=3 uid="uid://bk18t6fywcqee"]
+
+[ext_resource type="PackedScene" uid="uid://dvrxvg3bqflga" path="res://rendering/doors_locks/door_visual.tscn" id="1_dqfn5"]
+[ext_resource type="Script" path="res://logic/door_data.gd" id="2_y7f6i"]
+
+[sub_resource type="Resource" id="Resource_8b5et"]
+script = ExtResource("2_y7f6i")
+real_amount = 1
+imaginary_amount = 0
+outer_color = 4
+locks = null
+sequence_next = null
+width = 1.0
+height = 1.0
+
+[node name="Main" type="Node2D"]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 166.0
+offset_bottom = 102.0
+
+[node name="door2" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="door3" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 72.0
+offset_top = 35.0
+offset_right = 117.0
+offset_bottom = 75.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="door4" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 263.0
+offset_top = 57.0
+offset_right = 308.0
+offset_bottom = 97.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="door5" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 150.0
+offset_top = 166.0
+offset_right = 195.0
+offset_bottom = 206.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="door6" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 290.0
+offset_top = 144.0
+offset_right = 335.0
+offset_bottom = 184.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="door7" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 439.0
+offset_top = 59.0
+offset_right = 484.0
+offset_bottom = 99.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="door8" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 413.0
+offset_top = 152.0
+offset_right = 524.0
+offset_bottom = 224.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="door9" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 145.0
+offset_top = 131.0
+offset_right = 241.0
+offset_bottom = 155.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="door10" parent="Control" instance=ExtResource("1_dqfn5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 18.0
+offset_top = 183.0
+offset_right = 87.0
+offset_bottom = 207.0
+grow_horizontal = 1
+grow_vertical = 1
+door_data = SubResource("Resource_8b5et")

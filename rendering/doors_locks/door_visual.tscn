@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=3 uid="uid://dvrxvg3bqflga"]
+
+[ext_resource type="Script" path="res://rendering/doors_locks/door_visual.gd" id="1_gb35w"]
+[ext_resource type="Script" path="res://logic/door_data.gd" id="2_7qkbo"]
+[ext_resource type="Script" path="res://logic/lock_data.gd" id="2_esg7s"]
+[ext_resource type="Texture2D" uid="uid://bsvyhq7xwb7a1" path="res://rendering/doors_locks/rendered_textures/door_color_texture_7.png" id="4_asqq3"]
+[ext_resource type="Texture2D" uid="uid://don8htg12dlvb" path="res://rendering/doors_locks/rendered_textures/door_frame_texture_0.png" id="5_thnpy"]
+
+[sub_resource type="Resource" id="Resource_ewqbb"]
+script = ExtResource("2_esg7s")
+color = 3
+magnitude = 1
+sign = null
+value_type = null
+lock_type = null
+
+[sub_resource type="Resource" id="Resource_m3ecb"]
+script = ExtResource("2_7qkbo")
+real_amount = 1
+imaginary_amount = 0
+outer_color = 7
+locks = [SubResource("Resource_ewqbb")]
+sequence_next = null
+width = 1.0
+height = 1.0
+
+[node name="Door" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -768.0
+offset_bottom = -576.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gb35w")
+door_data = SubResource("Resource_m3ecb")
+
+[node name="ColoredCenter" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("4_asqq3")
+region_rect = Rect2(0, 0, 17, 19)
+patch_margin_left = 9
+patch_margin_top = 10
+patch_margin_right = 9
+patch_margin_bottom = 10
+
+[node name="Frame" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("5_thnpy")
+region_rect = Rect2(0, 0, 17, 19)
+patch_margin_left = 9
+patch_margin_top = 10
+patch_margin_right = 9
+patch_margin_bottom = 10
