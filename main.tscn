@@ -1,197 +1,47 @@
-[gd_scene load_steps=5 format=3 uid="uid://bk18t6fywcqee"]
+[gd_scene load_steps=5 format=3 uid="uid://dhk52cl3is4t8"]
 
-[ext_resource type="PackedScene" uid="uid://dvrxvg3bqflga" path="res://rendering/doors_locks/door_visual.tscn" id="1_dqfn5"]
-[ext_resource type="Script" path="res://logic/door_data.gd" id="2_y7f6i"]
+[ext_resource type="Texture2D" uid="uid://c7gp7isvc6cij" path="res://rendering/tiles/World1.png" id="1_8pg5l"]
 [ext_resource type="PackedScene" uid="uid://kf6erpn2cgij" path="res://iwbtg/kid/kid.tscn" id="3_kieau"]
 
-[sub_resource type="Resource" id="Resource_8b5et"]
-script = ExtResource("2_y7f6i")
-real_amount = 1
-imaginary_amount = 0
-outer_color = 4
-locks = null
-sequence_next = null
-width = 1.0
-height = 1.0
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fb8ee"]
+texture = ExtResource("1_8pg5l")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:0/0 = 0
+1:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:0/0/physics_layer_0/angular_velocity = 0.0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+2:0/0 = 0
+2:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:0/0/physics_layer_0/angular_velocity = 0.0
+0:1/0 = 0
+0:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:1/0/physics_layer_0/angular_velocity = 0.0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+1:1/0 = 0
+1:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:1/0/physics_layer_0/angular_velocity = 0.0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+2:1/0 = 0
+2:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:1/0/physics_layer_0/angular_velocity = 0.0
+
+[sub_resource type="TileSet" id="TileSet_vc54h"]
+tile_size = Vector2i(32, 32)
+physics_layer_0/collision_layer = 2
+physics_layer_0/collision_mask = 0
+sources/1 = SubResource("TileSetAtlasSource_fb8ee")
 
 [node name="Main" type="Node2D"]
 
-[node name="Control" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 16.0
-offset_top = 76.0
-offset_right = 182.0
-offset_bottom = 178.0
-
-[node name="door2" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 388.0
-offset_top = 224.0
-offset_right = 484.0
-offset_bottom = 256.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door13" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 196.0
-offset_top = 192.0
-offset_right = 292.0
-offset_bottom = 224.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door14" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 164.0
-offset_top = 160.0
-offset_right = 260.0
-offset_bottom = 192.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door15" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 132.0
-offset_top = 128.0
-offset_right = 228.0
-offset_bottom = 160.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door11" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 420.0
-offset_top = 256.0
-offset_right = 516.0
-offset_bottom = 288.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door12" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 452.0
-offset_top = 288.0
-offset_right = 548.0
-offset_bottom = 320.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door3" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = -17.0
-offset_top = 320.0
-offset_right = 943.0
-offset_bottom = 352.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door4" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 263.0
-offset_top = 57.0
-offset_right = 308.0
-offset_bottom = 97.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door5" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 150.0
-offset_top = 166.0
-offset_right = 195.0
-offset_bottom = 206.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door6" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 290.0
-offset_top = 144.0
-offset_right = 335.0
-offset_bottom = 184.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door7" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 439.0
-offset_top = 59.0
-offset_right = 484.0
-offset_bottom = 99.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door8" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 413.0
-offset_top = 152.0
-offset_right = 524.0
-offset_bottom = 224.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door9" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 145.0
-offset_top = 131.0
-offset_right = 241.0
-offset_bottom = 155.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="door10" parent="Control" instance=ExtResource("1_dqfn5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 18.0
-offset_top = 183.0
-offset_right = 87.0
-offset_bottom = 207.0
-grow_horizontal = 1
-grow_vertical = 1
-door_data = SubResource("Resource_8b5et")
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = SubResource("TileSet_vc54h")
+cell_quadrant_size = 32
+format = 2
+layer_0/tile_data = PackedInt32Array(262150, 131073, 1, 327686, 131073, 1, 458758, 131073, 1, 524294, 131073, 1, 655366, 131073, 1, 720902, 131073, 1, 196615, 131073, 1, 262151, 131073, 1, 327687, 131073, 1, 393223, 131073, 1, 458759, 131073, 1, 524295, 131073, 1, 589831, 131073, 1, 655367, 131073, 1, 720903, 131073, 1, 786439, 131073, 1, 851975, 131073, 1, 131080, 131073, 1, 196616, 131073, 1, 262152, 65537, 1, 327688, 65537, 0, 393224, 65537, 0, 458760, 65537, 0, 524296, 65537, 0, 589832, 65537, 1, 655368, 65537, 0, 720904, 65537, 0, 786440, 65537, 1, 851976, 131073, 1, 917512, 131073, 1, 131081, 131073, 1, 196617, 131073, 1, 262153, 1, 1, 589833, 1, 1, 655369, 131073, 0, 720905, 131073, 0, 786441, 1, 1, 851977, 131073, 1, 917513, 131073, 1, 196618, 131073, 1, 262154, 1, 1, 786442, 1, 1, 851978, 131073, 1, 131083, 131073, 1, 196619, 131073, 1, 262155, 65537, 1, 786443, 1, 1, 851979, 131073, 1, 917515, 131073, 1, 131084, 131073, 1, 196620, 131073, 1, 262156, 1, 1, 786444, 1, 1, 851980, 131073, 1, 917516, 131073, 1, 196621, 131073, 1, 262157, 1, 1, 786445, 1, 1, 851981, 131073, 1, 131086, 131073, 1, 196622, 131073, 1, 262158, 1, 1, 786446, 1, 1, 851982, 131073, 1, 917518, 131073, 1, 131087, 131073, 1, 196623, 131073, 1, 262159, 1, 1, 786447, 1, 1, 851983, 131073, 1, 917519, 131073, 1, 196624, 131073, 1, 262160, 1, 1, 589840, 65537, 1, 655376, 65537, 1, 720912, 131073, 0, 786448, 1, 1, 851984, 131073, 1, 131089, 131073, 1, 196625, 131073, 1, 262161, 65537, 1, 327697, 65537, 0, 393233, 65537, 0, 458769, 65537, 1, 524305, 131073, 0, 589841, 1, 1, 655377, 131073, 0, 720913, 131073, 0, 786449, 1, 1, 851985, 131073, 1, 917521, 131073, 1, 131090, 131073, 1, 196626, 131073, 1, 262162, 1, 1, 327698, 131073, 0, 393234, 131073, 0, 458770, 131073, 0, 524306, 131073, 0, 589842, 1, 1, 655378, 131073, 0, 720914, 131073, 0, 786450, 1, 1, 851986, 131073, 1, 917522, 131073, 1, 196627, 131073, 1, 262163, 1, 1, 393235, 131073, 0, 458771, 131073, 0, 589843, 1, 1, 655379, 131073, 0, 786451, 1, 1, 851987, 131073, 1, 327689, 131073, 0, 393225, 131073, 0, 458761, 131073, 0, 524297, 131073, 0, 327690, 131073, 0, 393226, 131073, 0, 458762, 131073, 0, 524298, 131073, 0, 589834, 1, 1, 655370, 131073, 0, 720906, 131073, 0, 327691, 65537, 0, 393227, 65537, 0, 458763, 65537, 1, 524299, 131073, 0, 589835, 1, 1, 655371, 131073, 0, 720907, 131073, 0, 589836, 65537, 1, 655372, 65537, 1, 720908, 131073, 0, 327699, 131073, 0, 524307, 131073, 0, 720915, 131073, 0, 131092, 131073, 1, 196628, 131073, 1, 262164, 65537, 1, 327700, 65537, 0, 393236, 65537, 0, 458772, 65537, 0, 524308, 65537, 0, 589844, 65537, 1, 655380, 65537, 0, 720916, 65537, 0, 786452, 65537, 1, 851988, 131073, 1, 917524, 131073, 1, 131093, 131073, 1, 196629, 131073, 1, 262165, 131073, 1, 327701, 131073, 1, 393237, 131073, 1, 458773, 131073, 1, 524309, 131073, 1, 589845, 131073, 1, 655381, 131073, 1, 720917, 131073, 1, 786453, 131073, 1, 851989, 131073, 1, 917525, 131073, 1, 196630, 131073, 1, 262166, 131073, 1, 393238, 131073, 1, 458774, 131073, 1, 589846, 131073, 1, 655382, 131073, 1, 786454, 131073, 1, 851990, 131073, 1)
 
 [node name="kid" parent="." instance=ExtResource("3_kieau")]
-position = Vector2(213, 300)
+position = Vector2(337, 375)

@@ -1,0 +1,86 @@
+[gd_scene load_steps=10 format=3 uid="uid://dd8syclwqrjoi"]
+
+[ext_resource type="Script" path="res://rendering/doors_locks/door.gd" id="1_ws6pv"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="2_uoy3f"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="3_n3pyp"]
+[ext_resource type="Texture2D" uid="uid://bsvyhq7xwb7a1" path="res://rendering/doors_locks/rendered_textures/door_color_texture_7.png" id="4_inulb"]
+[ext_resource type="PackedScene" uid="uid://bm76nndjcq18q" path="res://rendering/doors_locks/lock_visual.tscn" id="4_vi1jf"]
+[ext_resource type="Texture2D" uid="uid://don8htg12dlvb" path="res://rendering/doors_locks/rendered_textures/door_frame_texture_0.png" id="5_f1urh"]
+
+[sub_resource type="Resource" id="Resource_ewqbb"]
+script = ExtResource("2_uoy3f")
+color = 3
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2(18, 18)
+lock_arrangement = -1
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_m3ecb"]
+script = ExtResource("3_n3pyp")
+amount = null
+outer_color = 7
+locks = [SubResource("Resource_ewqbb")]
+sequence_next = null
+width = 1.0
+height = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
+size = Vector2(1, 1)
+
+[node name="Door" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -736.0
+offset_bottom = -544.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ws6pv")
+door_data = SubResource("Resource_m3ecb")
+
+[node name="ColoredCenter" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("4_inulb")
+region_rect = Rect2(0, 0, 17, 19)
+patch_margin_left = 9
+patch_margin_top = 10
+patch_margin_right = 9
+patch_margin_bottom = 10
+
+[node name="Frame" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("5_f1urh")
+region_rect = Rect2(0, 0, 17, 19)
+patch_margin_left = 9
+patch_margin_top = 10
+patch_margin_right = 9
+patch_margin_bottom = 10
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+unique_name_in_owner = true
+visible = false
+scale = Vector2(64, 64)
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_j8eyw")
+
+[node name="Control2" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Control" parent="Control2" instance=ExtResource("4_vi1jf")]
+layout_mode = 2
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 7.0
+offset_top = 8.0
+offset_right = 57.0
+offset_bottom = 58.0

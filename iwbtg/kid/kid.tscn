@@ -118,11 +118,12 @@ animations = [{
 "speed": 25.0
 }]
 
-[node name="kid" type="CharacterBody2D"]
+[node name="kid" type="CharacterBody2D" groups=["player"]]
+collision_layer = 16
+collision_mask = 14
 script = ExtResource("1_cknyw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(0.5, -1.5)
 shape = SubResource("RectangleShape2D_k1m2g")
 

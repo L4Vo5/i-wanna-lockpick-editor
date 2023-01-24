@@ -1,5 +1,6 @@
 @tool
 extends MarginContainer
+class_name Door
 
 @export var door_data: DoorData
 
@@ -10,5 +11,5 @@ extends MarginContainer
 # DEBUG: This shouldn't be every frame lol
 func _process(_delta: float) -> void:
 	colored_center.texture = DoorRendering.get_door_color_texture(door_data.outer_color)
-	frame.texture = DoorRendering.get_door_frame_texture(Enums.sign.positive if door_data.real_amount >= 0 else Enums.sign.negative)
+	frame.texture = DoorRendering.get_door_frame_texture(Enums.sign.positive if door_data.amount[0].real_part >= 0 else Enums.sign.negative)
 	static_body.scale = size

@@ -19,10 +19,6 @@ extends MarginContainer
 
 @onready var is_ready := true
 
-# DEBUG
-func _process(d) -> void:
-	print(get_tree().root.size)
-
 # OPTIMIZATION: Currently it takes about 2ms to draw the 24-lock variation, 1ms for the 8-lock. Just draw the locks manually instead of using nodes. Maybe same for the LockCountDraw: make it a static method or even just draw it in this class. Would make it not show properly if the number exceeds the box and it goes offscreen, but the number shouldn't exceed the box in the first place. 
 func generate_locks() -> void:
 	assert(lock_data == null or lock_data is LockData)

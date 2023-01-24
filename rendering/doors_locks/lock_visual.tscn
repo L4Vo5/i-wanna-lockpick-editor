@@ -1,83 +1,61 @@
-[gd_scene load_steps=9 format=3 uid="uid://bn4ukdxf7fky6"]
+[gd_scene load_steps=7 format=3 uid="uid://bm76nndjcq18q"]
 
 [ext_resource type="Script" path="res://rendering/doors_locks/lock_visual.gd" id="1_dbmh1"]
-[ext_resource type="Texture2D" uid="uid://pxgt8n0hcygx" path="res://rendering/doors_locks/ref_temp.png" id="1_n8y8m"]
-[ext_resource type="Script" path="res://logic/lock_data.gd" id="2_4x5xu"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="2_ou0js"]
+[ext_resource type="Texture2D" uid="uid://4kkbnfeomfkl" path="res://rendering/doors_locks/rendered_textures/lock_frame_texture_0.png" id="3_7r2ri"]
 [ext_resource type="Texture2D" uid="uid://b13b2mwiwafpk" path="res://rendering/doors_locks/locks.png" id="4_jcet0"]
 [ext_resource type="PackedScene" uid="uid://drihmwx2umdao" path="res://rendering/doors_locks/lock_count_draw.tscn" id="6_s5s7g"]
 
 [sub_resource type="Resource" id="Resource_jxu6l"]
-script = ExtResource("2_4x5xu")
+script = ExtResource("2_ou0js")
 color = 5
-magnitude = 24
+magnitude = 8
 sign = 0
 value_type = 1
 lock_type = 0
-size = Vector2(82, 82)
+size = Vector2(50, 50)
 lock_arrangement = -1
 dont_show_lock = false
 
-[sub_resource type="Image" id="Image_ysx2p"]
-data = {
-"data": PackedByteArray(132, 96, 60, 255, 132, 96, 60, 255, 132, 96, 60, 255, 132, 96, 60, 255, 132, 96, 60, 255, 88, 64, 39, 255, 132, 96, 60, 255, 132, 96, 60, 255, 132, 96, 60, 255, 88, 64, 39, 255, 88, 64, 39, 255, 88, 64, 39, 255, 1, 0, 0, 0, 88, 64, 39, 255, 88, 64, 39, 255, 88, 64, 39, 255, 44, 32, 20, 255, 44, 32, 20, 255, 44, 32, 20, 255, 88, 64, 39, 255, 44, 32, 20, 255, 44, 32, 20, 255, 44, 32, 20, 255, 44, 32, 20, 255, 44, 32, 20, 255),
-"format": "RGBA8",
-"height": 5,
-"mipmaps": false,
-"width": 5
-}
-
-[sub_resource type="ImageTexture" id="ImageTexture_edyst"]
-image = SubResource("Image_ysx2p")
-
-[node name="Control" type="Control"]
-layout_mode = 3
-anchors_preset = 0
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-visible = false
-position = Vector2(-695, -7)
-texture = ExtResource("1_n8y8m")
-centered = false
-
-[node name="Lock" type="MarginContainer" parent="."]
-layout_mode = 1
+[node name="Lock" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 82.0
-offset_bottom = 82.0
+offset_right = 50.0
+offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dbmh1")
 lock_data = SubResource("Resource_jxu6l")
 
-[node name="Color" type="ColorRect" parent="Lock"]
+[node name="Color" type="ColorRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 color = Color(0.839216, 0.560784, 0.286275, 1)
 
-[node name="Frame" type="NinePatchRect" parent="Lock"]
+[node name="Frame" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-texture = SubResource("ImageTexture_edyst")
+texture = ExtResource("3_7r2ri")
 patch_margin_left = 2
 patch_margin_top = 2
 patch_margin_right = 2
 patch_margin_bottom = 2
 
-[node name="Locks" type="Node2D" parent="Lock"]
+[node name="Locks" type="Node2D" parent="."]
 unique_name_in_owner = true
 modulate = Color(0.172549, 0.12549, 0.0784314, 1)
 position = Vector2(2, 2)
 
-[node name="LockTemplate" type="Sprite2D" parent="Lock"]
+[node name="LockTemplate" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
 texture = ExtResource("4_jcet0")
 hframes = 6
 
-[node name="LockCountDraw" parent="Lock" instance=ExtResource("6_s5s7g")]
+[node name="LockCountDraw" parent="." instance=ExtResource("6_s5s7g")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-text = "0"
+text = "23"
+lock_type = 1
