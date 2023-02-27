@@ -8,5 +8,4 @@ class_name DoorData
 @export var outer_color := Enums.color.none
 @export var locks: Array[LockData] = []
 @export var sequence_next: Array[DoorData] = []
-@export var width := 1.0
-@export var height := 1.0
+@export var size := Vector2i(32, 32)

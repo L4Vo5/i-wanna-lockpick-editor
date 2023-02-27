@@ -3,10 +3,10 @@ class_name ComplexNumber
 @export var real_part := 0
 @export var imaginary_part := 0
 
-static func new_with(real_part: int, imaginary_part: int) -> ComplexNumber:
+static func new_with(_real_part: int, _imaginary_part: int) -> ComplexNumber:
 	var kc := ComplexNumber.new()
-	kc.real_part = real_part
-	kc.imaginary_part = imaginary_part
+	kc.real_part = _real_part
+	kc.imaginary_part = _imaginary_part
 	return kc
 
 func flip() -> ComplexNumber:

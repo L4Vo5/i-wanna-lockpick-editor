@@ -31,6 +31,8 @@ class_name LockData
 # visual settings
 ## displayed size
 @export var size := Vector2(18, 18)
+## position in door
+@export var position := Vector2(7, 7)
 ## the lock pattern to use, or -1 for numbers
 ## (nonexistent arrangements will default to numbers too)
 @export var lock_arrangement := -1
@@ -67,7 +69,7 @@ func open_with(key_count: ComplexNumber) -> ComplexNumber:
 	var new_key_count := ComplexNumber.new()
 	var signed_magnitude := magnitude if sign == Enums.sign.positive else -magnitude
 	var relevant_value_sn: StringName = value_type_to_ComplexNumber_var[value_type]
-	var relevant_value := key_count.get(relevant_value_sn)
+	var relevant_value = key_count.get(relevant_value_sn)
 	
 	if relevant_value * signi(relevant_value) < magnitude:
 		return null

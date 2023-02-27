@@ -1,4 +1,3 @@
-@tool
 extends Control
 
 const FONT := preload("res://fonts/lock_count.png")
@@ -12,12 +11,14 @@ const I = 10
 		text = val
 		queue_redraw()
 
-@export_enum("Real,Imaginary,Don't show") var lock_type := 0:
+@export_enum("Real", "Imaginary", "Don't show") var lock_type := 0:
 	set(val):
 		lock_type = val
 		queue_redraw()
 
 func _draw() -> void:
+	if text == "":
+		return
 	var offset := Vector2(
 		(size.x - text.length() * CHAR_SIZE.x) / 2.0,
 		(size.y - CHAR_SIZE.y) / 2.0) 

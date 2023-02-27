@@ -4,28 +4,39 @@
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_uoy3f"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="3_n3pyp"]
 [ext_resource type="Texture2D" uid="uid://bsvyhq7xwb7a1" path="res://rendering/doors_locks/rendered_textures/door_color_texture_7.png" id="4_inulb"]
-[ext_resource type="PackedScene" uid="uid://bm76nndjcq18q" path="res://rendering/doors_locks/lock_visual.tscn" id="4_vi1jf"]
 [ext_resource type="Texture2D" uid="uid://don8htg12dlvb" path="res://rendering/doors_locks/rendered_textures/door_frame_texture_0.png" id="5_f1urh"]
 
 [sub_resource type="Resource" id="Resource_ewqbb"]
 script = ExtResource("2_uoy3f")
-color = 3
-magnitude = 1
+color = 4
+magnitude = 5
 sign = 0
 value_type = 0
 lock_type = 0
 size = Vector2(18, 18)
+position = Vector2(7, 7)
+lock_arrangement = -1
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_q677e"]
+script = ExtResource("2_uoy3f")
+color = 4
+magnitude = 5
+sign = 1
+value_type = 0
+lock_type = 0
+size = Vector2(18, 18)
+position = Vector2(7, 71)
 lock_arrangement = -1
 dont_show_lock = false
 
 [sub_resource type="Resource" id="Resource_m3ecb"]
 script = ExtResource("3_n3pyp")
 amount = null
-outer_color = 7
-locks = [SubResource("Resource_ewqbb")]
-sequence_next = null
-width = 1.0
-height = 1.0
+outer_color = 4
+locks = Array[ExtResource("2_uoy3f")]([SubResource("Resource_ewqbb"), SubResource("Resource_q677e")])
+sequence_next = Array[ExtResource("3_n3pyp")]([])
+size = Vector2i(64, 128)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
 size = Vector2(1, 1)
@@ -72,15 +83,6 @@ collision_mask = 0
 position = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_j8eyw")
 
-[node name="Control2" type="Control" parent="."]
+[node name="LockHolder" type="Control" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
-
-[node name="Control" parent="Control2" instance=ExtResource("4_vi1jf")]
-layout_mode = 2
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 7.0
-offset_top = 8.0
-offset_right = 57.0
-offset_bottom = 58.0

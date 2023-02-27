@@ -74,7 +74,7 @@ func get_door_frame_texture(sign: Enums.sign) -> Texture2D:
 	if tex == null:
 		tex  = color_texture(DOOR_FRAME, frame_colors[sign])
 		_door_frame_textures[sign] = tex
-		tex.resource_path = RENDERED_PATH.path_join("door_frame_texture_" + str(sign) + ".png")
+		tex.resource_path = RENDERED_PATH.path_join("door_frame_texture_" + str(sign) + ".png.import")
 		ResourceSaver.save(tex)
 		print("rendered " + tex.resource_path)
 	return tex
@@ -84,7 +84,7 @@ func get_door_color_texture(color: Enums.color) -> Texture2D:
 	if tex == null:
 		tex = color_texture(DOOR_COLOR, color_colors[color])
 		_door_color_textures[color] = tex
-		tex.resource_path = RENDERED_PATH.path_join("door_color_texture_" + str(color) + ".png")
+		tex.resource_path = RENDERED_PATH.path_join("door_color_texture_" + str(color) + ".png.import")
 		ResourceSaver.save(tex)
 		print("rendered " + tex.resource_path)
 	return tex
@@ -94,7 +94,7 @@ func get_lock_frame_texture(sign: Enums.sign) -> Texture2D:
 	if tex == null:
 		tex = color_texture(LOCK_FRAME, frame_colors[sign])
 		_lock_frame_textures[sign] = tex
-		tex.resource_path = RENDERED_PATH.path_join("lock_frame_texture_" + str(sign) + ".png")
+		tex.resource_path = RENDERED_PATH.path_join("lock_frame_texture_" + str(sign) + ".png.import")
 		ResourceSaver.save(tex)
 		print("rendered " + tex.resource_path)
 	return tex

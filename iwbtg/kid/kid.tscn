@@ -129,9 +129,8 @@ shape = SubResource("RectangleShape2D_k1m2g")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
-frames = SubResource("SpriteFrames_2if8x")
+sprite_frames = SubResource("SpriteFrames_2if8x")
 animation = &"idle"
-playing = true
 centered = false
 offset = Vector2(-17, -23)
 

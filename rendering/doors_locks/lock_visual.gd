@@ -1,4 +1,3 @@
-@tool
 extends MarginContainer
 
 @export var lock_data: LockData:
@@ -22,6 +21,7 @@ extends MarginContainer
 # OPTIMIZATION: Currently it takes about 2ms to draw the 24-lock variation, 1ms for the 8-lock. Just draw the locks manually instead of using nodes. Maybe same for the LockCountDraw: make it a static method or even just draw it in this class. Would make it not show properly if the number exceeds the box and it goes offscreen, but the number shouldn't exceed the box in the first place. 
 func generate_locks() -> void:
 	assert(lock_data == null or lock_data is LockData)
+	position = lock_data.position
 	size = lock_data.size
 	frame.texture = DoorRendering.get_lock_frame_texture(lock_data.sign)
 	inner_color.color = DoorRendering.color_colors[lock_data.color][0]
