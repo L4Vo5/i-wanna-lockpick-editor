@@ -118,7 +118,7 @@ animations = [{
 "speed": 25.0
 }]
 
-[node name="kid" type="CharacterBody2D" groups=["player"]]
+[node name="kid" type="CharacterBody2D"]
 collision_layer = 16
 collision_mask = 14
 script = ExtResource("1_cknyw")

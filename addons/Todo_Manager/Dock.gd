@@ -37,7 +37,7 @@ var patterns := [["\\bTODO\\b", Color("96f1ad")], ["\\bHACK\\b", Color("d5bc70")
 @onready var colours_container := $VBoxContainer/TabContainer/Settings/ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer3/Colours as VBoxContainer
 @onready var pattern_container := $VBoxContainer/TabContainer/Settings/ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer4/Patterns as VBoxContainer
 @onready var ignore_textbox := $VBoxContainer/TabContainer/Settings/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/HBoxContainer2/Scripts/IgnorePaths/TextEdit as LineEdit
-
+@onready var auto_refresh_button := $VBoxContainer/TabContainer/Settings/ScrollContainer/MarginContainer/VBoxContainer/HBoxContainer5/Patterns/RefreshCheckButton as CheckButton
 
 func _ready() -> void:
 	load_config()
@@ -150,6 +150,8 @@ func populate_settings() -> void:
 		ignore_paths_text += path + ", "
 	ignore_paths_text = ignore_paths_text.trim_suffix(", ")
 	ignore_paths_field.text = ignore_paths_text
+	
+	auto_refresh_button.button_pressed = auto_refresh
 
 
 func rebuild_settings() -> void:
@@ -184,7 +186,7 @@ func load_config() -> void:
 		full_path = config.get_value("scripts", "full_path", DEFAULT_SCRIPT_NAME)
 		_sort_alphabetical = config.get_value("scripts", "sort_alphabetical", DEFAULT_SORT)
 		script_colour = config.get_value("scripts", "script_colour", DEFAULT_SCRIPT_COLOUR)
-		ignore_paths = config.get_value("scripts", "ignore_paths", [])
+		ignore_paths = config.get_value("scripts", "ignore_paths", [] as Array[String])
 		patterns = config.get_value("patterns", "patterns", DEFAULT_PATTERNS)
 		auto_refresh = config.get_value("config", "auto_refresh", true)
 		builtin_enabled = config.get_value("config", "builtin_enabled", false)

@@ -11,14 +11,14 @@ var LOCK := preload("res://rendering/doors_locks/lock_visual.tscn")
 @onready var lock_holder := %LockHolder as Control
 
 func _ready() -> void:
-	pass
+	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 
 # DEBUG: This shouldn't be every frame lol
 func _process(_delta: float) -> void:
 	size = door_data.size
 	static_body.scale = size
-	colored_center.texture = DoorRendering.get_door_color_texture(door_data.outer_color)
-	frame.texture = DoorRendering.get_door_frame_texture(Enums.sign.positive if door_data.amount[0].real_part >= 0 else Enums.sign.negative)
+	colored_center.texture = Rendering.get_door_color_texture(door_data.outer_color)
+	frame.texture = Rendering.get_door_frame_texture(Enums.sign.positive if door_data.amount[0].real_part >= 0 else Enums.sign.negative)
 	update_locks()
 
 func update_locks() -> void:
@@ -28,3 +28,9 @@ func update_locks() -> void:
 		var new_lock := LOCK.instantiate()
 		lock_holder.add_child(new_lock)
 		new_lock.lock_data = lock
+
+func try_open() -> void:
+	door_data.try_open()
+	if door_data.amount[0].is_zero():
+		hide()
+		static_body.process_mode = Node.PROCESS_MODE_DISABLED

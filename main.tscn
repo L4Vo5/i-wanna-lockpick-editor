@@ -1,8 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://dhk52cl3is4t8"]
+[gd_scene load_steps=12 format=3 uid="uid://dhk52cl3is4t8"]
 
+[ext_resource type="Script" path="res://level.gd" id="1_6pjc7"]
 [ext_resource type="Texture2D" uid="uid://c7gp7isvc6cij" path="res://rendering/tiles/World1.png" id="1_8pg5l"]
 [ext_resource type="PackedScene" uid="uid://dd8syclwqrjoi" path="res://rendering/doors_locks/door.tscn" id="3_fu1uk"]
 [ext_resource type="PackedScene" uid="uid://kf6erpn2cgij" path="res://iwbtg/kid/kid.tscn" id="3_kieau"]
+[ext_resource type="PackedScene" uid="uid://cbmfu5jjgaqgo" path="res://rendering/keys/key.tscn" id="4_5qia5"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="5_0xlsj"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="6_6n2u4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fb8ee"]
 texture = ExtResource("1_8pg5l")
@@ -36,7 +40,29 @@ physics_layer_0/collision_layer = 2
 physics_layer_0/collision_mask = 0
 sources/1 = SubResource("TileSetAtlasSource_fb8ee")
 
-[node name="Main" type="Node2D"]
+[sub_resource type="Resource" id="Resource_41raj"]
+script = ExtResource("5_0xlsj")
+color = 5
+magnitude = 1
+sign = 1
+value_type = 0
+lock_type = 0
+size = Vector2(18, 18)
+position = Vector2(7, 7)
+lock_arrangement = -1
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_al0yc"]
+script = ExtResource("6_6n2u4")
+amount = null
+outer_color = 5
+locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_41raj")])
+sequence_next = Array[ExtResource("6_6n2u4")]([])
+size = Vector2i(32, 32)
+
+[node name="TestLevel" type="Node2D" node_paths=PackedStringArray("player")]
+script = ExtResource("1_6pjc7")
+player = NodePath("kid")
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_vc54h")
@@ -48,7 +74,17 @@ layer_0/tile_data = PackedInt32Array(262150, 131073, 1, 327686, 131073, 1, 45875
 position = Vector2(337, 375)
 
 [node name="Door" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 457.0
-offset_top = 323.0
-offset_right = 475.0
-offset_bottom = 343.0
+offset_left = 544.0
+offset_top = 256.0
+offset_right = 562.0
+offset_bottom = 276.0
+
+[node name="Door2" parent="." instance=ExtResource("3_fu1uk")]
+offset_left = 512.0
+offset_top = 352.0
+offset_right = 530.0
+offset_bottom = 372.0
+door_data = SubResource("Resource_al0yc")
+
+[node name="key" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(304, 185)

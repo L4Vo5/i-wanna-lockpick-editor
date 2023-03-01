@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dd8syclwqrjoi"]
+[gd_scene load_steps=9 format=3 uid="uid://dd8syclwqrjoi"]
 
 [ext_resource type="Script" path="res://rendering/doors_locks/door.gd" id="1_ws6pv"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_uoy3f"]
@@ -8,8 +8,8 @@
 
 [sub_resource type="Resource" id="Resource_ewqbb"]
 script = ExtResource("2_uoy3f")
-color = 4
-magnitude = 5
+color = 3
+magnitude = 1
 sign = 0
 value_type = 0
 lock_type = 0
@@ -18,25 +18,13 @@ position = Vector2(7, 7)
 lock_arrangement = -1
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_q677e"]
-script = ExtResource("2_uoy3f")
-color = 4
-magnitude = 5
-sign = 1
-value_type = 0
-lock_type = 0
-size = Vector2(18, 18)
-position = Vector2(7, 71)
-lock_arrangement = -1
-dont_show_lock = false
-
 [sub_resource type="Resource" id="Resource_m3ecb"]
 script = ExtResource("3_n3pyp")
 amount = null
-outer_color = 4
-locks = Array[ExtResource("2_uoy3f")]([SubResource("Resource_ewqbb"), SubResource("Resource_q677e")])
+outer_color = 5
+locks = Array[ExtResource("2_uoy3f")]([SubResource("Resource_ewqbb")])
 sequence_next = Array[ExtResource("3_n3pyp")]([])
-size = Vector2i(64, 128)
+size = Vector2i(32, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
 size = Vector2(1, 1)
@@ -77,7 +65,7 @@ unique_name_in_owner = true
 visible = false
 scale = Vector2(64, 64)
 collision_layer = 4
-collision_mask = 0
+collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 position = Vector2(0.5, 0.5)

@@ -1,0 +1,58 @@
+[gd_scene load_steps=10 format=3 uid="uid://cbmfu5jjgaqgo"]
+
+[ext_resource type="Script" path="res://rendering/keys/key.gd" id="1_irm70"]
+[ext_resource type="Texture2D" uid="uid://c3yg2n17xq0nk" path="res://rendering/keys/spr_key_fill.png" id="2_a46qw"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="2_xy83h"]
+[ext_resource type="Texture2D" uid="uid://krj3m6t0k1jc" path="res://rendering/keys/spr_key_outline.png" id="3_u7wg3"]
+[ext_resource type="AudioStream" uid="uid://cvfd3d4c881kw" path="res://rendering/keys/key_pickup.wav" id="4_xgj2q"]
+
+[sub_resource type="Resource" id="Resource_ogwck"]
+script = ExtResource("2_xy83h")
+amount = 1
+spent = [false]
+type = 0
+color = 3
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_mb7fb"]
+radius = 9.5
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_kspn0"]
+radius = 3.53246
+height = 25.4556
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i7153"]
+size = Vector2(12.7018, 11.9508)
+
+[node name="key" type="Area2D"]
+collision_layer = 8
+collision_mask = 16
+script = ExtResource("1_irm70")
+key_data = SubResource("Resource_ogwck")
+
+[node name="Fill" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+texture = ExtResource("2_a46qw")
+centered = false
+
+[node name="Outline" type="Sprite2D" parent="."]
+texture = ExtResource("3_u7wg3")
+centered = false
+hframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(9.5, 10)
+shape = SubResource("CircleShape2D_mb7fb")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2(21, 21)
+rotation = -0.785398
+shape = SubResource("CapsuleShape2D_kspn0")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
+position = Vector2(23.8418, 20.3201)
+rotation = 0.785398
+shape = SubResource("RectangleShape2D_i7153")
+
+[node name="Pickup" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("4_xgj2q")

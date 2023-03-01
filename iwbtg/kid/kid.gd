@@ -77,7 +77,7 @@ func detect_doors() -> void:
 				interact_with_door(collider.get_parent())
 
 func interact_with_door(door: Door) -> void:
-	pass
+	door.try_open()
 
 func anim() -> void:
 	if velocity.y < 0:

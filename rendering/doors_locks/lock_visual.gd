@@ -23,15 +23,15 @@ func generate_locks() -> void:
 	assert(lock_data == null or lock_data is LockData)
 	position = lock_data.position
 	size = lock_data.size
-	frame.texture = DoorRendering.get_lock_frame_texture(lock_data.sign)
-	inner_color.color = DoorRendering.color_colors[lock_data.color][0]
+	frame.texture = Rendering.get_lock_frame_texture(lock_data.sign)
+	inner_color.color = Rendering.color_colors[lock_data.color][0]
 	for child in locks_parent.get_children():
 		child.queue_free()
 	match lock_data.lock_type:
 		LockData.lock_types.normal:
 			if not lock_data.dont_show_lock and lock_positions.has(lock_data.magnitude) and lock_positions[lock_data.magnitude].size() > lock_data.lock_arrangement:
 				lock_count_number.hide()
-				locks_parent.modulate = DoorRendering.lock_colors[lock_data.sign]
+				locks_parent.modulate = Rendering.lock_colors[lock_data.sign]
 				var arrangement = lock_positions[lock_data.magnitude][lock_data.lock_arrangement]
 				lock_data.size = Vector2(arrangement[0], arrangement[1])
 				size = lock_data.size

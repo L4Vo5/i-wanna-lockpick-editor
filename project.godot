@@ -17,8 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-DoorRendering="*res://rendering/doors_locks/door_rendering_singleton.gd"
 Global="*res://misc/Global.gd"
+Rendering="*res://rendering/rendering_singleton.gd"
 
 [display]
 

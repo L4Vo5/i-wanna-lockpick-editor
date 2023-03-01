@@ -21,3 +21,10 @@ func rotor() -> ComplexNumber:
 	imaginary_part = new_imaginary
 	return self
 
+func add(other: ComplexNumber) -> ComplexNumber:
+	real_part += other.real_part
+	imaginary_part += other.imaginary_part
+	return self
+
+func is_zero() -> bool:
+	return real_part == 0 and imaginary_part == 0
