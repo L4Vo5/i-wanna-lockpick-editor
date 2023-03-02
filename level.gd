@@ -1,9 +1,9 @@
 extends Node2D
 class_name Level
 
-@export var mimic_color := Enums.color.mimic
+@export var glitch_color := Enums.color.glitch
 @export var key_counts := {
-	Enums.color.mimic: ComplexNumber.new(),
+	Enums.color.glitch: ComplexNumber.new(),
 	Enums.color.black: ComplexNumber.new(),
 	Enums.color.white: ComplexNumber.new(),
 	Enums.color.pink: ComplexNumber.new(),
@@ -17,6 +17,22 @@ class_name Level
 	Enums.color.pure: ComplexNumber.new(),
 	Enums.color.master: ComplexNumber.new(),
 	Enums.color.stone: ComplexNumber.new(),
+}
+@export var star_keys := {
+	Enums.color.glitch: false,
+	Enums.color.black: false,
+	Enums.color.white: false,
+	Enums.color.pink: false,
+	Enums.color.orange: false,
+	Enums.color.purple: false,
+	Enums.color.cyan: false,
+	Enums.color.red: false,
+	Enums.color.green: false,
+	Enums.color.blue: false,
+	Enums.color.brown: false,
+	Enums.color.pure: false,
+	Enums.color.master: false,
+	Enums.color.stone: false,
 }
 
 # undo/redo actions should be handled somewhere in here, too

@@ -1,14 +1,17 @@
-[gd_scene load_steps=10 format=3 uid="uid://cbmfu5jjgaqgo"]
+[gd_scene load_steps=14 format=3 uid="uid://cbmfu5jjgaqgo"]
 
 [ext_resource type="Script" path="res://rendering/keys/key.gd" id="1_irm70"]
 [ext_resource type="Texture2D" uid="uid://c3yg2n17xq0nk" path="res://rendering/keys/spr_key_fill.png" id="2_a46qw"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="2_xy83h"]
+[ext_resource type="Texture2D" uid="uid://rek5hwp2r3c4" path="res://rendering/keys/spr_key_shadow.png" id="3_7ipp6"]
 [ext_resource type="Texture2D" uid="uid://krj3m6t0k1jc" path="res://rendering/keys/spr_key_outline.png" id="3_u7wg3"]
 [ext_resource type="AudioStream" uid="uid://cvfd3d4c881kw" path="res://rendering/keys/key_pickup.wav" id="4_xgj2q"]
+[ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="6_5cf8d"]
+[ext_resource type="Texture2D" uid="uid://cwjs8fryokbnu" path="res://rendering/keys/spr_key_stone.png" id="6_h7edn"]
+[ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://rendering/keys/spr_special_keys.png" id="7_jemto"]
 
 [sub_resource type="Resource" id="Resource_ogwck"]
 script = ExtResource("2_xy83h")
-amount = 1
 spent = [false]
 type = 0
 color = 3
@@ -29,26 +32,46 @@ collision_mask = 16
 script = ExtResource("1_irm70")
 key_data = SubResource("Resource_ogwck")
 
+[node name="Shadow" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.376471)
+position = Vector2(3, 3)
+texture = ExtResource("3_7ipp6")
+centered = false
+hframes = 5
+
 [node name="Fill" type="Sprite2D" parent="."]
 unique_name_in_owner = true
+modulate = Color(0.839216, 0.811765, 0.788235, 1)
 texture = ExtResource("2_a46qw")
 centered = false
+hframes = 4
 
 [node name="Outline" type="Sprite2D" parent="."]
+unique_name_in_owner = true
 texture = ExtResource("3_u7wg3")
 centered = false
-hframes = 2
+hframes = 4
+
+[node name="Special" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+texture = ExtResource("6_h7edn")
+centered = false
+hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(9.5, 10)
 shape = SubResource("CircleShape2D_mb7fb")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(21, 21)
 rotation = -0.785398
 shape = SubResource("CapsuleShape2D_kspn0")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(23.8418, 20.3201)
 rotation = 0.785398
 shape = SubResource("RectangleShape2D_i7153")
@@ -56,3 +79,25 @@ shape = SubResource("RectangleShape2D_i7153")
 [node name="Pickup" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("4_xgj2q")
+
+[node name="Number" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+offset_left = 1.0
+offset_top = 8.0
+offset_right = 175.0
+offset_bottom = 37.0
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/outline_size = 1
+theme_override_constants/shadow_outline_size = 10
+theme_override_fonts/font = ExtResource("6_5cf8d")
+theme_override_font_sizes/font_size = 22
+text = "×"
+
+[node name="Symbol" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(9, 24)
+texture = ExtResource("7_jemto")
+hframes = 3

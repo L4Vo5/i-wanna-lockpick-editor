@@ -6,3 +6,8 @@ extends Node
 var print_actions := true
 
 var current_level: Level
+
+var time := 0.0
+
+func _process(delta: float) -> void:
+	time += delta

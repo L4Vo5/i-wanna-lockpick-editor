@@ -3,7 +3,7 @@ class_name Enums
 
 enum color {
 	none,
-	mimic,
+	glitch,
 	black,
 	white,
 	pink,

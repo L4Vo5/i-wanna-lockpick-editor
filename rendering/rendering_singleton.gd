@@ -2,6 +2,7 @@
 extends Node
 
 const RENDERED_PATH := "res://rendering/doors_locks/rendered_textures/"
+const SPECIAL_ANIM_SPEED := 0.3
 
 # these are basically const, but they have to be vars because of get_image()
 var DOOR_FRAME := preload("res://rendering/doors_locks/door_frame.png").get_image()
@@ -20,7 +21,7 @@ var lock_colors := {
 
 var color_colors := generate_colors({
 #	Enums.color.none: [],
-#	Enums.color.mimic: [],
+#	Enums.color.glitch: [],
 	Enums.color.black: ["363029", "554B40", "181512"],
 	Enums.color.white: ["D6CFC9", "EDEAE7", "BBAEA4"],
 	Enums.color.pink: ["CF709F", "E4AFCA", "AF3A75"],
@@ -36,13 +37,35 @@ var color_colors := generate_colors({
 #	Enums.color.stone: [],
 })
 
+var key_colors := generate_colors({
+#	Enums.color.none: ,
+#	Enums.color.glitch: ,
+	Enums.color.black: "363029",
+	Enums.color.white: "D6CFC9",
+	Enums.color.pink: "CF709F",
+	Enums.color.orange: "D68F49",
+	Enums.color.purple: "8D5BBF",
+	Enums.color.cyan: "50AFAF",
+	Enums.color.red: "C83737",
+	Enums.color.green: "359F50",
+	Enums.color.blue: "5F71A0",
+	Enums.color.brown: "704010",
+#	Enums.color.pure: ,
+#	Enums.color.master: ,
+#	Enums.color.stone: ,
+})
+var key_number_colors: Array[Color] = [Color("c9dbcc"), Color("363029")]
+
 func generate_colors(from: Dictionary) -> Dictionary:
 	var dict := {}
 	for key in from.keys():
-		dict[key] = from[key].map(
-			func(s: String):
-				return Color(s)
-		)
+		if from[key] is Array:
+			dict[key] = from[key].map(
+				func(s: String):
+					return Color(s)
+			)
+		else:
+			dict[key] = Color(from[key])
 	return dict
 
 var _door_frame_textures := {}

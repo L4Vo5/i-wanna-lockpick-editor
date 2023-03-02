@@ -28,3 +28,6 @@ func add(other: ComplexNumber) -> ComplexNumber:
 
 func is_zero() -> bool:
 	return real_part == 0 and imaginary_part == 0
+
+func is_one() -> bool:
+	return real_part == 1 and imaginary_part == 0

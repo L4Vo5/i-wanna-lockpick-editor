@@ -1,12 +1,14 @@
 extends Resource
 class_name KeyData
 
-@export var amount := 1
+@export var amount := ComplexNumber.new_with(1, 0)
 ## if the key is spent, in every universe
 @export var spent := [false]
-@export var type := key_types.real
+@export var type := key_types.add
 @export var color := Enums.color.white
 
 enum key_types {
-	real, imaginary, flip, rotor, rotor_flip
+	add, exact,
+	star, unstar,
+	flip, rotor, rotor_flip
 }
