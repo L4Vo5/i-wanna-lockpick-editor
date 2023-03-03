@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://dhk52cl3is4t8"]
+[gd_scene load_steps=61 format=3 uid="uid://dhk52cl3is4t8"]
 
 [ext_resource type="Script" path="res://level.gd" id="1_6pjc7"]
 [ext_resource type="Texture2D" uid="uid://c7gp7isvc6cij" path="res://rendering/tiles/World1.png" id="1_8pg5l"]
@@ -139,6 +139,30 @@ script = ExtResource("9_bvh1h")
 spent = [false]
 type = 3
 color = 14
+
+[sub_resource type="Resource" id="Resource_he5jl"]
+script = ExtResource("9_bvh1h")
+spent = [false]
+type = 0
+color = 1
+
+[sub_resource type="Resource" id="Resource_ganpl"]
+script = ExtResource("9_bvh1h")
+spent = [false]
+type = 1
+color = 1
+
+[sub_resource type="Resource" id="Resource_6s6rh"]
+script = ExtResource("9_bvh1h")
+spent = [false]
+type = 2
+color = 1
+
+[sub_resource type="Resource" id="Resource_cyubb"]
+script = ExtResource("9_bvh1h")
+spent = [false]
+type = 3
+color = 1
 
 [sub_resource type="Resource" id="Resource_ditgt"]
 script = ExtResource("8_2frqs")
@@ -320,10 +344,9 @@ spent = [false]
 type = 0
 color = 4
 
-[node name="TestLevel" type="Node2D"]
+[node name="TestLevel" type="Node2D" node_paths=PackedStringArray("player")]
 script = ExtResource("1_6pjc7")
-glitch_color = null
-star_keys = null
+player = NodePath("kid")
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_vc54h")
@@ -401,6 +424,22 @@ key_data = SubResource("Resource_qihdg")
 [node name="key29" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(747, 227)
 key_data = SubResource("Resource_nselt")
+
+[node name="key30" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(747, 298)
+key_data = SubResource("Resource_he5jl")
+
+[node name="key31" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(747, 348)
+key_data = SubResource("Resource_ganpl")
+
+[node name="key32" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(751, 400)
+key_data = SubResource("Resource_6s6rh")
+
+[node name="key33" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(748, 456)
+key_data = SubResource("Resource_cyubb")
 
 [node name="key3" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(44, 106)

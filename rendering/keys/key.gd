@@ -6,46 +6,45 @@ extends Area2D
 @onready var fill: Sprite2D = %Fill
 @onready var outline: Sprite2D = %Outline
 @onready var special: Sprite2D = %Special
+@onready var glitch: Sprite2D = %SprGlitch
 
 @onready var snd_pickup: AudioStreamPlayer = %Pickup
 @onready var number: Label = %Number
 @onready var symbol: Sprite2D = %Symbol
 
-const MULT = "×"
-
-
 func _ready() -> void:
 	body_entered.connect(on_collide)
 	update_visual()
+	_connect_global_level()
+	Global.changed_level.connect(_connect_global_level)
+
+func _connect_global_level() -> void:
+	if is_instance_valid(Global.current_level):
+		# needed to access the level glitch color (only necessary if it starts out not being glitch, which shouldn't happen in-game, but I want things to work while I test)
+		if key_data.color == Enums.color.glitch:
+			update_visual()
+		Global.current_level.changed_glitch_color.connect(update_visual)
 
 func _process(delta: float) -> void:
-	if special.visible and special.vframes == 3:
+	if key_data.color in [Enums.color.master, Enums.color.pure]:
 		var frame := floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % 4
 		if frame == 3:
 			frame = 1
 		special.frame = (special.frame % 4) + frame * 4
 
+func set_special_texture(color: Enums.color) -> void:
+	match color:
+		Enums.color.stone:
+			special.texture = preload("res://rendering/keys/spr_key_stone.png")
+			special.vframes = 2
+		Enums.color.master:
+			special.texture = preload("res://rendering/keys/spr_key_master.png")
+			special.vframes = 4
+		Enums.color.pure:
+			special.texture = preload("res://rendering/keys/spr_key_pure.png")
+			special.vframes = 4
+
 func update_visual() -> void:
-	if key_data.color in [Enums.color.master, Enums.color.pure, Enums.color.stone, Enums.color.glitch]:
-		fill.hide()
-		outline.hide()
-		special.show()
-		match key_data.color:
-			Enums.color.stone:
-				special.texture = preload("res://rendering/keys/spr_key_stone.png")
-				special.vframes = 1
-			Enums.color.master:
-				special.texture = preload("res://rendering/keys/spr_key_master.png")
-				special.vframes = 3
-			Enums.color.pure:
-				special.texture = preload("res://rendering/keys/spr_key_pure.png")
-				special.vframes = 3
-	else:
-		fill.show()
-		outline.show()
-		special.hide()
-		fill.modulate = Rendering.key_colors[key_data.color]
-	
 	# get the outline / shadow / fill
 	var spr_frame = {
 		key_data.key_types.exact: 1,
@@ -57,8 +56,37 @@ func update_visual() -> void:
 	fill.frame = spr_frame
 	outline.frame = spr_frame
 	special.frame = spr_frame
+	glitch.frame = spr_frame
 	if key_data.color == Enums.color.master and key_data.type == key_data.key_types.add:
 		shadow.frame = 4
+	
+	if key_data.color in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
+		fill.hide()
+		outline.hide()
+		special.show()
+		glitch.hide()
+		set_special_texture(key_data.color)
+	elif key_data.color == Enums.color.glitch:
+		fill.hide()
+		outline.hide()
+		special.hide()
+		glitch.show()
+		if is_instance_valid(Global.current_level) and Global.current_level.glitch_color[0] != Enums.color.glitch:
+			if Global.current_level.glitch_color[0] in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
+				special.show()
+				set_special_texture(Global.current_level.glitch_color[0])
+				special.frame = special.frame % 4 + 4 * (special.vframes - 1)
+			else:
+				fill.show()
+				fill.frame = fill.frame % 4 + 4
+				fill.modulate = Rendering.key_colors[Global.current_level.glitch_color[0]]
+	else:
+		fill.show()
+		outline.show()
+		special.hide()
+		glitch.hide()
+		fill.modulate = Rendering.key_colors[key_data.color]
+	
 	
 	# draw the number
 	if key_data.type == key_data.key_types.add or key_data.type == key_data.key_types.exact:

@@ -54,7 +54,8 @@ var key_colors := generate_colors({
 #	Enums.color.master: ,
 #	Enums.color.stone: ,
 })
-var key_number_colors: Array[Color] = [Color("c9dbcc"), Color("363029")]
+#var key_number_colors: Array[Color] = [Color("c9dbcc"), Color("363029")]
+var key_number_colors: Array[Color] = [Color("EBE3DD"), Color("363029")]
 
 func generate_colors(from: Dictionary) -> Dictionary:
 	var dict := {}

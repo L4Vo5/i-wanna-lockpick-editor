@@ -1,7 +1,8 @@
 extends Node2D
 class_name Level
 
-@export var glitch_color := Enums.color.glitch
+signal changed_glitch_color
+@export var glitch_color := [Enums.color.pure]
 @export var key_counts := {
 	Enums.color.glitch: ComplexNumber.new(),
 	Enums.color.black: ComplexNumber.new(),
@@ -42,3 +43,8 @@ var imaginary_view := false
 
 func _ready() -> void:
 	Global.current_level = self
+
+func set_glitch_color(color: Enums.color):
+	if glitch_color[0] == color: return
+	glitch_color[0] = color
+	changed_glitch_color.emit()
