@@ -31,3 +31,20 @@ func is_zero() -> bool:
 
 func is_one() -> bool:
 	return real_part == 1 and imaginary_part == 0
+
+func _to_string() -> String:
+	var str := ""
+	# simple case if no imaginary part
+	if imaginary_part == 0:
+		str += str(real_part)
+	# there's imaginary part
+	else:
+		# don't include real part if 0
+		if real_part != 0:
+			str += str(real_part)
+			# draw a + if imaginary is positive (only if there's reals)
+			if imaginary_part > 0:
+				str += "+"
+		str += str(imaginary_part)
+		str += "i"
+	return str

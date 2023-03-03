@@ -1,6 +1,8 @@
 extends Area2D
+class_name Key
 
 @export var key_data: KeyData
+@export var in_keypad := false
 
 @onready var shadow: Sprite2D = %Shadow
 @onready var fill: Sprite2D = %Fill
@@ -13,12 +15,17 @@ extends Area2D
 @onready var symbol: Sprite2D = %Symbol
 
 func _ready() -> void:
+	if in_keypad:
+		shadow.hide()
+		collision_layer = 0
+		collision_mask = 0
 	body_entered.connect(on_collide)
 	update_visual()
 	_connect_global_level()
 	Global.changed_level.connect(_connect_global_level)
 
 func _connect_global_level() -> void:
+	if in_keypad: return
 	if is_instance_valid(Global.current_level):
 		# needed to access the level glitch color (only necessary if it starts out not being glitch, which shouldn't happen in-game, but I want things to work while I test)
 		if key_data.color == Enums.color.glitch:
@@ -71,7 +78,7 @@ func update_visual() -> void:
 		outline.hide()
 		special.hide()
 		glitch.show()
-		if is_instance_valid(Global.current_level) and Global.current_level.glitch_color[0] != Enums.color.glitch:
+		if not in_keypad and is_instance_valid(Global.current_level) and Global.current_level.glitch_color[0] != Enums.color.glitch:
 			if Global.current_level.glitch_color[0] in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
 				special.show()
 				set_special_texture(Global.current_level.glitch_color[0])
@@ -92,22 +99,9 @@ func update_visual() -> void:
 	if key_data.type == key_data.key_types.add or key_data.type == key_data.key_types.exact:
 		number.show()
 		symbol.hide()
-		number.text = ""
-		# simple case if no imaginary keys
-		if key_data.amount.imaginary_part == 0:
-			# don't draw a key with just 1
-			if key_data.amount.real_part != 1:
-				number.text += str(key_data.amount.real_part)
-		# there's imaginary keys
-		else:
-			# don't draw a key with real part 0
-			if key_data.amount.real_part != 0:
-				number.text += str(key_data.amount.real_part)
-				# draw a + if imaginary is positive (only if there's reals)
-				if key_data.amount.imaginary_part > 0:
-					number.text += "+"
-			number.text += str(key_data.amount.imaginary_part)
-			number.text += "i"
+		number.text = str(key_data.amount)
+		if number.text == "1":
+			number.text = ""
 		# sign color
 		# 0 = positive colors, 1 = negative colors
 		var i := 0

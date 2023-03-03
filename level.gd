@@ -24,11 +24,11 @@ signal changed_glitch_color
 	Enums.color.black: false,
 	Enums.color.white: false,
 	Enums.color.pink: false,
-	Enums.color.orange: false,
+	Enums.color.orange: true,
 	Enums.color.purple: false,
 	Enums.color.cyan: false,
 	Enums.color.red: false,
-	Enums.color.green: false,
+	Enums.color.green: true,
 	Enums.color.blue: false,
 	Enums.color.brown: false,
 	Enums.color.pure: false,
@@ -40,6 +40,24 @@ signal changed_glitch_color
 
 @export var player: Kid
 var imaginary_view := false
+
+var time := 0.0
+func _process(delta: float) -> void:
+	time += delta
+	if time >= 0.4:
+		time -= 0.4
+	else:
+		return
+	for key in star_keys.keys():
+		star_keys[key] = true if randi() % 2 == 0 else false
+	for count in key_counts.values():
+		var get_val = func():
+			var value = randf_range(-100, 100)
+			for i in 5:
+				value *= randf()
+			return int(value)
+		count.real_part = get_val.call()
+		count.imaginary_part = get_val.call()
 
 func _ready() -> void:
 	Global.current_level = self
