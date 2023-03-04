@@ -18,6 +18,9 @@ const KEY_COLORS := [
 func _ready() -> void:
 	generate_keys()
 
+func _process(delta: float) -> void:
+	visible = Input.is_action_pressed("keypad")
+
 func generate_keys() -> void:
 	for child in keys.get_children():
 		child.queue_free()

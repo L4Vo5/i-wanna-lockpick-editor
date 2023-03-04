@@ -135,22 +135,28 @@ func on_pickup() -> void:
 	if Global.print_actions:
 		print("Picked up a key")
 	key_data.spent[0] = true
-	if Global.current_level.star_keys[key_data.color]:
+	var color := key_data.color
+	if color == Enums.color.glitch:
+		if not is_instance_valid(Global.current_level):
+			printerr("Glitch key picked up, but there's no level")
+		else:
+			color = Global.current_level.glitch_color[0]
+	if Global.current_level.star_keys[color]:
 		if key_data.type == key_data.key_types.unstar:
-			Global.current_level.star_keys[key_data.color] = false
+			Global.current_level.star_keys[color] = false
 	else:
 		match key_data.type:
 			key_data.key_types.add:
-				Global.current_level.key_counts[key_data.color].add(key_data.amount)
+				Global.current_level.key_counts[color].add(key_data.amount)
 			key_data.key_types.exact:
-				Global.current_level.key_counts[key_data.color] = key_data.amount
+				Global.current_level.key_counts[color] = key_data.amount
 			key_data.key_types.rotor:
-				Global.current_level.key_counts[key_data.color].rotor()
+				Global.current_level.key_counts[color].rotor()
 			key_data.key_types.flip:
-				Global.current_level.key_counts[key_data.color].flip()
+				Global.current_level.key_counts[color].flip()
 			key_data.key_types.rotor_flip:
-				Global.current_level.key_counts[key_data.color].rotor().flip()
+				Global.current_level.key_counts[color].rotor().flip()
 			key_data.key_types.star:
-				Global.current_level.star_keys[key_data.color] = true
+				Global.current_level.star_keys[color] = true
 	hide()
 	snd_pickup.play()

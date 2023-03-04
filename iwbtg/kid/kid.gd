@@ -10,7 +10,7 @@ const gravity := 0.4
 var universe = 1
 
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint(): return
+	if Global.in_editor: return
 	on_floor = test_move(transform, Vector2(0, gravity))
 	on_ceiling = test_move(transform, Vector2(0, -1))
 	run()

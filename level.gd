@@ -24,11 +24,11 @@ signal changed_glitch_color
 	Enums.color.black: false,
 	Enums.color.white: false,
 	Enums.color.pink: false,
-	Enums.color.orange: true,
+	Enums.color.orange: false,
 	Enums.color.purple: false,
 	Enums.color.cyan: false,
 	Enums.color.red: false,
-	Enums.color.green: true,
+	Enums.color.green: false,
 	Enums.color.blue: false,
 	Enums.color.brown: false,
 	Enums.color.pure: false,
@@ -43,6 +43,7 @@ var imaginary_view := false
 
 var time := 0.0
 func _process(delta: float) -> void:
+	return
 	time += delta
 	if time >= 0.4:
 		time -= 0.4

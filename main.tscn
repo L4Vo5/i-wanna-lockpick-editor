@@ -355,7 +355,7 @@ format = 2
 layer_0/tile_data = PackedInt32Array(262150, 131073, 1, 327686, 131073, 1, 458758, 131073, 1, 524294, 131073, 1, 655366, 131073, 1, 720902, 131073, 1, 196615, 131073, 1, 262151, 131073, 1, 327687, 131073, 1, 393223, 131073, 1, 458759, 131073, 1, 524295, 131073, 1, 589831, 131073, 1, 655367, 131073, 1, 720903, 131073, 1, 786439, 131073, 1, 851975, 131073, 1, 131080, 65537, 1, 196616, 131073, 1, 262152, 65537, 1, 327688, 65537, 0, 393224, 65537, 0, 458760, 65537, 0, 524296, 65537, 0, 589832, 65537, 1, 655368, 65537, 0, 720904, 65537, 0, 786440, 65537, 1, 851976, 131073, 1, 917512, 131073, 1, 131081, 65537, 1, 196617, 131073, 1, 262153, 1, 1, 589833, 1, 1, 655369, 131073, 0, 720905, 131073, 0, 786441, 1, 1, 851977, 131073, 1, 917513, 131073, 1, 196618, 131073, 1, 262154, 1, 1, 786442, 1, 1, 851978, 131073, 1, 131083, 65537, 1, 196619, 131073, 1, 262155, 65537, 1, 786443, 1, 1, 851979, 131073, 1, 917515, 131073, 1, 131084, 65537, 1, 196620, 131073, 1, 262156, 1, 1, 786444, 1, 1, 851980, 131073, 1, 917516, 131073, 1, 196621, 131073, 1, 262157, 1, 1, 786445, 1, 1, 851981, 131073, 1, 131086, 65537, 1, 196622, 131073, 1, 262158, 1, 1, 786446, 1, 1, 851982, 131073, 1, 917518, 131073, 1, 131087, 65537, 1, 196623, 131073, 1, 262159, 1, 1, 786447, 1, 1, 851983, 131073, 1, 917519, 131073, 1, 196624, 131073, 1, 262160, 1, 1, 589840, 65537, 1, 655376, 65537, 1, 720912, 131073, 0, 786448, 1, 1, 851984, 131073, 1, 131089, 65537, 1, 196625, 131073, 1, 262161, 65537, 1, 327697, 65537, 0, 393233, 65537, 0, 458769, 65537, 1, 524305, 131073, 0, 589841, 1, 1, 655377, 131073, 0, 720913, 131073, 0, 786449, 1, 1, 851985, 131073, 1, 917521, 131073, 1, 131090, 65537, 1, 196626, 131073, 1, 262162, 1, 1, 327698, 131073, 0, 393234, 131073, 0, 458770, 131073, 0, 524306, 131073, 0, 589842, 1, 1, 655378, 131073, 0, 720914, 131073, 0, 786450, 1, 1, 851986, 131073, 1, 917522, 131073, 1, 196627, 131073, 1, 262163, 1, 1, 393235, 131073, 0, 458771, 131073, 0, 589843, 1, 1, 655379, 131073, 0, 786451, 1, 1, 851987, 131073, 1, 327689, 131073, 0, 393225, 131073, 0, 458761, 131073, 0, 524297, 131073, 0, 327690, 131073, 0, 393226, 131073, 0, 458762, 131073, 0, 524298, 131073, 0, 589834, 1, 1, 655370, 131073, 0, 720906, 131073, 0, 327691, 65537, 0, 393227, 65537, 0, 458763, 65537, 1, 524299, 131073, 0, 589835, 1, 1, 655371, 131073, 0, 720907, 131073, 0, 589836, 65537, 1, 655372, 65537, 1, 720908, 131073, 0, 327699, 131073, 0, 524307, 131073, 0, 720915, 131073, 0, 131092, 65537, 1, 196628, 131073, 1, 262164, 65537, 1, 327700, 65537, 0, 393236, 65537, 0, 458772, 65537, 0, 524308, 65537, 0, 589844, 65537, 1, 655380, 65537, 0, 720916, 65537, 0, 786452, 65537, 1, 851988, 131073, 1, 917524, 131073, 1, 131093, 65537, 1, 196629, 131073, 1, 262165, 131073, 1, 327701, 65537, 1, 393237, 131073, 1, 458773, 131073, 1, 524309, 65537, 1, 589845, 131073, 1, 196630, 131073, 1, 262166, 131073, 1, 393238, 65537, 1, 458774, 131073, 1, 589846, 65537, 1, 655382, 131073, 1, 786454, 65537, 1, 1114114, 65537, 1, 1114115, 65537, 1, 1114116, 65537, 1, 1114117, 65537, 1, 1114118, 65537, 1, 1114119, 65537, 1, 1114134, 65537, 1, 1114135, 65537, 1, 1114136, 65537, 1, 1114120, 65537, 1, 1114121, 65537, 1, 1114122, 65537, 1, 1114123, 65537, 1, 1114124, 65537, 1, 1114125, 65537, 1, 1114126, 65537, 1, 1114127, 65537, 1, 1114128, 65537, 1, 1114129, 65537, 1, 1114130, 65537, 1, 1114131, 65537, 1, 1114132, 65537, 1, 1114133, 65537, 1, 1048600, 65537, 1, 131091, 65537, 1, 131088, 65537, 1, 131085, 65537, 1, 131082, 65537, 1, 131079, 65537, 1, 131078, 65537, 1, 1048577, 65537, 1, 983040, 65537, 1, 851970, 65537, 1, 786433, 65537, 1, 655364, 65537, 1, 589829, 65537, 1, 393218, 65537, 1, 327680, 65537, 1, 524291, 65537, 1, 327685, 65537, 1, 196611, 65537, 1, 720917, 65537, 1, 917525, 65537, 1, 983062, 65537, 1)
 
 [node name="kid" parent="." instance=ExtResource("3_kieau")]
-position = Vector2(337, 439)
+position = Vector2(337, 534.975)
 
 [node name="Door" parent="." instance=ExtResource("3_fu1uk")]
 offset_left = 544.0
@@ -372,131 +372,164 @@ door_data = SubResource("Resource_al0yc")
 
 [node name="key" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(304, 185)
+in_keypad = false
 
 [node name="key2" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(44, 47)
 key_data = SubResource("Resource_74ncv")
+in_keypad = false
 
 [node name="key18" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(343, 32)
 key_data = SubResource("Resource_v64xx")
+in_keypad = false
 
 [node name="key19" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(398, 35)
 key_data = SubResource("Resource_26m7f")
+in_keypad = false
 
 [node name="key20" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(456, 35)
 key_data = SubResource("Resource_0sr3i")
+in_keypad = false
 
 [node name="key21" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(519, 35)
 key_data = SubResource("Resource_ejpb0")
+in_keypad = false
 
 [node name="key22" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(600, 35)
 key_data = SubResource("Resource_al623")
+in_keypad = false
 
 [node name="key23" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(646, 36)
 key_data = SubResource("Resource_0kjv4")
+in_keypad = false
 
 [node name="key24" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(698, 35)
 key_data = SubResource("Resource_fgnbw")
+in_keypad = false
 
 [node name="key25" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(743, 35)
 key_data = SubResource("Resource_4ycdh")
+in_keypad = false
 
 [node name="key26" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(742, 99)
 key_data = SubResource("Resource_4rr0j")
+in_keypad = false
 
 [node name="key27" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(747, 150)
 key_data = SubResource("Resource_vuoko")
+in_keypad = false
 
 [node name="key28" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(747, 190)
 key_data = SubResource("Resource_qihdg")
+in_keypad = false
 
 [node name="key29" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(747, 227)
 key_data = SubResource("Resource_nselt")
+in_keypad = false
 
 [node name="key30" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(747, 298)
 key_data = SubResource("Resource_he5jl")
+in_keypad = false
 
 [node name="key31" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(747, 348)
 key_data = SubResource("Resource_ganpl")
+in_keypad = false
 
 [node name="key32" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(751, 400)
 key_data = SubResource("Resource_6s6rh")
+in_keypad = false
 
 [node name="key33" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(748, 456)
 key_data = SubResource("Resource_cyubb")
+in_keypad = false
 
 [node name="key3" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(44, 106)
 key_data = SubResource("Resource_0kolo")
+in_keypad = false
 
 [node name="key6" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(161, 107)
 key_data = SubResource("Resource_ogqyn")
+in_keypad = false
 
 [node name="key7" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(47, 162)
 key_data = SubResource("Resource_8t5mq")
+in_keypad = false
 
 [node name="key8" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(130, 162)
 key_data = SubResource("Resource_se6lm")
+in_keypad = false
 
 [node name="key17" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(145, 442)
 key_data = SubResource("Resource_fp000")
+in_keypad = false
 
 [node name="key9" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(52, 221)
 key_data = SubResource("Resource_q3p6a")
+in_keypad = false
 
 [node name="key10" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(139, 219)
 key_data = SubResource("Resource_egj1y")
+in_keypad = false
 
 [node name="key11" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(61, 307)
 key_data = SubResource("Resource_h5i8h")
+in_keypad = false
 
 [node name="key12" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(77, 387)
 key_data = SubResource("Resource_gych0")
+in_keypad = false
 
 [node name="key13" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(82, 446)
 key_data = SubResource("Resource_yyt1c")
+in_keypad = false
 
 [node name="key14" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(76, 505)
 key_data = SubResource("Resource_x5sfy")
+in_keypad = false
 
 [node name="key15" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(139, 505)
 key_data = SubResource("Resource_i3puh")
+in_keypad = false
 
 [node name="key16" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(204, 508)
 key_data = SubResource("Resource_2uyif")
+in_keypad = false
 
 [node name="key4" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(107, 48)
 key_data = SubResource("Resource_1exsc")
+in_keypad = false
 
 [node name="key5" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(162, 48)
 key_data = SubResource("Resource_22ksp")
+in_keypad = false
