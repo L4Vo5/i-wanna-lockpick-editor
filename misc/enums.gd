@@ -27,3 +27,10 @@ enum value {
 	real,
 	imaginary
 }
+
+enum curses {
+	ice, # 1 red
+	eroded, # 5 green
+	painted, # 3 blue
+	brown, # caused by 1 brown, cured by -1 brown
+}

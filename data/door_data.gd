@@ -1,3 +1,4 @@
+@tool
 extends Resource
 class_name DoorData
 
@@ -9,6 +10,12 @@ class_name DoorData
 @export var locks: Array[LockData] = []
 @export var sequence_next: Array[DoorData] = []
 @export var size := Vector2i(32, 32)
+@export var curses := {
+	Enums.curses.ice: false,
+	Enums.curses.eroded: false,
+	Enums.curses.painted: false,
+	Enums.curses.brown: false,
+}
 
 ## try to open the door with the current level's keys.
 ## returns true if the door opened.
@@ -23,3 +30,11 @@ func try_open() -> bool:
 	amount[0].real_part -= 1
 	Global.current_level.key_counts[outer_color].add(diff)
 	return true
+
+func has_color(color: Enums.color) -> bool:
+	if outer_color == color:
+		return true
+	for lock in locks:
+		if lock.color == color:
+			return true
+	return false

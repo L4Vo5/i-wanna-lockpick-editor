@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://dwmf7hgwce11b"]
+
+[ext_resource type="Texture2D" uid="uid://bgkjsq8sgxqhg" path="res://rendering/doors_locks/curses/spr_brown_particle.png" id="1_h2fmi"]
+[ext_resource type="Script" path="res://rendering/doors_locks/curses/spr_brown_particle.gd" id="1_jc5yq"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_6sdv1"]
+blend_mode = 2
+
+[node name="BrownParticle" type="Sprite2D"]
+modulate = Color(1, 1, 1, 6.12303e-17)
+material = SubResource("CanvasItemMaterial_6sdv1")
+position = Vector2(-9.51223, 2.47126)
+rotation = 5.02655
+scale = Vector2(0.203519, 0.203519)
+texture = ExtResource("1_h2fmi")
+script = ExtResource("1_jc5yq")

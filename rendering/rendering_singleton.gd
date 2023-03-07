@@ -77,21 +77,33 @@ func _ready() -> void:
 	load_rendered_textures()
 
 func load_rendered_textures() -> void:
-	var loaded_count := 0
-	for file_name in DirAccess.get_files_at(RENDERED_PATH):
-		file_name = RENDERED_PATH.path_join(file_name)
-		if file_name.ends_with(".png.import"):
-			loaded_count += 1
-			if file_name.begins_with("door_color_texture_"):
-				_door_color_textures[file_name.to_int()] = load(file_name)
-				assert(_door_color_textures[file_name.to_int()] != null)
-			if file_name.begins_with("door_frame_texture_"):
-				_door_frame_textures[file_name.to_int()] = load(file_name)
-				assert(_door_frame_textures[file_name.to_int()] != null)
-			if file_name.begins_with("lock_frame_texture_"):
-				_lock_frame_textures[file_name.to_int()] = load(file_name)
-				assert(_lock_frame_textures[file_name.to_int()] != null)
-	print("loaded %d pre-rendered textures" % loaded_count)
+	for children in get_children():
+		
+		if children.name.begins_with("DoorColorTexture"):
+			_door_color_textures[children.name.to_int()] = children.texture
+		elif children.name.begins_with("DoorFrameTexture"):
+			_door_frame_textures[children.name.to_int()] = children.texture
+		elif children.name.begins_with("LockFrameTexture"):
+			_lock_frame_textures[children.name.to_int()] = children.texture
+#	var loaded_count := 0
+#	for file_name in DirAccess.get_files_at(RENDERED_PATH):
+#		var full_path := RENDERED_PATH.path_join(file_name)
+#		if file_name.ends_with(".png.import"):
+#			loaded_count += 1
+#			if file_name.begins_with("door_color_texture_"):
+#				_door_color_textures[file_name.to_int()] = load(full_path)
+#				assert(_door_color_textures[file_name.to_int()] != null)
+#			elif file_name.begins_with("door_frame_texture_"):
+#				_door_frame_textures[file_name.to_int()] = load(full_path)
+#				assert(_door_frame_textures[file_name.to_int()] != null)
+#			elif file_name.begins_with("lock_frame_texture_"):
+#				_lock_frame_textures[file_name.to_int()] = load(full_path)
+#				assert(_lock_frame_textures[file_name.to_int()] != null)
+#			else:
+#				print(file_name)
+#				breakpoint
+#	print("loaded %d pre-rendered textures" % loaded_count)
+	
 
 func get_door_frame_texture(sign: Enums.sign) -> Texture2D:
 	var tex: Texture2D = _door_frame_textures.get(sign)
@@ -123,8 +135,9 @@ func get_lock_frame_texture(sign: Enums.sign) -> Texture2D:
 		print("rendered " + tex.resource_path)
 	return tex
 
-# Waiting4Godot: Palette should be Array[Color]
-func color_texture(base: Image, palette: Array) -> Texture2D:
+func color_texture(base: Image, palette: Array[Color]) -> Texture2D:
+	assert(false, "color_texture is deprecated")
+	return null
 	var image := Image.create(base.get_width(), base.get_height(), false, Image.FORMAT_RGBA8)
 	for y in base.get_height():
 		for x in base.get_width():

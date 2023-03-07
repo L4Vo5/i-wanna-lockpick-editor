@@ -5,14 +5,25 @@ class_name Kid
 @onready var sprite := %AnimatedSprite2D as AnimatedSprite2D
 @onready var snd_jump := %Jump as AudioStreamPlayer
 @onready var snd_jump_2 := %Jump2 as AudioStreamPlayer
+@onready var spr_brown_aura: Sprite2D = %SprBrownAura
+@onready var spr_brown_aura_2: Sprite2D = %SprBrownAura2
+@onready var spr_red_aura: Sprite2D = %SprRedAura
+@onready var spr_green_aura: Sprite2D = %SprGreenAura
+@onready var spr_blue_aura: Sprite2D = %SprBlueAura
+@onready var aura_area: Area2D = %AuraArea
+
 const gravity := 0.4
 
 var universe = 1
+
+func _ready() -> void:
+	aura_area.body_entered.connect(_on_aura_touch_door)
 
 func _physics_process(delta: float) -> void:
 	if Global.in_editor: return
 	on_floor = test_move(transform, Vector2(0, gravity))
 	on_ceiling = test_move(transform, Vector2(0, -1))
+	auras()
 	run()
 	fall_jump()
 	anim()
@@ -88,3 +99,44 @@ func anim() -> void:
 		sprite.play(&"idle")
 	else:
 		sprite.play(&"walk")
+
+func auras() -> void:
+	if not is_instance_valid(Global.current_level): return
+	spr_red_aura.visible = Global.current_level.key_counts[Enums.color.red].real_part >= 1
+	spr_green_aura.visible = Global.current_level.key_counts[Enums.color.green].real_part >= 5
+	spr_blue_aura.visible = Global.current_level.key_counts[Enums.color.blue].real_part >= 3
+	
+	spr_brown_aura.rotation_degrees = fmod(spr_brown_aura.rotation_degrees + 2.5, 360)
+	var brown_amount: int = Global.current_level.key_counts[Enums.color.brown].real_part
+	spr_brown_aura.visible = brown_amount != 0
+	var mat : CanvasItemMaterial = spr_brown_aura.material
+	if brown_amount > 0:
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_SUB
+		spr_brown_aura.frame = 0
+	elif brown_amount < 0:
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		spr_brown_aura.frame = 1
+	else:
+		spr_brown_aura.rotation_degrees = 0
+	# brown area 2 is added just in case there's a pure black or white background,
+	# in which case the brown and -brown areas respectively would normally be invisible
+	spr_brown_aura_2.visible = spr_brown_aura.visible
+	spr_brown_aura_2.frame = spr_brown_aura.frame + 2
+	spr_brown_aura_2.rotation_degrees = spr_brown_aura.rotation_degrees
+
+func _on_aura_touch_door(body: Node2D) -> void:
+	auras() # recalculate the auras this frame just in case lol
+	var door: Door = body.get_parent()
+	assert(door != null)
+	if spr_red_aura.visible:
+		door.break_curse_ice()
+	if spr_green_aura.visible:
+		door.break_curse_eroded()
+	if spr_blue_aura.visible:
+		door.break_curse_painted()
+	if spr_brown_aura.visible:
+		var brown_amount: int = Global.current_level.key_counts[Enums.color.brown].real_part
+		if brown_amount < 0:
+			door.break_curse_brown()
+		elif brown_amount > 0:
+			door.curse_brown()

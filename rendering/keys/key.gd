@@ -1,7 +1,15 @@
+@tool
 extends Area2D
 class_name Key
 
-@export var key_data: KeyData
+@export var key_data: KeyData:
+	set(val):
+		if key_data == val: return
+		if is_instance_valid(key_data):
+			key_data.changed.disconnect(update_visual)
+		key_data = val
+		if is_instance_valid(key_data):
+			key_data.changed.connect(update_visual)
 @export var in_keypad := false
 
 @onready var shadow: Sprite2D = %Shadow
@@ -14,7 +22,9 @@ class_name Key
 @onready var number: Label = %Number
 @onready var symbol: Sprite2D = %Symbol
 
+var is_ready := false
 func _ready() -> void:
+	is_ready = true
 	if in_keypad:
 		shadow.hide()
 		collision_layer = 0
@@ -52,6 +62,14 @@ func set_special_texture(color: Enums.color) -> void:
 			special.vframes = 4
 
 func update_visual() -> void:
+	if not is_ready: return
+	if not is_instance_valid(key_data): return
+	fill.hide()
+	outline.hide()
+	special.hide()
+	glitch.hide()
+	number.hide()
+	symbol.hide()
 	# get the outline / shadow / fill
 	var spr_frame = {
 		key_data.key_types.exact: 1,
@@ -66,17 +84,10 @@ func update_visual() -> void:
 	glitch.frame = spr_frame
 	if key_data.color == Enums.color.master and key_data.type == key_data.key_types.add:
 		shadow.frame = 4
-	
 	if key_data.color in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
-		fill.hide()
-		outline.hide()
 		special.show()
-		glitch.hide()
 		set_special_texture(key_data.color)
 	elif key_data.color == Enums.color.glitch:
-		fill.hide()
-		outline.hide()
-		special.hide()
 		glitch.show()
 		if not in_keypad and is_instance_valid(Global.current_level) and Global.current_level.glitch_color[0] != Enums.color.glitch:
 			if Global.current_level.glitch_color[0] in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
@@ -90,34 +101,22 @@ func update_visual() -> void:
 	else:
 		fill.show()
 		outline.show()
-		special.hide()
-		glitch.hide()
 		fill.modulate = Rendering.key_colors[key_data.color]
 	
 	
 	# draw the number
 	if key_data.type == key_data.key_types.add or key_data.type == key_data.key_types.exact:
 		number.show()
-		symbol.hide()
 		number.text = str(key_data.amount)
 		if number.text == "1":
 			number.text = ""
 		# sign color
-		# 0 = positive colors, 1 = negative colors
-		var i := 0
-		if key_data.amount.real_part == 0:
-			i = 0 if key_data.amount.imaginary_part >= 0 else 1
-		elif key_data.amount.imaginary_part == 0:
-			i = 0 if key_data.amount.real_part >= 0 else 1
-		# if they're both negative
-		elif key_data.amount.real_part < 0 and key_data.amount.imaginary_part < 0:
-			i = 1
+		var i := 1 if key_data.amount.is_negative() else 0
 		number.add_theme_color_override(&"font_color", Rendering.key_number_colors[i])
 		number.add_theme_color_override(&"font_outline_color", Rendering.key_number_colors[i])
 		number.add_theme_color_override(&"font_shadow_color", Rendering.key_number_colors[1-i])
 	# or the symbol
 	else:
-		number.hide()
 		var frame = {
 			key_data.key_types.flip: 0,
 			key_data.key_types.rotor: 1,
@@ -127,14 +126,14 @@ func update_visual() -> void:
 			symbol.frame = frame
 			symbol.show()
 
-func on_collide(_who: Node2D) -> void:
-	if key_data.spent[0]: return
+func on_collide(who: Node2D) -> void:
+	if key_data.is_spent(): return
 	on_pickup()
 
 func on_pickup() -> void:
 	if Global.print_actions:
 		print("Picked up a key")
-	key_data.spent[0] = true
+	key_data.set_spent(true)
 	var color := key_data.color
 	if color == Enums.color.glitch:
 		if not is_instance_valid(Global.current_level):
@@ -159,4 +158,20 @@ func on_pickup() -> void:
 			key_data.key_types.star:
 				Global.current_level.star_keys[color] = true
 	hide()
+	
+	snd_pickup.pitch_scale = 1
+	if key_data.color == Enums.color.master:
+		snd_pickup.stream = preload("res://rendering/keys/master_pickup.wav")
+		if key_data.amount.is_negative():
+			snd_pickup.pitch_scale = 0.82
+	elif key_data.type in [key_data.key_types.flip, key_data.key_types.rotor, key_data.key_types.rotor_flip]:
+		snd_pickup.stream = preload("res://rendering/keys/signflip_pickup.wav")
+	elif key_data.type == key_data.key_types.star:
+		snd_pickup.stream = preload("res://rendering/keys/star_pickup.wav")
+	elif key_data.type == key_data.key_types.unstar:
+		snd_pickup.stream = preload("res://rendering/keys/unstar_pickup.wav")
+	elif key_data.amount.is_negative():
+		snd_pickup.stream = preload("res://rendering/keys/negative_pickup.wav")
+	else:
+		snd_pickup.stream = preload("res://rendering/keys/key_pickup.wav")
 	snd_pickup.play()

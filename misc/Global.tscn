@@ -11,3 +11,4 @@ layer = 100
 
 [node name="KeyPad" parent="CanvasLayer" instance=ExtResource("2_wvrb2")]
 unique_name_in_owner = true
+visible = false

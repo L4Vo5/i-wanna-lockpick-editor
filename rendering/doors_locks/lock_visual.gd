@@ -1,3 +1,4 @@
+@tool
 extends MarginContainer
 
 @export var lock_data: LockData:
@@ -28,8 +29,18 @@ func generate_locks() -> void:
 	for child in locks_parent.get_children():
 		child.queue_free()
 	match lock_data.lock_type:
+		LockData.lock_types.blast:
+			lock_count_number.show()
+			lock_count_number.modulate = Rendering.lock_colors[lock_data.sign]
+			lock_count_number.text = "x" if lock_data.value_type == Enums.value.real else "+"
+			lock_count_number.lock_type = 2
+		LockData.lock_types.all:
+			lock_count_number.show()
+			lock_count_number.modulate = Rendering.lock_colors[lock_data.sign]
+			lock_count_number.text = "="
+			lock_count_number.lock_type = 2
 		LockData.lock_types.normal:
-			if not lock_data.dont_show_lock and lock_positions.has(lock_data.magnitude) and lock_positions[lock_data.magnitude].size() > lock_data.lock_arrangement:
+			if lock_positions.has(lock_data.magnitude) and lock_positions[lock_data.magnitude].size() > lock_data.lock_arrangement and lock_data.lock_arrangement != -1:
 				lock_count_number.hide()
 				locks_parent.modulate = Rendering.lock_colors[lock_data.sign]
 				var arrangement = lock_positions[lock_data.magnitude][lock_data.lock_arrangement]
@@ -46,6 +57,7 @@ func generate_locks() -> void:
 					locks_parent.add_child(lock)
 			else:
 				lock_count_number.show()
+				lock_count_number.modulate = Rendering.lock_colors[lock_data.sign]
 				lock_count_number.text = str(lock_data.magnitude)
 				lock_count_number.lock_type = 2 if lock_data.dont_show_lock else 0 if lock_data.value_type == Enums.value.real else 1 if lock_data.value_type == Enums.value.imaginary else 2
 

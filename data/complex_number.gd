@@ -1,7 +1,17 @@
+@tool
 extends Resource
 class_name ComplexNumber
-@export var real_part := 0
-@export var imaginary_part := 0
+
+@export var real_part := 0:
+	set(val):
+		if real_part == val: return
+		real_part = val
+		emit_changed()
+@export var imaginary_part := 0:
+	set(val):
+		if imaginary_part == val: return
+		imaginary_part = val
+		emit_changed()
 
 static func new_with(_real_part: int, _imaginary_part: int) -> ComplexNumber:
 	var kc := ComplexNumber.new()
@@ -26,11 +36,15 @@ func add(other: ComplexNumber) -> ComplexNumber:
 	imaginary_part += other.imaginary_part
 	return self
 
+func is_equal_to(other: ComplexNumber) -> bool:
+	return real_part == other.real_part and imaginary_part == other.imaginary_part
+
 func is_zero() -> bool:
 	return real_part == 0 and imaginary_part == 0
 
-func is_one() -> bool:
-	return real_part == 1 and imaginary_part == 0
+## will return true if it's in the fully negative quadrant, not including zero, but including -1+0i and 0-1i
+func is_negative() -> bool:
+	return (real_part <= 0 and imaginary_part <= 0) and (real_part < 0 or imaginary_part < 0)
 
 func _to_string() -> String:
 	var str := ""

@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://kf6erpn2cgij"]
+[gd_scene load_steps=27 format=3 uid="uid://kf6erpn2cgij"]
 
 [ext_resource type="Script" path="res://iwbtg/kid/kid.gd" id="1_cknyw"]
 [ext_resource type="Texture2D" uid="uid://cleh0e4h3gwca" path="res://iwbtg/kid/fall.png" id="2_186t3"]
@@ -7,6 +7,13 @@
 [ext_resource type="Texture2D" uid="uid://bbbhhru56rgp3" path="res://iwbtg/kid/jump.png" id="4_t5m72"]
 [ext_resource type="AudioStream" uid="uid://j81m54lj8k3f" path="res://iwbtg/kid/snd_Jump.wav" id="6_ekrvg"]
 [ext_resource type="AudioStream" uid="uid://cyhxjfoc58xsi" path="res://iwbtg/kid/snd_DJump.wav" id="7_qwfu2"]
+[ext_resource type="Texture2D" uid="uid://clhkqdbb4xygc" path="res://iwbtg/kid/auras/spr_brown_aura.png" id="8_hppn8"]
+[ext_resource type="Texture2D" uid="uid://ba3rni1j8cxj2" path="res://iwbtg/kid/auras/spr_rgb_auras.png" id="9_umpdb"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ea3o2"]
+blend_mode = 2
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_8oifk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1m2g"]
 size = Vector2(11, 21)
@@ -118,10 +125,55 @@ animations = [{
 "speed": 25.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_catrg"]
+radius = 32.3883
+
 [node name="kid" type="CharacterBody2D"]
 collision_layer = 16
 collision_mask = 14
 script = ExtResource("1_cknyw")
+
+[node name="SprRedAura" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+texture = ExtResource("9_umpdb")
+hframes = 3
+
+[node name="SprGreenAura" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+texture = ExtResource("9_umpdb")
+hframes = 3
+frame = 1
+
+[node name="SprBlueAura" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+texture = ExtResource("9_umpdb")
+hframes = 3
+frame = 2
+
+[node name="SprBrownAura" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+material = SubResource("CanvasItemMaterial_ea3o2")
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("8_hppn8")
+hframes = 2
+vframes = 2
+
+[node name="SprBrownAura2" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.12549)
+material = SubResource("CanvasItemMaterial_8oifk")
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("8_hppn8")
+hframes = 2
+vframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0.5, -1.5)
@@ -143,3 +195,12 @@ bus = &"Sfx"
 unique_name_in_owner = true
 stream = ExtResource("7_qwfu2")
 bus = &"Sfx"
+
+[node name="AuraArea" type="Area2D" parent="."]
+unique_name_in_owner = true
+visible = false
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AuraArea"]
+shape = SubResource("CircleShape2D_catrg")

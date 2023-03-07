@@ -4,7 +4,7 @@ extends Node
 signal changed_level
 
 var in_editor := Engine.is_editor_hint()
-var print_actions := true
+var print_actions := false
 @onready var key_pad: Control = %KeyPad
 
 var current_level: Level:

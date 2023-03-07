@@ -30,14 +30,30 @@ class_name LockData
 
 # visual settings
 ## displayed size
-@export var size := Vector2(18, 18)
+@export var size := Vector2(18, 18):
+	set(val):
+		if size == val: return
+		size = val
+		changed.emit()
 ## position in door
-@export var position := Vector2(7, 7)
+@export var position := Vector2(7, 7):
+	set(val):
+		if position == val: return
+		position = val
+		changed.emit()
 ## the lock pattern to use, or -1 for numbers
 ## (nonexistent arrangements will default to numbers too)
-@export var lock_arrangement := -1
+@export var lock_arrangement := 0:
+	set(val):
+		if lock_arrangement == val: return
+		lock_arrangement = val
+		changed.emit()
 ## if rendering as number, don't show the lock symbol
-@export var dont_show_lock := false
+@export var dont_show_lock := false:
+	set(val):
+		if dont_show_lock == val: return
+		dont_show_lock = val
+		changed.emit()
 
 enum lock_types {
 	normal,

@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://dc32rd5t7t2kq"]
+
+[ext_resource type="Texture2D" uid="uid://dfc3a7q6mo00j" path="res://rendering/doors_locks/curses/spr_paint.png" id="1_mu2ek"]
+
+[node name="Paint" type="TextureRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -768.0
+offset_bottom = -576.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_mu2ek")
+expand_mode = 1
+stretch_mode = 1

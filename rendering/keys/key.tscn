@@ -1,6 +1,7 @@
-[gd_scene load_steps=16 format=3 uid="uid://cbmfu5jjgaqgo"]
+[gd_scene load_steps=18 format=3 uid="uid://cbmfu5jjgaqgo"]
 
 [ext_resource type="Script" path="res://rendering/keys/key.gd" id="1_irm70"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="2_6e1kd"]
 [ext_resource type="Texture2D" uid="uid://c3yg2n17xq0nk" path="res://rendering/keys/spr_key_fill.png" id="2_a46qw"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="2_xy83h"]
 [ext_resource type="Texture2D" uid="uid://rek5hwp2r3c4" path="res://rendering/keys/spr_key_shadow.png" id="3_7ipp6"]
@@ -12,9 +13,14 @@
 [ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://rendering/keys/spr_special_keys.png" id="7_jemto"]
 [ext_resource type="Texture2D" uid="uid://dr8mnidwq7oss" path="res://rendering/keys/spr_glitch.png" id="11_2ifgy"]
 
+[sub_resource type="Resource" id="Resource_w2h4u"]
+script = ExtResource("2_6e1kd")
+real_part = 1
+imaginary_part = 0
+
 [sub_resource type="Resource" id="Resource_ogwck"]
 script = ExtResource("2_xy83h")
-spent = [false]
+amount = SubResource("Resource_w2h4u")
 type = 0
 color = 3
 
@@ -44,6 +50,7 @@ hframes = 5
 
 [node name="SprGlitch" type="Sprite2D" parent="."]
 unique_name_in_owner = true
+visible = false
 material = ExtResource("4_hykin")
 texture = ExtResource("11_2ifgy")
 centered = false
@@ -51,7 +58,6 @@ hframes = 4
 
 [node name="Fill" type="Sprite2D" parent="."]
 unique_name_in_owner = true
-visible = false
 modulate = Color(0.839216, 0.811765, 0.788235, 1)
 texture = ExtResource("2_a46qw")
 centered = false
@@ -60,7 +66,6 @@ vframes = 2
 
 [node name="Outline" type="Sprite2D" parent="."]
 unique_name_in_owner = true
-visible = false
 texture = ExtResource("3_u7wg3")
 centered = false
 hframes = 4
@@ -71,6 +76,7 @@ visible = false
 texture = ExtResource("6_h7edn")
 centered = false
 hframes = 4
+vframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
@@ -95,18 +101,19 @@ stream = ExtResource("4_xgj2q")
 
 [node name="Number" type="Label" parent="."]
 unique_name_in_owner = true
-visible = false
 offset_left = 1.0
 offset_top = 8.0
 offset_right = 175.0
 offset_bottom = 37.0
+theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
+theme_override_colors/font_shadow_color = Color(0.211765, 0.188235, 0.160784, 1)
+theme_override_colors/font_outline_color = Color(0.921569, 0.890196, 0.866667, 1)
 theme_override_constants/shadow_offset_x = 0
 theme_override_constants/shadow_offset_y = 0
 theme_override_constants/outline_size = 1
 theme_override_constants/shadow_outline_size = 10
 theme_override_fonts/font = ExtResource("6_5cf8d")
 theme_override_font_sizes/font_size = 22
-text = "×"
 
 [node name="Symbol" type="Sprite2D" parent="."]
 unique_name_in_owner = true
@@ -114,3 +121,4 @@ visible = false
 position = Vector2(9, 24)
 texture = ExtResource("7_jemto")
 hframes = 3
+frame = 2

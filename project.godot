@@ -17,8 +17,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Rendering="*res://rendering/rendering_singleton.gd"
 Global="*res://misc/Global.tscn"
+Rendering="*res://rendering/rendering_singleton.tscn"
 
 [display]
 
@@ -30,6 +30,10 @@ window/stretch/aspect="expand"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg")
+
+[filesystem]
+
+import/blender/enabled=false
 
 [input]
 
