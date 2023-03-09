@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cpyhqorivhd20"]
+[gd_scene load_steps=16 format=3 uid="uid://cpyhqorivhd20"]
 
 [ext_resource type="Script" path="res://rendering/doors_locks/door.gd" id="1_ws6pv"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_eq35m"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dc32rd5t7t2kq" path="res://rendering/doors_locks/curses/paint.tscn" id="8_pglmf"]
 [ext_resource type="PackedScene" uid="uid://cxvf2t0bqs758" path="res://rendering/doors_locks/curses/ice.tscn" id="9_t334h"]
 [ext_resource type="PackedScene" uid="uid://b1hu1idum47sv" path="res://rendering/doors_locks/curses/brown_curse.tscn" id="10_c4q2g"]
+[ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://rendering/doors_locks/open.wav" id="11_gu5d3"]
 
 [sub_resource type="Resource" id="Resource_fd2cc"]
 script = ExtResource("2_eq35m")
@@ -110,3 +111,7 @@ layout_mode = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+
+[node name="Open" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("11_gu5d3")

@@ -101,10 +101,12 @@ stream = ExtResource("4_xgj2q")
 
 [node name="Number" type="Label" parent="."]
 unique_name_in_owner = true
+visible = false
 offset_left = 1.0
 offset_top = 8.0
-offset_right = 175.0
+offset_right = 40.0
 offset_bottom = 37.0
+mouse_filter = 1
 theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
 theme_override_colors/font_shadow_color = Color(0.211765, 0.188235, 0.160784, 1)
 theme_override_colors/font_outline_color = Color(0.921569, 0.890196, 0.866667, 1)

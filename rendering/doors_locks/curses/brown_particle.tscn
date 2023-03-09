@@ -9,8 +9,6 @@ blend_mode = 2
 [node name="BrownParticle" type="Sprite2D"]
 modulate = Color(1, 1, 1, 6.12303e-17)
 material = SubResource("CanvasItemMaterial_6sdv1")
-position = Vector2(-9.51223, 2.47126)
-rotation = 5.02655
-scale = Vector2(0.203519, 0.203519)
+scale = Vector2(1e-05, 1e-05)
 texture = ExtResource("1_h2fmi")
 script = ExtResource("1_jc5yq")
