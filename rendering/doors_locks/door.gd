@@ -4,10 +4,14 @@ class_name Door
 
 const LOCK := preload("res://rendering/doors_locks/lock_visual.tscn")
 const DEBRIS := preload("res://rendering/doors_locks/door_debris.tscn")
+const FRAME_POS := preload("res://rendering/doors_locks/door_frame_texture_pos.png")
+const FRAME_NEG := preload("res://rendering/doors_locks/door_frame_texture_neg.png")
 
 @export var door_data: DoorData
 
-@onready var colored_center := %ColoredCenter as NinePatchRect
+@onready var color_light: NinePatchRect = %ColorLight
+@onready var color_mid: NinePatchRect = %ColorMid
+@onready var color_dark: NinePatchRect = %ColorDark
 @onready var frame := %Frame as NinePatchRect
 @onready var static_body := %StaticBody2D as StaticBody2D
 @onready var lock_holder := %LockHolder as Control
@@ -28,8 +32,10 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	size = door_data.size
 	static_body.scale = size
-	colored_center.texture = Rendering.get_door_color_texture(door_data.outer_color)
-	frame.texture = Rendering.get_door_frame_texture(Enums.sign.positive if door_data.amount[0].real_part >= 0 else Enums.sign.negative)
+	color_light.modulate = Rendering.color_colors[door_data.outer_color][1]
+	color_mid.modulate = Rendering.color_colors[door_data.outer_color][0]
+	color_dark.modulate = Rendering.color_colors[door_data.outer_color][2]
+	frame.texture = FRAME_POS if door_data.amount[0].real_part >= 0 else FRAME_NEG
 	update_locks()
 	update_curses()
 
@@ -77,7 +83,8 @@ func break_curse_brown() -> void:
 	door_data.curses[Enums.curses.brown] = false
 
 func create_debris() -> void:
-	var texture = Rendering.get_door_color_texture(door_data.outer_color)
+	return
+	var texture = null
 	for x in size.x / 16:
 		for y in size.y / 16:
 			var debris := DEBRIS.instantiate()

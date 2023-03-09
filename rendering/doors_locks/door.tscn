@@ -1,13 +1,15 @@
-[gd_scene load_steps=16 format=3 uid="uid://cpyhqorivhd20"]
+[gd_scene load_steps=18 format=3 uid="uid://cpyhqorivhd20"]
 
 [ext_resource type="Script" path="res://rendering/doors_locks/door.gd" id="1_ws6pv"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_eq35m"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_uoy3f"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="3_n3pyp"]
-[ext_resource type="Texture2D" uid="uid://wmsaho4k3pha" path="res://rendering/doors_locks/rendered_textures/door_color_texture_5.png" id="5_aolpi"]
-[ext_resource type="Texture2D" uid="uid://cxfeovktnrnmr" path="res://rendering/doors_locks/rendered_textures/door_frame_texture_0.png" id="5_f1urh"]
+[ext_resource type="Texture2D" uid="uid://cfhmg7cp4bhcs" path="res://rendering/doors_locks/door_color_light.png" id="6_4d3v2"]
 [ext_resource type="PackedScene" uid="uid://mtfnqndq7wvn" path="res://rendering/doors_locks/curses/erosion.tscn" id="7_ic407"]
+[ext_resource type="Texture2D" uid="uid://bnnlmpfvgiaga" path="res://rendering/doors_locks/door_color_mid.png" id="7_krmy1"]
+[ext_resource type="Texture2D" uid="uid://hxpxqwc4s4bx" path="res://rendering/doors_locks/door_frame_texture_pos.png" id="8_7otvs"]
 [ext_resource type="PackedScene" uid="uid://dc32rd5t7t2kq" path="res://rendering/doors_locks/curses/paint.tscn" id="8_pglmf"]
+[ext_resource type="Texture2D" uid="uid://252neirmxm6w" path="res://rendering/doors_locks/door_color_dark.png" id="8_qsko5"]
 [ext_resource type="PackedScene" uid="uid://cxvf2t0bqs758" path="res://rendering/doors_locks/curses/ice.tscn" id="9_t334h"]
 [ext_resource type="PackedScene" uid="uid://b1hu1idum47sv" path="res://rendering/doors_locks/curses/brown_curse.tscn" id="10_c4q2g"]
 [ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://rendering/doors_locks/open.wav" id="11_gu5d3"]
@@ -57,10 +59,33 @@ grow_vertical = 2
 script = ExtResource("1_ws6pv")
 door_data = SubResource("Resource_m3ecb")
 
-[node name="ColoredCenter" type="NinePatchRect" parent="."]
+[node name="ColorLight" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
+modulate = Color(0.905882, 0.74902, 0.596078, 1)
 layout_mode = 2
-texture = ExtResource("5_aolpi")
+texture = ExtResource("6_4d3v2")
+region_rect = Rect2(0, 0, 17, 19)
+patch_margin_left = 9
+patch_margin_top = 10
+patch_margin_right = 9
+patch_margin_bottom = 10
+
+[node name="ColorMid" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+modulate = Color(0.839216, 0.560784, 0.286275, 1)
+layout_mode = 2
+texture = ExtResource("7_krmy1")
+region_rect = Rect2(0, 0, 17, 19)
+patch_margin_left = 9
+patch_margin_top = 10
+patch_margin_right = 9
+patch_margin_bottom = 10
+
+[node name="ColorDark" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+modulate = Color(0.611765, 0.376471, 0.137255, 1)
+layout_mode = 2
+texture = ExtResource("8_qsko5")
 region_rect = Rect2(0, 0, 17, 19)
 patch_margin_left = 9
 patch_margin_top = 10
@@ -70,7 +95,7 @@ patch_margin_bottom = 10
 [node name="Frame" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-texture = ExtResource("5_f1urh")
+texture = ExtResource("8_7otvs")
 region_rect = Rect2(0, 0, 17, 19)
 patch_margin_left = 9
 patch_margin_top = 10

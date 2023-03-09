@@ -1,6 +1,9 @@
 @tool
 extends MarginContainer
 
+const FRAME_POS := preload("res://rendering/doors_locks/lock_frame_texture_pos.png")
+const FRAME_NEG := preload("res://rendering/doors_locks/lock_frame_texture_neg.png")
+
 @export var lock_data: LockData:
 	set(val):
 		if lock_data == val: return
@@ -24,7 +27,7 @@ func generate_locks() -> void:
 	assert(lock_data == null or lock_data is LockData)
 	position = lock_data.position
 	size = lock_data.size
-	frame.texture = Rendering.get_lock_frame_texture(lock_data.sign)
+	frame.texture = FRAME_POS if lock_data.sign == Enums.sign.positive else FRAME_NEG
 	inner_color.color = Rendering.color_colors[lock_data.color][0]
 	for child in locks_parent.get_children():
 		child.queue_free()

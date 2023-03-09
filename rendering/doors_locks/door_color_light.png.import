@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wmsaho4k3pha"
-path="res://.godot/imported/door_color_texture_5.png-1af4f2c4a1f610b6949a5666e7ac1d55.ctex"
+uid="uid://cfhmg7cp4bhcs"
+path="res://.godot/imported/door_color_light.png-ee2984492cbbbf7a3726b94e0b3abab8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://rendering/doors_locks/rendered_textures/door_color_texture_5.png"
-dest_files=["res://.godot/imported/door_color_texture_5.png-1af4f2c4a1f610b6949a5666e7ac1d55.ctex"]
+source_file="res://rendering/doors_locks/door_color_light.png"
+dest_files=["res://.godot/imported/door_color_light.png-ee2984492cbbbf7a3726b94e0b3abab8.ctex"]
 
 [params]
 
