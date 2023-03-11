@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b774f1wos4nms"
-path="res://.godot/imported/0.png-15115b3fb1679f28376d1611dab9acf0.ctex"
+uid="uid://dk7hvp2syhlt6"
+path="res://.godot/imported/stone_texture.png-400a588ffc480f91212eaca0d2342f50.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://rendering/doors_locks/sprDebris/0.png"
-dest_files=["res://.godot/imported/0.png-15115b3fb1679f28376d1611dab9acf0.ctex"]
+source_file="res://rendering/doors_locks/stone_texture.png"
+dest_files=["res://.godot/imported/stone_texture.png-400a588ffc480f91212eaca0d2342f50.ctex"]
 
 [params]
 

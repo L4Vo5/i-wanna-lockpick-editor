@@ -55,6 +55,21 @@ class_name LockData
 		dont_show_lock = val
 		changed.emit()
 
+signal changed_glitch
+## Modified by the door data for easier rendering. Not meant to be stored, but I guess it can be used for logic
+var glitch_color := Enums.color.glitch:
+	set(val):
+		if glitch_color == val: return
+		glitch_color = val
+		changed_glitch.emit()
+
+signal changed_override_brown
+var override_brown := false:
+	set(val):
+		if override_brown == val: return
+		override_brown = val
+		changed_override_brown.emit()
+
 enum lock_types {
 	normal,
 	blast,

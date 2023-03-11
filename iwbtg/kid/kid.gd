@@ -25,9 +25,9 @@ func _physics_process(delta: float) -> void:
 	on_ceiling = test_move(transform, Vector2(0, -1))
 	auras()
 	run()
+	detect_doors()
 	fall_jump()
 	anim()
-	detect_doors()
 	var current_speed := 3
 	if on_floor and velocity.y == 0 and Input.is_action_pressed(&"fast"):
 		current_speed = 6
@@ -78,14 +78,17 @@ func fall_jump() -> void:
 			velocity.y *= 0.45
 
 func detect_doors() -> void:
-	for info in [
-		move_and_collide(velocity * Vector2(1,0), true), # horizontal movement
-		move_and_collide(velocity * Vector2(0, 1), true) if velocity.y != 0 else move_and_collide(Vector2(0, 1), true) # vertical movement (check below if stopped)
+	for vec in [
+		velocity * Vector2(1,0), # horizontal movement
+		velocity * Vector2(0, 1) if velocity.y != 0 else Vector2(0, 1) # vertical movement (check below if stopped)
 	]:
+		var info = move_and_collide(vec, true)
 		if info != null:
 			var collider = info.get_collider()
 			if collider.get_parent() is Door:
 				interact_with_door(collider.get_parent())
+				if velocity.y < 0 and vec.y < 0:
+					velocity.y = 0
 
 func interact_with_door(door: Door) -> void:
 	door.try_open()

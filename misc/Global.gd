@@ -14,6 +14,8 @@ var current_level: Level:
 		changed_level.emit()
 
 var time := 0.0
+var physics_time := 0.0
+var physics_step := 0
 
 func _ready() -> void:
 	if in_editor:
@@ -21,3 +23,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	time += delta
+
+func _physics_process(delta: float) -> void:
+	physics_time += delta
+	physics_step += 1
+	RenderingServer.global_shader_parameter_set(&"FPS_TIME", physics_time)

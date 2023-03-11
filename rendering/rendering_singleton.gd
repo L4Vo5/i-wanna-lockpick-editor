@@ -3,7 +3,8 @@ extends Node
 
 const RENDERED_PATH := "res://rendering/doors_locks/rendered_textures/"
 ## Animation speed of special keys and doors (master, pure)
-const SPECIAL_ANIM_SPEED := 0.3
+## This is how much each frame takes, not the speed at which they increase
+const SPECIAL_ANIM_SPEED := 0.2
 
 # Order: main, clear, dark
 var frame_colors := generate_colors({
@@ -16,6 +17,7 @@ var lock_colors := {
 	Enums.sign.negative: Color("EBDFD3"),
 }
 
+# middle / light / dark
 var color_colors := generate_colors({
 #	Enums.color.none: [],
 #	Enums.color.glitch: [],

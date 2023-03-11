@@ -1,15 +1,19 @@
-[gd_scene load_steps=18 format=3 uid="uid://cpyhqorivhd20"]
+[gd_scene load_steps=23 format=3 uid="uid://uex7agg4af37"]
 
 [ext_resource type="Script" path="res://rendering/doors_locks/door.gd" id="1_ws6pv"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_eq35m"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_uoy3f"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="3_n3pyp"]
 [ext_resource type="Texture2D" uid="uid://cfhmg7cp4bhcs" path="res://rendering/doors_locks/door_color_light.png" id="6_4d3v2"]
+[ext_resource type="Texture2D" uid="uid://3wmthl3ess0c" path="res://rendering/doors_locks/glitch_door_2.png" id="6_o1bp1"]
 [ext_resource type="PackedScene" uid="uid://mtfnqndq7wvn" path="res://rendering/doors_locks/curses/erosion.tscn" id="7_ic407"]
 [ext_resource type="Texture2D" uid="uid://bnnlmpfvgiaga" path="res://rendering/doors_locks/door_color_mid.png" id="7_krmy1"]
 [ext_resource type="Texture2D" uid="uid://hxpxqwc4s4bx" path="res://rendering/doors_locks/door_frame_texture_pos.png" id="8_7otvs"]
+[ext_resource type="Texture2D" uid="uid://dk7hvp2syhlt6" path="res://rendering/doors_locks/stone_texture.png" id="8_emv08"]
 [ext_resource type="PackedScene" uid="uid://dc32rd5t7t2kq" path="res://rendering/doors_locks/curses/paint.tscn" id="8_pglmf"]
 [ext_resource type="Texture2D" uid="uid://252neirmxm6w" path="res://rendering/doors_locks/door_color_dark.png" id="8_qsko5"]
+[ext_resource type="Texture2D" uid="uid://cbdrxilu4i11y" path="res://rendering/doors_locks/gold_glitch_door.png" id="9_3m1wg"]
+[ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="9_036h3"]
 [ext_resource type="PackedScene" uid="uid://cxvf2t0bqs758" path="res://rendering/doors_locks/curses/ice.tscn" id="9_t334h"]
 [ext_resource type="PackedScene" uid="uid://b1hu1idum47sv" path="res://rendering/doors_locks/curses/brown_curse.tscn" id="10_c4q2g"]
 [ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://rendering/doors_locks/open.wav" id="11_gu5d3"]
@@ -21,7 +25,7 @@ imaginary_part = 0
 
 [sub_resource type="Resource" id="Resource_ewqbb"]
 script = ExtResource("2_uoy3f")
-color = 3
+color = 12
 magnitude = 1
 sign = 0
 value_type = 0
@@ -31,19 +35,32 @@ position = Vector2(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
+[sub_resource type="Resource" id="Resource_rmbwb"]
+script = ExtResource("2_uoy3f")
+color = 13
+magnitude = 1
+sign = 1
+value_type = 0
+lock_type = 0
+size = Vector2(18, 18)
+position = Vector2(39, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
 [sub_resource type="Resource" id="Resource_m3ecb"]
 script = ExtResource("3_n3pyp")
-amount = [SubResource("Resource_fd2cc")]
-outer_color = 5
-locks = Array[ExtResource("2_uoy3f")]([SubResource("Resource_ewqbb")])
+amount = Array[ExtResource("2_eq35m")]([SubResource("Resource_fd2cc")])
+outer_color = 1
+locks = Array[ExtResource("2_uoy3f")]([SubResource("Resource_ewqbb"), SubResource("Resource_rmbwb")])
 sequence_next = Array[ExtResource("3_n3pyp")]([])
-size = Vector2i(32, 32)
-curses = {
+size = Vector2i(64, 64)
+_curses = {
 0: false,
 1: false,
 2: false,
 3: false
 }
+glitch_color = 10
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
 size = Vector2(1, 1)
@@ -52,8 +69,8 @@ size = Vector2(1, 1)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -768.0
-offset_bottom = -576.0
+offset_right = -736.0
+offset_bottom = -544.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ws6pv")
@@ -61,7 +78,7 @@ door_data = SubResource("Resource_m3ecb")
 
 [node name="ColorLight" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
-modulate = Color(0.905882, 0.74902, 0.596078, 1)
+modulate = Color(0.529412, 0.584314, 0.721569, 1)
 layout_mode = 2
 texture = ExtResource("6_4d3v2")
 region_rect = Rect2(0, 0, 17, 19)
@@ -72,7 +89,7 @@ patch_margin_bottom = 10
 
 [node name="ColorMid" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
-modulate = Color(0.839216, 0.560784, 0.286275, 1)
+modulate = Color(0.372549, 0.443137, 0.627451, 1)
 layout_mode = 2
 texture = ExtResource("7_krmy1")
 region_rect = Rect2(0, 0, 17, 19)
@@ -83,7 +100,7 @@ patch_margin_bottom = 10
 
 [node name="ColorDark" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
-modulate = Color(0.611765, 0.376471, 0.137255, 1)
+modulate = Color(0.227451, 0.27451, 0.396078, 1)
 layout_mode = 2
 texture = ExtResource("8_qsko5")
 region_rect = Rect2(0, 0, 17, 19)
@@ -92,20 +109,56 @@ patch_margin_top = 10
 patch_margin_right = 9
 patch_margin_bottom = 10
 
+[node name="StoneTexture" type="TextureRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+texture = ExtResource("8_emv08")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="SpecialAnim" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+scale = Vector2(64, 1.10345)
+texture = ExtResource("9_3m1wg")
+centered = false
+
+[node name="Glitch" type="MarginContainer" parent="."]
+modulate = Color(0.196078, 0.588235, 0, 1)
+layout_mode = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="Glitch" type="NinePatchRect" parent="Glitch"]
+unique_name_in_owner = true
+modulate = Color(0.196078, 0.588235, 0, 1)
+material = ExtResource("9_036h3")
+layout_mode = 2
+texture = ExtResource("6_o1bp1")
+patch_margin_left = 6
+patch_margin_top = 6
+patch_margin_right = 6
+patch_margin_bottom = 6
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 1
+
 [node name="Frame" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 texture = ExtResource("8_7otvs")
-region_rect = Rect2(0, 0, 17, 19)
-patch_margin_left = 9
-patch_margin_top = 10
-patch_margin_right = 9
-patch_margin_bottom = 10
+region_rect = Rect2(0, 0, 7, 7)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 unique_name_in_owner = true
 visible = false
-scale = Vector2(32, 32)
+scale = Vector2(64, 64)
 collision_layer = 4
 collision_mask = 16
 

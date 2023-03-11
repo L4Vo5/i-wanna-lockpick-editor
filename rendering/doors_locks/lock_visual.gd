@@ -9,6 +9,8 @@ const FRAME_NEG := preload("res://rendering/doors_locks/lock_frame_texture_neg.p
 		if lock_data == val: return
 		lock_data = val
 		lock_data.changed.connect(generate_locks)
+		lock_data.changed_glitch.connect(set_colors)
+		lock_data.changed_override_brown.connect(set_colors)
 		if is_ready:
 			generate_locks()
 		else:
@@ -16,19 +18,66 @@ const FRAME_NEG := preload("res://rendering/doors_locks/lock_frame_texture_neg.p
 
 @onready var inner_color := %Color as ColorRect
 @onready var frame := %Frame as NinePatchRect
+@onready var special_anim: Sprite2D = %SpecialAnim # master and pure
+@onready var stone_texture: TextureRect = %StoneTexture
+@onready var glitch: NinePatchRect = %Glitch
+
 @onready var locks_parent := %Locks as Node2D
 @onready var lock_count_number := %LockCountDraw
 @onready var lock_template := %LockTemplate as Sprite2D
 
 @onready var is_ready := true
 
+func _physics_process(delta: float) -> void:
+	special_anim.frame = floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % special_anim.hframes * special_anim.vframes
+	if lock_data.color == Enums.color.glitch:
+		special_anim.frame = 0
+
+func set_colors() -> void:
+	frame.texture = FRAME_POS if lock_data.sign == Enums.sign.positive else FRAME_NEG
+	
+	inner_color.hide()
+	special_anim.hide()
+	stone_texture.hide()
+	glitch.hide()
+	
+	var used_color := lock_data.color
+	if lock_data.override_brown:
+		used_color = Enums.color.brown
+	
+	if lock_data.color == Enums.color.glitch:
+		glitch.show()
+		if lock_data.glitch_color == Enums.color.glitch:
+			glitch.texture = preload("res://rendering/doors_locks/glitch_lock_1.png")
+			return
+		else:
+			glitch.texture = preload("res://rendering/doors_locks/glitch_lock_2.png")
+			used_color = lock_data.glitch_color
+	
+	if used_color in [Enums.color.master, Enums.color.pure]:
+		special_anim.show()
+		special_anim.scale = size / Vector2(1,64)
+		special_anim.hframes = 4
+		special_anim.texture = {
+			Enums.color.master: preload("res://rendering/doors_locks/gold_gradient.png"),
+			Enums.color.pure: preload("res://rendering/doors_locks/pure_gradient.png")
+		}[used_color]
+	elif used_color == Enums.color.stone:
+		stone_texture.show()
+	elif used_color == Enums.color.glitch:
+		glitch.show()
+	else:
+		inner_color.show()
+		inner_color.color = Rendering.color_colors[used_color][0]
+	
+
 # OPTIMIZATION: Currently it takes about 2ms to draw the 24-lock variation, 1ms for the 8-lock. Just draw the locks manually instead of using nodes. Maybe same for the LockCountDraw: make it a static method or even just draw it in this class. Would make it not show properly if the number exceeds the box and it goes offscreen, but the number shouldn't exceed the box in the first place. 
 func generate_locks() -> void:
 	assert(lock_data == null or lock_data is LockData)
 	position = lock_data.position
 	size = lock_data.size
-	frame.texture = FRAME_POS if lock_data.sign == Enums.sign.positive else FRAME_NEG
-	inner_color.color = Rendering.color_colors[lock_data.color][0]
+	set_colors()
+	lock_count_number.hide()
 	for child in locks_parent.get_children():
 		child.queue_free()
 	match lock_data.lock_type:
@@ -44,7 +93,6 @@ func generate_locks() -> void:
 			lock_count_number.lock_type = 2
 		LockData.lock_types.normal:
 			if lock_positions.has(lock_data.magnitude) and lock_positions[lock_data.magnitude].size() > lock_data.lock_arrangement and lock_data.lock_arrangement != -1:
-				lock_count_number.hide()
 				locks_parent.modulate = Rendering.lock_colors[lock_data.sign]
 				var arrangement = lock_positions[lock_data.magnitude][lock_data.lock_arrangement]
 				lock_data.size = Vector2(arrangement[0], arrangement[1])

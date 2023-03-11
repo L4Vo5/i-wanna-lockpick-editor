@@ -6,12 +6,12 @@ class_name ComplexNumber
 	set(val):
 		if real_part == val: return
 		real_part = val
-		emit_changed()
+		changed.emit()
 @export var imaginary_part := 0:
 	set(val):
 		if imaginary_part == val: return
 		imaginary_part = val
-		emit_changed()
+		changed.emit()
 
 static func new_with(_real_part: int, _imaginary_part: int) -> ComplexNumber:
 	var kc := ComplexNumber.new()

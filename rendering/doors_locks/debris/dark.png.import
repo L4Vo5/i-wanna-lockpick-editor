@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfx7kdkr8v1kk"
-path="res://.godot/imported/2.png-ff0d0d63b5f423dbe850c3876ee563a6.ctex"
+uid="uid://dcm470ipi713p"
+path="res://.godot/imported/dark.png-276c3175b371f49a6255c271e614814c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://rendering/doors_locks/sprDebris/2.png"
-dest_files=["res://.godot/imported/2.png-ff0d0d63b5f423dbe850c3876ee563a6.ctex"]
+source_file="res://rendering/doors_locks/debris/dark.png"
+dest_files=["res://.godot/imported/dark.png-276c3175b371f49a6255c271e614814c.ctex"]
 
 [params]
 

@@ -1,8 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://bhmuk2otx5c01"]
-
-[ext_resource type="Script" path="res://rendering/doors_locks/door_debris.gd" id="1_aork7"]
-[ext_resource type="Texture2D" uid="uid://csjt7h7nhp0ra" path="res://rendering/doors_locks/rendered_textures/debris_6.png" id="1_jjikh"]
-
-[node name="DoorDebris" type="Sprite2D"]
-texture = ExtResource("1_jjikh")
-script = ExtResource("1_aork7")

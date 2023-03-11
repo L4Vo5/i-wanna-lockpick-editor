@@ -1,8 +1,8 @@
-[gd_scene load_steps=88 format=3 uid="uid://dhk52cl3is4t8"]
+[gd_scene load_steps=92 format=3 uid="uid://dhk52cl3is4t8"]
 
 [ext_resource type="Script" path="res://level.gd" id="1_6pjc7"]
 [ext_resource type="Texture2D" uid="uid://c7gp7isvc6cij" path="res://rendering/tiles/World1.png" id="1_8pg5l"]
-[ext_resource type="PackedScene" uid="uid://cpyhqorivhd20" path="res://rendering/doors_locks/door.tscn" id="3_fu1uk"]
+[ext_resource type="PackedScene" uid="uid://uex7agg4af37" path="res://rendering/doors_locks/door.tscn" id="3_fu1uk"]
 [ext_resource type="PackedScene" uid="uid://kf6erpn2cgij" path="res://iwbtg/kid/kid.tscn" id="3_kieau"]
 [ext_resource type="PackedScene" uid="uid://cbmfu5jjgaqgo" path="res://rendering/keys/key.tscn" id="4_5qia5"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="5_0xlsj"]
@@ -61,17 +61,75 @@ dont_show_lock = false
 
 [sub_resource type="Resource" id="Resource_52yxl"]
 script = ExtResource("6_6n2u4")
-amount = [SubResource("Resource_fd2cc")]
+amount = Array[ExtResource("8_2frqs")]([SubResource("Resource_fd2cc")])
 outer_color = 5
 locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb")])
 sequence_next = Array[ExtResource("6_6n2u4")]([])
 size = Vector2i(32, 32)
-curses = {
+_curses = {
 0: false,
 1: false,
 2: false,
 3: false
 }
+glitch_color = 1
+
+[sub_resource type="Resource" id="Resource_h64pg"]
+script = ExtResource("6_6n2u4")
+amount = Array[ExtResource("8_2frqs")]([SubResource("Resource_fd2cc")])
+outer_color = 12
+locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb")])
+sequence_next = Array[ExtResource("6_6n2u4")]([])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 1
+
+[sub_resource type="Resource" id="Resource_ekwhs"]
+script = ExtResource("6_6n2u4")
+amount = Array[ExtResource("8_2frqs")]([SubResource("Resource_fd2cc")])
+outer_color = 10
+locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb")])
+sequence_next = Array[ExtResource("6_6n2u4")]([])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 1
+
+[sub_resource type="Resource" id="Resource_b47hk"]
+script = ExtResource("5_0xlsj")
+color = 10
+magnitude = 1
+sign = 1
+value_type = 0
+lock_type = 0
+size = Vector2(18, 18)
+position = Vector2(39, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_5jh43"]
+script = ExtResource("6_6n2u4")
+amount = Array[ExtResource("8_2frqs")]([SubResource("Resource_fd2cc")])
+outer_color = 14
+locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb"), SubResource("Resource_b47hk")])
+sequence_next = Array[ExtResource("6_6n2u4")]([])
+size = Vector2i(64, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 1
 
 [sub_resource type="Resource" id="Resource_3uuwx"]
 script = ExtResource("8_2frqs")
@@ -92,17 +150,18 @@ dont_show_lock = false
 
 [sub_resource type="Resource" id="Resource_al0yc"]
 script = ExtResource("6_6n2u4")
-amount = [SubResource("Resource_3uuwx")]
+amount = Array[ExtResource("8_2frqs")]([SubResource("Resource_3uuwx")])
 outer_color = 5
 locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_41raj")])
 sequence_next = Array[ExtResource("6_6n2u4")]([])
 size = Vector2i(32, 32)
-curses = {
+_curses = {
 0: false,
 1: false,
 2: false,
 3: false
 }
+glitch_color = 1
 
 [sub_resource type="Resource" id="Resource_j6yat"]
 script = ExtResource("8_2frqs")
@@ -508,6 +567,27 @@ offset_top = 256.0
 offset_right = 576.0
 offset_bottom = 288.0
 door_data = SubResource("Resource_52yxl")
+
+[node name="Door4" parent="." instance=ExtResource("3_fu1uk")]
+offset_left = 408.0
+offset_top = 203.0
+offset_right = 440.0
+offset_bottom = 235.0
+door_data = SubResource("Resource_h64pg")
+
+[node name="Door5" parent="." instance=ExtResource("3_fu1uk")]
+offset_left = 464.0
+offset_top = 202.0
+offset_right = 496.0
+offset_bottom = 234.0
+door_data = SubResource("Resource_ekwhs")
+
+[node name="Door6" parent="." instance=ExtResource("3_fu1uk")]
+offset_left = 464.0
+offset_top = 167.0
+offset_right = 528.0
+offset_bottom = 199.0
+door_data = SubResource("Resource_5jh43")
 
 [node name="Door3" parent="." instance=ExtResource("3_fu1uk")]
 offset_left = 544.0

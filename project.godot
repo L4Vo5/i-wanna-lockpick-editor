@@ -89,3 +89,10 @@ common/physics_ticks_per_second=50
 
 renderer/rendering_method="gl_compatibility"
 textures/canvas_textures/default_texture_filter=0
+
+[shader_globals]
+
+FPS_TIME={
+"type": "float",
+"value": 0.0
+}
