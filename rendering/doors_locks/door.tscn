@@ -1,11 +1,10 @@
-[gd_scene load_steps=23 format=3 uid="uid://uex7agg4af37"]
+[gd_scene load_steps=27 format=3 uid="uid://uex7agg4af37"]
 
 [ext_resource type="Script" path="res://rendering/doors_locks/door.gd" id="1_ws6pv"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_eq35m"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_uoy3f"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="3_n3pyp"]
 [ext_resource type="Texture2D" uid="uid://cfhmg7cp4bhcs" path="res://rendering/doors_locks/door_color_light.png" id="6_4d3v2"]
-[ext_resource type="Texture2D" uid="uid://3wmthl3ess0c" path="res://rendering/doors_locks/glitch_door_2.png" id="6_o1bp1"]
 [ext_resource type="PackedScene" uid="uid://mtfnqndq7wvn" path="res://rendering/doors_locks/curses/erosion.tscn" id="7_ic407"]
 [ext_resource type="Texture2D" uid="uid://bnnlmpfvgiaga" path="res://rendering/doors_locks/door_color_mid.png" id="7_krmy1"]
 [ext_resource type="Texture2D" uid="uid://hxpxqwc4s4bx" path="res://rendering/doors_locks/door_frame_texture_pos.png" id="8_7otvs"]
@@ -16,9 +15,14 @@
 [ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="9_036h3"]
 [ext_resource type="PackedScene" uid="uid://cxvf2t0bqs758" path="res://rendering/doors_locks/curses/ice.tscn" id="9_t334h"]
 [ext_resource type="PackedScene" uid="uid://b1hu1idum47sv" path="res://rendering/doors_locks/curses/brown_curse.tscn" id="10_c4q2g"]
+[ext_resource type="Texture2D" uid="uid://b1d4n3mlkp7nn" path="res://rendering/doors_locks/glitch_door.png" id="11_8wajm"]
 [ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://rendering/doors_locks/open.wav" id="11_gu5d3"]
+[ext_resource type="Texture2D" uid="uid://b300fyhgkmlja" path="res://rendering/doors_locks/door_frame_light.png" id="13_0dseb"]
+[ext_resource type="Texture2D" uid="uid://d4lgl6u0642bn" path="res://rendering/doors_locks/door_frame_mid.png" id="14_c5sfr"]
+[ext_resource type="Texture2D" uid="uid://cqwfx0awl2b6c" path="res://rendering/doors_locks/door_frame_dark.png" id="15_537r2"]
+[ext_resource type="FontFile" uid="uid://d3wvfkvx16abd" path="res://fonts/consolab.ttf" id="18_a8jmt"]
 
-[sub_resource type="Resource" id="Resource_fd2cc"]
+[sub_resource type="Resource" id="Resource_lrhk2"]
 script = ExtResource("2_eq35m")
 real_part = 1
 imaginary_part = 0
@@ -49,18 +53,18 @@ dont_show_lock = false
 
 [sub_resource type="Resource" id="Resource_m3ecb"]
 script = ExtResource("3_n3pyp")
-amount = Array[ExtResource("2_eq35m")]([SubResource("Resource_fd2cc")])
+amount = SubResource("Resource_lrhk2")
 outer_color = 1
 locks = Array[ExtResource("2_uoy3f")]([SubResource("Resource_ewqbb"), SubResource("Resource_rmbwb")])
 sequence_next = Array[ExtResource("3_n3pyp")]([])
-size = Vector2i(64, 64)
+size = Vector2i(64, 32)
 _curses = {
 0: false,
 1: false,
 2: false,
 3: false
 }
-glitch_color = 10
+glitch_color = 1
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
 size = Vector2(1, 1)
@@ -70,7 +74,7 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = -736.0
-offset_bottom = -544.0
+offset_bottom = -576.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ws6pv")
@@ -78,6 +82,7 @@ door_data = SubResource("Resource_m3ecb")
 
 [node name="ColorLight" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
+visible = false
 modulate = Color(0.529412, 0.584314, 0.721569, 1)
 layout_mode = 2
 texture = ExtResource("6_4d3v2")
@@ -89,6 +94,7 @@ patch_margin_bottom = 10
 
 [node name="ColorMid" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
+visible = false
 modulate = Color(0.372549, 0.443137, 0.627451, 1)
 layout_mode = 2
 texture = ExtResource("7_krmy1")
@@ -100,6 +106,7 @@ patch_margin_bottom = 10
 
 [node name="ColorDark" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
+visible = false
 modulate = Color(0.227451, 0.27451, 0.396078, 1)
 layout_mode = 2
 texture = ExtResource("8_qsko5")
@@ -120,7 +127,7 @@ stretch_mode = 1
 [node name="SpecialAnim" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
-scale = Vector2(64, 1.10345)
+scale = Vector2(32, 0.551724)
 texture = ExtResource("9_3m1wg")
 centered = false
 
@@ -137,12 +144,12 @@ unique_name_in_owner = true
 modulate = Color(0.196078, 0.588235, 0, 1)
 material = ExtResource("9_036h3")
 layout_mode = 2
-texture = ExtResource("6_o1bp1")
+texture = ExtResource("11_8wajm")
 patch_margin_left = 6
 patch_margin_top = 6
 patch_margin_right = 6
 patch_margin_bottom = 6
-axis_stretch_horizontal = 2
+axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
 
 [node name="Frame" type="NinePatchRect" parent="."]
@@ -155,10 +162,43 @@ patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 4
 
+[node name="FrameLight" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+modulate = Color(0.517647, 0.376471, 0.235294, 1)
+layout_mode = 2
+texture = ExtResource("13_0dseb")
+region_rect = Rect2(0, 0, 7, 7)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="FrameMid" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+modulate = Color(0.345098, 0.25098, 0.152941, 1)
+layout_mode = 2
+texture = ExtResource("14_c5sfr")
+region_rect = Rect2(0, 0, 7, 7)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="FrameDark" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+modulate = Color(0.172549, 0.12549, 0.0784314, 1)
+layout_mode = 2
+texture = ExtResource("15_537r2")
+region_rect = Rect2(0, 0, 7, 7)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 unique_name_in_owner = true
 visible = false
-scale = Vector2(64, 64)
+scale = Vector2(64, 32)
 collision_layer = 4
 collision_mask = 16
 
@@ -193,3 +233,20 @@ layout_mode = 2
 [node name="Open" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("11_gu5d3")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Copies" type="Label" parent="Control"]
+unique_name_in_owner = true
+layout_mode = 2
+offset_top = -16.0
+offset_right = 64.0
+offset_bottom = 12.0
+mouse_filter = 1
+theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
+theme_override_colors/font_outline_color = Color(0.211765, 0.188235, 0.160784, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("18_a8jmt")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1

@@ -11,6 +11,11 @@ var frame_colors := generate_colors({
 	Enums.sign.positive: ["584027", "84603C", "2C2014"],
 	Enums.sign.negative: ["D8BFA7", "EBDFD3", "C49F7B"],
 })
+var frame_s_v := [
+	[70.0 / 100.0, 90.0 / 100.0],
+	[50.0 / 100.0, 100.0 / 100.0],
+	[100.0 / 100.0, 75.0 / 100.0]
+]
 
 var lock_colors := {
 	Enums.sign.positive: Color("2C2014"),

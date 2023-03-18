@@ -4,17 +4,13 @@ extends MarginContainer
 const FRAME_POS := preload("res://rendering/doors_locks/lock_frame_texture_pos.png")
 const FRAME_NEG := preload("res://rendering/doors_locks/lock_frame_texture_neg.png")
 
+signal changed_lock_data
 @export var lock_data: LockData:
 	set(val):
 		if lock_data == val: return
+		disconnect_lock_data()
 		lock_data = val
-		lock_data.changed.connect(generate_locks)
-		lock_data.changed_glitch.connect(set_colors)
-		lock_data.changed_override_brown.connect(set_colors)
-		if is_ready:
-			generate_locks()
-		else:
-			call_deferred(&"generate_locks")
+		connect_lock_data()
 
 @onready var inner_color := %Color as ColorRect
 @onready var frame := %Frame as NinePatchRect
@@ -28,10 +24,41 @@ const FRAME_NEG := preload("res://rendering/doors_locks/lock_frame_texture_neg.p
 
 @onready var is_ready := true
 
+func connect_lock_data() -> void:
+	if not is_instance_valid(lock_data): return
+	lock_data.changed.connect(generate_locks)
+	lock_data.changed_glitch.connect(set_colors)
+	lock_data.changed_override_brown.connect(set_colors)
+	lock_data.changed_dont_show_frame.connect(set_frame_visible)
+	lock_data.changed_rotation.connect(generate_locks)
+	if not is_ready:
+		await ready
+	set_colors()
+	generate_locks()
+	set_frame_visible()
+
+func disconnect_lock_data() -> void:
+	if not is_instance_valid(lock_data): return
+	lock_data.changed.disconnect(generate_locks)
+	lock_data.changed_glitch.disconnect(set_colors)
+	lock_data.changed_override_brown.disconnect(set_colors)
+	lock_data.changed_dont_show_frame.disconnect(set_frame_visible)
+	lock_data.changed_rotation.disconnect(generate_locks)
+
 func _physics_process(delta: float) -> void:
 	special_anim.frame = floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % special_anim.hframes * special_anim.vframes
 	if lock_data.color == Enums.color.glitch:
 		special_anim.frame = 0
+
+func set_frame_visible() -> void:
+	if lock_data.dont_show_frame:
+		frame.hide()
+		locks_parent.hide()
+		lock_count_number.hide()
+	else:
+		frame.show()
+		locks_parent.show()
+		lock_count_number.visible = locks_parent.get_child_count() == 0
 
 func set_colors() -> void:
 	frame.texture = FRAME_POS if lock_data.sign == Enums.sign.positive else FRAME_NEG
@@ -76,41 +103,42 @@ func generate_locks() -> void:
 	assert(lock_data == null or lock_data is LockData)
 	position = lock_data.position
 	size = lock_data.size
-	set_colors()
-	lock_count_number.hide()
+	var amount := lock_data.get_complex_amount().multiply_by(lock_data.rotation)
+	var sign := amount.sign_1d()
+	var value_type := amount.value_type_1d()
+	# magnitude is the same lol
+	var magnitude := lock_data.magnitude
+	lock_count_number.text = ""
 	for child in locks_parent.get_children():
 		child.queue_free()
 	match lock_data.lock_type:
 		LockData.lock_types.blast:
-			lock_count_number.show()
-			lock_count_number.modulate = Rendering.lock_colors[lock_data.sign]
-			lock_count_number.text = "x" if lock_data.value_type == Enums.value.real else "+"
+			lock_count_number.modulate = Rendering.lock_colors[sign]
+			lock_count_number.text = "x" if value_type == Enums.value.real else "+"
 			lock_count_number.lock_type = 2
 		LockData.lock_types.all:
-			lock_count_number.show()
-			lock_count_number.modulate = Rendering.lock_colors[lock_data.sign]
+			lock_count_number.modulate = Rendering.lock_colors[sign]
 			lock_count_number.text = "="
 			lock_count_number.lock_type = 2
 		LockData.lock_types.normal:
-			if lock_positions.has(lock_data.magnitude) and lock_positions[lock_data.magnitude].size() > lock_data.lock_arrangement and lock_data.lock_arrangement != -1:
-				locks_parent.modulate = Rendering.lock_colors[lock_data.sign]
-				var arrangement = lock_positions[lock_data.magnitude][lock_data.lock_arrangement]
+			if lock_positions.has(magnitude) and lock_positions[magnitude].size() > lock_data.lock_arrangement and lock_data.lock_arrangement != -1:
+				locks_parent.modulate = Rendering.lock_colors[sign]
+				var arrangement = lock_positions[magnitude][lock_data.lock_arrangement]
 				lock_data.size = Vector2(arrangement[0], arrangement[1])
 				size = lock_data.size
 				for lock_position in arrangement[2]:
 					var lock := lock_template.duplicate() as Sprite2D
 					lock.show()
-					lock.frame = lock_position[2] + (3 if lock_data.value_type == Enums.value.imaginary else 0)
+					lock.frame = lock_position[2] + (3 if value_type == Enums.value.imaginary else 0)
 					lock.position = Vector2(lock_position[0], lock_position[1])
 					lock.rotation_degrees = lock_position[3]
 					if lock_position.size() == 5:
 						lock.flip_h = lock_position[4]
 					locks_parent.add_child(lock)
 			else:
-				lock_count_number.show()
-				lock_count_number.modulate = Rendering.lock_colors[lock_data.sign]
-				lock_count_number.text = str(lock_data.magnitude)
-				lock_count_number.lock_type = 2 if lock_data.dont_show_lock else 0 if lock_data.value_type == Enums.value.real else 1 if lock_data.value_type == Enums.value.imaginary else 2
+				lock_count_number.modulate = Rendering.lock_colors[sign]
+				lock_count_number.text = str(magnitude)
+				lock_count_number.lock_type = 2 if lock_data.dont_show_lock else 0 if value_type == Enums.value.real else 1 if value_type == Enums.value.imaginary else 2
 
 
 # the keys are lock count with multiple arrays inside. each array corresponds to a lock arrangement

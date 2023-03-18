@@ -5,7 +5,7 @@ const vec2 direction_g = vec2(-0.5, 0.86603);
 const vec2 direction_b = vec2(0.5, -0.86603);
 const float speed = 100.1;
 uniform float alpha: hint_range(0.0, 1.0) = 1.0;
-uniform sampler2D noise;
+uniform sampler2D noise: repeat_enable;
 global uniform float FPS_TIME;
 
 vec4 overlay(vec4 base, vec4 blend){

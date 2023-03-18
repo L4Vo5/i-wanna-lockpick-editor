@@ -94,5 +94,4 @@ unique_name_in_owner = true
 visible = false
 modulate = Color(0.172549, 0.12549, 0.0784314, 1)
 layout_mode = 2
-text = "="
 lock_type = 2

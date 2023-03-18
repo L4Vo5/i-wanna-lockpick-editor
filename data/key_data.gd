@@ -12,8 +12,13 @@ class_name KeyData
 			amount.changed.connect(emit_changed)
 		emit_changed()
 
-## if the key is spent, in each universe
-var _spent: Array[bool] = [false]
+## if the key is spent
+var is_spent := false:
+	set(val):
+		if is_spent == val: return
+		is_spent = val
+		changed.emit()
+
 @export var type := key_types.add:
 	set(val):
 		if type == val: return
@@ -25,13 +30,6 @@ var _spent: Array[bool] = [false]
 		color = val
 		emit_changed()
 
-func is_spent() -> bool:
-	return _spent[0]
-
-func set_spent(val: bool) -> void:
-	if _spent[0] == val: return
-	_spent[0] = val
-	emit_changed()
 
 enum key_types {
 	add, exact,

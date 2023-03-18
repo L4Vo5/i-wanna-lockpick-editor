@@ -19,6 +19,7 @@ enum color {
 	stone,
 }
 
+# 0 shall generally be considered positive
 enum sign {
 	positive,
 	negative,

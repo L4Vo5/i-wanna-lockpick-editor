@@ -2,7 +2,7 @@ extends Node2D
 class_name Level
 
 signal changed_glitch_color
-@export var glitch_color := [Enums.color.pure]
+@export var glitch_color := Enums.color.pure
 @export var key_counts := {
 	Enums.color.glitch: ComplexNumber.new(),
 	Enums.color.black: ComplexNumber.new(),
@@ -39,7 +39,8 @@ signal changed_glitch_color
 # undo/redo actions should be handled somewhere in here, too
 
 @export var player: Kid
-var imaginary_view := false
+signal changed_i_view
+var i_view := false
 
 var time := 0.0
 func _process(delta: float) -> void:
@@ -60,10 +61,15 @@ func _process(delta: float) -> void:
 		count.real_part = get_val.call()
 		count.imaginary_part = get_val.call()
 
+func _input(event: InputEvent) -> void:
+	if event.is_action(&"i-view") and event.is_pressed():
+		i_view = not i_view
+		changed_i_view.emit()
+
 func _ready() -> void:
 	Global.current_level = self
 
 func set_glitch_color(color: Enums.color):
-	if glitch_color[0] == color: return
-	glitch_color[0] = color
+	if glitch_color == color: return
+	glitch_color = color
 	changed_glitch_color.emit()

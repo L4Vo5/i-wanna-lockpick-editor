@@ -16,7 +16,10 @@ const FRAME_NEG := preload("res://rendering/doors_locks/door_frame_texture_neg.p
 @onready var stone_texture: TextureRect = %StoneTexture
 @onready var glitch: Control = %Glitch
 
-@onready var frame := %Frame as NinePatchRect
+@onready var frame_light: NinePatchRect = %FrameLight
+@onready var frame_mid: NinePatchRect = %FrameMid
+@onready var frame_dark: NinePatchRect = %FrameDark
+
 
 @onready var static_body := %StaticBody2D as StaticBody2D
 @onready var lock_holder := %LockHolder as Control
@@ -27,6 +30,9 @@ const FRAME_NEG := preload("res://rendering/doors_locks/door_frame_texture_neg.p
 @onready var brown_curse: Control = %BrownCurse
 
 @onready var snd_open: AudioStreamPlayer = %Open
+@onready var copies: Label = %Copies
+
+var using_i_view_colors := false
 
 func _ready() -> void:
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
@@ -34,24 +40,76 @@ func _ready() -> void:
 		door_data = door_data.duplicated()
 	door_data.changed.connect(update_everything)
 	update_everything()
-	var timer := Timer.new()
-	timer.timeout.connect(create_debris)
-	add_child(timer)
-	timer.start(0.1)
+	copies.minimum_size_changed.connect(position_copies)
+	connect_level()
+	Global.changed_level.connect(connect_level)
 
+func connect_level() -> void:
+	if is_instance_valid(Global.current_level):
+		Global.current_level.changed_i_view.connect(_on_changed_i_view)
+		_on_changed_i_view()
 
 func _physics_process(_delta: float) -> void:
 	special_anim.frame = floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % special_anim.hframes * special_anim.vframes
+	
+	var text := ""
+	if not door_data.amount.is_value(1,0):
+		text = "×" + str(door_data.amount)
+	copies.text = text
+	i_view_colors()
 
 func update_everything() -> void:
 	update_textures()
 	update_locks()
 	update_curses()
 
+func position_copies() -> void:
+	copies.size.x = size.x
+	var diff := copies.size.x - size.x
+	copies.position.x = -diff/2
+
+func _on_changed_i_view() -> void:
+	if not is_instance_valid(Global.current_level): return
+	if not is_instance_valid(door_data): return
+	var is_aligned := false
+	var is_flipped := false
+	if not Global.current_level.i_view and door_data.amount.real_part != 0:
+		is_aligned = true
+		if door_data.amount.real_part < 0:
+			is_flipped = true
+	if Global.current_level.i_view and door_data.amount.imaginary_part != 0:
+		is_aligned = true
+		if door_data.amount.imaginary_part < 0:
+			is_flipped = true
+	using_i_view_colors = not is_aligned
+	if not using_i_view_colors:
+		update_textures()
+	for lock in door_data.locks:
+		if not is_instance_valid(lock): continue
+		lock.dont_show_frame = not is_aligned
+		if Global.current_level.i_view:
+			lock.rotation.set_to(0, 1)
+		else:
+			lock.rotation.set_to(1, 0)
+		if is_flipped:
+			lock.rotation.flip()
+
+func i_view_colors() -> void:
+	if not using_i_view_colors: return
+	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
+	frame_light.modulate = Color.from_hsv(hue, Rendering.frame_s_v[1][0], Rendering.frame_s_v[1][1])
+	frame_mid.modulate = Color.from_hsv(hue, Rendering.frame_s_v[0][0], Rendering.frame_s_v[0][1])
+	frame_dark.modulate = Color.from_hsv(hue, Rendering.frame_s_v[2][0], Rendering.frame_s_v[2][1])
+
 func update_textures() -> void:
 	size = door_data.size
+	position_copies()
 	static_body.scale = size
-	frame.texture = FRAME_POS if door_data.amount[0].real_part >= 0 else FRAME_NEG
+	var frame_palette = Rendering.frame_colors[Enums.sign.positive if door_data.amount.real_part >= 0 else Enums.sign.negative]
+	frame_light.modulate = frame_palette[1]
+	frame_mid.modulate = frame_palette[0]
+	frame_dark.modulate = frame_palette[2]
+	i_view_colors()
 	
 	color_light.hide()
 	color_mid.hide()
@@ -116,7 +174,7 @@ func try_open() -> void:
 	if door_data.try_open():
 		snd_open.play()
 		create_debris()
-	if door_data.amount[0].is_zero():
+	if door_data.amount.is_zero():
 		hide()
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
 

@@ -14,8 +14,6 @@ class_name Kid
 
 const gravity := 0.4
 
-var universe = 1
-
 func _ready() -> void:
 	aura_area.body_entered.connect(_on_aura_touch_door)
 

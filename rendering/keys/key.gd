@@ -89,15 +89,15 @@ func update_visual() -> void:
 		set_special_texture(key_data.color)
 	elif key_data.color == Enums.color.glitch:
 		glitch.show()
-		if not in_keypad and is_instance_valid(Global.current_level) and Global.current_level.glitch_color[0] != Enums.color.glitch:
-			if Global.current_level.glitch_color[0] in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
+		if not in_keypad and is_instance_valid(Global.current_level) and Global.current_level.glitch_color != Enums.color.glitch:
+			if Global.current_level.glitch_color in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
 				special.show()
-				set_special_texture(Global.current_level.glitch_color[0])
+				set_special_texture(Global.current_level.glitch_color)
 				special.frame = special.frame % 4 + 4 * (special.vframes - 1)
 			else:
 				fill.show()
 				fill.frame = fill.frame % 4 + 4
-				fill.modulate = Rendering.key_colors[Global.current_level.glitch_color[0]]
+				fill.modulate = Rendering.key_colors[Global.current_level.glitch_color]
 	else:
 		fill.show()
 		outline.show()
@@ -127,19 +127,19 @@ func update_visual() -> void:
 			symbol.show()
 
 func on_collide(who: Node2D) -> void:
-	if key_data.is_spent(): return
+	if key_data.is_spent: return
 	on_pickup()
 
 func on_pickup() -> void:
 	if Global.print_actions:
 		print("Picked up a key")
-	key_data.set_spent(true)
+	key_data.is_spent = true
 	var color := key_data.color
 	if color == Enums.color.glitch:
 		if not is_instance_valid(Global.current_level):
 			printerr("Glitch key picked up, but there's no level")
 		else:
-			color = Global.current_level.glitch_color[0]
+			color = Global.current_level.glitch_color
 	if Global.current_level.star_keys[color]:
 		if key_data.type == key_data.key_types.unstar:
 			Global.current_level.star_keys[color] = false
