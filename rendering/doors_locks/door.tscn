@@ -233,6 +233,7 @@ layout_mode = 2
 [node name="Open" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("11_gu5d3")
+bus = &"Sfx"
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 2

@@ -1,12 +1,12 @@
 @tool
 extends Node
 
-signal changed_level
 
 var in_editor := Engine.is_editor_hint()
 var print_actions := false
 @onready var key_pad: Control = %KeyPad
 
+signal changed_level
 var current_level: Level:
 	set(val):
 		if current_level == val: return

@@ -93,7 +93,7 @@ func try_open() -> bool:
 			open_dim.set_to(0, -1)
 			rotor = true
 			flip = false
-		else:
+		elif not i_view: # just in case idk
 			assert(amount.is_zero(), "what??")
 			printerr("Can't open a door with 0 copies!")
 	

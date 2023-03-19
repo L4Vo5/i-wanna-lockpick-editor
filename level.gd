@@ -3,6 +3,7 @@ class_name Level
 
 signal changed_glitch_color
 @export var glitch_color := Enums.color.pure
+# Some code might depend on these complex numbers' changed signals, so don't change them to new numbers pls
 @export var key_counts := {
 	Enums.color.glitch: ComplexNumber.new(),
 	Enums.color.black: ComplexNumber.new(),

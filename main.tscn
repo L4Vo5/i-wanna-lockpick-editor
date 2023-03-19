@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://dhk52cl3is4t8"]
+[gd_scene load_steps=38 format=3 uid="uid://dhk52cl3is4t8"]
 
 [ext_resource type="Script" path="res://level.gd" id="1_6pjc7"]
 [ext_resource type="Texture2D" uid="uid://c7gp7isvc6cij" path="res://rendering/tiles/World1.png" id="1_8pg5l"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://data/lock_data.gd" id="5_0xlsj"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="6_6n2u4"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="8_2frqs"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="9_w773q"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fb8ee"]
 texture = ExtResource("1_8pg5l")
@@ -229,6 +230,50 @@ _curses = {
 }
 glitch_color = 1
 
+[sub_resource type="Resource" id="Resource_bs23n"]
+script = ExtResource("8_2frqs")
+real_part = 2
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_yqpaw"]
+script = ExtResource("9_w773q")
+amount = SubResource("Resource_bs23n")
+type = 0
+color = 13
+
+[sub_resource type="Resource" id="Resource_er03g"]
+script = ExtResource("8_2frqs")
+real_part = 0
+imaginary_part = -1
+
+[sub_resource type="Resource" id="Resource_bq6vb"]
+script = ExtResource("9_w773q")
+amount = SubResource("Resource_er03g")
+type = 1
+color = 13
+
+[sub_resource type="Resource" id="Resource_gg8x2"]
+script = ExtResource("8_2frqs")
+real_part = -1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_nr1hf"]
+script = ExtResource("9_w773q")
+amount = SubResource("Resource_gg8x2")
+type = 0
+color = 13
+
+[sub_resource type="Resource" id="Resource_phhxv"]
+script = ExtResource("8_2frqs")
+real_part = 0
+imaginary_part = 1
+
+[sub_resource type="Resource" id="Resource_w7use"]
+script = ExtResource("9_w773q")
+amount = SubResource("Resource_phhxv")
+type = 1
+color = 13
+
 [node name="TestLevel" type="Node2D" node_paths=PackedStringArray("player")]
 script = ExtResource("1_6pjc7")
 player = NodePath("kid")
@@ -257,10 +302,10 @@ offset_bottom = 239.0
 door_data = SubResource("Resource_h64pg")
 
 [node name="Door9" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 440.0
-offset_top = 253.0
-offset_right = 472.0
-offset_bottom = 285.0
+offset_left = 382.0
+offset_top = 185.0
+offset_right = 414.0
+offset_bottom = 217.0
 door_data = SubResource("Resource_2h3kq")
 
 [node name="Door8" parent="." instance=ExtResource("3_fu1uk")]
@@ -300,3 +345,19 @@ door_data = SubResource("Resource_al0yc")
 
 [node name="key" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(304, 185)
+
+[node name="key2" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(389, 246)
+key_data = SubResource("Resource_yqpaw")
+
+[node name="key3" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(478, 307)
+key_data = SubResource("Resource_bq6vb")
+
+[node name="key5" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(478, 353)
+key_data = SubResource("Resource_nr1hf")
+
+[node name="key4" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(445, 256)
+key_data = SubResource("Resource_w7use")

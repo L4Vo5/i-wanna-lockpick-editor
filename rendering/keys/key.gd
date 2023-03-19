@@ -148,7 +148,7 @@ func on_pickup() -> void:
 			key_data.key_types.add:
 				Global.current_level.key_counts[color].add(key_data.amount)
 			key_data.key_types.exact:
-				Global.current_level.key_counts[color] = key_data.amount
+				Global.current_level.key_counts[color].set_to_this(key_data.amount)
 			key_data.key_types.rotor:
 				Global.current_level.key_counts[color].rotor()
 			key_data.key_types.flip:

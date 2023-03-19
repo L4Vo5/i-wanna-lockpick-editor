@@ -9,8 +9,8 @@
 [ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="4_hykin"]
 [ext_resource type="AudioStream" uid="uid://cvfd3d4c881kw" path="res://rendering/keys/key_pickup.wav" id="4_xgj2q"]
 [ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="6_5cf8d"]
-[ext_resource type="Texture2D" uid="uid://cwjs8fryokbnu" path="res://rendering/keys/spr_key_stone.png" id="6_h7edn"]
 [ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://rendering/keys/spr_special_keys.png" id="7_jemto"]
+[ext_resource type="Texture2D" uid="uid://b6k20y7s4yqy7" path="res://rendering/keys/spr_key_master.png" id="9_spxl3"]
 [ext_resource type="Texture2D" uid="uid://dr8mnidwq7oss" path="res://rendering/keys/spr_glitch.png" id="11_2ifgy"]
 
 [sub_resource type="Resource" id="Resource_w2h4u"]
@@ -73,10 +73,10 @@ hframes = 4
 [node name="Special" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
-texture = ExtResource("6_h7edn")
+texture = ExtResource("9_spxl3")
 centered = false
 hframes = 4
-vframes = 2
+vframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
@@ -98,6 +98,7 @@ shape = SubResource("RectangleShape2D_i7153")
 [node name="Pickup" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("4_xgj2q")
+bus = &"Sfx"
 
 [node name="Number" type="Label" parent="."]
 unique_name_in_owner = true

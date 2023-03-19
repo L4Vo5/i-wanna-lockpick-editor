@@ -37,6 +37,12 @@ func set_to(r: int, i: int) -> ComplexNumber:
 	changed.emit()
 	return self
 
+func set_to_this(other: ComplexNumber) -> ComplexNumber:
+	_real_part = other.real_part
+	_imaginary_part = other.imaginary_part
+	changed.emit()
+	return self 
+
 func flip() -> ComplexNumber:
 	_real_part *= -1
 	_imaginary_part *= -1

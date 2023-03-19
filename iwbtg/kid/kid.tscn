@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://kf6erpn2cgij"]
+[gd_scene load_steps=33 format=3 uid="uid://kf6erpn2cgij"]
 
 [ext_resource type="Script" path="res://iwbtg/kid/kid.gd" id="1_cknyw"]
 [ext_resource type="Texture2D" uid="uid://cleh0e4h3gwca" path="res://iwbtg/kid/fall.png" id="2_186t3"]
@@ -9,6 +9,11 @@
 [ext_resource type="AudioStream" uid="uid://cyhxjfoc58xsi" path="res://iwbtg/kid/snd_DJump.wav" id="7_qwfu2"]
 [ext_resource type="Texture2D" uid="uid://clhkqdbb4xygc" path="res://iwbtg/kid/auras/spr_brown_aura.png" id="8_hppn8"]
 [ext_resource type="Texture2D" uid="uid://ba3rni1j8cxj2" path="res://iwbtg/kid/auras/spr_rgb_auras.png" id="9_umpdb"]
+[ext_resource type="AudioStream" uid="uid://u8s05mqpl74l" path="res://iwbtg/kid/master_equip.wav" id="10_37nhi"]
+[ext_resource type="AudioStream" uid="uid://cq7dau6jysyu8" path="res://iwbtg/kid/master_unequip.wav" id="11_5ce0b"]
+[ext_resource type="AudioStream" uid="uid://d302bvepvw5no" path="res://iwbtg/kid/master_anti_equip.wav" id="12_3s1du"]
+[ext_resource type="Texture2D" uid="uid://bwhaubn3y72qr" path="res://iwbtg/kid/spr_key_master_equip.png" id="13_5ksfo"]
+[ext_resource type="Texture2D" uid="uid://b5gv2xg17yxyx" path="res://iwbtg/kid/spr_player_shine.png" id="13_doi6s"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ea3o2"]
 blend_mode = 2
@@ -128,6 +133,9 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_catrg"]
 radius = 32.3883
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_csn0j"]
+blend_mode = 1
+
 [node name="kid" type="CharacterBody2D"]
 collision_layer = 16
 collision_mask = 14
@@ -204,3 +212,28 @@ collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AuraArea"]
 shape = SubResource("CircleShape2D_catrg")
+
+[node name="MasterEquip" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("10_37nhi")
+bus = &"Sfx"
+
+[node name="MasterUnequip" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("11_5ce0b")
+bus = &"Sfx"
+
+[node name="MasterAntiEquip" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("12_3s1du")
+bus = &"Sfx"
+
+[node name="PlayerShine" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+material = SubResource("CanvasItemMaterial_csn0j")
+texture = ExtResource("13_doi6s")
+
+[node name="EquippedMaster" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+texture = ExtResource("13_5ksfo")
+hframes = 2

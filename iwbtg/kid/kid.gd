@@ -12,10 +12,20 @@ class_name Kid
 @onready var spr_blue_aura: Sprite2D = %SprBlueAura
 @onready var aura_area: Area2D = %AuraArea
 
+@onready var player_shine: Sprite2D = %PlayerShine
+
+@onready var snd_master_equip: AudioStreamPlayer = %MasterEquip
+@onready var snd_master_unequip: AudioStreamPlayer = %MasterUnequip
+@onready var snd_master_anti_equip: AudioStreamPlayer = %MasterAntiEquip
+@onready var equipped_master: Sprite2D = %EquippedMaster
 const gravity := 0.4
+
+var master_equipped := ComplexNumber.new()
 
 func _ready() -> void:
 	aura_area.body_entered.connect(_on_aura_touch_door)
+	Global.changed_level.connect(connect_level)
+	connect_level()
 
 func _physics_process(delta: float) -> void:
 	if Global.in_editor: return
@@ -26,6 +36,7 @@ func _physics_process(delta: float) -> void:
 	detect_doors()
 	fall_jump()
 	anim()
+	master_anim()
 	var current_speed := 3
 	if on_floor and velocity.y == 0 and Input.is_action_pressed(&"fast"):
 		current_speed = 6
@@ -33,6 +44,11 @@ func _physics_process(delta: float) -> void:
 		current_speed = 1
 	move_and_collide(velocity * Vector2(current_speed, 0))
 	move_and_collide(velocity * Vector2(0, 1))
+
+func _input(event: InputEvent) -> void:
+	if not is_instance_valid(Global.current_level): return
+	if event.is_action("master") and event.is_pressed():
+		_update_master_equipped(true, true)
 
 var on_floor := false
 var on_ceiling := false
@@ -141,3 +157,57 @@ func _on_aura_touch_door(body: Node2D) -> void:
 			door.break_curse_brown()
 		elif brown_amount > 0:
 			door.curse_brown()
+
+func connect_level() -> void:
+	if is_instance_valid(Global.current_level):
+		Global.current_level.changed_i_view.connect(_update_master_equipped)
+		# TODO: fix this when autowrap works properly
+		var the_signal: Signal = Global.current_level.key_counts[Enums.color.master].changed
+		the_signal.connect(_update_master_equipped.bind(false, false, true))
+
+
+func _update_master_equipped(switch_state := false, play_sounds := true, unequip_if_different := false) -> void:
+	# if the objective is for it to be "on" or not
+	var obj_on := (master_equipped.is_zero() and switch_state) or (not master_equipped.is_zero() and not switch_state)
+	if not obj_on:
+		master_equipped.set_to(0, 0)
+	else:
+		var original_count := master_equipped.duplicate()
+		var i_view: bool = Global.current_level.i_view
+		master_equipped.set_to(0,0)
+		if not i_view:
+			master_equipped.real_part = signi(Global.current_level.key_counts[Enums.color.master].real_part)
+		else:
+			master_equipped.imaginary_part = signi(Global.current_level.key_counts[Enums.color.master].imaginary_part)
+		if unequip_if_different and not original_count.is_equal_to(master_equipped):
+			master_equipped.set_to(0, 0)
+	if play_sounds:
+		_master_equipped_sounds()
+	else:
+		_last_master_equipped.set_to_this(master_equipped)
+
+var _last_master_equipped := ComplexNumber.new()
+func _master_equipped_sounds() -> void:
+	if _last_master_equipped.is_zero():
+		if not master_equipped.is_zero():
+			if master_equipped.is_negative():
+				snd_master_anti_equip.play()
+			else:
+				snd_master_equip.play()
+	else:
+		if master_equipped.is_zero():
+			snd_master_unequip.play()
+	_last_master_equipped.set_to_this(master_equipped)
+
+func master_anim() -> void:
+	if master_equipped.is_zero():
+		player_shine.hide()
+		equipped_master.hide()
+		return
+	player_shine.show()
+	equipped_master.show()
+	equipped_master.frame = 0 if not master_equipped.is_negative() else 1
+	player_shine.modulate = Color8(180, 180, 50) if not master_equipped.is_negative() else Color8(50, 50, 180)
+	var alpha := 0.8 + 0.2 * (sin(deg_to_rad(Global.physics_step * 4 % 360)))
+	equipped_master.modulate.a = alpha * 0.6
+	player_shine.scale = Vector2(alpha, alpha)
