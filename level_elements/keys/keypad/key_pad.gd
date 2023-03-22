@@ -5,13 +5,13 @@ const KEY := preload("res://level_elements/keys/key.tscn")
 const KEY_START := Vector2i(20, 20)
 const KEY_DIFF := Vector2i(204, 68) - KEY_START
 const KEY_COLORS := [
-	Enums.color.white, Enums.color.master,
-	Enums.color.orange, Enums.color.pure,
-	Enums.color.purple, Enums.color.brown,
-	Enums.color.pink, Enums.color.red,
-	Enums.color.cyan, Enums.color.green,
-	Enums.color.black, Enums.color.blue,
-	Enums.color.stone, Enums.color.glitch
+	Enums.colors.white, Enums.colors.master,
+	Enums.colors.orange, Enums.colors.pure,
+	Enums.colors.purple, Enums.colors.brown,
+	Enums.colors.pink, Enums.colors.red,
+	Enums.colors.cyan, Enums.colors.green,
+	Enums.colors.black, Enums.colors.blue,
+	Enums.colors.stone, Enums.colors.glitch
 ]
 @onready var keys: Node2D = %Keys
 @onready var sound: AudioStreamPlayer = %Sound

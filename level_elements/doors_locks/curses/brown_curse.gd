@@ -4,7 +4,7 @@ extends Control
 const PART := preload("res://level_elements/doors_locks/curses/brown_particle.tscn")
 var time = 119
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if !visible:
 		time = 119
 		return

@@ -1,7 +1,7 @@
 @tool
 class_name Enums
 
-enum color {
+enum colors {
 	none,
 	glitch,
 	black,
@@ -24,12 +24,13 @@ enum sign {
 	positive,
 	negative,
 }
+
 enum value {
 	real,
 	imaginary
 }
 
-enum curses {
+enum curse {
 	ice, # 1 red
 	eroded, # 5 green
 	painted, # 3 blue

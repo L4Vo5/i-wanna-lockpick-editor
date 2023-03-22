@@ -20,6 +20,13 @@ config/icon="res://icon.png"
 Global="*res://misc/Global.tscn"
 Rendering="*res://rendering/rendering_singleton.tscn"
 
+[debug]
+
+gdscript/warnings/assert_always_true=2
+gdscript/warnings/assert_always_false=0
+gdscript/warnings/redundant_await=0
+gdscript/warnings/shadowed_global_identifier=0
+
 [display]
 
 window/size/viewport_width=800

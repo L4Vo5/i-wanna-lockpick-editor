@@ -13,7 +13,7 @@ func _init() -> void:
 	position = Vector2.ZERO
 	rotation = 0
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	scale += Vector2.ONE * (part_scale - scale.x) * 0.1
 	rotation_degrees += iaspd
 	speed = min(speed + 0.001, 0.4)

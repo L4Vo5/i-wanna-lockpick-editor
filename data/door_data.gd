@@ -13,7 +13,7 @@ class_name DoorData
 		amount = val
 		amount.changed.connect(emit_changed)
 		changed.emit()
-@export var outer_color := Enums.color.none:
+@export var outer_color := Enums.colors.none:
 	set(val):
 		if outer_color == val: return
 		outer_color = val
@@ -36,12 +36,12 @@ class_name DoorData
 		size = val
 		changed.emit()
 @export var _curses := {
-	Enums.curses.ice: false,
-	Enums.curses.eroded: false,
-	Enums.curses.painted: false,
-	Enums.curses.brown: false,
+	Enums.curse.ice: false,
+	Enums.curse.eroded: false,
+	Enums.curse.painted: false,
+	Enums.curse.brown: false,
 }
-@export var glitch_color := Enums.color.glitch:
+@export var glitch_color := Enums.colors.glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
@@ -49,12 +49,12 @@ class_name DoorData
 			lock.glitch_color = glitch_color
 		changed.emit()
 
-func set_curse(curse: Enums.curses, val: bool) -> void:
+func set_curse(curse: Enums.curse, val: bool) -> void:
 	if _curses[curse] == val: return
 	_curses[curse] = val
 	changed.emit()
 
-func get_curse(curse: Enums.curses) -> bool:
+func get_curse(curse: Enums.curse) -> bool:
 	return _curses[curse]
 
 func _init() -> void:
@@ -82,15 +82,15 @@ func try_open() -> Dictionary:
 		"added_copy" = false, # can only happen with master keys
 	}
 	if amount.is_zero(): return return_dict
-	if _curses[Enums.curses.ice] or _curses[Enums.curses.eroded] or _curses[Enums.curses.painted]: return return_dict
+	if _curses[Enums.curse.ice] or _curses[Enums.curse.eroded] or _curses[Enums.curse.painted]: return return_dict
 	var player: Kid = Global.current_level.player
 	# try to open with master keys
 	if not player.master_equipped.is_zero():
 		var can_master := true
-		var non_copiable_colors := [Enums.color.master, Enums.color.pure]
+		var non_copiable_colors := [Enums.colors.master, Enums.colors.pure]
 		if glitch_color in non_copiable_colors:
-			non_copiable_colors.push_back(Enums.color.glitch)
-		if _curses[Enums.curses.brown]:
+			non_copiable_colors.push_back(Enums.colors.glitch)
+		if _curses[Enums.curse.brown]:
 			can_master = true
 		elif outer_color in non_copiable_colors:
 			can_master = false
@@ -105,14 +105,14 @@ func try_open() -> Dictionary:
 			amount.sub(player.master_equipped)
 			if amount.is_bigger_than(old_amount):
 				return_dict.added_copy = true
-			if not Global.current_level.star_keys[Enums.color.master]:
-				Global.current_level.key_counts[Enums.color.master].sub(player.master_equipped)
+			if not Global.current_level.star_keys[Enums.colors.master]:
+				Global.current_level.key_counts[Enums.colors.master].sub(player.master_equipped)
 			if not Input.is_action_pressed(&"master"):
 				if not player.master_equipped.is_zero():
 					player.update_master_equipped(true, false)
 			return_dict.opened = true
 			return return_dict
-	
+	# open normally
 	var diff := ComplexNumber.new()
 	var i_view: bool = Global.current_level.i_view if is_instance_valid(Global.current_level) else false
 	var open_dim := ComplexNumber.new()
@@ -145,11 +145,12 @@ func try_open() -> Dictionary:
 	amount.sub(open_dim)
 	if not Global.current_level.star_keys[outer_color]:
 		Global.current_level.key_counts[outer_color].add(diff)
+	Global.current_level.glitch_color = outer_color
 	return_dict.opened = true
 	return return_dict
 
 
-func has_color(color: Enums.color) -> bool:
+func has_color(color: Enums.colors) -> bool:
 	if outer_color == color:
 		return true
 	for lock in locks:

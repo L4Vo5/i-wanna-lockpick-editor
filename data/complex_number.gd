@@ -117,18 +117,18 @@ func value_type_1d() -> Enums.value:
 		return Enums.value.real
 
 func _to_string() -> String:
-	var str := ""
+	var s := ""
 	# simple case if no imaginary part
 	if _imaginary_part == 0:
-		str += str(_real_part)
+		s += str(_real_part)
 	# there's imaginary part
 	else:
 		# don't include real part if 0
 		if _real_part != 0:
-			str += str(_real_part)
+			s += str(_real_part)
 			# draw a + if imaginary is positive (only if there's reals)
 			if _imaginary_part > 0:
-				str += "+"
-		str += str(_imaginary_part)
-		str += "i"
-	return str
+				s += "+"
+		s += str(_imaginary_part)
+		s += "i"
+	return s

@@ -123,33 +123,33 @@ func update_textures() -> void:
 	
 	var used_color := door_data.outer_color
 	
-	if used_color == Enums.color.glitch:
+	if used_color == Enums.colors.glitch:
 		glitch.show()
-		if door_data.glitch_color == Enums.color.glitch:
+		if door_data.glitch_color == Enums.colors.glitch:
 			glitch.texture = preload("res://level_elements/doors_locks/glitch_door.png")
 			return
 		else:
 			used_color = door_data.glitch_color
 			glitch.texture = preload("res://level_elements/doors_locks/glitch_door_2.png")
-			if used_color in [Enums.color.master, Enums.color.pure]:
+			if used_color in [Enums.colors.master, Enums.colors.pure]:
 				special_anim.show()
 				special_anim.hframes = 1
 				special_anim.scale = size / Vector2(1,58)
 				special_anim.texture = {
-					Enums.color.master: preload("res://level_elements/doors_locks/gold_glitch_door.png"),
-					Enums.color.pure: preload("res://level_elements/doors_locks/pure_glitch_door.png")
+					Enums.colors.master: preload("res://level_elements/doors_locks/gold_glitch_door.png"),
+					Enums.colors.pure: preload("res://level_elements/doors_locks/pure_glitch_door.png")
 				}[used_color]
 				return
 	
-	if used_color in [Enums.color.master, Enums.color.pure]:
+	if used_color in [Enums.colors.master, Enums.colors.pure]:
 		special_anim.show()
 		special_anim.scale = size / Vector2(1,64)
 		special_anim.hframes = 4
 		special_anim.texture = {
-			Enums.color.master: preload("res://level_elements/doors_locks/gold_gradient.png"),
-			Enums.color.pure: preload("res://level_elements/doors_locks/pure_gradient.png")
+			Enums.colors.master: preload("res://level_elements/doors_locks/gold_gradient.png"),
+			Enums.colors.pure: preload("res://level_elements/doors_locks/pure_gradient.png")
 		}[used_color]
-	elif used_color == Enums.color.stone:
+	elif used_color == Enums.colors.stone:
 		stone_texture.show()
 	else: # most colors
 		color_light.show()
@@ -168,10 +168,10 @@ func update_locks() -> void:
 		lock_holder.add_child(new_lock)
 
 func update_curses() -> void:
-	ice.visible = door_data.get_curse(Enums.curses.ice)
-	erosion.visible = door_data.get_curse(Enums.curses.eroded)
-	paint.visible = door_data.get_curse(Enums.curses.painted)
-	brown_curse.visible = door_data.get_curse(Enums.curses.brown)
+	ice.visible = door_data.get_curse(Enums.curse.ice)
+	erosion.visible = door_data.get_curse(Enums.curse.eroded)
+	paint.visible = door_data.get_curse(Enums.curse.painted)
+	brown_curse.visible = door_data.get_curse(Enums.curse.brown)
 
 func try_open() -> void:
 	if not can_open: return
@@ -186,7 +186,7 @@ func try_open() -> void:
 				snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
 			elif door_data.locks.size() > 1:
 				snd_open.stream = preload("res://level_elements/doors_locks/open_combo.wav")
-			elif door_data.outer_color == Enums.color.master:
+			elif door_data.outer_color == Enums.colors.master:
 				snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
 			else:
 				snd_open.stream = preload("res://level_elements/doors_locks/open.wav")
@@ -203,24 +203,24 @@ func try_open() -> void:
 
 # do the effects for the curses
 func break_curse_ice() -> void:
-	if not door_data.get_curse(Enums.curses.ice): return
-	door_data.set_curse(Enums.curses.ice, false)
+	if not door_data.get_curse(Enums.curse.ice): return
+	door_data.set_curse(Enums.curse.ice, false)
 
 func break_curse_eroded() -> void:
-	if not door_data.get_curse(Enums.curses.eroded): return
-	door_data.set_curse(Enums.curses.eroded, false)
+	if not door_data.get_curse(Enums.curse.eroded): return
+	door_data.set_curse(Enums.curse.eroded, false)
 
 func break_curse_painted() -> void:
-	if not door_data.get_curse(Enums.curses.painted): return
-	door_data.set_curse(Enums.curses.painted, false)
+	if not door_data.get_curse(Enums.curse.painted): return
+	door_data.set_curse(Enums.curse.painted, false)
 
 func curse_brown() -> void:
-	if door_data.get_curse(Enums.curses.brown): return
-	door_data.set_curse(Enums.curses.brown, true)
+	if door_data.get_curse(Enums.curse.brown): return
+	door_data.set_curse(Enums.curse.brown, true)
 
 func break_curse_brown() -> void:
-	if not door_data.get_curse(Enums.curses.brown): return
-	door_data.set_curse(Enums.curses.brown, false)
+	if not door_data.get_curse(Enums.curse.brown): return
+	door_data.set_curse(Enums.curse.brown, false)
 
 func create_debris() -> void:
 	for x in floori(size.x / 16):
@@ -231,9 +231,9 @@ func create_debris() -> void:
 			timer.timeout.connect(debris.queue_free)
 			debris.add_child(timer)
 			debris.color = door_data.outer_color
-			if door_data.get_curse(Enums.curses.brown):
-				debris.color = Enums.color.brown
-			elif door_data.outer_color == Enums.color.glitch:
+			if door_data.get_curse(Enums.curse.brown):
+				debris.color = Enums.colors.brown
+			elif door_data.outer_color == Enums.colors.glitch:
 				debris.color = door_data.glitch_color
 				debris.is_glitched_color = true
 			debris.global_position = global_position

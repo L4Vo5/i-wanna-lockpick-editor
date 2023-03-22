@@ -40,26 +40,26 @@ func _connect_global_level() -> void:
 	if in_keypad: return
 	if is_instance_valid(Global.current_level):
 		# needed to access the level glitch color (only necessary if it starts out not being glitch, which shouldn't happen in-game, but I want things to work while I test)
-		if key_data.color == Enums.color.glitch:
+		if key_data.color == Enums.colors.glitch:
 			update_visual()
 		Global.current_level.changed_glitch_color.connect(update_visual)
 
-func _process(delta: float) -> void:
-	if key_data.color in [Enums.color.master, Enums.color.pure]:
+func _process(_delta: float) -> void:
+	if key_data.color in [Enums.colors.master, Enums.colors.pure]:
 		var frame := floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % 4
 		if frame == 3:
 			frame = 1
 		special.frame = (special.frame % 4) + frame * 4
 
-func set_special_texture(color: Enums.color) -> void:
+func set_special_texture(color: Enums.colors) -> void:
 	match color:
-		Enums.color.stone:
+		Enums.colors.stone:
 			special.texture = preload("res://level_elements/keys/spr_key_stone.png")
 			special.vframes = 2
-		Enums.color.master:
+		Enums.colors.master:
 			special.texture = preload("res://level_elements/keys/spr_key_master.png")
 			special.vframes = 4
-		Enums.color.pure:
+		Enums.colors.pure:
 			special.texture = preload("res://level_elements/keys/spr_key_pure.png")
 			special.vframes = 4
 
@@ -84,15 +84,15 @@ func update_visual() -> void:
 	outline.frame = spr_frame
 	special.frame = spr_frame
 	glitch.frame = spr_frame
-	if key_data.color == Enums.color.master and key_data.type == key_data.key_types.add:
+	if key_data.color == Enums.colors.master and key_data.type == key_data.key_types.add:
 		shadow.frame = 4
-	if key_data.color in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
+	if key_data.color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
 		special.show()
 		set_special_texture(key_data.color)
-	elif key_data.color == Enums.color.glitch:
+	elif key_data.color == Enums.colors.glitch:
 		glitch.show()
-		if not in_keypad and is_instance_valid(Global.current_level) and Global.current_level.glitch_color != Enums.color.glitch:
-			if Global.current_level.glitch_color in [Enums.color.master, Enums.color.pure, Enums.color.stone]:
+		if not in_keypad and is_instance_valid(Global.current_level) and Global.current_level.glitch_color != Enums.colors.glitch:
+			if Global.current_level.glitch_color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
 				special.show()
 				set_special_texture(Global.current_level.glitch_color)
 				special.frame = special.frame % 4 + 4 * (special.vframes - 1)
@@ -128,14 +128,14 @@ func update_visual() -> void:
 			symbol.frame = frame
 			symbol.show()
 
-func on_collide(who: Node2D) -> void:
+func on_collide(_who: Node2D) -> void:
 	if key_data.is_spent: return
 	on_pickup()
 
 func on_pickup() -> void:
 	key_data.is_spent = true
 	var color := key_data.color
-	if color == Enums.color.glitch:
+	if color == Enums.colors.glitch:
 		if not is_instance_valid(Global.current_level):
 			printerr("Glitch key picked up, but there's no level")
 		else:
@@ -160,7 +160,7 @@ func on_pickup() -> void:
 	hide()
 	
 	snd_pickup.pitch_scale = 1
-	if key_data.color == Enums.color.master:
+	if key_data.color == Enums.colors.master:
 		snd_pickup.stream = preload("res://level_elements/keys/master_pickup.wav")
 		if key_data.amount.is_negative():
 			snd_pickup.pitch_scale = 0.82

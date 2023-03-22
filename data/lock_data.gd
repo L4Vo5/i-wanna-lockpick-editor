@@ -2,7 +2,7 @@
 extends Resource
 class_name LockData
 
-@export var color := Enums.color.none:
+@export var color := Enums.colors.none:
 	set(val):
 		if color == val: return
 		color = val
@@ -57,7 +57,7 @@ class_name LockData
 
 ## Variables modified by the door data for easier rendering. Not meant to be stored, but I guess they can be used for logic?
 signal changed_glitch
-var glitch_color := Enums.color.glitch:
+var glitch_color := Enums.colors.glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
@@ -107,13 +107,13 @@ const value_type_to_ComplexNumber_var: Dictionary = {
 	Enums.value.imaginary: &"imaginary_part",
 }
 # returns the key count difference after opening, or null if it can't be opened
-func open_with(key_count: ComplexNumber, flipped: bool, rotor: bool) -> ComplexNumber:
+func open_with(key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> ComplexNumber:
 	# listen... it works lmao
-	if flipped or rotor:
+	if flipped or is_rotor:
 		var temp_lock: LockData = duplicate(true)
 		if flipped:
 			temp_lock.flip_sign()
-		if rotor:
+		if is_rotor:
 			temp_lock.rotor()
 		return temp_lock.open_with(key_count, false, false)
 	

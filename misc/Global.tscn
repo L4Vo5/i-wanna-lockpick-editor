@@ -10,4 +10,5 @@ script = ExtResource("1_387qh")
 layer = 100
 
 [node name="KeyPad" parent="CanvasLayer" instance=ExtResource("2_2xxiq")]
+unique_name_in_owner = true
 visible = false

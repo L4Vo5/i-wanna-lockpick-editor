@@ -43,7 +43,7 @@ dont_show_lock = false
 script = ExtResource("3_cjud2")
 color = 13
 magnitude = 1
-sign = 1
+sign = 0
 value_type = 0
 lock_type = 0
 size = Vector2(18, 18)
@@ -70,11 +70,8 @@ glitch_color = 1
 size = Vector2(1, 1)
 
 [node name="Door" type="MarginContainer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -736.0
-offset_bottom = -576.0
+offset_right = 64.0
+offset_bottom = 32.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_sybd2")

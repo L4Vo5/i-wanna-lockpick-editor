@@ -24,7 +24,7 @@ var is_spent := false:
 		if type == val: return
 		type = val
 		emit_changed()
-@export var color := Enums.color.white:
+@export var color := Enums.colors.white:
 	set(val):
 		if color == val: return
 		color = val

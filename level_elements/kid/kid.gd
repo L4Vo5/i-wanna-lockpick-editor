@@ -27,7 +27,7 @@ func _ready() -> void:
 	Global.changed_level.connect(connect_level)
 	connect_level()
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if Global.in_editor: return
 	on_floor = test_move(transform, Vector2(0, gravity))
 	on_ceiling = test_move(transform, Vector2(0, -1))
@@ -119,12 +119,12 @@ func anim() -> void:
 
 func auras() -> void:
 	if not is_instance_valid(Global.current_level): return
-	spr_red_aura.visible = Global.current_level.key_counts[Enums.color.red].real_part >= 1
-	spr_green_aura.visible = Global.current_level.key_counts[Enums.color.green].real_part >= 5
-	spr_blue_aura.visible = Global.current_level.key_counts[Enums.color.blue].real_part >= 3
+	spr_red_aura.visible = Global.current_level.key_counts[Enums.colors.red].real_part >= 1
+	spr_green_aura.visible = Global.current_level.key_counts[Enums.colors.green].real_part >= 5
+	spr_blue_aura.visible = Global.current_level.key_counts[Enums.colors.blue].real_part >= 3
 	
 	spr_brown_aura.rotation_degrees = fmod(spr_brown_aura.rotation_degrees + 2.5, 360)
-	var brown_amount: int = Global.current_level.key_counts[Enums.color.brown].real_part
+	var brown_amount: int = Global.current_level.key_counts[Enums.colors.brown].real_part
 	spr_brown_aura.visible = brown_amount != 0
 	var mat : CanvasItemMaterial = spr_brown_aura.material
 	if brown_amount > 0:
@@ -152,7 +152,7 @@ func _on_aura_touch_door(body: Node2D) -> void:
 	if spr_blue_aura.visible:
 		door.break_curse_painted()
 	if spr_brown_aura.visible:
-		var brown_amount: int = Global.current_level.key_counts[Enums.color.brown].real_part
+		var brown_amount: int = Global.current_level.key_counts[Enums.colors.brown].real_part
 		if brown_amount < 0:
 			door.break_curse_brown()
 		elif brown_amount > 0:
@@ -162,7 +162,7 @@ func connect_level() -> void:
 	if is_instance_valid(Global.current_level):
 		Global.current_level.changed_i_view.connect(update_master_equipped)
 		# TODO: fix this when autowrap works properly
-		var the_signal: Signal = Global.current_level.key_counts[Enums.color.master].changed
+		var the_signal: Signal = Global.current_level.key_counts[Enums.colors.master].changed
 		the_signal.connect(update_master_equipped.bind(false, false, true))
 
 
@@ -176,9 +176,9 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 		var i_view: bool = Global.current_level.i_view
 		master_equipped.set_to(0,0)
 		if not i_view:
-			master_equipped.real_part = signi(Global.current_level.key_counts[Enums.color.master].real_part)
+			master_equipped.real_part = signi(Global.current_level.key_counts[Enums.colors.master].real_part)
 		else:
-			master_equipped.imaginary_part = signi(Global.current_level.key_counts[Enums.color.master].imaginary_part)
+			master_equipped.imaginary_part = signi(Global.current_level.key_counts[Enums.colors.master].imaginary_part)
 		if unequip_if_different and not original_count.is_equal_to(master_equipped):
 			master_equipped.set_to(0, 0)
 	if play_sounds:

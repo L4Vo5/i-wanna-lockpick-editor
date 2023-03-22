@@ -17,7 +17,7 @@ const CHAR_SIZE := Vector2i(10, 14)
 ]
 
 # PERF: simply do not do this every frame :)
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	queue_redraw()
 
 func _ready() -> void:
@@ -27,7 +27,7 @@ func _draw() -> void:
 	for y in 7:
 		for x in 2:
 			var str := strings[y * 2 + x]
-			var color: Enums.color = KeyPad.KEY_COLORS[y * 2 + x]
+			var color: Enums.colors = KeyPad.KEY_COLORS[y * 2 + x]
 			var key_count := ComplexNumber.new()
 			if is_instance_valid(Global.current_level):
 				key_count = Global.current_level.key_counts[color]

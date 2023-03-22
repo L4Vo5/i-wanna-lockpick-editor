@@ -3,7 +3,7 @@ extends Node2D
 
 var velocity := Vector2.ZERO
 var gravity := 0.0
-@export var color := Enums.color.white
+@export var color := Enums.colors.white
 @export var is_glitched_color := false
 @onready var glitch: Sprite2D = %Glitch
 var can_move := false
@@ -14,7 +14,7 @@ func _ready() -> void:
 	gravity = randf_range(0.4, 0.5)
 	glitch.material = glitch.material.duplicate()
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if not can_move:
 		queue_redraw()
 		return
@@ -35,20 +35,20 @@ func _draw() -> void:
 	if is_glitched_color:
 		glitch.show()
 		glitch.frame = 1
-	if color == Enums.color.none:
+	if color == Enums.colors.none:
 		pass
-	elif color == Enums.color.glitch:
+	elif color == Enums.colors.glitch:
 		glitch.show()
 		glitch.frame = 0
-	elif color == Enums.color.pure:
+	elif color == Enums.colors.pure:
 		var anim_frame := floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % 4
 		draw_texture_rect_region(preload("res://level_elements/doors_locks/pure_gradient.png"), Rect2(1,1,14,14), Rect2(anim_frame,0,1,64)
 		)
-	elif color == Enums.color.master:
+	elif color == Enums.colors.master:
 		var anim_frame := floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % 4
 		draw_texture_rect_region(preload("res://level_elements/doors_locks/gold_gradient.png"), Rect2(1,1,14,14), Rect2(anim_frame,0,1,64)
 		)
-	elif color == Enums.color.stone:
+	elif color == Enums.colors.stone:
 		draw_texture_rect_region(preload("res://level_elements/doors_locks/stone_texture.png"), Rect2(1,1,14,14), Rect2(0,0,14,14))
 		pass
 	else:

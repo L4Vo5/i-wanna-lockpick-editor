@@ -45,9 +45,9 @@ func disconnect_lock_data() -> void:
 	lock_data.changed_dont_show_frame.disconnect(set_frame_visible)
 	lock_data.changed_rotation.disconnect(generate_locks)
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	special_anim.frame = floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % special_anim.hframes * special_anim.vframes
-	if lock_data.color == Enums.color.glitch:
+	if lock_data.color == Enums.colors.glitch:
 		special_anim.frame = 0
 
 func set_frame_visible() -> void:
@@ -70,28 +70,28 @@ func set_colors() -> void:
 	
 	var used_color := lock_data.color
 	if lock_data.override_brown:
-		used_color = Enums.color.brown
+		used_color = Enums.colors.brown
 	
-	if lock_data.color == Enums.color.glitch:
+	if lock_data.color == Enums.colors.glitch:
 		glitch.show()
-		if lock_data.glitch_color == Enums.color.glitch:
+		if lock_data.glitch_color == Enums.colors.glitch:
 			glitch.texture = preload("res://level_elements/doors_locks/glitch_lock_1.png")
 			return
 		else:
 			glitch.texture = preload("res://level_elements/doors_locks/glitch_lock_2.png")
 			used_color = lock_data.glitch_color
 	
-	if used_color in [Enums.color.master, Enums.color.pure]:
+	if used_color in [Enums.colors.master, Enums.colors.pure]:
 		special_anim.show()
 		special_anim.scale = size / Vector2(1,64)
 		special_anim.hframes = 4
 		special_anim.texture = {
-			Enums.color.master: preload("res://level_elements/doors_locks/gold_gradient.png"),
-			Enums.color.pure: preload("res://level_elements/doors_locks/pure_gradient.png")
+			Enums.colors.master: preload("res://level_elements/doors_locks/gold_gradient.png"),
+			Enums.colors.pure: preload("res://level_elements/doors_locks/pure_gradient.png")
 		}[used_color]
-	elif used_color == Enums.color.stone:
+	elif used_color == Enums.colors.stone:
 		stone_texture.show()
-	elif used_color == Enums.color.glitch:
+	elif used_color == Enums.colors.glitch:
 		glitch.show()
 	else:
 		inner_color.show()

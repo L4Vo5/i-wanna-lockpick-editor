@@ -20,9 +20,10 @@ const I = 10
 func _draw() -> void:
 	if text == "":
 		return
+	var isize = Vector2i(size)
 	var offset := Vector2i(
-		(size.x - text.length() * CHAR_SIZE.x) / 2,
-		(size.y - CHAR_SIZE.y) / 2) 
+		(isize.x - text.length() * CHAR_SIZE.x) / 2,
+		(isize.y - CHAR_SIZE.y) / 2) 
 	match lock_type:
 		0: # real
 			offset.x += 5
@@ -39,14 +40,14 @@ func _draw() -> void:
 		2: # don't show
 			pass
 	var pos := Vector2i(0, 0)
-	var max := Vector2(0, 0)
-	for char in text:
-		var i := CHARSET.find(char)
+#	var max := Vector2(0, 0)
+	for c in text:
+		var i := CHARSET.find(c)
 		if i != -1:
 			draw_texture_rect_region(FONT,
 				Rect2(pos + offset, CHAR_SIZE),
 				Rect2(Vector2(CHAR_SIZE.x * i, 0), CHAR_SIZE)
 			)
-		max.x = maxi(max.x, pos.x + CHAR_SIZE.x)
+#		max.x = maxi(max.x, pos.x + CHAR_SIZE.x)
 		pos.x += CHAR_SIZE.x
 #	size = max
