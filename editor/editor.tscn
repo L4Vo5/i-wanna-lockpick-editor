@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://ba6kd4ubk1swu"]
+
+[ext_resource type="Script" path="res://editor/editor.gd" id="1_244aj"]
+[ext_resource type="Script" path="res://level.gd" id="2_lir2a"]
+
+[node name="Editor" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_244aj")
+
+[node name="Level" type="Node2D" parent="."]
+script = ExtResource("2_lir2a")
+
+[node name="TileMap" type="TileMap" parent="Level"]
+format = 2

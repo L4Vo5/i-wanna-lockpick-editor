@@ -1,0 +1,127 @@
+[gd_scene load_steps=18 format=3 uid="uid://b0dwb73yoj3sr"]
+
+[ext_resource type="Script" path="res://level_elements/keys/key.gd" id="1_m20su"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="2_0fvvp"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="3_ngkr3"]
+[ext_resource type="Texture2D" uid="uid://rek5hwp2r3c4" path="res://level_elements/keys/spr_key_shadow.png" id="4_8n3em"]
+[ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="5_x10q2"]
+[ext_resource type="Texture2D" uid="uid://dr8mnidwq7oss" path="res://level_elements/keys/spr_glitch.png" id="6_6kxlr"]
+[ext_resource type="Texture2D" uid="uid://c3yg2n17xq0nk" path="res://level_elements/keys/spr_key_fill.png" id="7_3kknv"]
+[ext_resource type="Texture2D" uid="uid://krj3m6t0k1jc" path="res://level_elements/keys/spr_key_outline.png" id="8_yrtx4"]
+[ext_resource type="Texture2D" uid="uid://b6k20y7s4yqy7" path="res://level_elements/keys/spr_key_master.png" id="9_vu1hx"]
+[ext_resource type="AudioStream" uid="uid://cvfd3d4c881kw" path="res://level_elements/keys/key_pickup.wav" id="10_8nl5u"]
+[ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="11_jnf8c"]
+[ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://level_elements/keys/spr_special_keys.png" id="12_gx03b"]
+
+[sub_resource type="Resource" id="Resource_w2h4u"]
+script = ExtResource("2_0fvvp")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_ogwck"]
+script = ExtResource("3_ngkr3")
+amount = SubResource("Resource_w2h4u")
+type = 0
+color = 1
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_mb7fb"]
+radius = 9.5
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_kspn0"]
+radius = 3.53246
+height = 25.4556
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i7153"]
+size = Vector2(12.7018, 11.9508)
+
+[node name="key" type="Area2D"]
+collision_layer = 8
+collision_mask = 16
+script = ExtResource("1_m20su")
+key_data = SubResource("Resource_ogwck")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.376471)
+position = Vector2(3, 3)
+texture = ExtResource("4_8n3em")
+centered = false
+hframes = 5
+
+[node name="SprGlitch" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+material = ExtResource("5_x10q2")
+texture = ExtResource("6_6kxlr")
+centered = false
+hframes = 4
+
+[node name="Fill" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.839216, 0.811765, 0.788235, 1)
+texture = ExtResource("7_3kknv")
+centered = false
+hframes = 4
+vframes = 2
+
+[node name="Outline" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("8_yrtx4")
+centered = false
+hframes = 4
+
+[node name="Special" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("9_vu1hx")
+centered = false
+hframes = 4
+vframes = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(9.5, 10)
+shape = SubResource("CircleShape2D_mb7fb")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(21, 21)
+rotation = -0.785398
+shape = SubResource("CapsuleShape2D_kspn0")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(23.8418, 20.3201)
+rotation = 0.785398
+shape = SubResource("RectangleShape2D_i7153")
+
+[node name="Pickup" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("10_8nl5u")
+bus = &"Sfx"
+
+[node name="Number" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 1.0
+offset_top = 8.0
+offset_right = 40.0
+offset_bottom = 37.0
+mouse_filter = 1
+theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
+theme_override_colors/font_shadow_color = Color(0.211765, 0.188235, 0.160784, 1)
+theme_override_colors/font_outline_color = Color(0.921569, 0.890196, 0.866667, 1)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/outline_size = 1
+theme_override_constants/shadow_outline_size = 10
+theme_override_fonts/font = ExtResource("11_jnf8c")
+theme_override_font_sizes/font_size = 22
+
+[node name="Symbol" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(9, 24)
+texture = ExtResource("12_gx03b")
+hframes = 3
+frame = 2

@@ -43,6 +43,10 @@ signal changed_glitch_color
 signal changed_i_view
 var i_view := false
 
+# multiplier to how many times doors should try to be opened/copied
+# useful for levels with a lot of door copies
+var door_multiplier := 1
+
 var time := 0.0
 func _process(delta: float) -> void:
 	return
@@ -63,7 +67,7 @@ func _process(delta: float) -> void:
 		count.imaginary_part = get_val.call()
 
 func _input(event: InputEvent) -> void:
-	if event.is_action(&"i-view") and event.is_pressed():
+	if event.is_action(&"i-view") and event.is_pressed() and not event.is_echo():
 		i_view = not i_view
 		changed_i_view.emit()
 

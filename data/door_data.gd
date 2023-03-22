@@ -26,7 +26,8 @@ class_name DoorData
 				l.changed.disconnect(emit_changed)
 		locks = val
 		for l in locks:
-			l.changed.connect(emit_changed)
+			if is_instance_valid(l):
+				l.changed.connect(emit_changed)
 		changed.emit()
 @export var sequence_next: Array[DoorData] = []
 @export var size := Vector2i(32, 32):
@@ -73,7 +74,45 @@ func duplicated() -> DoorData:
 
 ## try to open the door with the current level's keys.
 ## returns true if the door opened.
-func try_open() -> bool:
+## (also tries changing the door's count)
+func try_open() -> Dictionary:
+	var return_dict := {
+		"opened" = false,
+		"master_key" = false,
+		"added_copy" = false, # can only happen with master keys
+	}
+	if amount.is_zero(): return return_dict
+	if _curses[Enums.curses.ice] or _curses[Enums.curses.eroded] or _curses[Enums.curses.painted]: return return_dict
+	var player: Kid = Global.current_level.player
+	# try to open with master keys
+	if not player.master_equipped.is_zero():
+		var can_master := true
+		var non_copiable_colors := [Enums.color.master, Enums.color.pure]
+		if glitch_color in non_copiable_colors:
+			non_copiable_colors.push_back(Enums.color.glitch)
+		if _curses[Enums.curses.brown]:
+			can_master = true
+		elif outer_color in non_copiable_colors:
+			can_master = false
+		else:
+			for lock in locks:
+				if lock.color in non_copiable_colors:
+					can_master = false
+					break
+		if can_master:
+			return_dict.master_key = true
+			var old_amount := amount.duplicate()
+			amount.sub(player.master_equipped)
+			if amount.is_bigger_than(old_amount):
+				return_dict.added_copy = true
+			if not Global.current_level.star_keys[Enums.color.master]:
+				Global.current_level.key_counts[Enums.color.master].sub(player.master_equipped)
+			if not Input.is_action_pressed(&"master"):
+				if not player.master_equipped.is_zero():
+					player.update_master_equipped(true, false)
+			return_dict.opened = true
+			return return_dict
+	
 	var diff := ComplexNumber.new()
 	var i_view: bool = Global.current_level.i_view if is_instance_valid(Global.current_level) else false
 	var open_dim := ComplexNumber.new()
@@ -100,12 +139,15 @@ func try_open() -> bool:
 	for lock_data in locks:
 		var color_amount: ComplexNumber = Global.current_level.key_counts[lock_data.color]
 		var diff_after_open := lock_data.open_with(color_amount, flip, rotor)
-		if diff_after_open == null: return false
+		if diff_after_open == null: return return_dict
 		diff.add(diff_after_open)
 	# it worked on all locks!
 	amount.sub(open_dim)
-	Global.current_level.key_counts[outer_color].add(diff)
-	return true
+	if not Global.current_level.star_keys[outer_color]:
+		Global.current_level.key_counts[outer_color].add(diff)
+	return_dict.opened = true
+	return return_dict
+
 
 func has_color(color: Enums.color) -> bool:
 	if outer_color == color:

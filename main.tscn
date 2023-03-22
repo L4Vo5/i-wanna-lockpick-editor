@@ -1,202 +1,13 @@
-[gd_scene load_steps=38 format=3 uid="uid://dhk52cl3is4t8"]
+[gd_scene load_steps=28 format=3 uid="uid://j1k1ahp8bdgi"]
 
 [ext_resource type="Script" path="res://level.gd" id="1_6pjc7"]
-[ext_resource type="Texture2D" uid="uid://c7gp7isvc6cij" path="res://rendering/tiles/World1.png" id="1_8pg5l"]
-[ext_resource type="PackedScene" uid="uid://uex7agg4af37" path="res://rendering/doors_locks/door.tscn" id="3_fu1uk"]
-[ext_resource type="PackedScene" uid="uid://kf6erpn2cgij" path="res://iwbtg/kid/kid.tscn" id="3_kieau"]
-[ext_resource type="PackedScene" uid="uid://cbmfu5jjgaqgo" path="res://rendering/keys/key.tscn" id="4_5qia5"]
+[ext_resource type="PackedScene" uid="uid://byfp3pi6x02gs" path="res://level_elements/doors_locks/door.tscn" id="3_fu1uk"]
+[ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="4_5qia5"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="5_0xlsj"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="6_6n2u4"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="8_2frqs"]
+[ext_resource type="PackedScene" uid="uid://wa0a5416mt10" path="res://level_elements/kid/kid.tscn" id="9_w0cl3"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="9_w773q"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fb8ee"]
-texture = ExtResource("1_8pg5l")
-texture_region_size = Vector2i(32, 32)
-0:0/0 = 0
-0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
-0:0/0/physics_layer_0/angular_velocity = 0.0
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
-1:0/0 = 0
-1:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
-1:0/0/physics_layer_0/angular_velocity = 0.0
-1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
-2:0/0 = 0
-2:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
-2:0/0/physics_layer_0/angular_velocity = 0.0
-0:1/0 = 0
-0:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
-0:1/0/physics_layer_0/angular_velocity = 0.0
-0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
-1:1/0 = 0
-1:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
-1:1/0/physics_layer_0/angular_velocity = 0.0
-1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
-2:1/0 = 0
-2:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
-2:1/0/physics_layer_0/angular_velocity = 0.0
-
-[sub_resource type="TileSet" id="TileSet_vc54h"]
-tile_size = Vector2i(32, 32)
-physics_layer_0/collision_layer = 2
-physics_layer_0/collision_mask = 0
-sources/1 = SubResource("TileSetAtlasSource_fb8ee")
-
-[sub_resource type="Resource" id="Resource_5oic3"]
-script = ExtResource("8_2frqs")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_ewqbb"]
-script = ExtResource("5_0xlsj")
-color = 3
-magnitude = 1
-sign = 0
-value_type = 0
-lock_type = 0
-size = Vector2(18, 18)
-position = Vector2(7, 7)
-lock_arrangement = 0
-dont_show_lock = false
-
-[sub_resource type="Resource" id="Resource_52yxl"]
-script = ExtResource("6_6n2u4")
-amount = SubResource("Resource_5oic3")
-outer_color = 5
-locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb")])
-sequence_next = Array[ExtResource("6_6n2u4")]([])
-size = Vector2i(32, 32)
-_curses = {
-0: false,
-1: false,
-2: false,
-3: false
-}
-glitch_color = 1
-
-[sub_resource type="Resource" id="Resource_eevvl"]
-script = ExtResource("8_2frqs")
-real_part = -1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_h64pg"]
-script = ExtResource("6_6n2u4")
-amount = SubResource("Resource_eevvl")
-outer_color = 12
-locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb")])
-sequence_next = Array[ExtResource("6_6n2u4")]([])
-size = Vector2i(32, 32)
-_curses = {
-0: false,
-1: false,
-2: false,
-3: false
-}
-glitch_color = 1
-
-[sub_resource type="Resource" id="Resource_rikxg"]
-script = ExtResource("8_2frqs")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_xolyh"]
-script = ExtResource("5_0xlsj")
-color = 3
-magnitude = 1
-sign = 1
-value_type = 0
-lock_type = 0
-size = Vector2(18, 18)
-position = Vector2(7, 7)
-lock_arrangement = 0
-dont_show_lock = false
-
-[sub_resource type="Resource" id="Resource_2h3kq"]
-script = ExtResource("6_6n2u4")
-amount = SubResource("Resource_rikxg")
-outer_color = 12
-locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_xolyh")])
-sequence_next = Array[ExtResource("6_6n2u4")]([])
-size = Vector2i(32, 32)
-_curses = {
-0: false,
-1: false,
-2: false,
-3: false
-}
-glitch_color = 1
-
-[sub_resource type="Resource" id="Resource_xhaq4"]
-script = ExtResource("8_2frqs")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_efqsm"]
-script = ExtResource("6_6n2u4")
-amount = SubResource("Resource_xhaq4")
-outer_color = 12
-locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb")])
-sequence_next = Array[ExtResource("6_6n2u4")]([])
-size = Vector2i(32, 32)
-_curses = {
-0: false,
-1: false,
-2: false,
-3: false
-}
-glitch_color = 1
-
-[sub_resource type="Resource" id="Resource_tecgq"]
-script = ExtResource("8_2frqs")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_ekwhs"]
-script = ExtResource("6_6n2u4")
-amount = SubResource("Resource_tecgq")
-outer_color = 10
-locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb")])
-sequence_next = Array[ExtResource("6_6n2u4")]([])
-size = Vector2i(32, 32)
-_curses = {
-0: false,
-1: false,
-2: false,
-3: false
-}
-glitch_color = 1
-
-[sub_resource type="Resource" id="Resource_cewlb"]
-script = ExtResource("8_2frqs")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_b47hk"]
-script = ExtResource("5_0xlsj")
-color = 10
-magnitude = 1
-sign = 1
-value_type = 0
-lock_type = 0
-size = Vector2(18, 18)
-position = Vector2(39, 7)
-lock_arrangement = 0
-dont_show_lock = false
-
-[sub_resource type="Resource" id="Resource_5jh43"]
-script = ExtResource("6_6n2u4")
-amount = SubResource("Resource_cewlb")
-outer_color = 14
-locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_ewqbb"), SubResource("Resource_b47hk")])
-sequence_next = Array[ExtResource("6_6n2u4")]([])
-size = Vector2i(64, 32)
-_curses = {
-0: false,
-1: false,
-2: false,
-3: false
-}
-glitch_color = 1
 
 [sub_resource type="Resource" id="Resource_1nl21"]
 script = ExtResource("8_2frqs")
@@ -230,9 +41,73 @@ _curses = {
 }
 glitch_color = 1
 
+[sub_resource type="Resource" id="Resource_5dedj"]
+script = ExtResource("8_2frqs")
+real_part = 200
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_auep8"]
+script = ExtResource("6_6n2u4")
+amount = SubResource("Resource_5dedj")
+outer_color = 2
+locks = Array[ExtResource("5_0xlsj")]([])
+sequence_next = Array[ExtResource("6_6n2u4")]([])
+size = Vector2i(320, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 1
+
+[sub_resource type="Resource" id="Resource_0j8b4"]
+script = ExtResource("8_2frqs")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_13kou"]
+script = ExtResource("5_0xlsj")
+color = 3
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2(18, 18)
+position = Vector2(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_27tk0"]
+script = ExtResource("5_0xlsj")
+color = 3
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2(18, 18)
+position = Vector2(7, 39)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_0jud3"]
+script = ExtResource("6_6n2u4")
+amount = SubResource("Resource_0j8b4")
+outer_color = 5
+locks = Array[ExtResource("5_0xlsj")]([SubResource("Resource_13kou"), SubResource("Resource_27tk0")])
+sequence_next = Array[ExtResource("6_6n2u4")]([])
+size = Vector2i(32, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 1
+
 [sub_resource type="Resource" id="Resource_bs23n"]
 script = ExtResource("8_2frqs")
-real_part = 2
+real_part = 5
 imaginary_part = 0
 
 [sub_resource type="Resource" id="Resource_yqpaw"]
@@ -263,6 +138,17 @@ amount = SubResource("Resource_gg8x2")
 type = 0
 color = 13
 
+[sub_resource type="Resource" id="Resource_55bx4"]
+script = ExtResource("8_2frqs")
+real_part = -10
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_pnbf5"]
+script = ExtResource("9_w773q")
+amount = SubResource("Resource_55bx4")
+type = 2
+color = 13
+
 [sub_resource type="Resource" id="Resource_phhxv"]
 script = ExtResource("8_2frqs")
 real_part = 0
@@ -279,75 +165,39 @@ script = ExtResource("1_6pjc7")
 player = NodePath("kid")
 
 [node name="TileMap" type="TileMap" parent="."]
-tile_set = SubResource("TileSet_vc54h")
 cell_quadrant_size = 32
 format = 2
 layer_0/tile_data = PackedInt32Array(262150, 131073, 1, 327686, 131073, 1, 458758, 131073, 1, 524294, 131073, 1, 655366, 131073, 1, 720902, 131073, 1, 196615, 131073, 1, 262151, 131073, 1, 327687, 131073, 1, 393223, 131073, 1, 458759, 131073, 1, 524295, 131073, 1, 589831, 131073, 1, 655367, 131073, 1, 720903, 131073, 1, 786439, 131073, 1, 851975, 131073, 1, 131080, 65537, 1, 196616, 131073, 1, 262152, 65537, 1, 327688, 65537, 0, 393224, 65537, 0, 458760, 65537, 0, 524296, 65537, 0, 589832, 65537, 1, 655368, 65537, 0, 720904, 65537, 0, 786440, 65537, 1, 851976, 131073, 1, 917512, 131073, 1, 131081, 65537, 1, 196617, 131073, 1, 262153, 1, 1, 589833, 1, 1, 655369, 131073, 0, 720905, 131073, 0, 786441, 1, 1, 851977, 131073, 1, 917513, 131073, 1, 196618, 131073, 1, 262154, 1, 1, 786442, 1, 1, 851978, 131073, 1, 131083, 65537, 1, 196619, 131073, 1, 262155, 65537, 1, 786443, 1, 1, 851979, 131073, 1, 917515, 131073, 1, 131084, 65537, 1, 196620, 131073, 1, 262156, 1, 1, 786444, 1, 1, 851980, 131073, 1, 917516, 131073, 1, 196621, 131073, 1, 262157, 1, 1, 786445, 1, 1, 851981, 131073, 1, 131086, 65537, 1, 196622, 131073, 1, 262158, 1, 1, 786446, 1, 1, 851982, 131073, 1, 917518, 131073, 1, 131087, 65537, 1, 196623, 131073, 1, 262159, 1, 1, 786447, 1, 1, 851983, 131073, 1, 917519, 131073, 1, 196624, 131073, 1, 262160, 1, 1, 589840, 65537, 1, 655376, 65537, 1, 720912, 131073, 0, 786448, 1, 1, 851984, 131073, 1, 131089, 65537, 1, 196625, 131073, 1, 262161, 65537, 1, 327697, 65537, 0, 393233, 65537, 0, 458769, 65537, 1, 524305, 131073, 0, 589841, 1, 1, 655377, 131073, 0, 720913, 131073, 0, 786449, 1, 1, 851985, 131073, 1, 917521, 131073, 1, 131090, 65537, 1, 196626, 131073, 1, 262162, 1, 1, 327698, 131073, 0, 393234, 131073, 0, 458770, 131073, 0, 524306, 131073, 0, 589842, 1, 1, 655378, 131073, 0, 720914, 131073, 0, 786450, 1, 1, 851986, 131073, 1, 917522, 131073, 1, 196627, 131073, 1, 262163, 1, 1, 393235, 131073, 0, 458771, 131073, 0, 589843, 1, 1, 655379, 131073, 0, 786451, 1, 1, 851987, 131073, 1, 327689, 131073, 0, 393225, 131073, 0, 458761, 131073, 0, 524297, 131073, 0, 327690, 131073, 0, 393226, 131073, 0, 458762, 131073, 0, 524298, 131073, 0, 589834, 1, 1, 655370, 131073, 0, 720906, 131073, 0, 327691, 65537, 0, 393227, 65537, 0, 458763, 65537, 1, 524299, 131073, 0, 589835, 1, 1, 655371, 131073, 0, 720907, 131073, 0, 589836, 65537, 1, 655372, 65537, 1, 720908, 131073, 0, 327699, 131073, 0, 524307, 131073, 0, 720915, 131073, 0, 131092, 65537, 1, 196628, 131073, 1, 262164, 65537, 1, 327700, 65537, 0, 393236, 65537, 0, 458772, 65537, 0, 524308, 65537, 0, 589844, 65537, 1, 655380, 65537, 0, 720916, 65537, 0, 786452, 65537, 1, 851988, 131073, 1, 917524, 131073, 1, 131093, 65537, 1, 196629, 131073, 1, 262165, 131073, 1, 327701, 65537, 1, 393237, 131073, 1, 458773, 131073, 1, 524309, 65537, 1, 589845, 131073, 1, 196630, 131073, 1, 262166, 131073, 1, 393238, 65537, 1, 458774, 131073, 1, 589846, 65537, 1, 655382, 131073, 1, 786454, 65537, 1, 1114114, 65537, 1, 1114115, 65537, 1, 1114116, 65537, 1, 1114117, 65537, 1, 1114118, 65537, 1, 1114119, 65537, 1, 1114134, 65537, 1, 1114135, 65537, 1, 1114136, 65537, 1, 1114120, 65537, 1, 1114121, 65537, 1, 1114122, 65537, 1, 1114123, 65537, 1, 1114124, 65537, 1, 1114125, 65537, 1, 1114126, 65537, 1, 1114127, 65537, 1, 1114128, 65537, 1, 1114129, 65537, 1, 1114130, 65537, 1, 1114131, 65537, 1, 1114132, 65537, 1, 1114133, 65537, 1, 1048600, 65537, 1, 131091, 65537, 1, 131088, 65537, 1, 131085, 65537, 1, 131082, 65537, 1, 131079, 65537, 1, 131078, 65537, 1, 1048577, 65537, 1, 983040, 65537, 1, 851970, 65537, 1, 786433, 65537, 1, 655364, 65537, 1, 589829, 65537, 1, 393218, 65537, 1, 327680, 65537, 1, 524291, 65537, 1, 327685, 65537, 1, 196611, 65537, 1, 720917, 65537, 1, 917525, 65537, 1, 983062, 65537, 1)
 
-[node name="kid" parent="." instance=ExtResource("3_kieau")]
-position = Vector2(338, 368)
-
-[node name="Door" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 544.0
-offset_top = 256.0
-offset_right = 576.0
-offset_bottom = 288.0
-door_data = SubResource("Resource_52yxl")
-
-[node name="Door4" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 424.0
-offset_top = 207.0
-offset_right = 456.0
-offset_bottom = 239.0
-door_data = SubResource("Resource_h64pg")
-
-[node name="Door9" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 382.0
-offset_top = 185.0
-offset_right = 414.0
-offset_bottom = 217.0
-door_data = SubResource("Resource_2h3kq")
-
-[node name="Door8" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 385.0
-offset_top = 154.0
-offset_right = 417.0
-offset_bottom = 186.0
-door_data = SubResource("Resource_efqsm")
-
-[node name="Door5" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 475.0
-offset_top = 221.0
-offset_right = 507.0
-offset_bottom = 253.0
-door_data = SubResource("Resource_ekwhs")
-
-[node name="Door6" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 464.0
-offset_top = 167.0
-offset_right = 528.0
-offset_bottom = 199.0
-door_data = SubResource("Resource_5jh43")
-
-[node name="Door3" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 544.0
-offset_top = 511.0
-offset_right = 576.0
-offset_bottom = 543.0
-door_data = SubResource("Resource_52yxl")
-
-[node name="Door2" parent="." instance=ExtResource("3_fu1uk")]
-offset_left = 512.0
-offset_top = 352.0
-offset_right = 544.0
-offset_bottom = 384.0
+[node name="Door10" parent="." instance=ExtResource("3_fu1uk")]
+offset_left = 384.0
+offset_top = 512.0
+offset_right = 416.0
+offset_bottom = 544.0
 door_data = SubResource("Resource_al0yc")
+
+[node name="Door12" parent="." instance=ExtResource("3_fu1uk")]
+offset_left = 261.0
+offset_top = 451.0
+offset_right = 581.0
+offset_bottom = 483.0
+door_data = SubResource("Resource_auep8")
+
+[node name="Door11" parent="." instance=ExtResource("3_fu1uk")]
+offset_left = 443.0
+offset_top = 473.0
+offset_right = 475.0
+offset_bottom = 537.0
+door_data = SubResource("Resource_0jud3")
 
 [node name="key" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(304, 185)
 
+[node name="key8" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(147, 505)
+
 [node name="key2" parent="." instance=ExtResource("4_5qia5")]
-position = Vector2(389, 246)
+position = Vector2(392, 250)
 key_data = SubResource("Resource_yqpaw")
 
 [node name="key3" parent="." instance=ExtResource("4_5qia5")]
@@ -355,9 +205,32 @@ position = Vector2(478, 307)
 key_data = SubResource("Resource_bq6vb")
 
 [node name="key5" parent="." instance=ExtResource("4_5qia5")]
-position = Vector2(478, 353)
+position = Vector2(277, 496)
 key_data = SubResource("Resource_nr1hf")
+
+[node name="key9" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(160, 465)
+key_data = SubResource("Resource_nr1hf")
+
+[node name="key10" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(161, 422)
+key_data = SubResource("Resource_nr1hf")
+
+[node name="key11" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(162, 375)
+key_data = SubResource("Resource_nr1hf")
+
+[node name="key7" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(601, 456)
+key_data = SubResource("Resource_nr1hf")
+
+[node name="key6" parent="." instance=ExtResource("4_5qia5")]
+position = Vector2(209, 508)
+key_data = SubResource("Resource_pnbf5")
 
 [node name="key4" parent="." instance=ExtResource("4_5qia5")]
 position = Vector2(445, 256)
 key_data = SubResource("Resource_w7use")
+
+[node name="kid" parent="." instance=ExtResource("9_w0cl3")]
+position = Vector2(338, 511)

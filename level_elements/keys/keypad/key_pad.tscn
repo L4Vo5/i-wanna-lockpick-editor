@@ -1,0 +1,89 @@
+[gd_scene load_steps=9 format=3 uid="uid://wkjs6v6a35d"]
+
+[ext_resource type="Script" path="res://level_elements/keys/keypad/key_pad.gd" id="1_by8tu"]
+[ext_resource type="Texture2D" uid="uid://drxhxedgna4ej" path="res://level_elements/keys/keypad/spr_keypad_base.png" id="2_a41vq"]
+[ext_resource type="Texture2D" uid="uid://b5uagksbmtn6r" path="res://level_elements/keys/keypad/spr_keypad_bottom_1.png" id="3_4revi"]
+[ext_resource type="Texture2D" uid="uid://dfkqyacr5r71w" path="res://level_elements/keys/keypad/spr_keypad_bottom_2.png" id="4_vq4hr"]
+[ext_resource type="Texture2D" uid="uid://be7omho7qmya3" path="res://level_elements/keys/keypad/spr_keypad_bottom_3.png" id="5_ukmg8"]
+[ext_resource type="Script" path="res://level_elements/keys/keypad/keypad_count_draw.gd" id="7_v6tjm"]
+[ext_resource type="AudioStream" uid="uid://c14d7y5nj1gaa" path="res://level_elements/keys/keypad/keypad_sound.wav" id="8_7yh2l"]
+[ext_resource type="Script" path="res://level_elements/keys/keypad/star_draw.gd" id="8_slq0m"]
+
+[node name="KeyPad" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_by8tu")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.478431)
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 32.0
+offset_right = 600.0
+offset_bottom = 576.0
+texture = ExtResource("2_a41vq")
+patch_margin_left = 7
+patch_margin_top = 8
+patch_margin_right = 7
+patch_margin_bottom = 8
+
+[node name="ScreenOutline" type="ColorRect" parent="NinePatchRect"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 386.0
+offset_bottom = 481.0
+color = Color(0, 0, 0, 1)
+
+[node name="Screen" type="ColorRect" parent="NinePatchRect"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 385.0
+offset_bottom = 480.0
+color = Color(0, 0.25098, 0, 1)
+
+[node name="SprKeypadBottom1" type="Sprite2D" parent="NinePatchRect"]
+position = Vector2(16, 519)
+texture = ExtResource("3_4revi")
+centered = false
+
+[node name="SprKeypadBottom2" type="Sprite2D" parent="NinePatchRect"]
+position = Vector2(176, 488)
+texture = ExtResource("4_vq4hr")
+centered = false
+
+[node name="SprKeypadBottom3" type="Sprite2D" parent="NinePatchRect"]
+position = Vector2(278, 517)
+texture = ExtResource("5_ukmg8")
+centered = false
+
+[node name="Keys" type="Node2D" parent="NinePatchRect"]
+unique_name_in_owner = true
+
+[node name="KeyCountDraw" type="Control" parent="NinePatchRect"]
+modulate = Color(0, 1, 0, 1)
+anchors_preset = 0
+offset_right = 400.0
+offset_bottom = 544.0
+script = ExtResource("7_v6tjm")
+strings = Array[String](["x7i", "x0", "x0", "x-5", "x0", "x2+3i", "x12-8i", "i", "5566778899++", "45+--ii", "xx0011223344", "x0x89539xix-5+235-132x5x+67-865", "x12", "1"])
+
+[node name="StarDraw" type="Node2D" parent="NinePatchRect"]
+script = ExtResource("8_slq0m")
+
+[node name="Sound" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("8_7yh2l")

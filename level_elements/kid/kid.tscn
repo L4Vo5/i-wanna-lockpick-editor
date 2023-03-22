@@ -1,0 +1,241 @@
+[gd_scene load_steps=33 format=3 uid="uid://wa0a5416mt10"]
+
+[ext_resource type="Script" path="res://level_elements/kid/kid.gd" id="1_ytpc6"]
+[ext_resource type="Texture2D" uid="uid://ba3rni1j8cxj2" path="res://level_elements/kid/auras/spr_rgb_auras.png" id="2_rggjw"]
+[ext_resource type="Texture2D" uid="uid://clhkqdbb4xygc" path="res://level_elements/kid/auras/spr_brown_aura.png" id="3_qutdv"]
+[ext_resource type="Texture2D" uid="uid://cleh0e4h3gwca" path="res://level_elements/kid/fall.png" id="4_ty0xs"]
+[ext_resource type="Texture2D" uid="uid://bsjkn1b1ckhg1" path="res://level_elements/kid/idle.png" id="5_xf6kx"]
+[ext_resource type="Texture2D" uid="uid://bbbhhru56rgp3" path="res://level_elements/kid/jump.png" id="6_a8nig"]
+[ext_resource type="Texture2D" uid="uid://c81tvvgcbljca" path="res://level_elements/kid/running.png" id="7_vwf72"]
+[ext_resource type="AudioStream" uid="uid://j81m54lj8k3f" path="res://level_elements/kid/snd_Jump.wav" id="8_7ei5d"]
+[ext_resource type="AudioStream" uid="uid://cyhxjfoc58xsi" path="res://level_elements/kid/snd_DJump.wav" id="9_lbvgj"]
+[ext_resource type="AudioStream" uid="uid://u8s05mqpl74l" path="res://level_elements/kid/master_equip.wav" id="10_76avb"]
+[ext_resource type="AudioStream" uid="uid://cq7dau6jysyu8" path="res://level_elements/kid/master_unequip.wav" id="11_wa6iq"]
+[ext_resource type="AudioStream" uid="uid://d302bvepvw5no" path="res://level_elements/kid/master_anti_equip.wav" id="12_k1q47"]
+[ext_resource type="Texture2D" uid="uid://b5gv2xg17yxyx" path="res://level_elements/kid/spr_player_shine.png" id="13_2esid"]
+[ext_resource type="Texture2D" uid="uid://bwhaubn3y72qr" path="res://level_elements/kid/spr_key_master_equip.png" id="14_skcwr"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ea3o2"]
+blend_mode = 2
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_8oifk"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k1m2g"]
+size = Vector2(11, 21)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ny3af"]
+atlas = ExtResource("4_ty0xs")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d8cgv"]
+atlas = ExtResource("4_ty0xs")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xh22p"]
+atlas = ExtResource("5_xf6kx")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_thqyi"]
+atlas = ExtResource("5_xf6kx")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_56ihl"]
+atlas = ExtResource("5_xf6kx")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_el0ub"]
+atlas = ExtResource("5_xf6kx")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8awup"]
+atlas = ExtResource("6_a8nig")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_38y2y"]
+atlas = ExtResource("6_a8nig")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fpkpx"]
+atlas = ExtResource("7_vwf72")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_deifg"]
+atlas = ExtResource("7_vwf72")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_66djk"]
+atlas = ExtResource("7_vwf72")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ked6w"]
+atlas = ExtResource("7_vwf72")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2if8x"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ny3af")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d8cgv")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 25.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xh22p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_thqyi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_56ihl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_el0ub")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8awup")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_38y2y")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 25.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fpkpx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_deifg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_66djk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ked6w")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 25.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_catrg"]
+radius = 32.3883
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_csn0j"]
+blend_mode = 1
+
+[node name="kid" type="CharacterBody2D"]
+collision_layer = 16
+collision_mask = 14
+script = ExtResource("1_ytpc6")
+
+[node name="SprRedAura" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+texture = ExtResource("2_rggjw")
+hframes = 3
+
+[node name="SprGreenAura" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+texture = ExtResource("2_rggjw")
+hframes = 3
+frame = 1
+
+[node name="SprBlueAura" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.501961)
+texture = ExtResource("2_rggjw")
+hframes = 3
+frame = 2
+
+[node name="SprBrownAura" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+material = SubResource("CanvasItemMaterial_ea3o2")
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_qutdv")
+hframes = 2
+vframes = 2
+
+[node name="SprBrownAura2" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.12549)
+material = SubResource("CanvasItemMaterial_8oifk")
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_qutdv")
+hframes = 2
+vframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, -1.5)
+shape = SubResource("RectangleShape2D_k1m2g")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+unique_name_in_owner = true
+sprite_frames = SubResource("SpriteFrames_2if8x")
+animation = &"idle"
+centered = false
+offset = Vector2(-17, -23)
+
+[node name="Jump" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("8_7ei5d")
+bus = &"Sfx"
+
+[node name="Jump2" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("9_lbvgj")
+bus = &"Sfx"
+
+[node name="AuraArea" type="Area2D" parent="."]
+unique_name_in_owner = true
+visible = false
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AuraArea"]
+shape = SubResource("CircleShape2D_catrg")
+
+[node name="MasterEquip" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("10_76avb")
+bus = &"Sfx"
+
+[node name="MasterUnequip" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("11_wa6iq")
+bus = &"Sfx"
+
+[node name="MasterAntiEquip" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("12_k1q47")
+bus = &"Sfx"
+
+[node name="PlayerShine" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+material = SubResource("CanvasItemMaterial_csn0j")
+texture = ExtResource("13_2esid")
+
+[node name="EquippedMaster" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("14_skcwr")
+hframes = 2
