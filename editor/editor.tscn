@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://ba6kd4ubk1swu"]
+[gd_scene load_steps=4 format=3 uid="uid://ba6kd4ubk1swu"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_244aj"]
 [ext_resource type="Script" path="res://level.gd" id="2_lir2a"]
+[ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="3_262xn"]
 
 [node name="Editor" type="Control"]
 layout_mode = 3
@@ -16,4 +17,6 @@ script = ExtResource("1_244aj")
 script = ExtResource("2_lir2a")
 
 [node name="TileMap" type="TileMap" parent="Level"]
+unique_name_in_owner = true
+tile_set = ExtResource("3_262xn")
 format = 2
