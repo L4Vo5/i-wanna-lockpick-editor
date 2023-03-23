@@ -1,0 +1,188 @@
+[gd_scene load_steps=9 format=3 uid="uid://dqsf6y71ncn36"]
+
+[ext_resource type="Script" path="res://editor/door_editor.gd" id="1_qqghd"]
+[ext_resource type="PackedScene" uid="uid://byfp3pi6x02gs" path="res://level_elements/doors_locks/door.tscn" id="2_ye8wh"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="3_pekxs"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="4_w8kad"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="5_6x28y"]
+
+[sub_resource type="Resource" id="Resource_vf17g"]
+script = ExtResource("3_pekxs")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_yw5lk"]
+script = ExtResource("4_w8kad")
+color = 3
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2(18, 18)
+position = Vector2(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_p5nxe"]
+script = ExtResource("5_6x28y")
+amount = SubResource("Resource_vf17g")
+outer_color = 3
+locks = Array[ExtResource("4_w8kad")]([SubResource("Resource_yw5lk")])
+sequence_next = Array[ExtResource("5_6x28y")]([])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 1
+
+[node name="DoorEditor" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 304.0
+offset_bottom = 608.0
+script = ExtResource("1_qqghd")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Door N"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Door" parent="MarginContainer/VBoxContainer/Control" instance=ExtResource("2_ye8wh")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+door_data = SubResource("Resource_p5nxe")
+
+[node name="Amount" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Curses" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Curses"]
+layout_mode = 2
+
+[node name="Ice" type="MarginContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IceButton" type="Button" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Ice"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+flat = true
+
+[node name="Ice" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Ice"]
+layout_mode = 2
+size_flags_horizontal = 6
+mouse_filter = 2
+
+[node name="Ice" type="Label" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Ice/Ice"]
+layout_mode = 2
+text = "Ice"
+
+[node name="IceCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Ice/Ice"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Erosion" type="MarginContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ErosionButton" type="Button" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Erosion"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+flat = true
+
+[node name="Erosion" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Erosion"]
+layout_mode = 2
+size_flags_horizontal = 6
+mouse_filter = 2
+
+[node name="Erosion" type="Label" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Erosion/Erosion"]
+layout_mode = 2
+text = "Erosion"
+
+[node name="ErosionCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Erosion/Erosion"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Paint" type="MarginContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PaintButton" type="Button" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Paint"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+flat = true
+
+[node name="Paint" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Paint"]
+layout_mode = 2
+size_flags_horizontal = 6
+mouse_filter = 2
+
+[node name="Paint" type="Label" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Paint/Paint"]
+layout_mode = 2
+text = "Paint"
+
+[node name="PaintCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Paint/Paint"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Width:"
+
+[node name="SpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 32.0
+max_value = 3200.0
+step = 32.0
+value = 32.0
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Height:"
+
+[node name="SpinBox2" type="SpinBox" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 32.0
+max_value = 3200.0
+step = 32.0
+value = 32.0

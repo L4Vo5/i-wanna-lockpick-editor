@@ -32,7 +32,7 @@ enum value {
 
 enum curse {
 	ice, # 1 red
-	eroded, # 5 green
-	painted, # 3 blue
+	erosion, # 5 green
+	paint, # 3 blue
 	brown, # caused by 1 brown, cured by -1 brown
 }

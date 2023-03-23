@@ -148,9 +148,9 @@ func _on_aura_touch_door(body: Node2D) -> void:
 	if spr_red_aura.visible:
 		door.break_curse_ice()
 	if spr_green_aura.visible:
-		door.break_curse_eroded()
+		door.break_curse_erosion()
 	if spr_blue_aura.visible:
-		door.break_curse_painted()
+		door.break_curse_paint()
 	if spr_brown_aura.visible:
 		var brown_amount: int = Global.current_level.key_counts[Enums.colors.brown].real_part
 		if brown_amount < 0:

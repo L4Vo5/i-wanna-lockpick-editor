@@ -37,8 +37,8 @@ class_name DoorData
 		changed.emit()
 @export var _curses := {
 	Enums.curse.ice: false,
-	Enums.curse.eroded: false,
-	Enums.curse.painted: false,
+	Enums.curse.erosion: false,
+	Enums.curse.paint: false,
 	Enums.curse.brown: false,
 }
 @export var glitch_color := Enums.colors.glitch:
@@ -82,7 +82,7 @@ func try_open() -> Dictionary:
 		"added_copy" = false, # can only happen with master keys
 	}
 	if amount.is_zero(): return return_dict
-	if _curses[Enums.curse.ice] or _curses[Enums.curse.eroded] or _curses[Enums.curse.painted]: return return_dict
+	if _curses[Enums.curse.ice] or _curses[Enums.curse.erosion] or _curses[Enums.curse.paint]: return return_dict
 	var player: Kid = Global.current_level.player
 	# try to open with master keys
 	if not player.master_equipped.is_zero():

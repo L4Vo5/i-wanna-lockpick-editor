@@ -105,6 +105,7 @@ func i_view_colors() -> void:
 	frame_dark.modulate = Color.from_hsv(hue, Rendering.frame_s_v[2][0], Rendering.frame_s_v[2][1])
 
 func update_textures() -> void:
+	custom_minimum_size = door_data.size
 	size = door_data.size
 	position_copies()
 	static_body.scale = size
@@ -169,8 +170,8 @@ func update_locks() -> void:
 
 func update_curses() -> void:
 	ice.visible = door_data.get_curse(Enums.curse.ice)
-	erosion.visible = door_data.get_curse(Enums.curse.eroded)
-	paint.visible = door_data.get_curse(Enums.curse.painted)
+	erosion.visible = door_data.get_curse(Enums.curse.erosion)
+	paint.visible = door_data.get_curse(Enums.curse.paint)
 	brown_curse.visible = door_data.get_curse(Enums.curse.brown)
 
 func try_open() -> void:
@@ -206,13 +207,13 @@ func break_curse_ice() -> void:
 	if not door_data.get_curse(Enums.curse.ice): return
 	door_data.set_curse(Enums.curse.ice, false)
 
-func break_curse_eroded() -> void:
-	if not door_data.get_curse(Enums.curse.eroded): return
-	door_data.set_curse(Enums.curse.eroded, false)
+func break_curse_erosion() -> void:
+	if not door_data.get_curse(Enums.curse.erosion): return
+	door_data.set_curse(Enums.curse.erosion, false)
 
-func break_curse_painted() -> void:
-	if not door_data.get_curse(Enums.curse.painted): return
-	door_data.set_curse(Enums.curse.painted, false)
+func break_curse_paint() -> void:
+	if not door_data.get_curse(Enums.curse.paint): return
+	door_data.set_curse(Enums.curse.paint, false)
 
 func curse_brown() -> void:
 	if door_data.get_curse(Enums.curse.brown): return
