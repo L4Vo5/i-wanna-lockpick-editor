@@ -29,8 +29,8 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if Global.in_editor: return
-	on_floor = test_move(transform, Vector2(0, gravity))
-	on_ceiling = test_move(transform, Vector2(0, -1))
+	on_floor = test_move(global_transform, Vector2(0, gravity))
+	on_ceiling = test_move(global_transform, Vector2(0, -1))
 	auras()
 	run()
 	detect_doors()

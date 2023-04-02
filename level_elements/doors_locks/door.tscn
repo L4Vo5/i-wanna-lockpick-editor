@@ -70,6 +70,7 @@ glitch_color = 1
 size = Vector2(1, 1)
 
 [node name="Door" type="MarginContainer"]
+custom_minimum_size = Vector2(64, 32)
 offset_right = 64.0
 offset_bottom = 32.0
 grow_horizontal = 2
@@ -79,8 +80,7 @@ door_data = SubResource("Resource_m3ecb")
 
 [node name="ColorLight" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
-visible = false
-modulate = Color(0.529412, 0.584314, 0.721569, 1)
+modulate = Color(0.929412, 0.917647, 0.905882, 1)
 layout_mode = 2
 texture = ExtResource("5_fj7jm")
 region_rect = Rect2(0, 0, 17, 19)
@@ -91,8 +91,7 @@ patch_margin_bottom = 10
 
 [node name="ColorMid" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
-visible = false
-modulate = Color(0.372549, 0.443137, 0.627451, 1)
+modulate = Color(0.839216, 0.811765, 0.788235, 1)
 layout_mode = 2
 texture = ExtResource("6_bs502")
 region_rect = Rect2(0, 0, 17, 19)
@@ -103,8 +102,7 @@ patch_margin_bottom = 10
 
 [node name="ColorDark" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
-visible = false
-modulate = Color(0.227451, 0.27451, 0.396078, 1)
+modulate = Color(0.733333, 0.682353, 0.643137, 1)
 layout_mode = 2
 texture = ExtResource("7_aov5f")
 region_rect = Rect2(0, 0, 17, 19)
@@ -138,6 +136,7 @@ theme_override_constants/margin_bottom = 3
 
 [node name="Glitch" type="NinePatchRect" parent="Glitch"]
 unique_name_in_owner = true
+visible = false
 modulate = Color(0.196078, 0.588235, 0, 1)
 material = ExtResource("10_fcdv2")
 layout_mode = 2

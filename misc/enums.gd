@@ -3,20 +3,38 @@ class_name Enums
 
 enum colors {
 	none,
-	glitch,
-	black,
 	white,
-	pink,
+	black,
 	orange,
 	purple,
 	cyan,
+	pink,
 	red,
 	green,
 	blue,
 	brown,
-	pure,
 	master,
+	pure,
+	glitch,
 	stone,
+}
+
+const color_names := {
+	colors.none: "none",
+	colors.white: "white",
+	colors.black: "black",
+	colors.orange: "orange",
+	colors.purple: "purple",
+	colors.cyan: "cyan",
+	colors.pink: "pink",
+	colors.red: "red",
+	colors.green: "green",
+	colors.blue: "blue",
+	colors.brown: "brown",
+	colors.master: "master",
+	colors.glitch: "glitch",
+	colors.pure: "pure",
+	colors.stone: "stone",
 }
 
 # 0 shall generally be considered positive

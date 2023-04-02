@@ -1,5 +1,6 @@
 @tool
 extends MarginContainer
+class_name LockVisual
 
 const FRAME_POS := preload("res://level_elements/doors_locks/lock_frame_texture_pos.png")
 const FRAME_NEG := preload("res://level_elements/doors_locks/lock_frame_texture_neg.png")
@@ -102,7 +103,8 @@ func set_colors() -> void:
 func generate_locks() -> void:
 	assert(lock_data == null or lock_data is LockData)
 	position = lock_data.position
-	size = lock_data.size
+	custom_minimum_size = lock_data.size
+	size = custom_minimum_size
 	var amount := lock_data.get_complex_amount().multiply_by(lock_data.rotation)
 	var sign := amount.sign_1d()
 	var value_type := amount.value_type_1d()

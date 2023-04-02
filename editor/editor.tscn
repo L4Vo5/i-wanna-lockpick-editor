@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://ba6kd4ubk1swu"]
+[gd_scene load_steps=7 format=3 uid="uid://wjhmk4g8avy4"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_244aj"]
+[ext_resource type="Script" path="res://editor/level_container.gd" id="2_4nmqi"]
 [ext_resource type="Script" path="res://level.gd" id="2_lir2a"]
 [ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="3_262xn"]
+[ext_resource type="PackedScene" uid="uid://wa0a5416mt10" path="res://level_elements/kid/kid.tscn" id="4_soxoo"]
+[ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/door_editor.tscn" id="5_ld4m3"]
 
 [node name="Editor" type="Control"]
 layout_mode = 3
@@ -13,10 +16,66 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_244aj")
 
-[node name="Level" type="Node2D" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LevelContainer" type="Control" parent="VBoxContainer/HBoxContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_4nmqi")
+
+[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer/LevelContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="VBoxContainer/HBoxContainer/LevelContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.0823529)
+
+[node name="LevelContainerInner" type="Control" parent="VBoxContainer/HBoxContainer/LevelContainer"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 0
+
+[node name="ColorRect" type="ColorRect" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Level" type="Node2D" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner"]
 script = ExtResource("2_lir2a")
 
-[node name="TileMap" type="TileMap" parent="Level"]
+[node name="kid" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner/Level" instance=ExtResource("4_soxoo")]
+position = Vector2(462, 348)
+
+[node name="TileMap" type="TileMap" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner/Level"]
 unique_name_in_owner = true
 tile_set = ExtResource("3_262xn")
 format = 2
+layer_0/tile_data = PackedInt32Array(786440, 65537, 1, 589832, 65537, 1, 262152, 65537, 1, 262155, 65537, 1, 589836, 65537, 1, 655372, 65537, 1, 458763, 65537, 1, 458769, 65537, 1, 262161, 65537, 1, 262164, 65537, 1, 589844, 65537, 1, 786452, 65537, 1, 655376, 65537, 1, 589840, 65537, 1, 720916, 65537, 1, 655380, 65537, 1, 524308, 65537, 1, 458772, 65537, 1, 393236, 65537, 1, 327700, 65537, 1, 393233, 65537, 1, 327697, 65537, 1, 393227, 65537, 1, 327691, 65537, 1, 589835, 65537, 1, 589834, 65537, 1, 589833, 65537, 1, 720904, 65537, 1, 655368, 65537, 1, 524296, 65537, 1, 458760, 65537, 1, 393224, 65537, 1, 327688, 65537, 1, 262153, 65537, 1, 262154, 65537, 1, 262156, 65537, 1, 262157, 65537, 1, 262158, 65537, 1, 262159, 65537, 1, 262160, 65537, 1, 262162, 65537, 1, 262163, 65537, 1, 589843, 65537, 1, 589842, 65537, 1, 589841, 65537, 1, 786451, 65537, 1, 786450, 65537, 1, 786449, 65537, 1, 786448, 65537, 1, 786447, 65537, 1, 786446, 65537, 1, 786445, 65537, 1, 786444, 65537, 1, 786443, 65537, 1, 786442, 65537, 1, 786441, 65537, 1)
+
+[node name="DoorEditor" parent="VBoxContainer/HBoxContainer" instance=ExtResource("5_ld4m3")]
+custom_minimum_size = Vector2(281, 68)
+layout_mode = 2

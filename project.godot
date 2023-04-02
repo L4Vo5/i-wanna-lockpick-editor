@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Lockpick Editor"
-run/main_scene="res://main.tscn"
+run/main_scene="res://editor/editor.tscn"
 config/features=PackedStringArray("4.0", "GL Compatibility")
 config/icon="res://icon.png"
 
@@ -93,6 +93,16 @@ master={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":0,"key_label":88,"unicode":120,"echo":false,"script":null)
 ]
 }
+place_tile={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(245, 15),"global_position":Vector2(249, 58),"factor":1.0,"button_index":1,"pressed":true,"double_click":false,"script":null)
+]
+}
+remove_tile={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":2,"position":Vector2(212, 12),"global_position":Vector2(216, 55),"factor":1.0,"button_index":2,"pressed":true,"double_click":false,"script":null)
+]
+}
 
 [layer_names]
 
@@ -108,8 +118,8 @@ common/physics_ticks_per_second=50
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
 textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method="gl_compatibility"
 
 [shader_globals]
 

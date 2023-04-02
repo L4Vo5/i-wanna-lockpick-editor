@@ -50,6 +50,7 @@ hframes = 5
 
 [node name="SprGlitch" type="Sprite2D" parent="."]
 unique_name_in_owner = true
+visible = false
 material = ExtResource("5_x10q2")
 texture = ExtResource("6_6kxlr")
 centered = false
@@ -57,7 +58,6 @@ hframes = 4
 
 [node name="Fill" type="Sprite2D" parent="."]
 unique_name_in_owner = true
-visible = false
 modulate = Color(0.839216, 0.811765, 0.788235, 1)
 texture = ExtResource("7_3kknv")
 centered = false
@@ -66,7 +66,6 @@ vframes = 2
 
 [node name="Outline" type="Sprite2D" parent="."]
 unique_name_in_owner = true
-visible = false
 texture = ExtResource("8_yrtx4")
 centered = false
 hframes = 4

@@ -13,7 +13,7 @@ imaginary_part = 0
 
 [sub_resource type="Resource" id="Resource_yw5lk"]
 script = ExtResource("4_w8kad")
-color = 3
+color = 1
 magnitude = 1
 sign = 0
 value_type = 0
@@ -26,7 +26,7 @@ dont_show_lock = false
 [sub_resource type="Resource" id="Resource_p5nxe"]
 script = ExtResource("5_6x28y")
 amount = SubResource("Resource_vf17g")
-outer_color = 3
+outer_color = 1
 locks = Array[ExtResource("4_w8kad")]([SubResource("Resource_yw5lk")])
 sequence_next = Array[ExtResource("5_6x28y")]([])
 size = Vector2i(32, 32)
@@ -39,6 +39,7 @@ _curses = {
 glitch_color = 1
 
 [node name="DoorEditor" type="Control"]
+custom_minimum_size = Vector2(293, 80)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 304.0
@@ -59,130 +60,289 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TopStuff" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Door N"
+
+[node name="DoorXEdit" type="Label" parent="MarginContainer/VBoxContainer/TopStuff"]
+layout_mode = 2
+text = "Door 1 Edit"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Control" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+[node name="SpacingForDoorCount" type="Control" parent="MarginContainer/VBoxContainer/TopStuff"]
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
-[node name="Door" parent="MarginContainer/VBoxContainer/Control" instance=ExtResource("2_ye8wh")]
+[node name="TheDoor" type="CenterContainer" parent="MarginContainer/VBoxContainer/TopStuff"]
+layout_mode = 2
+
+[node name="Door" parent="MarginContainer/VBoxContainer/TopStuff/TheDoor" instance=ExtResource("2_ye8wh")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 door_data = SubResource("Resource_p5nxe")
 
-[node name="Amount" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="Curses" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Curses"]
-layout_mode = 2
-
-[node name="Ice" type="MarginContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer"]
+[node name="Editors" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="IceButton" type="Button" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Ice"]
+[node name="BaseDoor" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors"]
+layout_mode = 2
+
+[node name="Color" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
+layout_mode = 2
+text = "Color:"
+
+[node name="ColorChoice" type="OptionButton" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
 unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-flat = true
-
-[node name="Ice" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Ice"]
-layout_mode = 2
-size_flags_horizontal = 6
-mouse_filter = 2
-
-[node name="Ice" type="Label" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Ice/Ice"]
-layout_mode = 2
-text = "Ice"
-
-[node name="IceCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Ice/Ice"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Erosion" type="MarginContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+item_count = 42
+selected = 0
+popup/item_0/text = "white"
+popup/item_0/id = 1
+popup/item_1/text = "black"
+popup/item_1/id = 2
+popup/item_2/text = "orange"
+popup/item_2/id = 3
+popup/item_3/text = "purple"
+popup/item_3/id = 4
+popup/item_4/text = "cyan"
+popup/item_4/id = 5
+popup/item_5/text = "pink"
+popup/item_5/id = 6
+popup/item_6/text = "red"
+popup/item_6/id = 7
+popup/item_7/text = "green"
+popup/item_7/id = 8
+popup/item_8/text = "blue"
+popup/item_8/id = 9
+popup/item_9/text = "brown"
+popup/item_9/id = 10
+popup/item_10/text = "master"
+popup/item_10/id = 11
+popup/item_11/text = "glitch"
+popup/item_11/id = 13
+popup/item_12/text = "pure"
+popup/item_12/id = 12
+popup/item_13/text = "stone"
+popup/item_13/id = 14
+popup/item_14/text = "white"
+popup/item_14/id = 1
+popup/item_15/text = "black"
+popup/item_15/id = 2
+popup/item_16/text = "orange"
+popup/item_16/id = 3
+popup/item_17/text = "purple"
+popup/item_17/id = 4
+popup/item_18/text = "cyan"
+popup/item_18/id = 5
+popup/item_19/text = "pink"
+popup/item_19/id = 6
+popup/item_20/text = "red"
+popup/item_20/id = 7
+popup/item_21/text = "green"
+popup/item_21/id = 8
+popup/item_22/text = "blue"
+popup/item_22/id = 9
+popup/item_23/text = "brown"
+popup/item_23/id = 10
+popup/item_24/text = "master"
+popup/item_24/id = 11
+popup/item_25/text = "glitch"
+popup/item_25/id = 13
+popup/item_26/text = "pure"
+popup/item_26/id = 12
+popup/item_27/text = "stone"
+popup/item_27/id = 14
+popup/item_28/text = "white"
+popup/item_28/id = 1
+popup/item_29/text = "black"
+popup/item_29/id = 2
+popup/item_30/text = "orange"
+popup/item_30/id = 3
+popup/item_31/text = "purple"
+popup/item_31/id = 4
+popup/item_32/text = "cyan"
+popup/item_32/id = 5
+popup/item_33/text = "pink"
+popup/item_33/id = 6
+popup/item_34/text = "red"
+popup/item_34/id = 7
+popup/item_35/text = "green"
+popup/item_35/id = 8
+popup/item_36/text = "blue"
+popup/item_36/id = 9
+popup/item_37/text = "brown"
+popup/item_37/id = 10
+popup/item_38/text = "master"
+popup/item_38/id = 11
+popup/item_39/text = "glitch"
+popup/item_39/id = 13
+popup/item_40/text = "pure"
+popup/item_40/id = 12
+popup/item_41/text = "stone"
+popup/item_41/id = 14
 
-[node name="ErosionButton" type="Button" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Erosion"]
+[node name="Copies" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Copies:"
+
+[node name="RealCopies" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-toggle_mode = true
-flat = true
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+min_value = -1000.0
+max_value = 1000.0
+value = 1.0
 
-[node name="Erosion" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Erosion"]
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 6
-mouse_filter = 2
+size_flags_horizontal = 0
+text = "+"
 
-[node name="Erosion" type="Label" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Erosion/Erosion"]
-layout_mode = 2
-text = "Erosion"
-
-[node name="ErosionCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Erosion/Erosion"]
+[node name="ImaginaryCopies" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-mouse_filter = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+min_value = -1000.0
+max_value = 1000.0
+suffix = "i"
 
-[node name="Paint" type="MarginContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="PaintButton" type="Button" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Paint"]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-flat = true
-
-[node name="Paint" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Paint"]
-layout_mode = 2
-size_flags_horizontal = 6
-mouse_filter = 2
-
-[node name="Paint" type="Label" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Paint/Paint"]
-layout_mode = 2
-text = "Paint"
-
-[node name="PaintCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/Curses/HBoxContainer/Paint/Paint"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+[node name="Size" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
 text = "Width:"
 
-[node name="SpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="Width" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
 min_value = 32.0
 max_value = 3200.0
 step = 32.0
 value = 32.0
 
-[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
 text = "Height:"
 
-[node name="SpinBox2" type="SpinBox" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="Height" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
 min_value = 32.0
 max_value = 3200.0
 step = 32.0
 value = 32.0
+
+[node name="Curses" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses"]
+layout_mode = 2
+
+[node name="Ice" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IceButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Ice curse, broken with 1 red key or more."
+toggle_mode = true
+flat = true
+
+[node name="Ice" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice"]
+layout_mode = 2
+size_flags_horizontal = 6
+mouse_filter = 2
+
+[node name="Ice" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice/Ice"]
+layout_mode = 2
+text = "Frozen"
+
+[node name="IceCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice/Ice"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Erosion" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ErosionButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Erosion curse, broken with 5 green keys or more."
+toggle_mode = true
+flat = true
+
+[node name="Erosion" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion"]
+layout_mode = 2
+size_flags_horizontal = 6
+mouse_filter = 2
+
+[node name="Erosion" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion/Erosion"]
+layout_mode = 2
+text = "Eroded"
+
+[node name="ErosionCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion/Erosion"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Paint" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PaintButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Paint curse, broken with 3 blue keys or more."
+toggle_mode = true
+flat = true
+
+[node name="Paint" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint"]
+layout_mode = 2
+size_flags_horizontal = 6
+mouse_filter = 2
+
+[node name="Paint" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint/Paint"]
+layout_mode = 2
+text = "Painted"
+
+[node name="PaintCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint/Paint"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2

@@ -1,3 +1,5 @@
 [gd_resource type="Theme" format=3 uid="uid://dylovcwhtprp6"]
 
 [resource]
+HBoxContainer/constants/separation = 0
+VBoxContainer/constants/separation = 0
