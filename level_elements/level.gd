@@ -7,6 +7,7 @@ signal changed_glitch_color
 		if glitch_color == val: return
 		glitch_color = val
 		changed_glitch_color.emit()
+@export var level_data := LevelData.new()
 # Some code might depend on these complex numbers' changed signals, so don't change them to new numbers pls
 @export var key_counts := {
 	Enums.colors.glitch: ComplexNumber.new(),
@@ -43,7 +44,7 @@ signal changed_glitch_color
 
 # undo/redo actions should be handled somewhere in here, too
 
-@export var player: Kid
+var player: Kid
 signal changed_i_view
 var i_view := false
 
@@ -56,5 +57,40 @@ func _input(event: InputEvent) -> void:
 		i_view = not i_view
 		changed_i_view.emit()
 
+var player_spawn_point: Sprite2D
 func _ready() -> void:
 	Global.current_level = self
+	player_spawn_point = Sprite2D.new()
+	player_spawn_point.texture = preload("res://editor/player_spawnpoint.png")
+	player_spawn_point.position = level_data.player_spawn_position
+	player_spawn_point.centered = false
+	player_spawn_point.offset = Vector2i(-11, -25)
+	add_child(player_spawn_point)
+	player = preload("res://level_elements/kid/kid.tscn").instantiate()
+	player.position = level_data.player_spawn_position
+	add_child(player)
+
+func _physics_process(delta: float) -> void:
+	# TODO: Don't do this every frame
+	player_spawn_point.position = level_data.player_spawn_position
+	player_spawn_point.visible = not Global.in_level_editor
+	player_spawn_point.visible = true
+
+const DOOR := preload("res://level_elements/doors_locks/door.tscn")
+# Editor functions
+func add_door(door_data: DoorData) -> Door:
+	var door := DOOR.instantiate()
+	door.door_data = door_data
+	add_child(door)
+	return door
+
+func remove_door(door: Door) -> void:
+	level_data.doors.erase(door.door_data)
+	door.queue_free()
+
+func get_doors() -> Array[Door]:
+	var arr: Array[Door] = []
+	for child in get_children():
+		if child is Door:
+			arr.push_back(child)
+	return arr

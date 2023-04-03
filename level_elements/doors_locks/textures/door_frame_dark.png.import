@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bndp5tdpyex41"
-path="res://.godot/imported/gold_gradient.png-0d7efa79162649cb5032704768b764be.ctex"
+uid="uid://cqwfx0awl2b6c"
+path="res://.godot/imported/door_frame_dark.png-0a401b19aba1f3a7dbb05c35dcc817dc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/doors_locks/gold_gradient.png"
-dest_files=["res://.godot/imported/gold_gradient.png-0d7efa79162649cb5032704768b764be.ctex"]
+source_file="res://level_elements/doors_locks/textures/door_frame_dark.png"
+dest_files=["res://.godot/imported/door_frame_dark.png-0a401b19aba1f3a7dbb05c35dcc817dc.ctex"]
 
 [params]
 

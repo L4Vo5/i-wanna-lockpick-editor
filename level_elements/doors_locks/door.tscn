@@ -1,20 +1,20 @@
-[gd_scene load_steps=27 format=3 uid="uid://byfp3pi6x02gs"]
+[gd_scene load_steps=26 format=3 uid="uid://h5opptcugh0i"]
 
 [ext_resource type="Script" path="res://level_elements/doors_locks/door.gd" id="1_sybd2"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_h6u5i"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="3_cjud2"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="4_q43he"]
-[ext_resource type="Texture2D" uid="uid://cfhmg7cp4bhcs" path="res://level_elements/doors_locks/door_color_light.png" id="5_fj7jm"]
-[ext_resource type="Texture2D" uid="uid://bnnlmpfvgiaga" path="res://level_elements/doors_locks/door_color_mid.png" id="6_bs502"]
-[ext_resource type="Texture2D" uid="uid://252neirmxm6w" path="res://level_elements/doors_locks/door_color_dark.png" id="7_aov5f"]
-[ext_resource type="Texture2D" uid="uid://dk7hvp2syhlt6" path="res://level_elements/doors_locks/stone_texture.png" id="8_jgmu3"]
-[ext_resource type="Texture2D" uid="uid://cbdrxilu4i11y" path="res://level_elements/doors_locks/gold_glitch_door.png" id="9_l86wb"]
+[ext_resource type="Texture2D" uid="uid://cfhmg7cp4bhcs" path="res://level_elements/doors_locks/textures/door_color_light.png" id="5_x4fy6"]
+[ext_resource type="Texture2D" uid="uid://bnnlmpfvgiaga" path="res://level_elements/doors_locks/textures/door_color_mid.png" id="6_yqky5"]
+[ext_resource type="Texture2D" uid="uid://252neirmxm6w" path="res://level_elements/doors_locks/textures/door_color_dark.png" id="7_fd7pd"]
+[ext_resource type="Texture2D" uid="uid://dk7hvp2syhlt6" path="res://level_elements/doors_locks/textures/stone_texture.png" id="8_5nlc6"]
+[ext_resource type="Texture2D" uid="uid://cbdrxilu4i11y" path="res://level_elements/doors_locks/textures/gold_glitch_door.png" id="9_aduyf"]
 [ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="10_fcdv2"]
-[ext_resource type="Texture2D" uid="uid://b1d4n3mlkp7nn" path="res://level_elements/doors_locks/glitch_door.png" id="11_j45k8"]
-[ext_resource type="Texture2D" uid="uid://hxpxqwc4s4bx" path="res://level_elements/doors_locks/door_frame_texture_pos.png" id="12_dnssm"]
-[ext_resource type="Texture2D" uid="uid://b300fyhgkmlja" path="res://level_elements/doors_locks/door_frame_light.png" id="13_8loq3"]
-[ext_resource type="Texture2D" uid="uid://d4lgl6u0642bn" path="res://level_elements/doors_locks/door_frame_mid.png" id="14_g4plk"]
-[ext_resource type="Texture2D" uid="uid://cqwfx0awl2b6c" path="res://level_elements/doors_locks/door_frame_dark.png" id="15_1tpkx"]
+[ext_resource type="Texture2D" uid="uid://b1d4n3mlkp7nn" path="res://level_elements/doors_locks/textures/glitch_door.png" id="11_vmdn8"]
+[ext_resource type="Texture2D" uid="uid://hxpxqwc4s4bx" path="res://level_elements/doors_locks/textures/door_frame_texture_pos.png" id="12_pyubt"]
+[ext_resource type="Texture2D" uid="uid://b300fyhgkmlja" path="res://level_elements/doors_locks/textures/door_frame_light.png" id="13_sklu7"]
+[ext_resource type="Texture2D" uid="uid://d4lgl6u0642bn" path="res://level_elements/doors_locks/textures/door_frame_mid.png" id="14_qjd2f"]
+[ext_resource type="Texture2D" uid="uid://cqwfx0awl2b6c" path="res://level_elements/doors_locks/textures/door_frame_dark.png" id="15_7rfx4"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/erosion.tscn" id="16_pntfj"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/paint.tscn" id="17_oiull"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/ice.tscn" id="18_qg5bk"]
@@ -29,7 +29,7 @@ imaginary_part = 0
 
 [sub_resource type="Resource" id="Resource_ewqbb"]
 script = ExtResource("3_cjud2")
-color = 12
+color = 1
 magnitude = 1
 sign = 0
 value_type = 0
@@ -39,25 +39,13 @@ position = Vector2(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_rmbwb"]
-script = ExtResource("3_cjud2")
-color = 13
-magnitude = 1
-sign = 0
-value_type = 0
-lock_type = 0
-size = Vector2(18, 18)
-position = Vector2(39, 7)
-lock_arrangement = 0
-dont_show_lock = false
-
 [sub_resource type="Resource" id="Resource_m3ecb"]
 script = ExtResource("4_q43he")
 amount = SubResource("Resource_lrhk2")
 outer_color = 1
-locks = Array[ExtResource("3_cjud2")]([SubResource("Resource_ewqbb"), SubResource("Resource_rmbwb")])
+locks = Array[ExtResource("3_cjud2")]([SubResource("Resource_ewqbb")])
 sequence_next = Array[ExtResource("4_q43he")]([])
-size = Vector2i(64, 32)
+size = Vector2i(32, 32)
 _curses = {
 0: false,
 1: false,
@@ -65,13 +53,14 @@ _curses = {
 3: false
 }
 glitch_color = 1
+position = Vector2i(0, 0)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
 size = Vector2(1, 1)
 
 [node name="Door" type="MarginContainer"]
-custom_minimum_size = Vector2(64, 32)
-offset_right = 64.0
+custom_minimum_size = Vector2(32, 32)
+offset_right = 32.0
 offset_bottom = 32.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -82,7 +71,7 @@ door_data = SubResource("Resource_m3ecb")
 unique_name_in_owner = true
 modulate = Color(0.929412, 0.917647, 0.905882, 1)
 layout_mode = 2
-texture = ExtResource("5_fj7jm")
+texture = ExtResource("5_x4fy6")
 region_rect = Rect2(0, 0, 17, 19)
 patch_margin_left = 9
 patch_margin_top = 10
@@ -93,7 +82,7 @@ patch_margin_bottom = 10
 unique_name_in_owner = true
 modulate = Color(0.839216, 0.811765, 0.788235, 1)
 layout_mode = 2
-texture = ExtResource("6_bs502")
+texture = ExtResource("6_yqky5")
 region_rect = Rect2(0, 0, 17, 19)
 patch_margin_left = 9
 patch_margin_top = 10
@@ -104,7 +93,7 @@ patch_margin_bottom = 10
 unique_name_in_owner = true
 modulate = Color(0.733333, 0.682353, 0.643137, 1)
 layout_mode = 2
-texture = ExtResource("7_aov5f")
+texture = ExtResource("7_fd7pd")
 region_rect = Rect2(0, 0, 17, 19)
 patch_margin_left = 9
 patch_margin_top = 10
@@ -115,7 +104,8 @@ patch_margin_bottom = 10
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-texture = ExtResource("8_jgmu3")
+mouse_filter = 2
+texture = ExtResource("8_5nlc6")
 expand_mode = 1
 stretch_mode = 1
 
@@ -123,12 +113,13 @@ stretch_mode = 1
 unique_name_in_owner = true
 visible = false
 scale = Vector2(32, 0.551724)
-texture = ExtResource("9_l86wb")
+texture = ExtResource("9_aduyf")
 centered = false
 
 [node name="Glitch" type="MarginContainer" parent="."]
 modulate = Color(0.196078, 0.588235, 0, 1)
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 3
@@ -140,7 +131,7 @@ visible = false
 modulate = Color(0.196078, 0.588235, 0, 1)
 material = ExtResource("10_fcdv2")
 layout_mode = 2
-texture = ExtResource("11_j45k8")
+texture = ExtResource("11_vmdn8")
 patch_margin_left = 6
 patch_margin_top = 6
 patch_margin_right = 6
@@ -151,7 +142,7 @@ axis_stretch_vertical = 1
 [node name="Frame" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-texture = ExtResource("12_dnssm")
+texture = ExtResource("12_pyubt")
 region_rect = Rect2(0, 0, 7, 7)
 patch_margin_left = 4
 patch_margin_top = 4
@@ -162,7 +153,7 @@ patch_margin_bottom = 4
 unique_name_in_owner = true
 modulate = Color(0.517647, 0.376471, 0.235294, 1)
 layout_mode = 2
-texture = ExtResource("13_8loq3")
+texture = ExtResource("13_sklu7")
 region_rect = Rect2(0, 0, 7, 7)
 patch_margin_left = 4
 patch_margin_top = 4
@@ -173,7 +164,7 @@ patch_margin_bottom = 4
 unique_name_in_owner = true
 modulate = Color(0.345098, 0.25098, 0.152941, 1)
 layout_mode = 2
-texture = ExtResource("14_g4plk")
+texture = ExtResource("14_qjd2f")
 region_rect = Rect2(0, 0, 7, 7)
 patch_margin_left = 4
 patch_margin_top = 4
@@ -184,7 +175,7 @@ patch_margin_bottom = 4
 unique_name_in_owner = true
 modulate = Color(0.172549, 0.12549, 0.0784314, 1)
 layout_mode = 2
-texture = ExtResource("15_1tpkx")
+texture = ExtResource("15_7rfx4")
 region_rect = Rect2(0, 0, 7, 7)
 patch_margin_left = 4
 patch_margin_top = 4
@@ -194,7 +185,7 @@ patch_margin_bottom = 4
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 unique_name_in_owner = true
 visible = false
-scale = Vector2(64, 32)
+scale = Vector2(32, 32)
 collision_layer = 4
 collision_mask = 16
 
@@ -205,26 +196,31 @@ shape = SubResource("RectangleShape2D_j8eyw")
 [node name="LockHolder" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Erosion" parent="." instance=ExtResource("16_pntfj")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Paint" parent="." instance=ExtResource("17_oiull")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Ice" parent="." instance=ExtResource("18_qg5bk")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+mouse_filter = 2
 
 [node name="BrownCurse" parent="." instance=ExtResource("19_oyr8q")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Open" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
@@ -233,14 +229,14 @@ bus = &"Sfx"
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Copies" type="Label" parent="Control"]
 unique_name_in_owner = true
 layout_mode = 2
 offset_top = -16.0
-offset_right = 64.0
+offset_right = 32.0
 offset_bottom = 12.0
-mouse_filter = 1
 theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
 theme_override_colors/font_outline_color = Color(0.211765, 0.188235, 0.160784, 1)
 theme_override_constants/outline_size = 6

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dlrwg6bv30pt"
-path="res://.godot/imported/lock_frame_texture_neg.png-4e81437af4cfca7006874ec19b1ea49d.ctex"
+uid="uid://cbdrxilu4i11y"
+path="res://.godot/imported/gold_glitch_door.png-3584e065c0fa26506c7ea17477332b60.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/doors_locks/lock_frame_texture_neg.png"
-dest_files=["res://.godot/imported/lock_frame_texture_neg.png-4e81437af4cfca7006874ec19b1ea49d.ctex"]
+source_file="res://level_elements/doors_locks/textures/gold_glitch_door.png"
+dest_files=["res://.godot/imported/gold_glitch_door.png-3584e065c0fa26506c7ea17477332b60.ctex"]
 
 [params]
 

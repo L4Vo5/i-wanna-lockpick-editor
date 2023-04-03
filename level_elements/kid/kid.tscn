@@ -184,11 +184,12 @@ hframes = 2
 vframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, -1.5)
+position = Vector2(0.5, -10.5)
 shape = SubResource("RectangleShape2D_k1m2g")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
+position = Vector2(0, -9)
 sprite_frames = SubResource("SpriteFrames_2if8x")
 animation = &"idle"
 centered = false

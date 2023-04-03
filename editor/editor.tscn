@@ -1,11 +1,17 @@
-[gd_scene load_steps=7 format=3 uid="uid://wjhmk4g8avy4"]
+[gd_scene load_steps=8 format=3 uid="uid://dyco7sgfehqpl"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_244aj"]
 [ext_resource type="Script" path="res://editor/level_container.gd" id="2_4nmqi"]
-[ext_resource type="Script" path="res://level.gd" id="2_lir2a"]
+[ext_resource type="Script" path="res://level_elements/level.gd" id="3_27pmi"]
 [ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="3_262xn"]
-[ext_resource type="PackedScene" uid="uid://wa0a5416mt10" path="res://level_elements/kid/kid.tscn" id="4_soxoo"]
+[ext_resource type="Script" path="res://level_elements/level_data.gd" id="4_2s70h"]
 [ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/door_editor.tscn" id="5_ld4m3"]
+
+[sub_resource type="Resource" id="Resource_35qov"]
+script = ExtResource("4_2s70h")
+doors = Array[Resource("res://data/door_data.gd")]([])
+size = Vector2(800, 608)
+player_spawn_position = Vector2(462, 384)
 
 [node name="Editor" type="Control"]
 layout_mode = 3
@@ -23,6 +29,24 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Tools" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Tools"]
+layout_mode = 2
+
+[node name="Action" type="OptionButton" parent="VBoxContainer/Tools/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 3
+selected = 0
+popup/item_0/text = "Place/Delete Tiles"
+popup/item_0/id = 0
+popup/item_1/text = "Place/Delete Doors"
+popup/item_1/id = 1
+popup/item_2/text = "Select Doors"
+popup/item_2/id = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -63,12 +87,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+color = Color(1, 0, 0, 1)
 
 [node name="Level" type="Node2D" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner"]
-script = ExtResource("2_lir2a")
-
-[node name="kid" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner/Level" instance=ExtResource("4_soxoo")]
-position = Vector2(462, 348)
+unique_name_in_owner = true
+script = ExtResource("3_27pmi")
+level_data = SubResource("Resource_35qov")
 
 [node name="TileMap" type="TileMap" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner/Level"]
 unique_name_in_owner = true
@@ -77,5 +101,5 @@ format = 2
 layer_0/tile_data = PackedInt32Array(786440, 65537, 1, 589832, 65537, 1, 262152, 65537, 1, 262155, 65537, 1, 589836, 65537, 1, 655372, 65537, 1, 458763, 65537, 1, 458769, 65537, 1, 262161, 65537, 1, 262164, 65537, 1, 589844, 65537, 1, 786452, 65537, 1, 655376, 65537, 1, 589840, 65537, 1, 720916, 65537, 1, 655380, 65537, 1, 524308, 65537, 1, 458772, 65537, 1, 393236, 65537, 1, 327700, 65537, 1, 393233, 65537, 1, 327697, 65537, 1, 393227, 65537, 1, 327691, 65537, 1, 589835, 65537, 1, 589834, 65537, 1, 589833, 65537, 1, 720904, 65537, 1, 655368, 65537, 1, 524296, 65537, 1, 458760, 65537, 1, 393224, 65537, 1, 327688, 65537, 1, 262153, 65537, 1, 262154, 65537, 1, 262156, 65537, 1, 262157, 65537, 1, 262158, 65537, 1, 262159, 65537, 1, 262160, 65537, 1, 262162, 65537, 1, 262163, 65537, 1, 589843, 65537, 1, 589842, 65537, 1, 589841, 65537, 1, 786451, 65537, 1, 786450, 65537, 1, 786449, 65537, 1, 786448, 65537, 1, 786447, 65537, 1, 786446, 65537, 1, 786445, 65537, 1, 786444, 65537, 1, 786443, 65537, 1, 786442, 65537, 1, 786441, 65537, 1)
 
 [node name="DoorEditor" parent="VBoxContainer/HBoxContainer" instance=ExtResource("5_ld4m3")]
-custom_minimum_size = Vector2(281, 68)
+unique_name_in_owner = true
 layout_mode = 2

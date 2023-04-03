@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://d03p6e8hgs0ic"]
+[gd_scene load_steps=3 format=3 uid="uid://ci0xep67xsyqq"]
 
 [ext_resource type="Script" path="res://editor/lock_editor.gd" id="1_46nys"]
-[ext_resource type="PackedScene" path="res://level_elements/doors_locks/lock_visual.tscn" id="1_iyvjm"]
+[ext_resource type="PackedScene" uid="uid://ds64ntew1oani" path="res://level_elements/doors_locks/lock.tscn" id="1_iyvjm"]
 
 [node name="LockEditor" type="Control"]
 layout_mode = 3
@@ -38,5 +38,4 @@ layout_mode = 2
 
 [node name="Lock" parent="MarginContainer/VBoxContainer/CenterContainer" instance=ExtResource("1_iyvjm")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(18, 18)
 layout_mode = 2

@@ -2,13 +2,17 @@
 extends MarginContainer
 class_name Door
 
-const LOCK := preload("res://level_elements/doors_locks/lock_visual.tscn")
+signal clicked
+signal lock_clicked(which: int)
+
+const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tscn")
-const FRAME_POS := preload("res://level_elements/doors_locks/door_frame_texture_pos.png")
-const FRAME_NEG := preload("res://level_elements/doors_locks/door_frame_texture_neg.png")
+const FRAME_POS := preload("res://level_elements/doors_locks/textures/door_frame_texture_pos.png")
+const FRAME_NEG := preload("res://level_elements/doors_locks/textures/door_frame_texture_neg.png")
 
 var open_cooldown := 0.5
 var can_open := true
+
 
 @export var door_data: DoorData
 
@@ -61,10 +65,16 @@ func _physics_process(_delta: float) -> void:
 	copies.text = text
 	i_view_colors()
 
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.is_pressed():
+		clicked.emit()
+		accept_event()
+
 func update_everything() -> void:
 	update_textures()
 	update_locks()
 	update_curses()
+	position = door_data.position
 
 func position_copies() -> void:
 	copies.size.x = size.x
@@ -127,18 +137,18 @@ func update_textures() -> void:
 	if used_color == Enums.colors.glitch:
 		glitch.show()
 		if door_data.glitch_color == Enums.colors.glitch:
-			glitch.texture = preload("res://level_elements/doors_locks/glitch_door.png")
+			glitch.texture = preload("res://level_elements/doors_locks/textures/glitch_door.png")
 			return
 		else:
 			used_color = door_data.glitch_color
-			glitch.texture = preload("res://level_elements/doors_locks/glitch_door_2.png")
+			glitch.texture = preload("res://level_elements/doors_locks/textures/glitch_door_2.png")
 			if used_color in [Enums.colors.master, Enums.colors.pure]:
 				special_anim.show()
 				special_anim.hframes = 1
 				special_anim.scale = size / Vector2(1,58)
 				special_anim.texture = {
-					Enums.colors.master: preload("res://level_elements/doors_locks/gold_glitch_door.png"),
-					Enums.colors.pure: preload("res://level_elements/doors_locks/pure_glitch_door.png")
+					Enums.colors.master: preload("res://level_elements/doors_locks/textures/gold_glitch_door.png"),
+					Enums.colors.pure: preload("res://level_elements/doors_locks/textures/pure_glitch_door.png")
 				}[used_color]
 				return
 	
@@ -147,8 +157,8 @@ func update_textures() -> void:
 		special_anim.scale = size / Vector2(1,64)
 		special_anim.hframes = 4
 		special_anim.texture = {
-			Enums.colors.master: preload("res://level_elements/doors_locks/gold_gradient.png"),
-			Enums.colors.pure: preload("res://level_elements/doors_locks/pure_gradient.png")
+			Enums.colors.master: preload("res://level_elements/doors_locks/textures/gold_gradient.png"),
+			Enums.colors.pure: preload("res://level_elements/doors_locks/textures/pure_gradient.png")
 		}[used_color]
 	elif used_color == Enums.colors.stone:
 		stone_texture.show()
@@ -163,10 +173,13 @@ func update_textures() -> void:
 func update_locks() -> void:
 	for lock in lock_holder.get_children():
 		lock.queue_free()
+	var i := 0
 	for lock in door_data.locks:
 		var new_lock := LOCK.instantiate()
+		new_lock.clicked.connect(emit_signal.bind(&"lock_clicked", i))
 		new_lock.lock_data = lock
 		lock_holder.add_child(new_lock)
+		i += 1
 
 func update_curses() -> void:
 	ice.visible = door_data.get_curse(Enums.curse.ice)

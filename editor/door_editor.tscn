@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://dqsf6y71ncn36"]
 
 [ext_resource type="Script" path="res://editor/door_editor.gd" id="1_qqghd"]
-[ext_resource type="PackedScene" uid="uid://byfp3pi6x02gs" path="res://level_elements/doors_locks/door.tscn" id="2_ye8wh"]
+[ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="2_ye8wh"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="3_pekxs"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="4_w8kad"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="5_6x28y"]
@@ -37,9 +37,10 @@ _curses = {
 3: false
 }
 glitch_color = 1
+position = Vector2i(0, 0)
 
 [node name="DoorEditor" type="Control"]
-custom_minimum_size = Vector2(293, 80)
+custom_minimum_size = Vector2(281, 68)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 304.0
@@ -105,7 +106,7 @@ text = "Color:"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 42
+item_count = 14
 selected = 0
 popup/item_0/text = "white"
 popup/item_0/id = 1
@@ -135,62 +136,6 @@ popup/item_12/text = "pure"
 popup/item_12/id = 12
 popup/item_13/text = "stone"
 popup/item_13/id = 14
-popup/item_14/text = "white"
-popup/item_14/id = 1
-popup/item_15/text = "black"
-popup/item_15/id = 2
-popup/item_16/text = "orange"
-popup/item_16/id = 3
-popup/item_17/text = "purple"
-popup/item_17/id = 4
-popup/item_18/text = "cyan"
-popup/item_18/id = 5
-popup/item_19/text = "pink"
-popup/item_19/id = 6
-popup/item_20/text = "red"
-popup/item_20/id = 7
-popup/item_21/text = "green"
-popup/item_21/id = 8
-popup/item_22/text = "blue"
-popup/item_22/id = 9
-popup/item_23/text = "brown"
-popup/item_23/id = 10
-popup/item_24/text = "master"
-popup/item_24/id = 11
-popup/item_25/text = "glitch"
-popup/item_25/id = 13
-popup/item_26/text = "pure"
-popup/item_26/id = 12
-popup/item_27/text = "stone"
-popup/item_27/id = 14
-popup/item_28/text = "white"
-popup/item_28/id = 1
-popup/item_29/text = "black"
-popup/item_29/id = 2
-popup/item_30/text = "orange"
-popup/item_30/id = 3
-popup/item_31/text = "purple"
-popup/item_31/id = 4
-popup/item_32/text = "cyan"
-popup/item_32/id = 5
-popup/item_33/text = "pink"
-popup/item_33/id = 6
-popup/item_34/text = "red"
-popup/item_34/id = 7
-popup/item_35/text = "green"
-popup/item_35/id = 8
-popup/item_36/text = "blue"
-popup/item_36/id = 9
-popup/item_37/text = "brown"
-popup/item_37/id = 10
-popup/item_38/text = "master"
-popup/item_38/id = 11
-popup/item_39/text = "glitch"
-popup/item_39/id = 13
-popup/item_40/text = "pure"
-popup/item_40/id = 12
-popup/item_41/text = "stone"
-popup/item_41/id = 14
 
 [node name="Copies" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2

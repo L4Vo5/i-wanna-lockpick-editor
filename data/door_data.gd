@@ -48,6 +48,11 @@ class_name DoorData
 		for lock in locks:
 			lock.glitch_color = glitch_color
 		changed.emit()
+@export var position := Vector2i(0, 0):
+	set(val):
+		if position == val: return
+		position = val
+		changed.emit()
 
 func set_curse(curse: Enums.curse, val: bool) -> void:
 	if _curses[curse] == val: return
@@ -64,6 +69,7 @@ func duplicated() -> DoorData:
 	var dupe := DoorData.new()
 	dupe.outer_color = outer_color
 	dupe.size = size
+	dupe.position = position
 	dupe._curses = _curses.duplicate()
 	dupe.amount = amount.duplicate(true)
 	for l in locks:
@@ -71,6 +77,9 @@ func duplicated() -> DoorData:
 	for seq in sequence_next:
 		dupe.sequence_next.push_back(seq)
 	return dupe
+
+func has_point(point: Vector2) -> bool:
+	return Rect2(position, size).has_point(point)
 
 ## try to open the door with the current level's keys.
 ## returns true if the door opened.

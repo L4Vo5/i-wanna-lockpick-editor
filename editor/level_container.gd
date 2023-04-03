@@ -5,6 +5,8 @@ class_name LevelContainer
 @onready var inner_container := $LevelContainerInner
 @onready var level: Level = $LevelContainerInner/Level
 
+#var level_offset :=  Vector2(0, 0)
+
 const OBJ_SIZE := Vector2(800, 608)
 func _process(delta: float) -> void:
 	# center it

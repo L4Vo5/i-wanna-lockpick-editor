@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfhmg7cp4bhcs"
-path="res://.godot/imported/door_color_light.png-13aa2d6ff0f0973cad5cac9e7e89f02e.ctex"
+uid="uid://csi1qwjs8cdnl"
+path="res://.godot/imported/pure_gradient.png-67cde75502249f1d013712396df31b70.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/doors_locks/door_color_light.png"
-dest_files=["res://.godot/imported/door_color_light.png-13aa2d6ff0f0973cad5cac9e7e89f02e.ctex"]
+source_file="res://level_elements/doors_locks/textures/pure_gradient.png"
+dest_files=["res://.godot/imported/pure_gradient.png-67cde75502249f1d013712396df31b70.ctex"]
 
 [params]
 

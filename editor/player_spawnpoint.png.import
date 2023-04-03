@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bnnlmpfvgiaga"
-path="res://.godot/imported/door_color_mid.png-2440c55c230f18649a8dc500bd0b233b.ctex"
+uid="uid://btuot74j1fbp4"
+path="res://.godot/imported/player_spawnpoint.png-c06cbf6a5d8dd1e17c1998a8667a8d5d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/doors_locks/door_color_mid.png"
-dest_files=["res://.godot/imported/door_color_mid.png-2440c55c230f18649a8dc500bd0b233b.ctex"]
+source_file="res://editor/player_spawnpoint.png"
+dest_files=["res://.godot/imported/player_spawnpoint.png-c06cbf6a5d8dd1e17c1998a8667a8d5d.ctex"]
 
 [params]
 

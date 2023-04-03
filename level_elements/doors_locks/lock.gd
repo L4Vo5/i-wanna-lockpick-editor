@@ -1,9 +1,11 @@
 @tool
 extends MarginContainer
-class_name LockVisual
+class_name Lock
 
-const FRAME_POS := preload("res://level_elements/doors_locks/lock_frame_texture_pos.png")
-const FRAME_NEG := preload("res://level_elements/doors_locks/lock_frame_texture_neg.png")
+signal clicked
+
+const FRAME_POS := preload("res://level_elements/doors_locks/textures/lock_frame_texture_pos.png")
+const FRAME_NEG := preload("res://level_elements/doors_locks/textures/lock_frame_texture_neg.png")
 
 signal changed_lock_data
 @export var lock_data: LockData:
@@ -51,6 +53,11 @@ func _physics_process(_delta: float) -> void:
 	if lock_data.color == Enums.colors.glitch:
 		special_anim.frame = 0
 
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.is_pressed():
+		clicked.emit()
+		accept_event()
+
 func set_frame_visible() -> void:
 	if lock_data.dont_show_frame:
 		frame.hide()
@@ -76,10 +83,10 @@ func set_colors() -> void:
 	if lock_data.color == Enums.colors.glitch:
 		glitch.show()
 		if lock_data.glitch_color == Enums.colors.glitch:
-			glitch.texture = preload("res://level_elements/doors_locks/glitch_lock_1.png")
+			glitch.texture = preload("res://level_elements/doors_locks/textures/glitch_lock_1.png")
 			return
 		else:
-			glitch.texture = preload("res://level_elements/doors_locks/glitch_lock_2.png")
+			glitch.texture = preload("res://level_elements/doors_locks/textures/glitch_lock_2.png")
 			used_color = lock_data.glitch_color
 	
 	if used_color in [Enums.colors.master, Enums.colors.pure]:
@@ -87,8 +94,8 @@ func set_colors() -> void:
 		special_anim.scale = size / Vector2(1,64)
 		special_anim.hframes = 4
 		special_anim.texture = {
-			Enums.colors.master: preload("res://level_elements/doors_locks/gold_gradient.png"),
-			Enums.colors.pure: preload("res://level_elements/doors_locks/pure_gradient.png")
+			Enums.colors.master: preload("res://level_elements/doors_locks/textures/gold_gradient.png"),
+			Enums.colors.pure: preload("res://level_elements/doors_locks/textures/pure_gradient.png")
 		}[used_color]
 	elif used_color == Enums.colors.stone:
 		stone_texture.show()

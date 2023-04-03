@@ -1,7 +1,8 @@
 @tool
 extends Control
+class_name DoorEditor
 
-@onready var door: MarginContainer = %Door
+@onready var door: Door = %Door
 
 @onready var ice_checkbox: CheckBox = %IceCheckbox
 @onready var erosion_checkbox: CheckBox = %ErosionCheckbox
@@ -43,6 +44,7 @@ func _ready() -> void:
 	real_copies.value_changed.connect(update_door_amount.unbind(1))
 	imaginary_copies.value_changed.connect(update_door_amount.unbind(1))
 	
+	color_choice.clear()
 	for key in Enums.color_names.keys():
 		if key == Enums.colors.none: continue
 		color_choice.add_item(Enums.color_names[key], key)

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ukkruoxucl6r"
-path="res://.godot/imported/door_frame_texture_white.png-f15e90dbf8cbd425ee3278f29c1fc3c2.ctex"
+path="res://.godot/imported/door_frame_texture_white.png-0f373e0d32150dda5cdde1efff74d4ab.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/doors_locks/door_frame_texture_white.png"
-dest_files=["res://.godot/imported/door_frame_texture_white.png-f15e90dbf8cbd425ee3278f29c1fc3c2.ctex"]
+source_file="res://level_elements/doors_locks/textures/door_frame_texture_white.png"
+dest_files=["res://.godot/imported/door_frame_texture_white.png-0f373e0d32150dda5cdde1efff74d4ab.ctex"]
 
 [params]
 
