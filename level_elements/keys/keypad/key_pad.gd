@@ -42,6 +42,7 @@ func generate_keys() -> void:
 			key.key_data = key.key_data.duplicate(true)
 			key.key_data.color = KEY_COLORS[y * 2 + x]
 			key.in_keypad = true
+			key.hide_shadow = true
 			keys.add_child(key)
 
 

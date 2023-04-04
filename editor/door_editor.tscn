@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://data/lock_data.gd" id="4_w8kad"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="5_6x28y"]
 
-[sub_resource type="Resource" id="Resource_vf17g"]
+[sub_resource type="Resource" id="Resource_7qt2h"]
 script = ExtResource("3_pekxs")
 real_part = 1
 imaginary_part = 0
@@ -25,7 +25,7 @@ dont_show_lock = false
 
 [sub_resource type="Resource" id="Resource_p5nxe"]
 script = ExtResource("5_6x28y")
-amount = SubResource("Resource_vf17g")
+amount = SubResource("Resource_7qt2h")
 outer_color = 1
 locks = Array[ExtResource("4_w8kad")]([SubResource("Resource_yw5lk")])
 sequence_next = Array[ExtResource("5_6x28y")]([])
@@ -39,152 +39,146 @@ _curses = {
 glitch_color = 1
 position = Vector2i(0, 0)
 
-[node name="DoorEditor" type="Control"]
-custom_minimum_size = Vector2(281, 68)
-layout_mode = 3
-anchors_preset = 0
-offset_right = 304.0
-offset_bottom = 608.0
+[node name="DoorEditor" type="MarginContainer"]
+offset_right = 281.0
+offset_bottom = 235.0
 script = ExtResource("1_qqghd")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Panel" type="Panel" parent="MarginContainer"]
+[node name="Panel" type="Panel" parent="."]
+visible = false
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="TopStuff" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="TopStuff" type="VBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="DoorXEdit" type="Label" parent="MarginContainer/VBoxContainer/TopStuff"]
+[node name="DoorEdit" type="Label" parent="VBoxContainer/TopStuff"]
 layout_mode = 2
-text = "Door 1 Edit"
+text = "Door Editor"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SpacingForDoorCount" type="Control" parent="MarginContainer/VBoxContainer/TopStuff"]
+[node name="SpacingForDoorCount" type="Control" parent="VBoxContainer/TopStuff"]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
-[node name="TheDoor" type="CenterContainer" parent="MarginContainer/VBoxContainer/TopStuff"]
+[node name="TheDoor" type="CenterContainer" parent="VBoxContainer/TopStuff"]
 layout_mode = 2
 
-[node name="Door" parent="MarginContainer/VBoxContainer/TopStuff/TheDoor" instance=ExtResource("2_ye8wh")]
+[node name="Door" parent="VBoxContainer/TopStuff/TheDoor" instance=ExtResource("2_ye8wh")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
+ignore_position = true
 door_data = SubResource("Resource_p5nxe")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="Editors" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="Editors" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BaseDoor" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors"]
+[node name="BaseDoor" type="VBoxContainer" parent="VBoxContainer/ScrollContainer/Editors"]
 layout_mode = 2
 
-[node name="Color" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+[node name="Color" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
 layout_mode = 2
 text = "Color:"
 
-[node name="ColorChoice" type="OptionButton" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
+[node name="ColorChoice" type="OptionButton" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 14
 selected = 0
-popup/item_0/text = "white"
+popup/item_0/text = "White"
 popup/item_0/id = 1
-popup/item_1/text = "black"
+popup/item_1/text = "Black"
 popup/item_1/id = 2
-popup/item_2/text = "orange"
+popup/item_2/text = "Orange"
 popup/item_2/id = 3
-popup/item_3/text = "purple"
+popup/item_3/text = "Purple"
 popup/item_3/id = 4
-popup/item_4/text = "cyan"
+popup/item_4/text = "Cyan"
 popup/item_4/id = 5
-popup/item_5/text = "pink"
+popup/item_5/text = "Pink"
 popup/item_5/id = 6
-popup/item_6/text = "red"
+popup/item_6/text = "Red"
 popup/item_6/id = 7
-popup/item_7/text = "green"
+popup/item_7/text = "Green"
 popup/item_7/id = 8
-popup/item_8/text = "blue"
+popup/item_8/text = "Blue"
 popup/item_8/id = 9
-popup/item_9/text = "brown"
+popup/item_9/text = "Brown"
 popup/item_9/id = 10
-popup/item_10/text = "master"
+popup/item_10/text = "Master"
 popup/item_10/id = 11
-popup/item_11/text = "glitch"
+popup/item_11/text = "Glitch"
 popup/item_11/id = 13
-popup/item_12/text = "pure"
+popup/item_12/text = "Pure"
 popup/item_12/id = 12
-popup/item_13/text = "stone"
+popup/item_13/text = "Stone"
 popup/item_13/id = 14
 
-[node name="Copies" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+[node name="Copies" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Copies:"
 
-[node name="RealCopies" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
+[node name="RealCopies" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
-min_value = -1000.0
-max_value = 1000.0
+min_value = -1e+06
+max_value = 1e+06
 value = 1.0
+allow_greater = true
+allow_lesser = true
 
-[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
+[node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "+"
 
-[node name="ImaginaryCopies" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
+[node name="ImaginaryCopies" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
-min_value = -1000.0
-max_value = 1000.0
+min_value = -1e+06
+max_value = 1e+06
+allow_greater = true
+allow_lesser = true
 suffix = "i"
 
-[node name="Size" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+[node name="Size" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Width:"
 
-[node name="Width" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
+[node name="Width" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -195,12 +189,12 @@ max_value = 3200.0
 step = 32.0
 value = 32.0
 
-[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
+[node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Height:"
 
-[node name="Height" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
+[node name="Height" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -211,83 +205,83 @@ max_value = 3200.0
 step = 32.0
 value = 32.0
 
-[node name="Curses" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+[node name="Curses" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses"]
 layout_mode = 2
 
-[node name="Ice" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
+[node name="Ice" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="IceButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice"]
+[node name="IceButton" type="Button" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Ice curse, broken with 1 red key or more."
 toggle_mode = true
 flat = true
 
-[node name="Ice" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice"]
+[node name="Ice" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice"]
 layout_mode = 2
 size_flags_horizontal = 6
 mouse_filter = 2
 
-[node name="Ice" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice/Ice"]
+[node name="Ice" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice/Ice"]
 layout_mode = 2
 text = "Frozen"
 
-[node name="IceCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice/Ice"]
+[node name="IceCheckbox" type="CheckBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Ice/Ice"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Erosion" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
+[node name="Erosion" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ErosionButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion"]
+[node name="ErosionButton" type="Button" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Erosion curse, broken with 5 green keys or more."
 toggle_mode = true
 flat = true
 
-[node name="Erosion" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion"]
+[node name="Erosion" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion"]
 layout_mode = 2
 size_flags_horizontal = 6
 mouse_filter = 2
 
-[node name="Erosion" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion/Erosion"]
+[node name="Erosion" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion/Erosion"]
 layout_mode = 2
 text = "Eroded"
 
-[node name="ErosionCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion/Erosion"]
+[node name="ErosionCheckbox" type="CheckBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Erosion/Erosion"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Paint" type="MarginContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
+[node name="Paint" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PaintButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint"]
+[node name="PaintButton" type="Button" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Paint curse, broken with 3 blue keys or more."
 toggle_mode = true
 flat = true
 
-[node name="Paint" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint"]
+[node name="Paint" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint"]
 layout_mode = 2
 size_flags_horizontal = 6
 mouse_filter = 2
 
-[node name="Paint" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint/Paint"]
+[node name="Paint" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint/Paint"]
 layout_mode = 2
 text = "Painted"
 
-[node name="PaintCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint/Paint"]
+[node name="PaintCheckbox" type="CheckBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Curses/HBoxContainer/Paint/Paint"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2

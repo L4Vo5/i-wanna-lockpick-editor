@@ -10,7 +10,9 @@ class_name Key
 		key_data = val
 		if is_instance_valid(key_data):
 			key_data.changed.connect(update_visual)
+## Ignores player input and glitch color
 @export var in_keypad := false
+@export var hide_shadow := false
 
 @onready var shadow: Sprite2D = %Shadow
 @onready var fill: Sprite2D = %Fill
@@ -28,9 +30,10 @@ func _ready() -> void:
 		key_data = key_data.duplicate(true)
 	is_ready = true
 	if in_keypad:
-		shadow.hide()
 		collision_layer = 0
 		collision_mask = 0
+	if hide_shadow:
+		shadow.hide()
 	body_entered.connect(on_collide)
 	update_visual()
 	_connect_global_level()
@@ -74,9 +77,9 @@ func update_visual() -> void:
 	symbol.hide()
 	# get the outline / shadow / fill
 	var spr_frame = {
-		key_data.key_types.exact: 1,
-		key_data.key_types.star: 2,
-		key_data.key_types.unstar: 3,
+		Enums.key_types.exact: 1,
+		Enums.key_types.star: 2,
+		Enums.key_types.unstar: 3,
 	}.get(key_data.type)
 	if spr_frame == null: spr_frame = 0
 	shadow.frame = spr_frame
@@ -84,7 +87,7 @@ func update_visual() -> void:
 	outline.frame = spr_frame
 	special.frame = spr_frame
 	glitch.frame = spr_frame
-	if key_data.color == Enums.colors.master and key_data.type == key_data.key_types.add:
+	if key_data.color == Enums.colors.master and key_data.type == Enums.key_types.add:
 		shadow.frame = 4
 	if key_data.color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
 		special.show()
@@ -107,7 +110,7 @@ func update_visual() -> void:
 	
 	
 	# draw the number
-	if key_data.type == key_data.key_types.add or key_data.type == key_data.key_types.exact:
+	if key_data.type == Enums.key_types.add or key_data.type == Enums.key_types.exact:
 		number.show()
 		number.text = str(key_data.amount)
 		if number.text == "1":
@@ -120,9 +123,9 @@ func update_visual() -> void:
 	# or the symbol
 	else:
 		var frame = {
-			key_data.key_types.flip: 0,
-			key_data.key_types.rotor: 1,
-			key_data.key_types.rotor_flip: 2,
+			Enums.key_types.flip: 0,
+			Enums.key_types.rotor: 1,
+			Enums.key_types.rotor_flip: 2,
 		}.get(key_data.type)
 		if frame != null:
 			symbol.frame = frame
@@ -141,21 +144,21 @@ func on_pickup() -> void:
 		else:
 			color = Global.current_level.glitch_color
 	if Global.current_level.star_keys[color]:
-		if key_data.type == key_data.key_types.unstar:
+		if key_data.type == Enums.key_types.unstar:
 			Global.current_level.star_keys[color] = false
 	else:
 		match key_data.type:
-			key_data.key_types.add:
+			Enums.key_types.add:
 				Global.current_level.key_counts[color].add(key_data.amount)
-			key_data.key_types.exact:
+			Enums.key_types.exact:
 				Global.current_level.key_counts[color].set_to_this(key_data.amount)
-			key_data.key_types.rotor:
+			Enums.key_types.rotor:
 				Global.current_level.key_counts[color].rotor()
-			key_data.key_types.flip:
+			Enums.key_types.flip:
 				Global.current_level.key_counts[color].flip()
-			key_data.key_types.rotor_flip:
+			Enums.key_types.rotor_flip:
 				Global.current_level.key_counts[color].rotor().flip()
-			key_data.key_types.star:
+			Enums.key_types.star:
 				Global.current_level.star_keys[color] = true
 	hide()
 	
@@ -164,11 +167,11 @@ func on_pickup() -> void:
 		snd_pickup.stream = preload("res://level_elements/keys/master_pickup.wav")
 		if key_data.amount.is_negative():
 			snd_pickup.pitch_scale = 0.82
-	elif key_data.type in [key_data.key_types.flip, key_data.key_types.rotor, key_data.key_types.rotor_flip]:
+	elif key_data.type in [Enums.key_types.flip, Enums.key_types.rotor, Enums.key_types.rotor_flip]:
 		snd_pickup.stream = preload("res://level_elements/keys/signflip_pickup.wav")
-	elif key_data.type == key_data.key_types.star:
+	elif key_data.type == Enums.key_types.star:
 		snd_pickup.stream = preload("res://level_elements/keys/star_pickup.wav")
-	elif key_data.type == key_data.key_types.unstar:
+	elif key_data.type == Enums.key_types.unstar:
 		snd_pickup.stream = preload("res://level_elements/keys/unstar_pickup.wav")
 	elif key_data.amount.is_negative():
 		snd_pickup.stream = preload("res://level_elements/keys/negative_pickup.wav")

@@ -20,9 +20,6 @@ class_name DoorEditor
 ## unimplemented for now tho lol
 var non_standard_mode := false
 
-func _physics_process(delta: float) -> void:
-	custom_minimum_size = $MarginContainer.get_minimum_size()
-
 func _ready() -> void:
 	ice_button.tooltip_text = "Ice curse, broken with 1 red key or more."
 	erosion_button.tooltip_text = "Erosion curse, broken with 5 green keys or more."
@@ -45,9 +42,9 @@ func _ready() -> void:
 	imaginary_copies.value_changed.connect(update_door_amount.unbind(1))
 	
 	color_choice.clear()
-	for key in Enums.color_names.keys():
+	for key in Enums.COLOR_NAMES.keys():
 		if key == Enums.colors.none: continue
-		color_choice.add_item(Enums.color_names[key], key)
+		color_choice.add_item(Enums.COLOR_NAMES[key].capitalize(), key)
 	color_choice.selected = color_choice.get_item_index(door.door_data.outer_color) 
 	color_choice.item_selected.connect(update_door_color.unbind(1))
 

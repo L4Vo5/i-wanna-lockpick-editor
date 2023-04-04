@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://dh6h46bjp6c2s"]
 
 [ext_resource type="Texture2D" uid="uid://byjuwnqrk0p" path="res://level_elements/doors_locks/curses/spr_erosion_frame.png" id="1_rk2qa"]
 [ext_resource type="Script" path="res://level_elements/doors_locks/curses/erosion_tentacles.gd" id="2_wsbur"]

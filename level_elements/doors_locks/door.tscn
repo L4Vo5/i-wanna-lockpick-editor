@@ -15,7 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://b300fyhgkmlja" path="res://level_elements/doors_locks/textures/door_frame_light.png" id="13_sklu7"]
 [ext_resource type="Texture2D" uid="uid://d4lgl6u0642bn" path="res://level_elements/doors_locks/textures/door_frame_mid.png" id="14_qjd2f"]
 [ext_resource type="Texture2D" uid="uid://cqwfx0awl2b6c" path="res://level_elements/doors_locks/textures/door_frame_dark.png" id="15_7rfx4"]
-[ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/erosion.tscn" id="16_pntfj"]
+[ext_resource type="PackedScene" uid="uid://dh6h46bjp6c2s" path="res://level_elements/doors_locks/curses/erosion.tscn" id="16_pntfj"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/paint.tscn" id="17_oiull"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/ice.tscn" id="18_qg5bk"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/brown_curse.tscn" id="19_oyr8q"]
@@ -62,8 +62,6 @@ size = Vector2(1, 1)
 custom_minimum_size = Vector2(32, 32)
 offset_right = 32.0
 offset_bottom = 32.0
-grow_horizontal = 2
-grow_vertical = 2
 script = ExtResource("1_sybd2")
 door_data = SubResource("Resource_m3ecb")
 

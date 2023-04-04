@@ -19,7 +19,7 @@ var is_spent := false:
 		is_spent = val
 		changed.emit()
 
-@export var type := key_types.add:
+@export var type := Enums.key_types.add:
 	set(val):
 		if type == val: return
 		type = val
@@ -31,11 +31,7 @@ var is_spent := false:
 		emit_changed()
 
 
-enum key_types {
-	add, exact,
-	star, unstar,
-	flip, rotor, rotor_flip
-}
+
 
 func _init() -> void:
 	if is_instance_valid(amount):

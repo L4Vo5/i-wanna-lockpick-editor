@@ -19,7 +19,7 @@ enum colors {
 	stone,
 }
 
-const color_names := {
+const COLOR_NAMES := {
 	colors.none: "none",
 	colors.white: "white",
 	colors.black: "black",
@@ -53,4 +53,25 @@ enum curse {
 	erosion, # 5 green
 	paint, # 3 blue
 	brown, # caused by 1 brown, cured by -1 brown
+}
+
+enum key_types {
+	add, exact,
+	star, unstar,
+	flip, rotor, rotor_flip
+}
+const KEY_TYPE_NAMES := {
+	key_types.add: "add",
+	key_types.exact: "exact",
+	key_types.star: "star",
+	key_types.unstar: "unstar",
+	key_types.flip: "flip",
+	key_types.rotor: "rotor",
+	key_types.rotor_flip: "rotor_flip",
+}
+
+# Current "mode" of level edit, as in what should generally happen when interfacing with the level while in the editor
+enum editor_modes {
+	tilemap_edit,
+	objects
 }

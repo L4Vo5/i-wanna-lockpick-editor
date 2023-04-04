@@ -2,8 +2,8 @@
 extends MarginContainer
 class_name Door
 
-signal clicked
-signal lock_clicked(which: int)
+signal clicked(event: InputEventMouseButton)
+#signal lock_clicked(which: int)
 
 const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tscn")
@@ -13,7 +13,7 @@ const FRAME_NEG := preload("res://level_elements/doors_locks/textures/door_frame
 var open_cooldown := 0.5
 var can_open := true
 
-
+@export var ignore_position := false
 @export var door_data: DoorData
 
 @onready var color_light: NinePatchRect = %ColorLight
@@ -66,15 +66,16 @@ func _physics_process(_delta: float) -> void:
 	i_view_colors()
 
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.is_pressed():
-		clicked.emit()
-		accept_event()
+	if event is InputEventMouseButton:
+		clicked.emit(event)
+		# the event should be accepted on the signal receiver's side
 
 func update_everything() -> void:
 	update_textures()
 	update_locks()
 	update_curses()
-	position = door_data.position
+	if not ignore_position:
+		position = door_data.position
 
 func position_copies() -> void:
 	copies.size.x = size.x

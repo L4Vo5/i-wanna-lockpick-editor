@@ -64,7 +64,7 @@ func _ready() -> void:
 	player_spawn_point.texture = preload("res://editor/player_spawnpoint.png")
 	player_spawn_point.position = level_data.player_spawn_position
 	player_spawn_point.centered = false
-	player_spawn_point.offset = Vector2i(-11, -25)
+	player_spawn_point.offset = Vector2i(-13, -34)
 	add_child(player_spawn_point)
 	player = preload("res://level_elements/kid/kid.tscn").instantiate()
 	player.position = level_data.player_spawn_position
@@ -77,16 +77,29 @@ func _physics_process(delta: float) -> void:
 	player_spawn_point.visible = true
 
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
+const KEY := preload("res://level_elements/keys/key.tscn")
+
 # Editor functions
+
+signal door_clicked(event: InputEventMouseButton, door: Door)
+signal key_clicked(event: InputEventMouseButton, key: Key)
+
 func add_door(door_data: DoorData) -> Door:
 	var door := DOOR.instantiate()
 	door.door_data = door_data
+	door.clicked.connect(emit_signal.bind(&"door_clicked", door))
 	add_child(door)
 	return door
 
 func remove_door(door: Door) -> void:
 	level_data.doors.erase(door.door_data)
 	door.queue_free()
+
+func add_key(key_data: KeyData) -> Key:
+	var key := KEY.instantiate()
+	key.key_data = key_data
+	add_child(key)
+	return key
 
 func get_doors() -> Array[Door]:
 	var arr: Array[Door] = []
