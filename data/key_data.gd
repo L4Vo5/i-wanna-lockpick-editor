@@ -12,12 +12,12 @@ class_name KeyData
 			amount.changed.connect(emit_changed)
 		emit_changed()
 
-## if the key is spent
+## if the key is spent while playing the level
 var is_spent := false:
 	set(val):
 		if is_spent == val: return
 		is_spent = val
-		changed.emit()
+		emit_changed()
 
 @export var type := Enums.key_types.add:
 	set(val):
@@ -29,10 +29,17 @@ var is_spent := false:
 		if color == val: return
 		color = val
 		emit_changed()
-
+@export var position := Vector2i(0, 0):
+	set(val):
+		if position == val: return
+		position = val
+		emit_changed()
 
 
 
 func _init() -> void:
 	if is_instance_valid(amount):
 		amount.changed.connect(emit_changed)
+
+func duplicated() -> KeyData:
+	return duplicate(true)

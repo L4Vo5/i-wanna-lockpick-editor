@@ -2,7 +2,7 @@
 extends MarginContainer
 class_name Lock
 
-signal clicked
+signal clicked(event: InputEventMouseButton)
 
 const FRAME_POS := preload("res://level_elements/doors_locks/textures/lock_frame_texture_pos.png")
 const FRAME_NEG := preload("res://level_elements/doors_locks/textures/lock_frame_texture_neg.png")
@@ -55,8 +55,8 @@ func _physics_process(_delta: float) -> void:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
-		clicked.emit()
-		accept_event()
+		clicked.emit(event)
+		# the event should be accepted on the signal receiver's side
 
 func set_frame_visible() -> void:
 	if lock_data.dont_show_frame:

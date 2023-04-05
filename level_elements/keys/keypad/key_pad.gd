@@ -19,7 +19,10 @@ const KEY_COLORS := [
 func _ready() -> void:
 	generate_keys()
 
-func _input(event: InputEvent) -> void:
+func _unhandled_key_input(event: InputEvent) -> void:
+	if Global.in_level_editor:
+		hide()
+		return
 	if event.is_action("keypad") and not event.is_echo():
 		if event.is_pressed():
 			show()
@@ -29,6 +32,7 @@ func _input(event: InputEvent) -> void:
 			hide()
 			sound.pitch_scale = 1
 			sound.play()
+		get_tree().root.set_input_as_handled()
 
 func generate_keys() -> void:
 	for child in keys.get_children():
@@ -43,6 +47,7 @@ func generate_keys() -> void:
 			key.key_data.color = KEY_COLORS[y * 2 + x]
 			key.in_keypad = true
 			key.hide_shadow = true
+			key.ignore_position = true
 			keys.add_child(key)
 
 

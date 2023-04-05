@@ -33,6 +33,7 @@ layout_mode = 2
 
 [node name="key" parent="VBoxContainer/TopStuff/TheKey/KeyHolder" instance=ExtResource("1_2kdyu")]
 unique_name_in_owner = true
+ignore_position = true
 
 [node name="SpacingForKeyCount" type="Control" parent="VBoxContainer/TopStuff"]
 custom_minimum_size = Vector2(0, 10)

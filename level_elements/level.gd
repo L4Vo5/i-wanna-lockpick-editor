@@ -52,29 +52,31 @@ var i_view := false
 # useful for levels with a lot of door copies
 var door_multiplier := 1
 
-func _input(event: InputEvent) -> void:
+func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action(&"i-view") and event.is_pressed() and not event.is_echo():
 		i_view = not i_view
 		changed_i_view.emit()
 
 var player_spawn_point: Sprite2D
 func _ready() -> void:
+	
 	Global.current_level = self
+	
 	player_spawn_point = Sprite2D.new()
 	player_spawn_point.texture = preload("res://editor/player_spawnpoint.png")
 	player_spawn_point.position = level_data.player_spawn_position
+	level_data.changed_player_spawn_position.connect(
+		func():
+			player_spawn_point.position = level_data.player_spawn_position
+	)
 	player_spawn_point.centered = false
 	player_spawn_point.offset = Vector2i(-13, -34)
+	player_spawn_point.visible = not Global.in_level_editor
 	add_child(player_spawn_point)
+	
 	player = preload("res://level_elements/kid/kid.tscn").instantiate()
 	player.position = level_data.player_spawn_position
 	add_child(player)
-
-func _physics_process(delta: float) -> void:
-	# TODO: Don't do this every frame
-	player_spawn_point.position = level_data.player_spawn_position
-	player_spawn_point.visible = not Global.in_level_editor
-	player_spawn_point.visible = true
 
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
@@ -86,8 +88,10 @@ signal key_clicked(event: InputEventMouseButton, key: Key)
 
 func add_door(door_data: DoorData) -> Door:
 	var door := DOOR.instantiate()
+	if not door_data in level_data.doors:
+		level_data.doors.push_back(door_data)
 	door.door_data = door_data
-	door.clicked.connect(emit_signal.bind(&"door_clicked", door))
+	door.clicked.connect(_on_door_clicked.bind(door))
 	add_child(door)
 	return door
 
@@ -98,8 +102,19 @@ func remove_door(door: Door) -> void:
 func add_key(key_data: KeyData) -> Key:
 	var key := KEY.instantiate()
 	key.key_data = key_data
+	key.clicked.connect(_on_key_clicked.bind(key))
 	add_child(key)
 	return key
+
+func remove_key(key: Key) -> void:
+	level_data.keys.erase(key.key_data)
+	key.queue_free()
+
+func _on_door_clicked(event: InputEventMouseButton, door: Door):
+	door_clicked.emit(event, door)
+
+func _on_key_clicked(event: InputEventMouseButton, key: Key):
+	key_clicked.emit(event, key)
 
 func get_doors() -> Array[Door]:
 	var arr: Array[Door] = []

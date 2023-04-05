@@ -2,6 +2,8 @@
 extends Area2D
 class_name Key
 
+signal clicked(event: InputEventMouseButton)
+
 @export var key_data: KeyData:
 	set(val):
 		if key_data == val: return
@@ -13,6 +15,7 @@ class_name Key
 ## Ignores player input and glitch color
 @export var in_keypad := false
 @export var hide_shadow := false
+@export var ignore_position := false
 
 @onready var shadow: Sprite2D = %Shadow
 @onready var fill: Sprite2D = %Fill
@@ -23,6 +26,8 @@ class_name Key
 @onready var snd_pickup: AudioStreamPlayer = %Pickup
 @onready var number: Label = %Number
 @onready var symbol: Sprite2D = %Symbol
+
+var level: Level = null
 
 var is_ready := false
 func _ready() -> void:
@@ -38,6 +43,11 @@ func _ready() -> void:
 	update_visual()
 	_connect_global_level()
 	Global.changed_level.connect(_connect_global_level)
+	$GuiInputGrabber.gui_input.connect(_gui_input)
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		clicked.emit(event)
 
 func _connect_global_level() -> void:
 	if in_keypad: return
@@ -69,6 +79,7 @@ func set_special_texture(color: Enums.colors) -> void:
 func update_visual() -> void:
 	if not is_ready: return
 	if not is_instance_valid(key_data): return
+	if not ignore_position: position = key_data.position
 	fill.hide()
 	outline.hide()
 	special.hide()

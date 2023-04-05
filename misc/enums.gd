@@ -69,9 +69,3 @@ const KEY_TYPE_NAMES := {
 	key_types.rotor: "rotor",
 	key_types.rotor_flip: "rotor_flip",
 }
-
-# Current "mode" of level edit, as in what should generally happen when interfacing with the level while in the editor
-enum editor_modes {
-	tilemap_edit,
-	objects
-}

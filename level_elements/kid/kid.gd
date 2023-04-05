@@ -45,7 +45,7 @@ func _physics_process(_delta: float) -> void:
 	move_and_collide(velocity * Vector2(current_speed, 0))
 	move_and_collide(velocity * Vector2(0, 1))
 
-func _input(event: InputEvent) -> void:
+func _unhandled_key_input(event: InputEvent) -> void:
 	if not is_instance_valid(Global.current_level): return
 	if event.is_action("master") and event.is_pressed() and not event.is_echo():
 		update_master_equipped(true, true)

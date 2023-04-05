@@ -3,13 +3,15 @@ class_name LevelContainer
 ## Contains the level, centered, and at the correct aspect ratio
 ## Also is just the level editor for general input reasons (this should've been LevelContainerInner maybe but it's not that strong of a reason to clutter the responsibilities further)
 
-@export var DOOR: PackedScene
-
 @export var inner_container: Control
 @export var level: Level
 
 @export var tile_map: TileMap
 @export var door_editor: DoorEditor
+@export var key_editor: KeyEditor
+
+@export var editor: LockpickEditor
+var editor_data: EditorData
 
 #var level_offset :=  Vector2(0, 0)
 
@@ -20,9 +22,27 @@ func _process(delta: float) -> void:
 	inner_container.size = OBJ_SIZE
 
 var selected = null
+func _ready() -> void:
+	level.door_clicked.connect(_on_door_clicked)
 
-var mode := Enums.editor_modes.tilemap_edit
+func _on_door_clicked(event: InputEventMouseButton, door: Door) -> void:
+	pass
 
+func _on_key_clicked(event: InputEventMouseButton, key: Key) -> void:
+	pass
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				if editor_data.tilemap_edit:
+					place_tile_on_mouse()
+					accept_event()
+				elif editor_data.doors:
+					place_door_on_mouse()
+				elif editor_data.keys:
+					place_key_on_mouse()
+	pass
 #func _gui_input(event: InputEvent) -> void:
 #	if event.is_action_pressed("place_tile"):
 #		if mode == modes.tilemap_edit:
@@ -61,21 +81,27 @@ func remove_tile_on_mouse() -> void:
 	tile_map.erase_cell(layer, coord)
 
 func place_door_on_mouse() -> void:
-	var coord = get_mouse_door_coord()
-	var new_door = DOOR.instantiate()
-	new_door.door_data = door_editor.door.door_data.duplicated()
-	new_door.door_data.position = coord
-	level.add_child(new_door)
+	var coord = get_mouse_coord(32)
+	var door_data := door_editor.door.door_data.duplicated()
+	door_data.position = coord
+	level.add_door(door_data)
 
 func remove_door_on_mouse() -> void:
-	var coord = get_mouse_door_coord()
+	var coord = get_mouse_coord(32)
 	for door in level.get_doors():
 		if door.door_data.has_point(coord):
 			level.remove_door(door)
 			break
 
-func get_mouse_door_coord() -> Vector2i:
-	return Vector2i(get_local_mouse_position() - level.global_position) / Vector2i(32, 32) * Vector2i(32, 32)
+
+func place_key_on_mouse() -> void:
+	var coord = get_mouse_coord(16)
+	var key_data := key_editor.key.key_data.duplicated()
+	key_data.position = coord
+	level.add_key(key_data)
+
+func get_mouse_coord(grid_size: int) -> Vector2i:
+	return Vector2i(get_global_mouse_position() - level.global_position) / Vector2i(grid_size, grid_size) * Vector2i(grid_size, grid_size)
 
 func get_mouse_tile_coord() -> Vector2i:
 	return Vector2i((get_local_mouse_position() - level.global_position) / Vector2(32, 32))

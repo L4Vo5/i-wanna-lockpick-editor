@@ -3,6 +3,7 @@ extends MarginContainer
 class_name Door
 
 signal clicked(event: InputEventMouseButton)
+signal lock_clicked(event: InputEventMouseButton, lock: Lock)
 #signal lock_clicked(which: int)
 
 const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
@@ -40,6 +41,7 @@ var can_open := true
 @onready var copies: Label = %Copies
 
 var using_i_view_colors := false
+var level: Level = null
 
 func _ready() -> void:
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
@@ -177,7 +179,7 @@ func update_locks() -> void:
 	var i := 0
 	for lock in door_data.locks:
 		var new_lock := LOCK.instantiate()
-		new_lock.clicked.connect(emit_signal.bind(&"lock_clicked", i))
+		new_lock.clicked.connect(func(event): lock_clicked.emit(event, new_lock))
 		new_lock.lock_data = lock
 		lock_holder.add_child(new_lock)
 		i += 1

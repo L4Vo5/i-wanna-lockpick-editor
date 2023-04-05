@@ -23,6 +23,7 @@ script = ExtResource("3_ngkr3")
 amount = SubResource("Resource_w2h4u")
 type = 1
 color = 1
+position = Vector2i(0, 0)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mb7fb"]
 radius = 9.5
@@ -129,3 +130,9 @@ position = Vector2(9, 24)
 texture = ExtResource("12_gx03b")
 hframes = 3
 frame = 2
+
+[node name="GuiInputGrabber" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 32.0
+offset_bottom = 31.0
