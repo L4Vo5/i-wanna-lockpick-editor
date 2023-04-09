@@ -11,3 +11,4 @@ signal changed_player_spawn_position
 		player_spawn_position = val
 		changed_player_spawn_position.emit()
 		changed.emit()
+@export var custom_lock_arrangements := {}

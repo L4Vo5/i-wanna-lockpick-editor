@@ -8,32 +8,34 @@
 [ext_resource type="Texture2D" uid="uid://cv2iv6p4kmp7v" path="res://level_elements/doors_locks/textures/glitch_lock_1.png" id="6_1g38v"]
 [ext_resource type="Texture2D" uid="uid://cpwl77uktqrf2" path="res://level_elements/doors_locks/textures/lock_frame_texture_pos.png" id="7_olvo5"]
 [ext_resource type="Texture2D" uid="uid://b13b2mwiwafpk" path="res://level_elements/doors_locks/textures/locks.png" id="8_e3r8c"]
-[ext_resource type="PackedScene" path="res://level_elements/doors_locks/lock_count_draw.tscn" id="9_nchff"]
+[ext_resource type="PackedScene" uid="uid://ce3p2ey51goxn" path="res://level_elements/doors_locks/lock_count_draw.tscn" id="9_nchff"]
 
-[sub_resource type="Resource" id="Resource_jxu6l"]
+[sub_resource type="Resource" id="Resource_3jfdd"]
 script = ExtResource("2_cjgc5")
-color = 3
+color = 1
 magnitude = 1
 sign = 0
 value_type = 0
 lock_type = 0
-size = Vector2(18, 18)
-position = Vector2(0, 0)
+size = Vector2i(50, 50)
+position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
 [node name="Lock" type="MarginContainer"]
-custom_minimum_size = Vector2(18, 18)
-offset_right = 18.0
-offset_bottom = 18.0
+custom_minimum_size = Vector2(50, 50)
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 57.0
+offset_bottom = 57.0
 script = ExtResource("1_dmr10")
-lock_data = SubResource("Resource_jxu6l")
+lock_data = SubResource("Resource_3jfdd")
 
 [node name="Color" type="ColorRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-color = Color(0.839216, 0.560784, 0.286275, 1)
+color = Color(0.839216, 0.811765, 0.788235, 1)
 
 [node name="StoneTexture" type="TextureRect" parent="."]
 unique_name_in_owner = true
@@ -47,7 +49,7 @@ stretch_mode = 1
 [node name="SpecialAnim" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
-scale = Vector2(18, 0.28125)
+scale = Vector2(50, 0.78125)
 texture = ExtResource("4_eep47")
 centered = false
 hframes = 4
@@ -94,9 +96,11 @@ visible = false
 texture = ExtResource("8_e3r8c")
 hframes = 6
 
-[node name="LockCountDraw" parent="." instance=ExtResource("9_nchff")]
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 2
+
+[node name="LockCountDraw" parent="CenterContainer" instance=ExtResource("9_nchff")]
 unique_name_in_owner = true
-visible = false
 modulate = Color(0.172549, 0.12549, 0.0784314, 1)
 layout_mode = 2
-lock_type = 2
+text = ""

@@ -34,8 +34,8 @@ magnitude = 1
 sign = 0
 value_type = 0
 lock_type = 0
-size = Vector2(18, 18)
-position = Vector2(7, 7)
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 

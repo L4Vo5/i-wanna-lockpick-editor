@@ -18,8 +18,8 @@ magnitude = 1
 sign = 0
 value_type = 0
 lock_type = 0
-size = Vector2(18, 18)
-position = Vector2(7, 7)
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
@@ -149,6 +149,7 @@ max_value = 1e+06
 value = 1.0
 allow_greater = true
 allow_lesser = true
+alignment = 1
 
 [node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
 layout_mode = 2
@@ -165,6 +166,7 @@ min_value = -1e+06
 max_value = 1e+06
 allow_greater = true
 allow_lesser = true
+alignment = 1
 suffix = "i"
 
 [node name="Size" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
@@ -176,7 +178,8 @@ layout_mode = 2
 [node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "Width:"
+text = "Size:"
+vertical_alignment = 1
 
 [node name="Width" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 unique_name_in_owner = true
@@ -185,14 +188,16 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 min_value = 32.0
-max_value = 3200.0
+max_value = 800.0
 step = 32.0
 value = 32.0
+alignment = 1
 
 [node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "Height:"
+text = "×"
+vertical_alignment = 1
 
 [node name="Height" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
 unique_name_in_owner = true
@@ -201,9 +206,16 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 min_value = 32.0
-max_value = 3200.0
+max_value = 800.0
 step = 32.0
 value = 32.0
+alignment = 1
+
+[node name="Label3" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Size/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "pixels"
+vertical_alignment = 1
 
 [node name="Curses" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2

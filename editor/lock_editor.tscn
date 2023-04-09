@@ -1,10 +1,25 @@
-[gd_scene load_steps=3 format=3 uid="uid://ci0xep67xsyqq"]
+[gd_scene load_steps=7 format=3 uid="uid://ci0xep67xsyqq"]
 
 [ext_resource type="Script" path="res://editor/lock_editor.gd" id="1_46nys"]
 [ext_resource type="PackedScene" uid="uid://ds64ntew1oani" path="res://level_elements/doors_locks/lock.tscn" id="1_iyvjm"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="3_i0t7t"]
+[ext_resource type="PackedScene" uid="uid://cinkniexduuij" path="res://editor/arrangement_chooser.tscn" id="4_cei5h"]
 
-[node name="LockEditor" type="Control"]
-layout_mode = 3
+[sub_resource type="Resource" id="Resource_sgiyv"]
+script = ExtResource("3_i0t7t")
+color = 1
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Theme" id="Theme_3vag0"]
+
+[node name="LockEditor" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,30 +27,193 @@ offset_right = -496.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_46nys")
+lock_data = SubResource("Resource_sgiyv")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Panel" type="Panel" parent="MarginContainer"]
+[node name="Panel" type="Panel" parent="."]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
-text = "Lock 1 Edit"
+
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LockN" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Lock 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Delete"
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Lock" parent="MarginContainer/VBoxContainer/CenterContainer" instance=ExtResource("1_iyvjm")]
+[node name="Lock" parent="VBoxContainer/CenterContainer" instance=ExtResource("1_iyvjm")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+lock_data = SubResource("Resource_sgiyv")
+ignore_position = true
+
+[node name="Sep" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="Color" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Color"]
+layout_mode = 2
+text = "Color: "
+
+[node name="ColorChoice" type="OptionButton" parent="VBoxContainer/Color"]
 unique_name_in_owner = true
 layout_mode = 2
+item_count = 14
+selected = 0
+popup/item_0/text = "White"
+popup/item_0/id = 1
+popup/item_1/text = "Black"
+popup/item_1/id = 2
+popup/item_2/text = "Orange"
+popup/item_2/id = 3
+popup/item_3/text = "Purple"
+popup/item_3/id = 4
+popup/item_4/text = "Cyan"
+popup/item_4/id = 5
+popup/item_5/text = "Pink"
+popup/item_5/id = 6
+popup/item_6/text = "Red"
+popup/item_6/id = 7
+popup/item_7/text = "Green"
+popup/item_7/id = 8
+popup/item_8/text = "Blue"
+popup/item_8/id = 9
+popup/item_9/text = "Brown"
+popup/item_9/id = 10
+popup/item_10/text = "Master"
+popup/item_10/id = 11
+popup/item_11/text = "Glitch"
+popup/item_11/id = 13
+popup/item_12/text = "Pure"
+popup/item_12/id = 12
+popup/item_13/text = "Stone"
+popup/item_13/id = 14
+
+[node name="Type" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Type"]
+layout_mode = 2
+text = "Type: "
+
+[node name="TypeChoice" type="OptionButton" parent="VBoxContainer/Type"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 4
+selected = 0
+popup/item_0/text = "Normal"
+popup/item_0/id = 0
+popup/item_1/text = "Blast"
+popup/item_1/id = 1
+popup/item_2/text = "Blank"
+popup/item_2/id = 2
+popup/item_3/text = "All"
+popup/item_3/id = 3
+
+[node name="Requirement" type="MarginContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Requirement"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Requirement/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 5
+text = "Requires: "
+vertical_alignment = 1
+
+[node name="Amount" type="SpinBox" parent="VBoxContainer/Requirement/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 5
+size_flags_stretch_ratio = 0.0
+min_value = -1e+06
+max_value = 1e+06
+value = 1.0
+allow_greater = true
+allow_lesser = true
+alignment = 1
+
+[node name="IsImaginary" type="CheckBox" parent="VBoxContainer/Requirement/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 5
+text = "i keys"
+
+[node name="ArrangementChooser" parent="VBoxContainer" instance=ExtResource("4_cei5h")]
+unique_name_in_owner = true
+layout_mode = 2
+lock_data = SubResource("Resource_sgiyv")
+
+[node name="Size" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Size"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Size/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Size:"
+vertical_alignment = 1
+
+[node name="Width" type="SpinBox" parent="VBoxContainer/Size/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+theme = SubResource("Theme_3vag0")
+min_value = 18.0
+max_value = 640.0
+value = 18.0
+alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer/Size/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "×"
+vertical_alignment = 1
+
+[node name="Height" type="SpinBox" parent="VBoxContainer/Size/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+min_value = 18.0
+max_value = 640.0
+value = 18.0
+alignment = 1
+
+[node name="Fit" type="CheckBox" parent="VBoxContainer/Size/HBoxContainer"]
+unique_name_in_owner = true
+editor_description = "Makes the lock as small as possible"
+layout_mode = 2
+text = "Fit"
+alignment = 1

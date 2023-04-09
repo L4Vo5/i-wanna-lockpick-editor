@@ -69,3 +69,16 @@ const KEY_TYPE_NAMES := {
 	key_types.rotor: "rotor",
 	key_types.rotor_flip: "rotor_flip",
 }
+
+enum lock_types {
+	normal,
+	blast,
+	blank, # will ignore value_type and sign_type
+	all, # will ignore value_type and sign_type
+}
+const LOCK_TYPE_NAMES := {
+	lock_types.normal: "normal",
+	lock_types.blast: "blast",
+	lock_types.blank: "blank",
+	lock_types.all: "all",
+}

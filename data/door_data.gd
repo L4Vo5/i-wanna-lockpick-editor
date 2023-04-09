@@ -73,7 +73,7 @@ func duplicated() -> DoorData:
 	dupe._curses = _curses.duplicate()
 	dupe.amount = amount.duplicate(true)
 	for l in locks:
-		dupe.locks.push_back(l.duplicate(true))
+		dupe.locks.push_back(l.duplicated())
 	for seq in sequence_next:
 		dupe.sequence_next.push_back(seq)
 	return dupe

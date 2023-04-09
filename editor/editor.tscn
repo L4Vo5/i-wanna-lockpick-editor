@@ -16,6 +16,7 @@ doors = Array[Resource("res://data/door_data.gd")]([])
 keys = Array[Resource("res://data/key_data.gd")]([])
 size = Vector2(800, 608)
 player_spawn_position = Vector2(462, 384)
+custom_lock_arrangements = {}
 
 [node name="Editor" type="Control" node_paths=PackedStringArray("level", "side_container", "door_editor", "key_editor", "tile_editor", "level_container")]
 layout_mode = 3
@@ -103,7 +104,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(1, 0, 0, 1)
+color = Color(0.54902, 0.54902, 0.54902, 1)
 
 [node name="GhostDoor" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner" instance=ExtResource("3_d13v5")]
 visible = false
@@ -112,6 +113,14 @@ mouse_filter = 2
 
 [node name="GhostKey" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner" instance=ExtResource("4_tvl64")]
 visible = false
+
+[node name="Fill" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="2"]
+modulate = Color(0.839216, 0.811765, 0.788235, 1)
+
+[node name="Number" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="9"]
+theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
+theme_override_colors/font_shadow_color = Color(0.211765, 0.188235, 0.160784, 1)
+theme_override_colors/font_outline_color = Color(0.921569, 0.890196, 0.866667, 1)
 
 [node name="GuiInputGrabber" parent="VBoxContainer/HBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="11"]
 mouse_filter = 2

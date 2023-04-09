@@ -21,6 +21,15 @@ class_name DoorEditor
 var non_standard_mode := false
 
 func _ready() -> void:
+	width.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
+	height.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
+	real_copies.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
+	imaginary_copies.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
+	width.get_line_edit().expand_to_text_length = true
+	height.get_line_edit().expand_to_text_length = true
+	real_copies.get_line_edit().expand_to_text_length = true
+	imaginary_copies.get_line_edit().expand_to_text_length = true
+	
 	ice_button.tooltip_text = "Ice curse, broken with 1 red key or more."
 	erosion_button.tooltip_text = "Erosion curse, broken with 5 green keys or more."
 	paint_button.tooltip_text = "Paint curse, broken with 3 blue keys or more."
@@ -33,29 +42,29 @@ func _ready() -> void:
 	
 	width.value = door.door_data.size.x
 	height.value = door.door_data.size.y
-	width.value_changed.connect(update_door_size.unbind(1))
-	height.value_changed.connect(update_door_size.unbind(1))
+	width.value_changed.connect(_update_door_size.unbind(1))
+	height.value_changed.connect(_update_door_size.unbind(1))
 	
 	real_copies.value = door.door_data.amount.real_part
 	imaginary_copies.value = door.door_data.amount.imaginary_part
-	real_copies.value_changed.connect(update_door_amount.unbind(1))
-	imaginary_copies.value_changed.connect(update_door_amount.unbind(1))
+	real_copies.value_changed.connect(_update_door_amount.unbind(1))
+	imaginary_copies.value_changed.connect(_update_door_amount.unbind(1))
 	
 	color_choice.clear()
 	for key in Enums.COLOR_NAMES.keys():
 		if key == Enums.colors.none: continue
 		color_choice.add_item(Enums.COLOR_NAMES[key].capitalize(), key)
 	color_choice.selected = color_choice.get_item_index(door.door_data.outer_color) 
-	color_choice.item_selected.connect(update_door_color.unbind(1))
+	color_choice.item_selected.connect(_update_door_color.unbind(1))
 
 func set_curse(val: bool, which: Enums.curse) -> void:
 	door.door_data.set_curse(which, val)
 
-func update_door_size() -> void:
+func _update_door_size() -> void:
 	door.door_data.size = Vector2i(roundi(width.value), roundi(height.value))
 
-func update_door_amount() -> void:
+func _update_door_amount() -> void:
 	door.door_data.amount.set_to(real_copies.value, imaginary_copies.value)
 
-func update_door_color() -> void:
+func _update_door_color() -> void:
 	door.door_data.outer_color = color_choice.get_item_id(color_choice.selected)
