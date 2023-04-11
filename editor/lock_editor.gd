@@ -118,17 +118,19 @@ func _update_lock_color() -> void:
 func _update_lock_type() -> void:
 	lock_data.lock_type = type_choice.get_item_id(type_choice.selected)
 	if lock_data.lock_type == Enums.lock_types.normal:
+		arrangement_chooser.show()
 		requirement_parent.show()
 		for child in requirement_parent.get_children():
 			child.show()
-		is_negative.hide()
 	elif lock_data.lock_type == Enums.lock_types.blast:
+		arrangement_chooser.hide()
 		requirement_parent.show()
 		for child in requirement_parent.get_children():
 			child.hide()
 		is_negative.show()
 		is_imaginary.show()
 	else:
+		arrangement_chooser.hide()
 		requirement_parent.hide()
 
 var last_amount_value := 0
