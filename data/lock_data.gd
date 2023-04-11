@@ -11,7 +11,7 @@ signal changed_color
 		changed.emit()
 
 signal changed_magnitude
-@export var magnitude := 0:
+@export var magnitude := 1:
 	set(val):
 		if magnitude == val: return
 		magnitude = val

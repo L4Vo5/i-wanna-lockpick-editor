@@ -41,7 +41,7 @@ position = Vector2i(0, 0)
 
 [node name="DoorEditor" type="MarginContainer"]
 offset_right = 281.0
-offset_bottom = 235.0
+offset_bottom = 606.0
 script = ExtResource("1_qqghd")
 
 [node name="Panel" type="Panel" parent="."]
@@ -297,3 +297,12 @@ text = "Painted"
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
+
+[node name="LockEditors" type="VBoxContainer" parent="VBoxContainer/ScrollContainer/Editors"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="AddLock" type="Button" parent="VBoxContainer/ScrollContainer/Editors"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Add Lock 2"

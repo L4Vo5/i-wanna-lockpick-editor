@@ -30,6 +30,7 @@ script = ExtResource("1_46nys")
 lock_data = SubResource("Resource_sgiyv")
 
 [node name="Panel" type="Panel" parent="."]
+visible = false
 layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -51,7 +52,8 @@ text = "Lock 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="Delete" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Delete"
@@ -132,21 +134,18 @@ popup/item_2/id = 2
 popup/item_3/text = "All"
 popup/item_3/id = 3
 
-[node name="Requirement" type="MarginContainer" parent="VBoxContainer"]
+[node name="Requirement" type="HBoxContainer" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Requirement"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/Requirement/HBoxContainer"]
+[node name="RequirementLabel" type="Label" parent="VBoxContainer/Requirement"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 5
 text = "Requires: "
 vertical_alignment = 1
 
-[node name="Amount" type="SpinBox" parent="VBoxContainer/Requirement/HBoxContainer"]
+[node name="Amount" type="SpinBox" parent="VBoxContainer/Requirement"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -159,7 +158,14 @@ allow_greater = true
 allow_lesser = true
 alignment = 1
 
-[node name="IsImaginary" type="CheckBox" parent="VBoxContainer/Requirement/HBoxContainer"]
+[node name="IsNegative" type="CheckBox" parent="VBoxContainer/Requirement"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 5
+text = "negative"
+
+[node name="IsImaginary" type="CheckBox" parent="VBoxContainer/Requirement"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 5
@@ -216,4 +222,43 @@ unique_name_in_owner = true
 editor_description = "Makes the lock as small as possible"
 layout_mode = 2
 text = "Fit"
+alignment = 1
+
+[node name="Position" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Position"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Position/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Position:"
+vertical_alignment = 1
+
+[node name="X" type="SpinBox" parent="VBoxContainer/Position/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+theme = SubResource("Theme_3vag0")
+max_value = 14.0
+value = 7.0
+alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer/Position/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = ","
+vertical_alignment = 1
+
+[node name="Y" type="SpinBox" parent="VBoxContainer/Position/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+max_value = 14.0
+value = 7.0
 alignment = 1

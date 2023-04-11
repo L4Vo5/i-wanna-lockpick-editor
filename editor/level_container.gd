@@ -51,10 +51,20 @@ func _gui_input(event: InputEvent) -> void:
 				elif editor_data.keys:
 					place_key_on_mouse()
 					accept_event()
-			else:
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.pressed:
 				if editor_data.tilemap_edit:
 					remove_tile_on_mouse()
 					accept_event()
+	elif event is InputEventMouseMotion:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			if editor_data.tilemap_edit:
+				place_tile_on_mouse()
+				accept_event()
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+			if editor_data.tilemap_edit:
+				place_tile_on_mouse()
+				accept_event()
 	
 
 

@@ -13,6 +13,8 @@ config_version=5
 config/name="Lockpick Editor"
 run/main_scene="res://editor/editor.tscn"
 config/features=PackedStringArray("4.0", "GL Compatibility")
+boot_splash/show_image=false
+boot_splash/fullsize=false
 config/icon="res://icon.png"
 
 [autoload]
