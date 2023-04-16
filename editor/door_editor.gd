@@ -2,7 +2,13 @@
 extends Control
 class_name DoorEditor
 
-# TODO: Actually handle a DoorData
+@export var door_data: DoorData:
+	set(val):
+		door_data = val.duplicated()
+		if not is_ready: await ready
+		# TODO: Allow editing doors in the level (currently not done so you can't resize them)
+		door.door_data = door_data
+		_set_to_door_data()
 @onready var door: Door = %Door
 
 @onready var ice_checkbox: CheckBox = %IceCheckbox
@@ -23,7 +29,18 @@ const LOCK_EDITOR := preload("res://editor/lock_editor.tscn")
 ## unimplemented for now tho lol
 var non_standard_mode := false
 
+func _init() -> void:
+	if not is_instance_valid(door_data):
+		door_data = DoorData.new()
+		door_data.outer_color = Enums.colors.white
+		var lock := LockData.new()
+		lock.color = Enums.colors.white
+		door_data.locks.push_back(lock)
+
+var is_ready := false
 func _ready() -> void:
+	is_ready = true
+	door.door_data = door_data
 	width.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
 	height.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
 	real_copies.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
@@ -43,48 +60,59 @@ func _ready() -> void:
 	paint_button.toggled.connect(paint_checkbox.set_pressed_no_signal)
 	paint_button.toggled.connect(set_curse.bind(Enums.curse.paint))
 	
-	width.value = door.door_data.size.x
-	height.value = door.door_data.size.y
 	width.value_changed.connect(_update_door_size.unbind(1))
 	height.value_changed.connect(_update_door_size.unbind(1))
-	
-	real_copies.value = door.door_data.amount.real_part
-	imaginary_copies.value = door.door_data.amount.imaginary_part
 	real_copies.value_changed.connect(_update_door_amount.unbind(1))
 	imaginary_copies.value_changed.connect(_update_door_amount.unbind(1))
+	color_choice.item_selected.connect(_update_door_color.unbind(1))
 	
 	color_choice.clear()
 	for key in Enums.COLOR_NAMES.keys():
 		if key == Enums.colors.none: continue
 		color_choice.add_item(Enums.COLOR_NAMES[key].capitalize(), key)
-	color_choice.selected = color_choice.get_item_index(door.door_data.outer_color) 
-	color_choice.item_selected.connect(_update_door_color.unbind(1))
+	
+	add_lock.pressed.connect(_add_new_lock)
+	
+	_set_to_door_data()
+
+func _set_to_door_data() -> void:
+	ice_button.button_pressed = door_data.get_curse(Enums.curse.ice)
+	erosion_button.button_pressed = door_data.get_curse(Enums.curse.erosion)
+	paint_button.button_pressed = door_data.get_curse(Enums.curse.paint)
+	width.value = door_data.size.x
+	height.value = door_data.size.y
+	
+	real_copies.value = door_data.amount.real_part
+	imaginary_copies.value = door_data.amount.imaginary_part
+	
+	color_choice.selected = color_choice.get_item_index(door_data.outer_color) 
 	
 	_regen_lock_editors()
-	add_lock.pressed.connect(_add_new_lock)
 
 func set_curse(val: bool, which: Enums.curse) -> void:
-	door.door_data.set_curse(which, val)
+	door_data.set_curse(which, val)
 
 func _update_door_size() -> void:
-	door.door_data.size = Vector2i(roundi(width.value), roundi(height.value))
+	door_data.size = Vector2i(roundi(width.value), roundi(height.value))
+	print(door_data.size)
+	print(door.door_data.size)
 	_update_lock_editors_door_size()
 
 func _update_door_amount() -> void:
-	door.door_data.amount.set_to(real_copies.value, imaginary_copies.value)
+	door_data.amount.set_to(real_copies.value, imaginary_copies.value)
 
 func _update_door_color() -> void:
-	door.door_data.outer_color = color_choice.get_item_id(color_choice.selected)
+	door_data.outer_color = color_choice.get_item_id(color_choice.selected)
 
 func _regen_lock_editors() -> void:
 	for child in lock_editor_parent.get_children():
 		child.queue_free()
 	var i := 1
-	for lock_data in door.door_data.locks:
+	for lock_data in door_data.locks:
 		var lock_editor: LockEditor = LOCK_EDITOR.instantiate()
 		lock_editor.lock_number = i
 		lock_editor.lock_data = lock_data
-		lock_editor.door_size = door.door_data.size
+		lock_editor.door_size = door_data.size
 		lock_editor.delete.connect(_delete_lock.bind(i-1))
 		lock_editor_parent.add_child(lock_editor)
 		i += 1
@@ -92,19 +120,19 @@ func _regen_lock_editors() -> void:
 
 func _update_lock_editors_door_size() -> void:
 	for editor in lock_editor_parent.get_children():
-		editor.door_size = door.door_data.size
+		editor.door_size = door_data.size
 
 func _add_new_lock() -> void:
 	var new_lock := LockData.new()
-	new_lock.color = door.door_data.outer_color
-	door.door_data.locks.push_back(new_lock)
+	new_lock.color = door_data.outer_color
+	door_data.locks.push_back(new_lock)
 	# TODO: Make the door simply add a lock
 	door.update_locks()
 	# TODO: Simply add an editor
 	_regen_lock_editors()
 
 func _delete_lock(i: int) -> void:
-	door.door_data.locks.remove_at(i)
+	door_data.locks.remove_at(i)
 	# TODO: Make the door simply remove a lock
 	door.update_locks()
 	# TODO: Simply remove an editor

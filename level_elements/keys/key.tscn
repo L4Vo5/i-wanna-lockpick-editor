@@ -21,7 +21,7 @@ imaginary_part = 0
 [sub_resource type="Resource" id="Resource_ogwck"]
 script = ExtResource("3_ngkr3")
 amount = SubResource("Resource_w2h4u")
-type = 1
+type = 0
 color = 1
 position = Vector2i(0, 0)
 
@@ -48,7 +48,6 @@ position = Vector2(3, 3)
 texture = ExtResource("4_8n3em")
 centered = false
 hframes = 5
-frame = 1
 
 [node name="SprGlitch" type="Sprite2D" parent="."]
 unique_name_in_owner = true
@@ -57,7 +56,6 @@ material = ExtResource("5_x10q2")
 texture = ExtResource("6_6kxlr")
 centered = false
 hframes = 4
-frame = 1
 
 [node name="Fill" type="Sprite2D" parent="."]
 unique_name_in_owner = true
@@ -66,14 +64,12 @@ texture = ExtResource("7_3kknv")
 centered = false
 hframes = 4
 vframes = 2
-frame = 1
 
 [node name="Outline" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 texture = ExtResource("8_yrtx4")
 centered = false
 hframes = 4
-frame = 1
 
 [node name="Special" type="Sprite2D" parent="."]
 unique_name_in_owner = true
@@ -82,7 +78,6 @@ texture = ExtResource("9_vu1hx")
 centered = false
 hframes = 4
 vframes = 4
-frame = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false

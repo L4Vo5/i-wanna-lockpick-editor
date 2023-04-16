@@ -14,6 +14,7 @@ func regen_tentacles() -> void:
 		child.queue_free()
 	# top border with bottom tentacle texture
 	var top_border := TextureRect.new()
+	top_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top_border.texture = preload("res://level_elements/doors_locks/curses/spr_erosion_tentacle_bottom.png")
 	top_border.stretch_mode = TextureRect.STRETCH_TILE
 	top_border.size = Vector2i(int(size.x) - 2, 2)
@@ -35,17 +36,20 @@ func regen_tentacles() -> void:
 
 func create_tentacle(y: int, height: int) -> void:
 	var top := TextureRect.new()
+	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top.texture = preload("res://level_elements/doors_locks/curses/spr_erosion_tentacle_top.png")
 	top.stretch_mode = TextureRect.STRETCH_TILE
 	top.size = Vector2i(int(size.x) - 2, 2)
 	top.position = Vector2i(1, y+1)
 	
 	var middle := ColorRect.new()
+	middle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	middle.modulate = Color(0.282353, 0.0509804, 0.0509804, 0.705882)
 	middle.size = Vector2i(int(size.x) - 2, height)
 	middle.position = Vector2i(1, y+1+2)
 	
 	var bottom := TextureRect.new()
+	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bottom.texture = preload("res://level_elements/doors_locks/curses/spr_erosion_tentacle_bottom.png")
 	bottom.stretch_mode = TextureRect.STRETCH_TILE
 	bottom.size = Vector2i(int(size.x) - 2, 2)

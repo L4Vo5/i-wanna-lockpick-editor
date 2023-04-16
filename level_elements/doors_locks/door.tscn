@@ -17,7 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://cqwfx0awl2b6c" path="res://level_elements/doors_locks/textures/door_frame_dark.png" id="15_7rfx4"]
 [ext_resource type="PackedScene" uid="uid://dh6h46bjp6c2s" path="res://level_elements/doors_locks/curses/erosion.tscn" id="16_pntfj"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/paint.tscn" id="17_oiull"]
-[ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/ice.tscn" id="18_qg5bk"]
+[ext_resource type="PackedScene" uid="uid://dnfyqi6rplh85" path="res://level_elements/doors_locks/curses/ice.tscn" id="18_qg5bk"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/brown_curse.tscn" id="19_oyr8q"]
 [ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://level_elements/doors_locks/open.wav" id="20_k8bk1"]
 [ext_resource type="FontFile" uid="uid://d3wvfkvx16abd" path="res://fonts/consolab.ttf" id="21_81h8m"]

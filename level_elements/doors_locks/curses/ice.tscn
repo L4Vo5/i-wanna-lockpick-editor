@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://dnfyqi6rplh85"]
 
 [ext_resource type="Texture2D" uid="uid://bs8jkcglxbieq" path="res://level_elements/doors_locks/curses/spr_ice_frame.png" id="1_2gqcq"]
 [ext_resource type="Script" path="res://level_elements/doors_locks/curses/ice_shines.gd" id="2_xuh3h"]
@@ -20,6 +20,7 @@ patch_margin_bottom = 5
 [node name="Shines" type="Control" parent="."]
 modulate = Color(1, 1, 1, 0.788235)
 layout_mode = 2
+mouse_filter = 2
 script = ExtResource("2_xuh3h")
 
 [node name="Internal" type="Control" parent="Shines"]
@@ -29,4 +30,5 @@ offset_left = 1.0
 offset_top = 1.0
 offset_right = 31.0
 offset_bottom = 31.0
+mouse_filter = 2
 metadata/_edit_lock_ = true

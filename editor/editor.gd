@@ -25,10 +25,15 @@ func _exit_tree() -> void:
 func _ready() -> void:
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
-	side_container.tab_changed.connect(_update_mode.unbind(1))
+	
 	data.level_data = level.level_data
+	data.door_editor = door_editor
+	data.key_editor = key_editor
+	
 	level_container.editor_data = data
 	level_properties_editor.editor_data = data
+	
+	side_container.tab_changed.connect(_update_mode.unbind(1))
 	play_button.pressed.connect(_on_play_pressed)
 
 func _update_mode() -> void:
@@ -46,8 +51,11 @@ func _on_play_pressed() -> void:
 	side_container.visible = not data.disable_editing
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	if data.is_playing:
-		if not Global.in_editor:
-			ResourceSaver.save(data.level_data)
+		save_level()
 	level.reset()
 	play_button.release_focus()
 	grab_focus()
+
+func save_level() -> void:
+	if not Global.in_editor:
+		ResourceSaver.save(data.level_data)

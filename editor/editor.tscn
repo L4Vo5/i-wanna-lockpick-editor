@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=19 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_244aj"]
 [ext_resource type="Script" path="res://editor/level_container.gd" id="2_4nmqi"]
@@ -6,9 +6,58 @@
 [ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="4_tvl64"]
 [ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/door_editor.tscn" id="5_ld4m3"]
 [ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="5_t6w1l"]
-[ext_resource type="Resource" uid="uid://bujgo1j512ntc" path="res://editor/levels/default.res" id="6_j0pp1"]
+[ext_resource type="Resource" path="res://editor/levels/default.tres" id="6_n1ajy"]
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/key_editor.tscn" id="7_nmnlx"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="8_alamw"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="9_2s68o"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="9_5wk1m"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="10_jx68y"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="12_2ius3"]
+
+[sub_resource type="Resource" id="Resource_jnpws"]
+script = ExtResource("8_alamw")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_iv68s"]
+script = ExtResource("9_5wk1m")
+color = 1
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_sxn2e"]
+script = ExtResource("9_2s68o")
+amount = SubResource("Resource_jnpws")
+outer_color = 1
+locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_iv68s")])
+sequence_next = Array[ExtResource("9_2s68o")]([])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(0, 0)
+
+[sub_resource type="Resource" id="Resource_dwcd4"]
+script = ExtResource("8_alamw")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_hf1rb"]
+script = ExtResource("12_2ius3")
+amount = SubResource("Resource_dwcd4")
+type = 0
+color = 1
+position = Vector2i(0, 0)
 
 [node name="Editor" type="Control" node_paths=PackedStringArray("level", "side_container", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_container", "play_button")]
 layout_mode = 3
@@ -52,10 +101,27 @@ layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/Tools"]
 layout_mode = 2
+theme_override_constants/separation = 5
 
 [node name="Play" type="Button" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
 layout_mode = 2
 text = "Play"
+
+[node name="Save" type="Button" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+layout_mode = 2
+text = "Save"
+
+[node name="Load" type="Button" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+layout_mode = 2
+text = "Load"
+
+[node name="LevelPath" type="LineEdit" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "res://fgsdfgsdfgt.tres"
+alignment = 1
+editable = false
+expand_to_text_length = true
 
 [node name="LevelContainer" type="Control" parent="HBoxContainer/VBoxContainer" node_paths=PackedStringArray("inner_container", "level", "tile_map", "door_editor", "key_editor", "editor")]
 clip_contents = true
@@ -117,7 +183,7 @@ visible = false
 mouse_filter = 2
 
 [node name="Level" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner" instance=ExtResource("5_t6w1l")]
-level_data = ExtResource("6_j0pp1")
+level_data = ExtResource("6_n1ajy")
 exclude_player = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer"]
@@ -133,10 +199,12 @@ use_hidden_tabs_for_min_size = true
 
 [node name="Doors" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
 layout_mode = 2
+door_data = SubResource("Resource_sxn2e")
 
 [node name="Keys" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
 visible = false
 layout_mode = 2
+key_data = SubResource("Resource_hf1rb")
 
 [node name="Tiles" type="MarginContainer" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs"]
 visible = false

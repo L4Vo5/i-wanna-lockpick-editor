@@ -13,6 +13,7 @@ signal clicked(event: InputEventMouseButton)
 		key_data = val
 		if is_instance_valid(key_data):
 			key_data.changed.connect(update_visual)
+			update_visual()
 ## Ignores player input and glitch color
 @export var in_keypad := false
 @export var hide_shadow := false

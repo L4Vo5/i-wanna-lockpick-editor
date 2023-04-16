@@ -33,6 +33,9 @@ func _on_door_clicked(event: InputEventMouseButton, door: Door) -> void:
 		if event.pressed:
 			level.remove_door(door)
 			accept_event()
+	elif event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			editor_data.door_editor.door_data = door.door_data
 
 func _on_key_clicked(event: InputEventMouseButton, key: Key) -> void:
 	if editor_data.disable_editing: return
@@ -40,6 +43,9 @@ func _on_key_clicked(event: InputEventMouseButton, key: Key) -> void:
 		if event.pressed:
 			level.remove_key(key)
 			accept_event()
+	elif event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			editor_data.key_editor.key_data = key.key_data
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
@@ -60,18 +66,18 @@ func _gui_input(event: InputEvent) -> void:
 					accept_event()
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
-				if editor_data.tilemap_edit:
-					remove_tile_on_mouse()
-					accept_event()
+#				if editor_data.tilemap_edit:
+					if remove_tile_on_mouse():
+						accept_event()
 	elif event is InputEventMouseMotion:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			if editor_data.tilemap_edit:
 				place_tile_on_mouse()
 				accept_event()
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-			if editor_data.tilemap_edit:
-				remove_tile_on_mouse()
-				accept_event()
+#			if editor_data.tilemap_edit:
+				if remove_tile_on_mouse():
+					accept_event()
 	
 
 
@@ -80,10 +86,10 @@ func place_tile_on_mouse() -> void:
 	var coord = get_mouse_tile_coord(32)
 	level.place_tile(coord)
 
-func remove_tile_on_mouse() -> void:
-	if editor_data.disable_editing: return
+func remove_tile_on_mouse() -> bool:
+	if editor_data.disable_editing: return false
 	var coord = get_mouse_tile_coord(32)
-	level.remove_tile(coord)
+	return level.remove_tile(coord)
 
 func place_door_on_mouse() -> void:
 	if editor_data.disable_editing: return

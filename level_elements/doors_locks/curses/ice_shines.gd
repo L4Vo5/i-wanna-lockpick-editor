@@ -62,6 +62,7 @@ func regen_shines() -> void:
 ## width: pixel width
 func add_shine(distance: int, width: int, bottom_right := false) -> void:
 	var shine := ColorRect.new()
+	shine.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shine.rotation_degrees = -45
 	shine.position.y = distance * 2 + 2
 	shine.size.y = width / sqrt(2)

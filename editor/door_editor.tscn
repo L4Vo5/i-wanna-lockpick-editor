@@ -6,12 +6,12 @@
 [ext_resource type="Script" path="res://data/lock_data.gd" id="4_w8kad"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="5_6x28y"]
 
-[sub_resource type="Resource" id="Resource_7qt2h"]
+[sub_resource type="Resource" id="Resource_rves0"]
 script = ExtResource("3_pekxs")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_yw5lk"]
+[sub_resource type="Resource" id="Resource_hv8sp"]
 script = ExtResource("4_w8kad")
 color = 1
 magnitude = 1
@@ -23,11 +23,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_p5nxe"]
+[sub_resource type="Resource" id="Resource_8u8oi"]
 script = ExtResource("5_6x28y")
-amount = SubResource("Resource_7qt2h")
+amount = SubResource("Resource_rves0")
 outer_color = 1
-locks = Array[ExtResource("4_w8kad")]([SubResource("Resource_yw5lk")])
+locks = Array[ExtResource("4_w8kad")]([SubResource("Resource_hv8sp")])
 sequence_next = Array[ExtResource("5_6x28y")]([])
 size = Vector2i(32, 32)
 _curses = {
@@ -36,13 +36,14 @@ _curses = {
 2: false,
 3: false
 }
-glitch_color = 1
+glitch_color = 13
 position = Vector2i(0, 0)
 
 [node name="DoorEditor" type="MarginContainer"]
 offset_right = 281.0
 offset_bottom = 606.0
 script = ExtResource("1_qqghd")
+door_data = SubResource("Resource_8u8oi")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -71,7 +72,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 ignore_position = true
-door_data = SubResource("Resource_p5nxe")
+door_data = SubResource("Resource_8u8oi")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -97,7 +98,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 14
-selected = 0
 popup/item_0/text = "White"
 popup/item_0/id = 1
 popup/item_1/text = "Black"
@@ -305,4 +305,4 @@ layout_mode = 2
 [node name="AddLock" type="Button" parent="VBoxContainer/ScrollContainer/Editors"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Add Lock 2"
+text = "Add Lock 1"

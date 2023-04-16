@@ -179,11 +179,13 @@ func _spawn_tile(tile_coord: Vector2i) -> void:
 	var what_tile := Vector2i(1,1)
 	tile_map.set_cell(layer, tile_coord, id, what_tile)
 
-func remove_tile(tile_coord: Vector2i) -> void:
-	if not level_data.tiles.has(tile_coord): return
+## Removes a tile from the level data. Returns true if a tile was there.
+func remove_tile(tile_coord: Vector2i) -> bool:
+	if not level_data.tiles.has(tile_coord): return false
 	level_data.tiles.erase(tile_coord)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
+	return true
 
 func _spawn_player() -> void:
 	if is_instance_valid(player):
@@ -207,6 +209,10 @@ func is_space_occupied(rect: Rect2i, exclude_player_spawn := false, exclude_tile
 		var spawn_pos := (Vector2i(level_data.player_spawn_position - Vector2(0, 16)) / Vector2i(32, 32)) * Vector2i(32, 32)
 		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
 			return true
+	if not exclude_tiles:
+		for tile_pos in level_data.tiles:
+			if Rect2i(tile_pos * 32, Vector2i(32, 32)).intersects(rect):
+				return true
 	return false
 
 func _on_door_clicked(event: InputEventMouseButton, door: Door):

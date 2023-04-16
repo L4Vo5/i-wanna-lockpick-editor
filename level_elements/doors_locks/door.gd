@@ -15,7 +15,12 @@ var open_cooldown := 0.5
 var can_open := true
 
 @export var ignore_position := false
-@export var door_data: DoorData
+@export var door_data: DoorData:
+	set(val):
+		if door_data == val: return
+		_disconnect_door_data()
+		door_data = val
+		_connect_door_data()
 @export var ignore_collisions := false
 
 @onready var color_light: NinePatchRect = %ColorLight
@@ -44,17 +49,29 @@ var can_open := true
 var using_i_view_colors := false
 var level: Level = null
 
+var is_ready := false
 func _ready() -> void:
+	is_ready = true
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	if not Global.in_editor:
 		door_data = door_data.duplicated()
-	door_data.changed.connect(update_everything)
 	update_everything()
 	copies.minimum_size_changed.connect(position_copies)
 	connect_level()
 	Global.changed_level.connect(connect_level)
 	if ignore_collisions:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
+
+func _connect_door_data() -> void:
+	if not is_instance_valid(door_data): return
+	# TODO: Don't be lazy lol. locks are hard to create so this might suck for editor performance
+	door_data.changed.connect(update_everything)
+	if not is_ready: await ready
+	update_everything()
+
+func _disconnect_door_data() -> void:
+	if not is_instance_valid(door_data): return
+	door_data.changed.disconnect(update_everything)
 
 func connect_level() -> void:
 	if is_instance_valid(Global.current_level):
