@@ -90,7 +90,7 @@ func _ready() -> void:
 	player_spawn_point.visible = Global.in_level_editor
 	add_child(player_spawn_point)
 	
-	_spawn_player()
+	reset()
 
 
 func reset() -> void:
@@ -105,13 +105,17 @@ func reset() -> void:
 	for color in star_keys.keys():
 		star_keys[color] = false
 	i_view = false
+	tile_map.clear()
 	
 	# Spawn everything
 	for door_data in level_data.doors:
 		_spawn_door(door_data)
 	for key_data in level_data.keys:
 		_spawn_key(key_data)
+	for tile_coord in level_data.tiles:
+		_spawn_tile(tile_coord)
 	_spawn_player()
+	
 
 # Editor functions
 
@@ -162,7 +166,24 @@ func place_player_spawn(tile_coord: Vector2i) -> void:
 	var coord := tile_coord * 32
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32))): return
 	level_data.player_spawn_position = coord + Vector2i(14, 32)
-	
+
+func place_tile(tile_coord: Vector2i) -> void:
+	if level_data.tiles.has(tile_coord): return
+	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), false, true): return
+	level_data.tiles[tile_coord] = true
+	_spawn_tile(tile_coord)
+
+func _spawn_tile(tile_coord: Vector2i) -> void:
+	var layer := 0
+	var id := 1
+	var what_tile := Vector2i(1,1)
+	tile_map.set_cell(layer, tile_coord, id, what_tile)
+
+func remove_tile(tile_coord: Vector2i) -> void:
+	if not level_data.tiles.has(tile_coord): return
+	level_data.tiles.erase(tile_coord)
+	var layer := 0
+	tile_map.erase_cell(layer, tile_coord)
 
 func _spawn_player() -> void:
 	if is_instance_valid(player):
@@ -173,7 +194,8 @@ func _spawn_player() -> void:
 	add_child(player)
 
 ## Returns true if there's a tile, door, key, or player spawn position inside the given rect
-func is_space_occupied(rect: Rect2i, exclude_player_spawn := false) -> bool:
+# TODO: Optimize this obviously. mainly tiles OBVIOUSLY
+func is_space_occupied(rect: Rect2i, exclude_player_spawn := false, exclude_tiles := false) -> bool:
 	for door in level_data.doors:
 		if door.get_rect().intersects(rect):
 			return true

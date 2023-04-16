@@ -45,6 +45,9 @@ func _on_play_pressed() -> void:
 	level.exclude_player = not data.is_playing
 	side_container.visible = not data.disable_editing
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
+	if data.is_playing:
+		if not Global.in_editor:
+			ResourceSaver.save(data.level_data)
 	level.reset()
 	play_button.release_focus()
 	grab_focus()

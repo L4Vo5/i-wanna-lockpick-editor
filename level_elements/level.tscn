@@ -11,6 +11,7 @@ keys = Array[Resource("res://data/key_data.gd")]([])
 size = Vector2(800, 608)
 player_spawn_position = Vector2(462, 384)
 custom_lock_arrangements = {}
+tiles = {}
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_vj4eo")

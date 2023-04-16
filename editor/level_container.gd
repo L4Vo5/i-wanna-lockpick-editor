@@ -16,7 +16,7 @@ var editor_data: EditorData
 #var level_offset :=  Vector2(0, 0)
 
 const OBJ_SIZE := Vector2(800, 608)
-func _process(delta: float) -> void:
+func _on_resized() -> void:
 	# center it
 	inner_container.position = (size - OBJ_SIZE) / 2
 	inner_container.size = OBJ_SIZE
@@ -25,6 +25,7 @@ var selected = null
 func _ready() -> void:
 	level.door_clicked.connect(_on_door_clicked)
 	level.key_clicked.connect(_on_key_clicked)
+	resized.connect(_on_resized)
 
 func _on_door_clicked(event: InputEventMouseButton, door: Door) -> void:
 	if editor_data.disable_editing: return
@@ -76,16 +77,13 @@ func _gui_input(event: InputEvent) -> void:
 
 func place_tile_on_mouse() -> void:
 	if editor_data.disable_editing: return
-	var layer := 0
-	var id := 1
 	var coord = get_mouse_tile_coord(32)
-	tile_map.set_cell(layer, coord, id, Vector2i(1, 1))
+	level.place_tile(coord)
 
 func remove_tile_on_mouse() -> void:
 	if editor_data.disable_editing: return
-	var layer := 0
 	var coord = get_mouse_tile_coord(32)
-	tile_map.erase_cell(layer, coord)
+	level.remove_tile(coord)
 
 func place_door_on_mouse() -> void:
 	if editor_data.disable_editing: return
@@ -93,14 +91,6 @@ func place_door_on_mouse() -> void:
 	var door_data := door_editor.door.door_data.duplicated()
 	door_data.position = coord
 	level.add_door(door_data)
-
-func remove_door_on_mouse() -> void:
-	if editor_data.disable_editing: return
-	var coord = get_mouse_coord(32)
-	for door in level.get_doors():
-		if door.door_data.has_point(coord):
-			level.remove_door(door)
-			break
 
 func place_key_on_mouse() -> void:
 	if editor_data.disable_editing: return

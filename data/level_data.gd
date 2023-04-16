@@ -12,3 +12,6 @@ signal changed_player_spawn_position
 		changed_player_spawn_position.emit()
 		changed.emit()
 @export var custom_lock_arrangements := {}
+## Just saves all positions for the tiles... I'll come up with something better later ok
+# It's a dict so it's not absurdly inefficient to check for repeats when placing new ones
+@export var tiles := {}
