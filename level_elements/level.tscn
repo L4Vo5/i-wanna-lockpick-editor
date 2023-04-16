@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://me5bp2qss0qj"]
+
+[ext_resource type="Script" path="res://level_elements/level.gd" id="1_vj4eo"]
+[ext_resource type="Script" path="res://data/level_data.gd" id="2_o7ti3"]
+[ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="3_0buld"]
+
+[sub_resource type="Resource" id="Resource_35qov"]
+script = ExtResource("2_o7ti3")
+doors = Array[Resource("res://data/door_data.gd")]([])
+keys = Array[Resource("res://data/key_data.gd")]([])
+size = Vector2(800, 608)
+player_spawn_position = Vector2(462, 384)
+custom_lock_arrangements = {}
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_vj4eo")
+level_data = SubResource("Resource_35qov")
+
+[node name="TileMap" type="TileMap" parent="."]
+unique_name_in_owner = true
+tile_set = ExtResource("3_0buld")
+format = 2
+layer_0/tile_data = PackedInt32Array(786440, 65537, 1, 589832, 65537, 1, 262152, 65537, 1, 262155, 65537, 1, 589836, 65537, 1, 655372, 65537, 1, 458763, 65537, 1, 458769, 65537, 1, 262161, 65537, 1, 262164, 65537, 1, 589844, 65537, 1, 786452, 65537, 1, 655376, 65537, 1, 589840, 65537, 1, 720916, 65537, 1, 655380, 65537, 1, 524308, 65537, 1, 458772, 65537, 1, 393236, 65537, 1, 327700, 65537, 1, 393233, 65537, 1, 327697, 65537, 1, 393227, 65537, 1, 327691, 65537, 1, 589835, 65537, 1, 589834, 65537, 1, 589833, 65537, 1, 720904, 65537, 1, 655368, 65537, 1, 524296, 65537, 1, 458760, 65537, 1, 393224, 65537, 1, 327688, 65537, 1, 262153, 65537, 1, 262154, 65537, 1, 262156, 65537, 1, 262157, 65537, 1, 262158, 65537, 1, 262159, 65537, 1, 262160, 65537, 1, 262162, 65537, 1, 262163, 65537, 1, 589843, 65537, 1, 589842, 65537, 1, 589841, 65537, 1, 786451, 65537, 1, 786450, 65537, 1, 786449, 65537, 1, 786448, 65537, 1, 786447, 65537, 1, 786446, 65537, 1, 786445, 65537, 1, 786444, 65537, 1, 786443, 65537, 1, 786442, 65537, 1, 786441, 65537, 1)
+
+[node name="Doors" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Keys" type="Node2D" parent="."]
+unique_name_in_owner = true

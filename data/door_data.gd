@@ -78,8 +78,11 @@ func duplicated() -> DoorData:
 		dupe.sequence_next.push_back(seq)
 	return dupe
 
-func has_point(point: Vector2) -> bool:
-	return Rect2(position, size).has_point(point)
+func has_point(point: Vector2i) -> bool:
+	return Rect2i(position, size).has_point(point)
+
+func get_rect() -> Rect2i:
+	return Rect2i(position, size)
 
 ## try to open the door with the current level's keys.
 ## returns true if the door opened.

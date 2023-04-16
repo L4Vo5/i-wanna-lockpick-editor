@@ -1,6 +1,7 @@
 @tool
 extends Area2D
 class_name Key
+## Key lol
 
 signal clicked(event: InputEventMouseButton)
 

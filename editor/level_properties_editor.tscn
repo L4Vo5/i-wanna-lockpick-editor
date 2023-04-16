@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://bq8lnotf0ys0p"]
+
+[ext_resource type="Script" path="res://editor/level_properties_editor.gd" id="1_000i2"]
+
+[node name="LevelPropertiesEditor" type="MarginContainer"]
+script = ExtResource("1_000i2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="PlayerSpawn" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/HBoxContainer"]
+layout_mode = 2
+text = "Player Spawn: "
+
+[node name="PlayerSpawnCoord" type="Label" parent="VBoxContainer/PlayerSpawn/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "(0, 0)"
+
+[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn"]
+layout_mode = 2
+text = "(click anywhere to place it)"
+horizontal_alignment = 1

@@ -43,3 +43,6 @@ func _init() -> void:
 
 func duplicated() -> KeyData:
 	return duplicate(true)
+
+func get_rect() -> Rect2i:
+	return Rect2i(position, Vector2i(32, 32))

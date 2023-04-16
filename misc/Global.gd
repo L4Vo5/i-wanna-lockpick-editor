@@ -34,6 +34,10 @@ func _physics_process(delta: float) -> void:
 	physics_time += delta
 	physics_step += 1
 	RenderingServer.global_shader_parameter_set(&"FPS_TIME", physics_time)
+	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
+	if not in_editor:
+		# TODO: No real need to do this every frame
+		key_pad.update_pos()
 
 # sets the viewport according to gameplay settings
 func _set_viewport_to_gameplay() -> void:

@@ -15,14 +15,17 @@ const KEY_COLORS := [
 ]
 @onready var keys: Node2D = %Keys
 @onready var sound: AudioStreamPlayer = %Sound
+@onready var nine_patch_rect: NinePatchRect = %NinePatchRect
 
+var base_offset: Vector2
 func _ready() -> void:
+	base_offset = nine_patch_rect.position
 	generate_keys()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if Global.in_level_editor:
-		hide()
-		return
+#	if Global.in_level_editor:
+#		hide()
+#		return
 	if event.is_action("keypad") and not event.is_echo():
 		if event.is_pressed():
 			show()
@@ -45,9 +48,14 @@ func generate_keys() -> void:
 			# make unique
 			key.key_data = key.key_data.duplicate(true)
 			key.key_data.color = KEY_COLORS[y * 2 + x]
+			key.key_data.amount = ComplexNumber.new_with(1, 0)
+			key.key_data.type = Enums.key_types.add
 			key.in_keypad = true
 			key.hide_shadow = true
 			key.ignore_position = true
 			keys.add_child(key)
 
 
+func update_pos() -> void:
+		if is_instance_valid(Global.current_level):
+			nine_patch_rect.global_position = Global.current_level.global_position + base_offset

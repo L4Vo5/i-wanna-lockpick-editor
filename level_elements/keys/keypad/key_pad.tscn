@@ -28,6 +28,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.478431)
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 200.0
 offset_top = 32.0
@@ -87,3 +88,4 @@ script = ExtResource("8_slq0m")
 [node name="Sound" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("8_7yh2l")
+volume_db = -8.432

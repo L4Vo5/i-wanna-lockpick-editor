@@ -2,14 +2,20 @@ extends Node2D
 class_name Level
 
 signal changed_glitch_color
-@export var glitch_color := Enums.colors.glitch:
+var glitch_color := Enums.colors.glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
 		changed_glitch_color.emit()
 @export var level_data := LevelData.new()
+@export var exclude_player := false:
+	set(val):
+		if exclude_player == val: return
+		exclude_player = val
+		_spawn_player()
+
 # Some code might depend on these complex numbers' changed signals, so don't change them to new numbers pls
-@export var key_counts := {
+var key_counts := {
 	Enums.colors.glitch: ComplexNumber.new(),
 	Enums.colors.black: ComplexNumber.new(),
 	Enums.colors.white: ComplexNumber.new(),
@@ -25,7 +31,7 @@ signal changed_glitch_color
 	Enums.colors.master: ComplexNumber.new(),
 	Enums.colors.stone: ComplexNumber.new(),
 }
-@export var star_keys := {
+var star_keys := {
 	Enums.colors.glitch: false,
 	Enums.colors.black: false,
 	Enums.colors.white: false,
@@ -42,6 +48,15 @@ signal changed_glitch_color
 	Enums.colors.stone: false,
 }
 
+
+const DOOR := preload("res://level_elements/doors_locks/door.tscn")
+const KEY := preload("res://level_elements/keys/key.tscn")
+const PLAYER := preload("res://level_elements/kid/kid.tscn")
+
+@onready var doors: Node2D = %Doors
+@onready var keys: Node2D = %Keys
+@onready var tile_map: TileMap = %TileMap
+
 # undo/redo actions should be handled somewhere in here, too
 
 var player: Kid
@@ -56,10 +71,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action(&"i-view") and event.is_pressed() and not event.is_echo():
 		i_view = not i_view
 		changed_i_view.emit()
+	if event.is_action(&"restart") and event.is_pressed():
+		reset()
 
 var player_spawn_point: Sprite2D
 func _ready() -> void:
-	
 	Global.current_level = self
 	
 	player_spawn_point = Sprite2D.new()
@@ -71,44 +87,105 @@ func _ready() -> void:
 	)
 	player_spawn_point.centered = false
 	player_spawn_point.offset = Vector2i(-13, -34)
-	player_spawn_point.visible = not Global.in_level_editor
+	player_spawn_point.visible = Global.in_level_editor
 	add_child(player_spawn_point)
 	
-	player = preload("res://level_elements/kid/kid.tscn").instantiate()
-	player.position = level_data.player_spawn_position
-	add_child(player)
+	_spawn_player()
 
-const DOOR := preload("res://level_elements/doors_locks/door.tscn")
-const KEY := preload("res://level_elements/keys/key.tscn")
+
+func reset() -> void:
+	# Clear everything
+	for child in doors.get_children():
+		child.queue_free()
+	for key in keys.get_children():
+		key.queue_free()
+	glitch_color = Enums.colors.glitch
+	for color in key_counts.keys():
+		key_counts[color].set_to(0, 0)
+	for color in star_keys.keys():
+		star_keys[color] = false
+	i_view = false
+	
+	# Spawn everything
+	for door_data in level_data.doors:
+		_spawn_door(door_data)
+	for key_data in level_data.keys:
+		_spawn_key(key_data)
+	_spawn_player()
 
 # Editor functions
 
 signal door_clicked(event: InputEventMouseButton, door: Door)
 signal key_clicked(event: InputEventMouseButton, key: Key)
 
+## Adds a door to the level data
 func add_door(door_data: DoorData) -> Door:
-	var door := DOOR.instantiate()
+	if is_space_occupied(door_data.get_rect()): return
 	if not door_data in level_data.doors:
 		level_data.doors.push_back(door_data)
-	door.door_data = door_data
+	return _spawn_door(door_data)
+
+func _spawn_door(door_data: DoorData) -> Door:
+	var door := DOOR.instantiate()
+	door.door_data = door_data.duplicated()
+	door.set_meta(&"original_door_data", door_data)
 	door.clicked.connect(_on_door_clicked.bind(door))
-	add_child(door)
+	doors.add_child(door)
 	return door
 
+## Removes a door from the level data
 func remove_door(door: Door) -> void:
-	level_data.doors.erase(door.door_data)
+	level_data.doors.erase(door.get_meta(&"original_door_data"))
 	door.queue_free()
 
+## Adds a key to the level data
 func add_key(key_data: KeyData) -> Key:
+	if is_space_occupied(key_data.get_rect()): return
+	if not key_data in level_data.keys:
+		level_data.keys.push_back(key_data)
+	return _spawn_key(key_data)
+
+func _spawn_key(key_data: KeyData) -> Key:
 	var key := KEY.instantiate()
-	key.key_data = key_data
+	key.key_data = key_data.duplicated()
+	key.set_meta(&"original_key_data", key_data)
 	key.clicked.connect(_on_key_clicked.bind(key))
-	add_child(key)
+	keys.add_child(key)
 	return key
 
+## Removes a key from the level data
 func remove_key(key: Key) -> void:
-	level_data.keys.erase(key.key_data)
+	level_data.keys.erase(key.get_meta(&"original_key_data"))
 	key.queue_free()
+
+func place_player_spawn(tile_coord: Vector2i) -> void:
+	var coord := tile_coord * 32
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32))): return
+	level_data.player_spawn_position = coord + Vector2i(14, 32)
+	
+
+func _spawn_player() -> void:
+	if is_instance_valid(player):
+		player.queue_free()
+	if exclude_player: return
+	player = PLAYER.instantiate()
+	player.position = level_data.player_spawn_position
+	add_child(player)
+
+## Returns true if there's a tile, door, key, or player spawn position inside the given rect
+func is_space_occupied(rect: Rect2i, exclude_player_spawn := false) -> bool:
+	for door in level_data.doors:
+		if door.get_rect().intersects(rect):
+			return true
+	for key in level_data.keys:
+		if key.get_rect().intersects(rect):
+			return true
+	#TODO: tiles
+	if not exclude_player_spawn:
+		var spawn_pos := (Vector2i(level_data.player_spawn_position - Vector2(0, 16)) / Vector2i(32, 32)) * Vector2i(32, 32)
+		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
+			return true
+	return false
 
 func _on_door_clicked(event: InputEventMouseButton, door: Door):
 	door_clicked.emit(event, door)
@@ -122,3 +199,4 @@ func get_doors() -> Array[Door]:
 		if child is Door:
 			arr.push_back(child)
 	return arr
+

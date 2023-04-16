@@ -16,6 +16,7 @@ var can_open := true
 
 @export var ignore_position := false
 @export var door_data: DoorData
+@export var ignore_collisions := false
 
 @onready var color_light: NinePatchRect = %ColorLight
 @onready var color_mid: NinePatchRect = %ColorMid
@@ -52,6 +53,8 @@ func _ready() -> void:
 	copies.minimum_size_changed.connect(position_copies)
 	connect_level()
 	Global.changed_level.connect(connect_level)
+	if ignore_collisions:
+		static_body.process_mode = Node.PROCESS_MODE_DISABLED
 
 func connect_level() -> void:
 	if is_instance_valid(Global.current_level):
