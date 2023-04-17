@@ -17,17 +17,17 @@ magnitude = 1
 sign = 0
 value_type = 0
 lock_type = 0
-size = Vector2i(50, 50)
+size = Vector2i(18, 18)
 position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
 [node name="Lock" type="MarginContainer"]
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(18, 18)
 offset_left = 7.0
 offset_top = 7.0
-offset_right = 57.0
-offset_bottom = 57.0
+offset_right = 25.0
+offset_bottom = 25.0
 script = ExtResource("1_dmr10")
 lock_data = SubResource("Resource_3jfdd")
 
@@ -49,11 +49,11 @@ stretch_mode = 1
 [node name="SpecialAnim" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
-scale = Vector2(50, 0.78125)
+scale = Vector2(18, 0.28125)
 texture = ExtResource("4_eep47")
 centered = false
 hframes = 4
-frame = 2
+frame = 3
 
 [node name="Control" type="MarginContainer" parent="."]
 layout_mode = 2

@@ -94,8 +94,6 @@ func set_curse(val: bool, which: Enums.curse) -> void:
 
 func _update_door_size() -> void:
 	door_data.size = Vector2i(roundi(width.value), roundi(height.value))
-	print(door_data.size)
-	print(door.door_data.size)
 	_update_lock_editors_door_size()
 
 func _update_door_amount() -> void:

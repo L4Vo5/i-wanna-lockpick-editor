@@ -45,17 +45,18 @@ func _update_mode() -> void:
 	data.objects = tab_editor == door_editor or tab_editor == key_editor
 
 func _on_play_pressed() -> void:
+	save_level()
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
 	side_container.visible = not data.disable_editing
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
-	if data.is_playing:
-		save_level()
+	
 	level.reset()
 	play_button.release_focus()
 	grab_focus()
 
 func save_level() -> void:
 	if not Global.in_editor:
-		ResourceSaver.save(data.level_data)
+		if not data.is_playing:
+			ResourceSaver.save(data.level_data)

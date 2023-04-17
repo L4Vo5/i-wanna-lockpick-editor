@@ -37,7 +37,7 @@ const CONNECTIONS = {
 	&"update_lock_size": [&"changed_minimum_size"],
 	&"update_frame_visible": [&"changed_dont_show_frame"],
 	&"update_frame_texture": [&"changed_sign"],
-	&"update_colors": [&"changed_color", &"changed_glitch", &"changed_override_brown"],
+	&"update_colors": [&"changed_color", &"changed_glitch", &"changed_is_cursed"],
 	&"regenerate_locks": [&"changed_lock_type", &"changed_magnitude", &"changed_sign", &"changed_value_type", &"changed_dont_show_lock", &"changed_lock_arrangement", &"changed_rotation", ],
 }
 
@@ -107,10 +107,10 @@ func update_colors() -> void:
 	if lock_data.color == Enums.colors.none:
 		return
 	var used_color := lock_data.color
-	if lock_data.override_brown:
+	if lock_data.is_cursed:
 		used_color = Enums.colors.brown
 	
-	if lock_data.color == Enums.colors.glitch:
+	if used_color == Enums.colors.glitch:
 		glitch.show()
 		if lock_data.glitch_color == Enums.colors.glitch:
 			glitch.texture = preload("res://level_elements/doors_locks/textures/glitch_lock_1.png")

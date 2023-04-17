@@ -98,13 +98,13 @@ var glitch_color := Enums.colors.glitch:
 		changed_glitch.emit()
 		changed.emit()
 
-signal changed_override_brown
+signal changed_is_cursed
 ## When cursed, this is true to force the lock to be rendered brown.
-var override_brown := false:
+var is_cursed := false:
 	set(val):
-		if override_brown == val: return
-		override_brown = val
-		changed_override_brown.emit()
+		if is_cursed == val: return
+		is_cursed = val
+		changed_is_cursed.emit()
 		changed.emit()
 
 signal changed_dont_show_frame
@@ -133,6 +133,14 @@ func _init() -> void:
 
 func duplicated() -> LockData:
 	return duplicate()
+
+func get_used_color() -> Enums.colors:
+	var used_color := color
+	if is_cursed:
+		used_color = Enums.colors.brown
+	elif used_color == Enums.colors.glitch:
+		used_color = glitch_color
+	return used_color
 
 # I can't believe I made this lmao??? fine tho
 const value_type_to_ComplexNumber_var: Dictionary = {

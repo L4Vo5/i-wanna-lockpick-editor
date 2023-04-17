@@ -57,6 +57,9 @@ class_name DoorData
 func set_curse(curse: Enums.curse, val: bool) -> void:
 	if _curses[curse] == val: return
 	_curses[curse] = val
+	if curse == Enums.curse.brown:
+		for lock in locks:
+			lock.is_cursed = val
 	changed.emit()
 
 func get_curse(curse: Enums.curse) -> bool:
@@ -95,16 +98,14 @@ func try_open() -> Dictionary:
 	}
 	if amount.is_zero(): return return_dict
 	if _curses[Enums.curse.ice] or _curses[Enums.curse.erosion] or _curses[Enums.curse.paint]: return return_dict
+	var used_outer_color := get_used_color()
+	
 	var player: Kid = Global.current_level.player
 	# try to open with master keys
 	if not player.master_equipped.is_zero():
 		var can_master := true
 		var non_copiable_colors := [Enums.colors.master, Enums.colors.pure]
-		if glitch_color in non_copiable_colors:
-			non_copiable_colors.push_back(Enums.colors.glitch)
-		if _curses[Enums.curse.brown]:
-			can_master = true
-		elif outer_color in non_copiable_colors:
+		if used_outer_color in non_copiable_colors:
 			can_master = false
 		else:
 			for lock in locks:
@@ -149,18 +150,23 @@ func try_open() -> Dictionary:
 			printerr("Can't open a door with 0 copies!")
 	
 	for lock_data in locks:
-		var color_amount: ComplexNumber = Global.current_level.key_counts[lock_data.color]
+		var used_lock_color := lock_data.get_used_color()
+		
+		var color_amount: ComplexNumber = Global.current_level.key_counts[used_lock_color]
 		var diff_after_open := lock_data.open_with(color_amount, flip, rotor)
 		if diff_after_open == null: return return_dict
 		diff.add(diff_after_open)
 	# it worked on all locks!
 	amount.sub(open_dim)
-	if not Global.current_level.star_keys[outer_color]:
-		Global.current_level.key_counts[outer_color].add(diff)
-	Global.current_level.glitch_color = outer_color
+	if not Global.current_level.star_keys[used_outer_color]:
+		Global.current_level.key_counts[used_outer_color].add(diff)
+	Global.current_level.glitch_color = used_outer_color
 	return_dict.opened = true
 	return return_dict
 
+func update_glitch_color(color: Enums.colors) -> void:
+	if not get_curse(Enums.curse.brown):
+		glitch_color = color
 
 func has_color(color: Enums.colors) -> bool:
 	if outer_color == color:
@@ -169,3 +175,11 @@ func has_color(color: Enums.colors) -> bool:
 		if lock.color == color:
 			return true
 	return false
+
+func get_used_color() -> Enums.colors:
+	var used_color := outer_color
+	if get_curse(Enums.curse.brown):
+		used_color = Enums.colors.brown
+	elif used_color == Enums.colors.glitch:
+		used_color = glitch_color
+	return used_color

@@ -76,7 +76,10 @@ func _disconnect_door_data() -> void:
 func connect_level() -> void:
 	if is_instance_valid(Global.current_level):
 		Global.current_level.changed_i_view.connect(_on_changed_i_view)
+		Global.current_level.changed_glitch_color.connect(_on_changed_glitch_color)
 		_on_changed_i_view()
+		_on_changed_glitch_color()
+		
 
 func _physics_process(_delta: float) -> void:
 	special_anim.frame = floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % special_anim.hframes * special_anim.vframes
@@ -130,6 +133,9 @@ func _on_changed_i_view() -> void:
 		if is_flipped:
 			lock.rotation.flip()
 
+func _on_changed_glitch_color() -> void:
+	door_data.update_glitch_color(Global.current_level.glitch_color)
+
 func i_view_colors() -> void:
 	if not using_i_view_colors: return
 	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
@@ -156,6 +162,8 @@ func update_textures() -> void:
 	glitch.hide()
 	
 	var used_color := door_data.outer_color
+	if door_data.get_curse(Enums.curse.brown):
+		used_color = Enums.colors.brown
 	
 	if used_color == Enums.colors.glitch:
 		glitch.show()
@@ -240,23 +248,18 @@ func try_open() -> void:
 
 # do the effects for the curses
 func break_curse_ice() -> void:
-	if not door_data.get_curse(Enums.curse.ice): return
 	door_data.set_curse(Enums.curse.ice, false)
 
 func break_curse_erosion() -> void:
-	if not door_data.get_curse(Enums.curse.erosion): return
 	door_data.set_curse(Enums.curse.erosion, false)
 
 func break_curse_paint() -> void:
-	if not door_data.get_curse(Enums.curse.paint): return
 	door_data.set_curse(Enums.curse.paint, false)
 
 func curse_brown() -> void:
-	if door_data.get_curse(Enums.curse.brown): return
 	door_data.set_curse(Enums.curse.brown, true)
 
 func break_curse_brown() -> void:
-	if not door_data.get_curse(Enums.curse.brown): return
 	door_data.set_curse(Enums.curse.brown, false)
 
 func create_debris() -> void:
