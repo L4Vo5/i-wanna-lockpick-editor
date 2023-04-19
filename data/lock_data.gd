@@ -114,19 +114,24 @@ var dont_show_frame := false:
 		if dont_show_frame == val: return
 		dont_show_frame = val
 		changed_dont_show_frame.emit()
+		changed.emit()
 
 signal changed_rotation
 ## rotation for rendering i-view and negative doors without destructively affecting the lock data
 var rotation := ComplexNumber.new_with(1, 0):
 	set(val):
 		if is_instance_valid(rotation):
-			if rotation.changed.is_connected(emit_changed):
-				rotation.changed.disconnect(emit_changed)
+			if rotation.changed.is_connected(_emit_changed_rotation):
+				rotation.changed.disconnect(_emit_changed_rotation)
 		if rotation == val: return
 		rotation = val
 		if is_instance_valid(rotation):
-			rotation.changed.connect(emit_changed)
-		changed_rotation.emit()
+			rotation.changed.connect(_emit_changed_rotation)
+		_emit_changed_rotation()
+
+func _emit_changed_rotation() -> void:
+	changed_rotation.emit()
+	changed.emit()
 
 func _init() -> void:
 	rotation = rotation.duplicate()
