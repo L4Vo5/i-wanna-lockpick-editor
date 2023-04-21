@@ -12,3 +12,10 @@ layer = 100
 [node name="KeyPad" parent="CanvasLayer" instance=ExtResource("2_2xxiq")]
 unique_name_in_owner = true
 visible = false
+
+[node name="Priority" type="CanvasLayer" parent="."]
+layer = 128
+
+[node name="ErrorDialog" type="AcceptDialog" parent="Priority"]
+unique_name_in_owner = true
+dialog_autowrap = true

@@ -27,14 +27,14 @@ func _ready() -> void:
 	key.key_data = key_data
 	
 	color_choice.clear()
-	for key in Enums.COLOR_NAMES.keys():
-		if key == Enums.colors.none: continue
-		color_choice.add_item(Enums.COLOR_NAMES[key].capitalize(), key)
+	for color in Enums.COLOR_NAMES.keys():
+		if color == Enums.colors.none: continue
+		color_choice.add_item(Enums.COLOR_NAMES[color].capitalize(), color)
 	color_choice.item_selected.connect(_update_key_color.unbind(1))
 	
 	type_choice.clear()
-	for key in Enums.KEY_TYPE_NAMES.keys():
-		type_choice.add_item(Enums.KEY_TYPE_NAMES[key].capitalize(), key)
+	for key_type in Enums.KEY_TYPE_NAMES.keys():
+		type_choice.add_item(Enums.KEY_TYPE_NAMES[key_type].capitalize(), key_type)
 	type_choice.item_selected.connect(_update_key_type.unbind(1))
 	
 	real_amount.value_changed.connect(_update_key_amount.unbind(1))
@@ -57,4 +57,4 @@ func _update_key_type() -> void:
 	amount.visible = key_data.type in [Enums.key_types.add, Enums.key_types.exact]
 
 func _update_key_amount() -> void:
-	key_data.amount.set_to(real_amount.value, imaginary_amount.value)
+	key_data.amount.set_to(int(real_amount.value), int(imaginary_amount.value))

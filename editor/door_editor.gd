@@ -97,7 +97,7 @@ func _update_door_size() -> void:
 	_update_lock_editors_door_size()
 
 func _update_door_amount() -> void:
-	door_data.amount.set_to(real_copies.value, imaginary_copies.value)
+	door_data.amount.set_to(int(real_copies.value), int(imaginary_copies.value))
 
 func _update_door_color() -> void:
 	door_data.outer_color = color_choice.get_item_id(color_choice.selected)

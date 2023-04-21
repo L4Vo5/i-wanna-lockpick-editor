@@ -44,7 +44,6 @@ func _update_size() -> void:
 		return
 	var text_size = Vector2i(CHAR_SIZE * Vector2i(text.length(), 1))
 	text_size.y -= 1
-	var isize = Vector2i(size)
 	match lock_type:
 		0: # real
 			text_size.x += 11

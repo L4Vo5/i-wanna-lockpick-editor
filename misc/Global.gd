@@ -4,7 +4,9 @@ extends Node
 # in the godot editor, as opposed to the level editor
 var in_editor := Engine.is_editor_hint()
 var in_level_editor := false
+var game_version = ProjectSettings.get_setting("application/config/game_version")
 @onready var key_pad: Control = %KeyPad
+@onready var error_dialog: AcceptDialog = %ErrorDialog
 
 signal changed_level
 var current_level: Level:

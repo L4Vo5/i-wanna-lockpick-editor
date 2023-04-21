@@ -1,21 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=4 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_vj4eo"]
-[ext_resource type="Script" path="res://data/level_data.gd" id="2_o7ti3"]
 [ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="3_0buld"]
-
-[sub_resource type="Resource" id="Resource_35qov"]
-script = ExtResource("2_o7ti3")
-doors = Array[Resource("res://data/door_data.gd")]([])
-keys = Array[Resource("res://data/key_data.gd")]([])
-size = Vector2(800, 608)
-player_spawn_position = Vector2(462, 384)
-custom_lock_arrangements = {}
-tiles = {}
+[ext_resource type="Texture2D" uid="uid://btuot74j1fbp4" path="res://editor/player_spawnpoint.png" id="4_ue311"]
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_vj4eo")
-level_data = SubResource("Resource_35qov")
 
 [node name="TileMap" type="TileMap" parent="."]
 unique_name_in_owner = true
@@ -27,3 +17,10 @@ unique_name_in_owner = true
 
 [node name="Keys" type="Node2D" parent="."]
 unique_name_in_owner = true
+
+[node name="PlayerSpawnPoint" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("4_ue311")
+centered = false
+offset = Vector2(-13, -34)

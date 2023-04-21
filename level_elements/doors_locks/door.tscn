@@ -52,7 +52,7 @@ _curses = {
 2: false,
 3: false
 }
-glitch_color = 1
+glitch_color = 13
 position = Vector2i(0, 0)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]

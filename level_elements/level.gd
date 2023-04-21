@@ -7,7 +7,14 @@ var glitch_color := Enums.colors.glitch:
 		if glitch_color == val: return
 		glitch_color = val
 		changed_glitch_color.emit()
-@export var level_data := LevelData.new()
+
+@export var level_data: LevelData = null:
+	set(val):
+		if level_data == val: return
+		_disconnect_level_data()
+		level_data = val
+		_connect_level_data()
+
 @export var exclude_player := false:
 	set(val):
 		if exclude_player == val: return
@@ -56,6 +63,7 @@ const PLAYER := preload("res://level_elements/kid/kid.tscn")
 @onready var doors: Node2D = %Doors
 @onready var keys: Node2D = %Keys
 @onready var tile_map: TileMap = %TileMap
+@onready var player_spawn_point: Sprite2D = %PlayerSpawnPoint
 
 # undo/redo actions should be handled somewhere in here, too
 
@@ -74,26 +82,16 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action(&"restart") and event.is_pressed():
 		reset()
 
-var player_spawn_point: Sprite2D
+var is_ready := false
 func _ready() -> void:
+	is_ready = true
 	Global.current_level = self
-	
-	player_spawn_point = Sprite2D.new()
-	player_spawn_point.texture = preload("res://editor/player_spawnpoint.png")
-	player_spawn_point.position = level_data.player_spawn_position
-	level_data.changed_player_spawn_position.connect(
-		func():
-			player_spawn_point.position = level_data.player_spawn_position
-	)
-	player_spawn_point.centered = false
-	player_spawn_point.offset = Vector2i(-13, -34)
-	player_spawn_point.visible = Global.in_level_editor
-	add_child(player_spawn_point)
-	
 	reset()
+	_update_player_spawn_position()
 
 
 func reset() -> void:
+	if not is_ready: return
 	# Clear everything
 	for child in doors.get_children():
 		child.queue_free()
@@ -115,7 +113,23 @@ func reset() -> void:
 	for tile_coord in level_data.tiles:
 		_spawn_tile(tile_coord)
 	_spawn_player()
-	
+
+func _connect_level_data() -> void:
+	if not is_instance_valid(level_data): return
+	# Must do this in case level data has no version
+	level_data.check_version()
+	level_data.changed_player_spawn_position.connect(_update_player_spawn_position)
+	_update_player_spawn_position()
+	reset()
+
+func _disconnect_level_data() -> void:
+	if not is_instance_valid(level_data): return
+	level_data.changed_player_spawn_position.disconnect(_update_player_spawn_position)
+
+func _update_player_spawn_position() -> void:
+	if not is_ready: return
+	player_spawn_point.visible = Global.in_level_editor
+	player_spawn_point.position = level_data.player_spawn_position
 
 # Editor functions
 

@@ -204,13 +204,11 @@ func update_textures() -> void:
 func update_locks() -> void:
 	for lock in lock_holder.get_children():
 		lock.queue_free()
-	var i := 0
 	for lock in door_data.locks:
 		var new_lock := LOCK.instantiate()
 		new_lock.clicked.connect(func(event): lock_clicked.emit(event, new_lock))
 		new_lock.lock_data = lock
 		lock_holder.add_child(new_lock)
-		i += 1
 
 func update_curses() -> void:
 	ice.visible = door_data.get_curse(Enums.curse.ice)

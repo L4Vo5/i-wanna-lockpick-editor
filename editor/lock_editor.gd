@@ -94,7 +94,7 @@ func set_to_lock() -> void:
 	var full_amount := lock_data.get_complex_amount()
 	amount.value = full_amount.real_part + full_amount.imaginary_part
 	is_negative.button_pressed = amount.value < 0
-	last_amount_value = amount.value
+	last_amount_value = int(amount.value)
 	width.min_value = lock_data.minimum_size.x
 	height.min_value = lock_data.minimum_size.y
 	width.value = lock_data.size.x
@@ -109,7 +109,7 @@ func _update_min_size() -> void:
 	height.min_value = lock_data.minimum_size.y
 
 func _update_lock_size() -> void:
-	lock_data.size = Vector2i(width.value, height.value)
+	lock_data.size = Vector2i(int(width.value), int(height.value))
 	_update_max_pos()
 
 func _update_lock_color() -> void:
@@ -146,7 +146,7 @@ func _update_lock_amount() -> void:
 			amount.value = 1
 		else:
 			amount.value = -1
-		last_amount_value = amount.value
+		last_amount_value = int(amount.value)
 		return
 	lock_data.magnitude = abs(amount.value)
 	if amount.value < 0:
@@ -157,7 +157,7 @@ func _update_lock_amount() -> void:
 		lock_data.sign = Enums.sign.positive
 		if is_negative.button_pressed:
 			is_negative.button_pressed = false
-	last_amount_value = amount.value
+	last_amount_value = int(amount.value)
 
 func _update_is_imaginary() -> void:
 	if is_imaginary.button_pressed:

@@ -36,7 +36,7 @@ const CONNECTIONS = {
 	&"update_size": [&"changed_size"],
 	&"update_lock_size": [&"changed_minimum_size"],
 	&"update_frame_visible": [&"changed_dont_show_frame"],
-	&"update_frame_texture": [&"changed_sign"],
+	&"update_frame_texture": [&"changed_sign", &"changed_rotation"],
 	&"update_colors": [&"changed_color", &"changed_glitch", &"changed_is_cursed"],
 	&"regenerate_locks": [&"changed_lock_type", &"changed_magnitude", &"changed_sign", &"changed_value_type", &"changed_dont_show_lock", &"changed_lock_arrangement", &"changed_rotation", ],
 }
@@ -96,7 +96,9 @@ func update_frame_visible() -> void:
 		lock_count_number.show()
 
 func update_frame_texture() -> void:
-	frame.texture = FRAME_POS if lock_data.sign == Enums.sign.positive else FRAME_NEG
+	var amount := lock_data.get_complex_amount().multiply_by(lock_data.rotation)
+	var sign := amount.sign_1d()
+	frame.texture = FRAME_POS if sign == Enums.sign.positive else FRAME_NEG
 
 func update_colors() -> void:
 	inner_color.hide()

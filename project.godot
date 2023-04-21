@@ -13,9 +13,11 @@ config_version=5
 config/name="Lockpick Editor"
 run/main_scene="res://editor/editor.tscn"
 config/features=PackedStringArray("4.0", "GL Compatibility")
+run/max_fps=50
 boot_splash/show_image=false
 boot_splash/fullsize=false
 config/icon="res://icon.png"
+config/game_version="0.0.1.0"
 
 [autoload]
 
@@ -28,6 +30,7 @@ gdscript/warnings/assert_always_true=2
 gdscript/warnings/assert_always_false=0
 gdscript/warnings/redundant_await=0
 gdscript/warnings/shadowed_global_identifier=0
+gdscript/warnings/int_as_enum_without_cast=0
 
 [display]
 
