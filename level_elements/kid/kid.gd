@@ -18,7 +18,13 @@ class_name Kid
 @onready var snd_master_unequip: AudioStreamPlayer = %MasterUnequip
 @onready var snd_master_anti_equip: AudioStreamPlayer = %MasterAntiEquip
 @onready var equipped_master: Sprite2D = %EquippedMaster
-const gravity := 0.4
+const GRAVITY := 0.4
+# slightly nerfed to accomodate for difference in peak jump
+# this is because gamemaker gets the wrong curve by like. rounding or something.
+const JUMP_1 := -8.5 + 0.3
+const JUMP_2 := -7.0 + 0.2
+const MAX_VSPEED := 9.0
+const JUMP_REDUCTION := 0.45
 
 var master_equipped := ComplexNumber.new()
 
@@ -29,7 +35,7 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if Global.in_editor: return
-	on_floor = test_move(global_transform, Vector2(0, gravity))
+	on_floor = test_move(global_transform, Vector2(0, GRAVITY))
 	on_ceiling = test_move(global_transform, Vector2(0, -1))
 	auras()
 	run()
@@ -76,20 +82,20 @@ func fall_jump() -> void:
 		d_jumps = 1
 		velocity.y = 0
 		if Input.is_action_just_pressed(&"jump"):
-			velocity.y = -8.5
+			velocity.y = JUMP_1
 			snd_jump.play()
 	else:
-		velocity.y += gravity
-		if velocity.y > 9:
-			velocity.y = 9
+		velocity.y += GRAVITY
+		if velocity.y > MAX_VSPEED:
+			velocity.y = MAX_VSPEED
 		if on_ceiling and velocity.y < 0:
 			velocity.y = 0
 		elif Input.is_action_just_pressed(&"jump") and d_jumps > 0:
 			d_jumps -= 1
-			velocity.y = -7
+			velocity.y = JUMP_2
 			snd_jump_2.play()
 		elif Input.is_action_just_released(&"jump") and velocity.y < 0:
-			velocity.y *= 0.45
+			velocity.y *= JUMP_REDUCTION
 
 func detect_doors() -> void:
 	for vec in [

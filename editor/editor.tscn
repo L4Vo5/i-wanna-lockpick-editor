@@ -14,12 +14,12 @@
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="10_jx68y"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="12_2ius3"]
 
-[sub_resource type="Resource" id="Resource_qxnhm"]
+[sub_resource type="Resource" id="Resource_hv0o3"]
 script = ExtResource("8_alamw")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_4k6vi"]
+[sub_resource type="Resource" id="Resource_xa4po"]
 script = ExtResource("9_5wk1m")
 color = 1
 magnitude = 1
@@ -31,12 +31,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_q3hec"]
+[sub_resource type="Resource" id="Resource_2bwva"]
 script = ExtResource("9_2s68o")
-amount = SubResource("Resource_qxnhm")
+amount = SubResource("Resource_hv0o3")
 outer_color = 1
-locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_4k6vi")])
-sequence_next = Array[ExtResource("9_2s68o")]([])
+locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_xa4po")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -47,14 +46,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_y85xc"]
+[sub_resource type="Resource" id="Resource_v8uns"]
 script = ExtResource("8_alamw")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_6vsdk"]
+[sub_resource type="Resource" id="Resource_qp058"]
 script = ExtResource("12_2ius3")
-amount = SubResource("Resource_y85xc")
+amount = SubResource("Resource_v8uns")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -191,9 +190,13 @@ color = Color(0.54902, 0.54902, 0.54902, 1)
 visible = false
 layout_mode = 0
 mouse_filter = 2
+ignore_collisions = true
 
 [node name="GhostKey" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner" instance=ExtResource("4_tvl64")]
 visible = false
+collision_layer = 0
+collision_mask = 0
+in_keypad = true
 
 [node name="Fill" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="2"]
 modulate = Color(0.839216, 0.811765, 0.788235, 1)
@@ -223,12 +226,12 @@ use_hidden_tabs_for_min_size = true
 
 [node name="Doors" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
 layout_mode = 2
-door_data = SubResource("Resource_q3hec")
+door_data = SubResource("Resource_2bwva")
 
 [node name="Keys" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_6vsdk")
+key_data = SubResource("Resource_qp058")
 
 [node name="Tiles" type="MarginContainer" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs"]
 visible = false

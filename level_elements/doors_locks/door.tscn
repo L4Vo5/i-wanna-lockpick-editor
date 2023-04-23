@@ -44,7 +44,6 @@ script = ExtResource("4_q43he")
 amount = SubResource("Resource_lrhk2")
 outer_color = 1
 locks = Array[ExtResource("3_cjud2")]([SubResource("Resource_ewqbb")])
-sequence_next = Array[ExtResource("4_q43he")]([])
 size = Vector2i(32, 32)
 _curses = {
 0: false,

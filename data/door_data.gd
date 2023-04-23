@@ -29,7 +29,6 @@ class_name DoorData
 			if is_instance_valid(l):
 				l.changed.connect(emit_changed)
 		changed.emit()
-@export var sequence_next: Array[DoorData] = []
 @export var size := Vector2i(32, 32):
 	set(val):
 		if size == val: return
@@ -77,8 +76,6 @@ func duplicated() -> DoorData:
 	dupe.amount = amount.duplicate(true)
 	for l in locks:
 		dupe.locks.push_back(l.duplicated())
-	for seq in sequence_next:
-		dupe.sequence_next.push_back(seq)
 	return dupe
 
 func has_point(point: Vector2i) -> bool:

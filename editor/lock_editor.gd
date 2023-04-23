@@ -99,9 +99,10 @@ func set_to_lock() -> void:
 	height.min_value = lock_data.minimum_size.y
 	width.value = lock_data.size.x
 	height.value = lock_data.size.y
+	# This goes first so changing the position doesn't clamp the locks
+	_update_max_pos()
 	position_x.value = lock_data.position.x
 	position_y.value = lock_data.position.y
-	_update_max_pos()
 
 func _update_min_size() -> void:
 	if not is_ready: await ready
@@ -181,9 +182,14 @@ func _on_arrangement_changed() -> void:
 		height.value = lock_data.minimum_size.y
 
 func _update_position() -> void:
+	if not is_ready: await ready
+	# Just in case I switch the order of operations, This prevents the bug where locks get bunched up when regenerated.
+	_update_max_pos()
 	lock_data.position = Vector2i(roundi(position_x.value), roundi(position_y.value))
 
 func _update_max_pos() -> void:
 	if not is_ready: await ready
+	var old_pos := Vector2(position_x.max_value, position_y.max_value)
 	position_x.max_value = door_size.x - lock_data.size.x
 	position_y.max_value = door_size.y - lock_data.size.y
+	var new_pos := Vector2(position_x.max_value, position_y.max_value)

@@ -118,6 +118,7 @@ func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
 	# Must do this in case level data has no version
 	level_data.check_version()
+	level_data.check_valid()
 	level_data.changed_player_spawn_position.connect(_update_player_spawn_position)
 	_update_player_spawn_position()
 	reset()
@@ -220,7 +221,7 @@ func is_space_occupied(rect: Rect2i, exclude_player_spawn := false, exclude_tile
 			return true
 	#TODO: tiles
 	if not exclude_player_spawn:
-		var spawn_pos := (Vector2i(level_data.player_spawn_position - Vector2(0, 16)) / Vector2i(32, 32)) * Vector2i(32, 32)
+		var spawn_pos := (level_data.player_spawn_position - Vector2i(0, 16) / Vector2i(32, 32)) * Vector2i(32, 32)
 		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
 			return true
 	if not exclude_tiles:

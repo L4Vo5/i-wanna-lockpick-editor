@@ -83,16 +83,19 @@ func _gui_input(event: InputEvent) -> void:
 
 func place_tile_on_mouse() -> void:
 	if editor_data.disable_editing: return
+	if is_mouse_out_of_bounds(): return
 	var coord = get_mouse_tile_coord(32)
 	level.place_tile(coord)
 
 func remove_tile_on_mouse() -> bool:
 	if editor_data.disable_editing: return false
+	if is_mouse_out_of_bounds(): return false
 	var coord = get_mouse_tile_coord(32)
 	return level.remove_tile(coord)
 
 func place_door_on_mouse() -> void:
 	if editor_data.disable_editing: return
+	if is_mouse_out_of_bounds(): return
 	var coord = get_mouse_coord(32)
 	var door_data := door_editor.door.door_data.duplicated()
 	door_data.position = coord
@@ -100,6 +103,7 @@ func place_door_on_mouse() -> void:
 
 func place_key_on_mouse() -> void:
 	if editor_data.disable_editing: return
+	if is_mouse_out_of_bounds(): return
 	var coord = get_mouse_coord(16)
 	var key_data := key_editor.key.key_data.duplicated()
 	key_data.position = coord
@@ -107,6 +111,7 @@ func place_key_on_mouse() -> void:
 
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
+	if is_mouse_out_of_bounds(): return
 	var coord = get_mouse_tile_coord(32)
 	level.place_player_spawn(coord)
 
@@ -115,3 +120,9 @@ func get_mouse_coord(grid_size: int) -> Vector2i:
 
 func get_mouse_tile_coord(grid_size) -> Vector2i:
 	return Vector2i((get_global_mouse_position() - level.global_position) / Vector2(grid_size, grid_size))
+
+func is_mouse_out_of_bounds() -> bool:
+	var local_pos := get_global_mouse_position() - level.global_position
+	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= level.level_data.size.x or local_pos.y >= level.level_data.size.y:
+		return true
+	return false

@@ -109,8 +109,8 @@ func _regen_lock_editors() -> void:
 	for lock_data in door_data.locks:
 		var lock_editor: LockEditor = LOCK_EDITOR.instantiate()
 		lock_editor.lock_number = i
-		lock_editor.lock_data = lock_data
 		lock_editor.door_size = door_data.size
+		lock_editor.lock_data = lock_data
 		lock_editor.delete.connect(_delete_lock.bind(i-1))
 		lock_editor_parent.add_child(lock_editor)
 		i += 1

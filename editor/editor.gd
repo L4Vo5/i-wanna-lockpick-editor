@@ -60,6 +60,7 @@ func _ready() -> void:
 	popup_menu.add_item("Open Level Files Location")
 	popup_menu.add_item("More extra options coming soon? xD")
 	popup_menu.index_pressed.connect(_on_more_options_selected)
+	
 
 func _update_mode() -> void:
 	var tab_editor := side_container.get_current_tab_control()
