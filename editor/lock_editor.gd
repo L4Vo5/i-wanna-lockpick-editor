@@ -11,10 +11,12 @@ signal delete
 		lock_data = val
 		if is_instance_valid(lock_data):
 			lock_data.changed_minimum_size.connect(_update_min_size)
+			if lock_data.size == Vector2i(50, 50):
+				lock_data.changed_size.connect(func(): breakpoint)
 		if not is_ready: await ready
 		arrangement_chooser.lock_data = lock_data
 		lock.lock_data = val
-		set_to_lock()
+		_set_to_lock_data()
 @onready var lock: Lock = %Lock
 @onready var color_choice: OptionButton = %ColorChoice
 @onready var type_choice: OptionButton = %TypeChoice
@@ -46,6 +48,7 @@ signal delete
 var is_ready := false
 func _ready() -> void:
 	is_ready = true
+	
 	delete_button.pressed.connect(func(): delete.emit())
 	width.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
 	height.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
@@ -76,19 +79,23 @@ func _ready() -> void:
 	width.value_changed.connect(_update_lock_size.unbind(1))
 	height.value_changed.connect(_update_lock_size.unbind(1))
 	
-	arrangement_chooser.changed_arrangement.connect(_on_arrangement_changed)
-	fit.pressed.connect(_on_arrangement_changed)
+	arrangement_chooser.changed_arrangement.connect(_update_arrangement)
+	fit.pressed.connect(_update_arrangement)
 	
 	position_x.value_changed.connect(_update_position.unbind(1))
 	position_y.value_changed.connect(_update_position.unbind(1))
 	
-	set_to_lock()
 	lock_n.text = "Lock %d" % lock_number
 	
 	fit.editor_description = "Makes the lock as small as possible"
+	
+	_set_to_lock_data()
 
+# See _setting_to_data in DoorEditor
+var _setting_to_data := false
 # Sets the different controls to the lockdata's data
-func set_to_lock() -> void:
+func _set_to_lock_data() -> void:
+	_setting_to_data = true
 	color_choice.selected = color_choice.get_item_index(lock_data.color)
 	type_choice.selected = type_choice.get_item_index(lock_data.lock_type)
 	var full_amount := lock_data.get_complex_amount()
@@ -100,23 +107,28 @@ func set_to_lock() -> void:
 	width.value = lock_data.size.x
 	height.value = lock_data.size.y
 	# This goes first so changing the position doesn't clamp the locks
-	_update_max_pos()
 	position_x.value = lock_data.position.x
 	position_y.value = lock_data.position.y
+	_setting_to_data = false
+	_update_max_pos()
 
 func _update_min_size() -> void:
+	if _setting_to_data: return
 	if not is_ready: await ready
 	width.min_value = lock_data.minimum_size.x
 	height.min_value = lock_data.minimum_size.y
 
 func _update_lock_size() -> void:
+	if _setting_to_data: return
 	lock_data.size = Vector2i(int(width.value), int(height.value))
 	_update_max_pos()
 
 func _update_lock_color() -> void:
+	if _setting_to_data: return
 	lock_data.color = color_choice.get_item_id(color_choice.selected)
 
 func _update_lock_type() -> void:
+	if _setting_to_data: return
 	lock_data.lock_type = type_choice.get_item_id(type_choice.selected)
 	if lock_data.lock_type == Enums.lock_types.normal:
 		arrangement_chooser.show()
@@ -136,6 +148,7 @@ func _update_lock_type() -> void:
 
 var last_amount_value := 0
 func _update_lock_amount() -> void:
+	if _setting_to_data: return
 	# special case: amount's value shouldn't be 0
 	if amount.value == 0:
 		if lock_data.sign == Enums.sign.positive:
@@ -161,12 +174,14 @@ func _update_lock_amount() -> void:
 	last_amount_value = int(amount.value)
 
 func _update_is_imaginary() -> void:
+	if _setting_to_data: return
 	if is_imaginary.button_pressed:
 		lock_data.value_type = Enums.value.imaginary
 	else:
 		lock_data.value_type = Enums.value.real
 
 func _update_is_negative() -> void:
+	if _setting_to_data: return
 	if is_negative.button_pressed:
 		lock_data.sign = Enums.sign.negative
 		if amount.value > 0:
@@ -176,18 +191,19 @@ func _update_is_negative() -> void:
 		if amount.value < 0:
 			amount.value = abs(amount.value)
 
-func _on_arrangement_changed() -> void:
+func _update_arrangement() -> void:
+	if _setting_to_data: return
 	if fit.button_pressed:
 		width.value = lock_data.minimum_size.x
 		height.value = lock_data.minimum_size.y
 
 func _update_position() -> void:
+	if _setting_to_data: return
 	if not is_ready: await ready
-	# Just in case I switch the order of operations, This prevents the bug where locks get bunched up when regenerated.
-	_update_max_pos()
 	lock_data.position = Vector2i(roundi(position_x.value), roundi(position_y.value))
 
 func _update_max_pos() -> void:
+	if _setting_to_data: return
 	if not is_ready: await ready
 	var old_pos := Vector2(position_x.max_value, position_y.max_value)
 	position_x.max_value = door_size.x - lock_data.size.x

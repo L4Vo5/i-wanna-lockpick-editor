@@ -59,12 +59,16 @@ func clear_outside_things() -> void:
 # For my own reference lol
 const VERSIONS_LIST := [
 	"0.0.1.0",
-	"0.0.1.1" # Current
+	"0.0.1.1",
+	"0.0.1.2",
+	"0.0.2.0", # Current
 ]
 # Versions that are fully compatible with the current one
 const COMPATIBLE_VERSIONS := [
 	"0.0.1.0",
-	"0.0.1.1"
+	"0.0.1.1",
+	"0.0.1.2",
+	"0.0.2.0", # Current
 ]
 func check_version() -> void:
 	if has_been_loaded: return

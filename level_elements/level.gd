@@ -64,6 +64,7 @@ const PLAYER := preload("res://level_elements/kid/kid.tscn")
 @onready var keys: Node2D = %Keys
 @onready var tile_map: TileMap = %TileMap
 @onready var player_spawn_point: Sprite2D = %PlayerSpawnPoint
+@onready var debris_parent: Node2D = %DebrisParent
 
 # undo/redo actions should be handled somewhere in here, too
 
@@ -106,13 +107,14 @@ func reset() -> void:
 	tile_map.clear()
 	
 	# Spawn everything
+	# Player has to go first so the last one is deleted before objects are spawned
+	_spawn_player()
 	for door_data in level_data.doors:
 		_spawn_door(door_data)
 	for key_data in level_data.keys:
 		_spawn_key(key_data)
 	for tile_coord in level_data.tiles:
 		_spawn_tile(tile_coord)
-	_spawn_player()
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
@@ -204,7 +206,9 @@ func remove_tile(tile_coord: Vector2i) -> bool:
 
 func _spawn_player() -> void:
 	if is_instance_valid(player):
+		remove_child(player)
 		player.queue_free()
+		player = null
 	if exclude_player: return
 	player = PLAYER.instantiate()
 	player.position = level_data.player_spawn_position
@@ -243,3 +247,5 @@ func get_doors() -> Array[Door]:
 			arr.push_back(child)
 	return arr
 
+func add_debris_child(debris: Node) -> void:
+	debris_parent.add_child(debris)

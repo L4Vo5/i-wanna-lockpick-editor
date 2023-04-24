@@ -281,5 +281,5 @@ func create_debris() -> void:
 				add_child(debris)
 			else:
 				# TODO: don't put it on the root that's dum
-				get_tree().root.add_child(debris)
+				Global.current_level.add_debris_child(debris)
 			timer.start(20)

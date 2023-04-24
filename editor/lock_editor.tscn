@@ -63,7 +63,6 @@ layout_mode = 2
 
 [node name="Lock" parent="VBoxContainer/CenterContainer" instance=ExtResource("1_iyvjm")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
 lock_data = SubResource("Resource_sgiyv")
 ignore_position = true

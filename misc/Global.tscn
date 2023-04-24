@@ -13,9 +13,18 @@ layer = 100
 unique_name_in_owner = true
 visible = false
 
+[node name="Update" type="CanvasLayer" parent="."]
+layer = 127
+
+[node name="UpdateDialog" type="AcceptDialog" parent="Update"]
+title = "New version available!"
+size = Vector2i(237, 100)
+
 [node name="Priority" type="CanvasLayer" parent="."]
 layer = 128
 
 [node name="ErrorDialog" type="AcceptDialog" parent="Priority"]
 unique_name_in_owner = true
 dialog_autowrap = true
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]

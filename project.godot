@@ -17,7 +17,7 @@ run/max_fps=50
 boot_splash/show_image=false
 boot_splash/fullsize=false
 config/icon="res://icon.png"
-config/game_version="0.0.1.1"
+config/game_version="0.0.2.0"
 
 [autoload]
 

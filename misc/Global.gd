@@ -7,6 +7,7 @@ var in_level_editor := false
 var game_version = ProjectSettings.get_setting("application/config/game_version")
 @onready var key_pad: Control = %KeyPad
 @onready var error_dialog: AcceptDialog = %ErrorDialog
+@onready var http_request: HTTPRequest = $HTTPRequest
 
 signal changed_level
 var current_level: Level:
@@ -28,6 +29,43 @@ func _ready() -> void:
 	if in_editor:
 		key_pad.hide()
 	set_mode(_current_mode)
+	
+	# Look for update...
+	var dl_button := update_dialog.add_button("Download", true)
+	dl_button.pressed.connect(_open_download_page)
+	http_request.request_completed.connect(_http_request_completed)
+
+	var error = http_request.request("https://l4vo5.itch.io/i-wanna-lockpick-editor")
+	if error != OK:
+		push_error("An error occurred in the HTTP request.")
+
+@onready var update_dialog: AcceptDialog = $Update/UpdateDialog
+var newer_version := ""
+func _http_request_completed(result, response_code, headers, body: PackedByteArray):
+	var s := body.get_string_from_ascii()
+	var start := s.find("The current version is ")
+	start += "The current version is ".length()
+	# Gotta find 3 version dots + the final dot:
+	var end := start
+	for i in 4:
+		end = s.find(".", end+1)
+	newer_version = s.substr(start, end - start)
+	inform_newer_version()
+
+func inform_newer_version() -> void:
+	print("Newest version on the itch.io page is %s" % newer_version)
+	if newer_version.naturalnocasecmp_to(Global.game_version) <= 0: 
+		print("Newest version is equal or older! won't popup")
+		return
+	var text := "There's an update available: " + newer_version
+	text += "\nCurrent version: " + game_version
+	update_dialog.dialog_text = text
+	update_dialog.popup_centered()
+
+func _open_download_page() -> void:
+	OS.shell_open("https://l4vo5.itch.io/i-wanna-lockpick-editor")
+
+
 
 func _process(delta: float) -> void:
 	time += delta

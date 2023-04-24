@@ -33,13 +33,15 @@ radius = 3.53246
 height = 25.4556
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_i7153"]
-size = Vector2(12.7018, 11.9508)
+size = Vector2(12.7018, 10.5562)
 
 [node name="key" type="Area2D"]
 collision_layer = 8
 collision_mask = 16
 script = ExtResource("1_m20su")
 key_data = SubResource("Resource_ogwck")
+metadata/_edit_vertical_guides_ = [32.0]
+metadata/_edit_horizontal_guides_ = [32.0]
 
 [node name="Shadow" type="Sprite2D" parent="."]
 unique_name_in_owner = true
@@ -80,19 +82,16 @@ hframes = 4
 vframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(9.5, 10)
 shape = SubResource("CircleShape2D_mb7fb")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(21, 21)
 rotation = -0.785398
 shape = SubResource("CapsuleShape2D_kspn0")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(23.8418, 20.3201)
+position = Vector2(23.3488, 20.8131)
 rotation = 0.785398
 shape = SubResource("RectangleShape2D_i7153")
 

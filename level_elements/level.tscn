@@ -24,3 +24,6 @@ visible = false
 texture = ExtResource("4_ue311")
 centered = false
 offset = Vector2(-13, -34)
+
+[node name="DebrisParent" type="Node2D" parent="."]
+unique_name_in_owner = true

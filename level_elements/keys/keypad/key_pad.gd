@@ -59,3 +59,5 @@ func generate_keys() -> void:
 func update_pos() -> void:
 		if is_instance_valid(Global.current_level):
 			nine_patch_rect.global_position = Global.current_level.global_position + base_offset
+			if Global.in_level_editor:
+				nine_patch_rect.global_position += Global.current_level.get_viewport().get_parent().global_position

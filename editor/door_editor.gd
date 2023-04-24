@@ -50,6 +50,12 @@ func _ready() -> void:
 	real_copies.get_line_edit().expand_to_text_length = true
 	imaginary_copies.get_line_edit().expand_to_text_length = true
 	
+	color_choice.clear()
+	for key in Enums.COLOR_NAMES.keys():
+		if key == Enums.colors.none: continue
+		color_choice.add_item(Enums.COLOR_NAMES[key].capitalize(), key)
+	
+	
 	ice_button.tooltip_text = "Ice curse, broken with 1 red key or more."
 	erosion_button.tooltip_text = "Erosion curse, broken with 5 green keys or more."
 	paint_button.tooltip_text = "Paint curse, broken with 3 blue keys or more."
@@ -66,16 +72,14 @@ func _ready() -> void:
 	imaginary_copies.value_changed.connect(_update_door_amount.unbind(1))
 	color_choice.item_selected.connect(_update_door_color.unbind(1))
 	
-	color_choice.clear()
-	for key in Enums.COLOR_NAMES.keys():
-		if key == Enums.colors.none: continue
-		color_choice.add_item(Enums.COLOR_NAMES[key].capitalize(), key)
-	
 	add_lock.pressed.connect(_add_new_lock)
-	
 	_set_to_door_data()
 
+# This avoids signals changing the door data while it's being set here
+# Fixes, for example, doors with sizes of 64x64 changing the width to 64, which calls _update_door_size, which sets the height to the default of 32
+var _setting_to_data := false
 func _set_to_door_data() -> void:
+	_setting_to_data = true
 	ice_button.button_pressed = door_data.get_curse(Enums.curse.ice)
 	erosion_button.button_pressed = door_data.get_curse(Enums.curse.erosion)
 	paint_button.button_pressed = door_data.get_curse(Enums.curse.paint)
@@ -88,18 +92,22 @@ func _set_to_door_data() -> void:
 	color_choice.selected = color_choice.get_item_index(door_data.outer_color) 
 	
 	_regen_lock_editors()
+	_setting_to_data = false
 
 func set_curse(val: bool, which: Enums.curse) -> void:
 	door_data.set_curse(which, val)
 
 func _update_door_size() -> void:
+	if _setting_to_data: return
 	door_data.size = Vector2i(roundi(width.value), roundi(height.value))
 	_update_lock_editors_door_size()
 
 func _update_door_amount() -> void:
+	if _setting_to_data: return
 	door_data.amount.set_to(int(real_copies.value), int(imaginary_copies.value))
 
 func _update_door_color() -> void:
+	if _setting_to_data: return
 	door_data.outer_color = color_choice.get_item_id(color_choice.selected)
 
 func _regen_lock_editors() -> void:
@@ -117,6 +125,7 @@ func _regen_lock_editors() -> void:
 	add_lock.text = "Add Lock %d" % i
 
 func _update_lock_editors_door_size() -> void:
+	if _setting_to_data: return
 	for editor in lock_editor_parent.get_children():
 		editor.door_size = door_data.size
 

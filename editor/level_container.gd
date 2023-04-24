@@ -5,6 +5,7 @@ class_name LevelContainer
 
 @export var inner_container: Control
 @export var level: Level
+@export var level_viewport: SubViewport
 
 @export var tile_map: TileMap
 @export var door_editor: DoorEditor
@@ -26,6 +27,7 @@ func _ready() -> void:
 	level.door_clicked.connect(_on_door_clicked)
 	level.key_clicked.connect(_on_key_clicked)
 	resized.connect(_on_resized)
+	level_viewport.size = Vector2i(800, 608)
 
 func _on_door_clicked(event: InputEventMouseButton, door: Door) -> void:
 	if editor_data.disable_editing: return
@@ -116,13 +118,16 @@ func place_player_spawn_on_mouse() -> void:
 	level.place_player_spawn(coord)
 
 func get_mouse_coord(grid_size: int) -> Vector2i:
-	return Vector2i(get_global_mouse_position() - level.global_position) / Vector2i(grid_size, grid_size) * Vector2i(grid_size, grid_size)
+	return Vector2i(get_global_mouse_position() - get_level_pos()) / Vector2i(grid_size, grid_size) * Vector2i(grid_size, grid_size)
 
 func get_mouse_tile_coord(grid_size) -> Vector2i:
-	return Vector2i((get_global_mouse_position() - level.global_position) / Vector2(grid_size, grid_size))
+	return Vector2i((get_global_mouse_position() - get_level_pos()) / Vector2(grid_size, grid_size))
 
 func is_mouse_out_of_bounds() -> bool:
-	var local_pos := get_global_mouse_position() - level.global_position
+	var local_pos := get_global_mouse_position() - get_level_pos()
 	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= level.level_data.size.x or local_pos.y >= level.level_data.size.y:
 		return true
 	return false
+
+func get_level_pos() -> Vector2:
+	return level_viewport.get_parent().global_position + level.global_position
