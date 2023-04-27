@@ -17,6 +17,11 @@ var disable_editing := false
 
 var door_editor: DoorEditor
 var key_editor: KeyEditor
+var side_tabs: TabContainer
+var side_tab_doors: DoorEditor
+var side_tab_keys: KeyEditor
+var side_tab_tile: MarginContainer
+var side_tab_level: LevelPropertiesEditor
 
 # what's currently being edited
 var tilemap_edit := false
@@ -24,6 +29,8 @@ var objects := false
 var doors := false
 var keys := false
 var level_properties := false
+var player_spawn := false
+var goal_position := false
 
 
 ###

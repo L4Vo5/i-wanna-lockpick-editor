@@ -23,7 +23,25 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "(0, 0)"
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
 layout_mode = 2
-text = "(click anywhere to place it)"
-horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/HBoxContainer2"]
+layout_mode = 2
+text = "Goal: "
+
+[node name="GoalCoord" type="Label" parent="VBoxContainer/PlayerSpawn/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "(0, 0)"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/HBoxContainer3"]
+layout_mode = 2
+text = "Left click should place: "
+
+[node name="WhatToPlace" type="OptionButton" parent="VBoxContainer/PlayerSpawn/HBoxContainer3"]
+unique_name_in_owner = true
+layout_mode = 2

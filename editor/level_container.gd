@@ -38,6 +38,7 @@ func _on_door_clicked(event: InputEventMouseButton, door: Door) -> void:
 	elif event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			editor_data.door_editor.door_data = door.door_data
+			editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.door_editor)
 
 func _on_key_clicked(event: InputEventMouseButton, key: Key) -> void:
 	if editor_data.disable_editing: return
@@ -48,6 +49,7 @@ func _on_key_clicked(event: InputEventMouseButton, key: Key) -> void:
 	elif event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			editor_data.key_editor.key_data = key.key_data
+			editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.key_editor)
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
@@ -64,8 +66,12 @@ func _gui_input(event: InputEvent) -> void:
 					place_key_on_mouse()
 					accept_event()
 				elif editor_data.level_properties:
-					place_player_spawn_on_mouse()
-					accept_event()
+					if editor_data.player_spawn:
+						place_player_spawn_on_mouse()
+						accept_event()
+					elif editor_data.goal_position:
+						place_goal_on_mouse()
+						accept_event()
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
 #				if editor_data.tilemap_edit:
@@ -76,6 +82,13 @@ func _gui_input(event: InputEvent) -> void:
 			if editor_data.tilemap_edit:
 				place_tile_on_mouse()
 				accept_event()
+			elif editor_data.level_properties:
+				if editor_data.player_spawn:
+					place_player_spawn_on_mouse()
+					accept_event()
+				elif editor_data.goal_position:
+					place_goal_on_mouse()
+					accept_event()
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 #			if editor_data.tilemap_edit:
 				if remove_tile_on_mouse():
@@ -114,8 +127,14 @@ func place_key_on_mouse() -> void:
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord = get_mouse_tile_coord(32)
+	var coord = get_mouse_coord(16)
 	level.place_player_spawn(coord)
+
+func place_goal_on_mouse() -> void:
+	if editor_data.disable_editing: return
+	if is_mouse_out_of_bounds(): return
+	var coord = get_mouse_coord(16)
+	level.place_goal(coord)
 
 func get_mouse_coord(grid_size: int) -> Vector2i:
 	return Vector2i(get_global_mouse_position() - get_level_pos()) / Vector2i(grid_size, grid_size) * Vector2i(grid_size, grid_size)

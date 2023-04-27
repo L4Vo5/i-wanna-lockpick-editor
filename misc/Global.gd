@@ -97,3 +97,13 @@ func set_mode(mode: Modes) -> void:
 		_set_viewport_to_gameplay()
 	else:
 		_set_viewport_to_editor()
+
+func fatal_error(text: String, size: Vector2i) -> void:
+	error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	
+	error_dialog.size = size
+	error_dialog.dialog_text = text
+	
+	error_dialog.popup_centered()
+	await error_dialog.visibility_changed
+	get_tree().quit()

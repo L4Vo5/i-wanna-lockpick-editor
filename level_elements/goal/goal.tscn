@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://co8kt44378qlq"]
+
+[ext_resource type="Script" path="res://level_elements/goal/goal.gd" id="1_86jih"]
+[ext_resource type="Texture2D" uid="uid://5je7lc0xwrl8" path="res://level_elements/goal/goal_sprites.png" id="2_ry2y7"]
+[ext_resource type="AudioStream" uid="uid://lcqkdym8yi06" path="res://level_elements/goal/win.wav" id="3_1r06c"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_shx3d"]
+radius = 16.0
+
+[node name="goal" type="Area2D"]
+collision_layer = 0
+collision_mask = 16
+script = ExtResource("1_86jih")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_shx3d")
+
+[node name="Particles" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_ry2y7")
+hframes = 4
+frame = 1
+
+[node name="Win" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_1r06c")

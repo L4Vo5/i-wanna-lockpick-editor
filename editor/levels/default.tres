@@ -1,14 +1,17 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3 uid="uid://b12m5jhti4o55"]
+[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://data/level_data.gd" id="1_yd7bo"]
 
 [resource]
 script = ExtResource("1_yd7bo")
 version = "0.0.2.0"
+num_version = 1
+editor_version = ""
 doors = Array[Resource("res://data/door_data.gd")]([])
 keys = Array[Resource("res://data/key_data.gd")]([])
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(398, 352)
+goal_position = Vector2i(416, 304)
 custom_lock_arrangements = {}
 tiles = {
 Vector2i(2, 20): true,
@@ -29,3 +32,4 @@ Vector2i(14, 8): true,
 Vector2i(14, 12): true,
 Vector2i(14, 13): true
 }
+level_name = ""

@@ -59,6 +59,7 @@ var star_keys := {
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
 const PLAYER := preload("res://level_elements/kid/kid.tscn")
+const GOAL := preload("res://level_elements/goal/goal.tscn")
 
 @onready var doors: Node2D = %Doors
 @onready var keys: Node2D = %Keys
@@ -69,6 +70,7 @@ const PLAYER := preload("res://level_elements/kid/kid.tscn")
 # undo/redo actions should be handled somewhere in here, too
 
 var player: Kid
+var goal: LevelGoal
 signal changed_i_view
 var i_view := false
 
@@ -108,13 +110,14 @@ func reset() -> void:
 	
 	# Spawn everything
 	# Player has to go first so the last one is deleted before objects are spawned
-	_spawn_player()
 	for door_data in level_data.doors:
 		_spawn_door(door_data)
 	for key_data in level_data.keys:
 		_spawn_key(key_data)
 	for tile_coord in level_data.tiles:
 		_spawn_tile(tile_coord)
+	_spawn_goal()
+	_spawn_player()
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
@@ -123,6 +126,8 @@ func _connect_level_data() -> void:
 	level_data.check_valid()
 	level_data.changed_player_spawn_position.connect(_update_player_spawn_position)
 	_update_player_spawn_position()
+	level_data.changed_goal_position.connect(_update_goal_position)
+	_update_goal_position()
 	reset()
 
 func _disconnect_level_data() -> void:
@@ -133,6 +138,10 @@ func _update_player_spawn_position() -> void:
 	if not is_ready: return
 	player_spawn_point.visible = Global.in_level_editor
 	player_spawn_point.position = level_data.player_spawn_position
+
+func _update_goal_position() -> void:
+	if not is_ready: return
+	goal.position = level_data.goal_position + Vector2i(16, 16)
 
 # Editor functions
 
@@ -179,14 +188,17 @@ func remove_key(key: Key) -> void:
 	level_data.keys.erase(key.get_meta(&"original_key_data"))
 	key.queue_free()
 
-func place_player_spawn(tile_coord: Vector2i) -> void:
-	var coord := tile_coord * 32
-	if is_space_occupied(Rect2i(coord, Vector2i(32, 32))): return
+func place_player_spawn(coord: Vector2i) -> void:
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"player_spawn"]): return
 	level_data.player_spawn_position = coord + Vector2i(14, 32)
+
+func place_goal(coord: Vector2i) -> void:
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"goal"]): return
+	level_data.goal_position = coord
 
 func place_tile(tile_coord: Vector2i) -> void:
 	if level_data.tiles.has(tile_coord): return
-	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), false, true): return
+	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
 	level_data.tiles[tile_coord] = true
 	_spawn_tile(tile_coord)
 
@@ -214,21 +226,33 @@ func _spawn_player() -> void:
 	player.position = level_data.player_spawn_position
 	add_child(player)
 
+func _spawn_goal() -> void:
+	if is_instance_valid(goal):
+		remove_child(goal)
+		goal.queue_free()
+	goal = GOAL.instantiate()
+	goal.position = level_data.goal_position + Vector2i(16, 16)
+	add_child(goal)
+
 ## Returns true if there's a tile, door, key, or player spawn position inside the given rect
 # TODO: Optimize this obviously. mainly tiles OBVIOUSLY
-func is_space_occupied(rect: Rect2i, exclude_player_spawn := false, exclude_tiles := false) -> bool:
-	for door in level_data.doors:
-		if door.get_rect().intersects(rect):
+func is_space_occupied(rect: Rect2i, exclusions: Array[String] = []) -> bool:
+	if not &"doors" in exclusions:
+		for door in level_data.doors:
+			if door.get_rect().intersects(rect):
+				return true
+	if not &"keys" in exclusions:
+		for key in level_data.keys:
+			if key.get_rect().intersects(rect):
+				return true
+	if not &"goal" in exclusions:
+		if Rect2i((level_data.goal_position), Vector2i(32, 32)).intersects(rect):
 			return true
-	for key in level_data.keys:
-		if key.get_rect().intersects(rect):
-			return true
-	#TODO: tiles
-	if not exclude_player_spawn:
-		var spawn_pos := (level_data.player_spawn_position - Vector2i(0, 16) / Vector2i(32, 32)) * Vector2i(32, 32)
+	if not &"player_spawn" in exclusions:
+		var spawn_pos := (level_data.player_spawn_position - Vector2i(14, 32))
 		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
 			return true
-	if not exclude_tiles:
+	if not &"tiles" in exclusions:
 		for tile_pos in level_data.tiles:
 			if Rect2i(tile_pos * 32, Vector2i(32, 32)).intersects(rect):
 				return true

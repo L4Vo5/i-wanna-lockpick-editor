@@ -3,10 +3,14 @@ class_name LevelData
 
 # has this level been loaded already? (no version check should be done)
 var has_been_loaded := false
+# DEPRECATED. Delete soon!
 @export var version: String:
 	set(val):
 		version = val
 		check_version()
+@export var num_version: int = 1
+# Just in case it's needed
+@export var editor_version: String
 
 @export var doors: Array[DoorData] = []
 @export var keys: Array[KeyData] = []
@@ -18,10 +22,20 @@ signal changed_player_spawn_position
 		player_spawn_position = val
 		changed_player_spawn_position.emit()
 		changed.emit()
+signal changed_goal_position
+@export var goal_position := Vector2i(0, 0):
+	set(val):
+		if goal_position == val: return
+		goal_position = val
+		changed_goal_position.emit()
+		changed.emit()
 @export var custom_lock_arrangements := {}
 ## Just saves all positions for the tiles... I'll come up with something better later ok
 # It's a dict so it's not absurdly inefficient to check for repeats when placing new ones
 @export var tiles := {}
+@export var level_name := ""
+# For easier saving
+var file_path := ""
 
 func clear_outside_things() -> void:
 	var amount_deleted := 0
@@ -73,6 +87,7 @@ const COMPATIBLE_VERSIONS := [
 func check_version() -> void:
 	if has_been_loaded: return
 	has_been_loaded = true
+	return
 	print("loading from version %s" % version)
 	if version == "" or version == null:
 		printerr("Why is this level being set to a null version?")
@@ -88,17 +103,13 @@ func check_version() -> void:
 		0:
 			pass
 		1: # made in newer version
-			Global.error_dialog.size = Vector2i(500, 200)
-			Global.error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			Global.error_dialog.popup_centered()
-			Global.error_dialog.dialog_text = \
+			var error_text := \
 """This level was made in version %s.
 You're on version %s.
 There's currently no plan to try to handle this.
 Please install the new version.
 The application will now be closed.""" % [version, Global.game_version]
-			await Global.error_dialog.visibility_changed
-			Global.get_tree().quit()
+			Global.fatal_error(error_text, Vector2i(500, 200))
 
 # Checks if the level is valid, and fixes any invalidness
 func check_valid() -> void:

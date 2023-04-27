@@ -2,7 +2,7 @@ extends Control
 class_name LockpickEditor
 
 @export var level: Level 
-@export var side_container: TabContainer
+@export var side_tabs: TabContainer
 @export var door_editor: DoorEditor
 @export var key_editor: KeyEditor
 @export var tile_editor: Control
@@ -36,11 +36,17 @@ func _ready() -> void:
 	data.level_data = level.level_data
 	data.door_editor = door_editor
 	data.key_editor = key_editor
+	data.side_tabs = side_tabs
+	
+	data.side_tab_doors = door_editor
+	data.side_tab_keys = key_editor
+	data.side_tab_tile = tile_editor
+	data.side_tab_level = level_properties_editor
 	
 	level_container.editor_data = data
 	level_properties_editor.editor_data = data
 	
-	side_container.tab_changed.connect(_update_mode.unbind(1))
+	side_tabs.tab_changed.connect(_update_mode.unbind(1))
 	play_button.pressed.connect(_on_play_pressed)
 	
 	save_button.pressed.connect(save_level)
@@ -52,8 +58,7 @@ func _ready() -> void:
 	
 	level_path_displayer.tooltip_text = "The current level's path"
 	
-	file_dialog.add_filter("*.res", "Binary Resource (smaller)")
-	file_dialog.add_filter("*.tres", "Text Resource (somewhat readable)")
+	file_dialog.add_filter("*.lvl", "Level file")
 	file_dialog.file_selected.connect(_on_file_selected)
 	
 	var popup_menu := more_options.get_popup()
@@ -63,7 +68,7 @@ func _ready() -> void:
 	
 
 func _update_mode() -> void:
-	var tab_editor := side_container.get_current_tab_control()
+	var tab_editor := side_tabs.get_current_tab_control()
 	data.tilemap_edit = tab_editor == tile_editor
 	data.doors = tab_editor == door_editor
 	data.keys = tab_editor == key_editor
@@ -75,7 +80,7 @@ func _on_play_pressed() -> void:
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
-	side_container.visible = not data.disable_editing
+	side_tabs.visible = not data.disable_editing
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
 	level.reset()
@@ -85,31 +90,63 @@ func _on_play_pressed() -> void:
 func save_level() -> void:
 	if not Global.in_editor:
 		if not data.is_playing:
-			ResourceSaver.save(data.level_data)
+			var path := data.level_data.file_path
+			if path == "":
+				path = data.level_data.resource_path
+			var ext := path.get_extension()
+			if ext in ["res", "tres"]:
+				if path.begins_with("res://"):
+					# One of the default levels, save it
+					ResourceSaver.save(data.level_data)
+				else:
+					assert(false)
+			elif ext == "lvl":
+				SaveLoad.save_level(data.level_data)
+
+func load_level(path: String) -> void:
+	var ext := path.get_extension()
+	if ext in ["res", "tres"]:
+		# TODO: Deprecate loading .res and .tres files unless they're from res://
+		var res := load(path)
+		var valid := (res != null) and (res is LevelData)
+		if valid:
+			data.level_data = res
+			res.file_path = path
+	elif ext == "lvl":
+		data.level_data = SaveLoad.load_from(path)
+	else:
+		assert(false)
 
 func _update_level_path() -> void:
 	level_path_displayer.text = data.level_data.resource_path
 
 func _on_save_as_pressed() -> void:
 	file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	
+	file_dialog.clear_filters()
+	file_dialog.add_filter("*.lvl", "Level file")
+	
 	file_dialog.popup_centered_ratio(0.9)
 
 func _on_load_pressed() -> void:
 	file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	
+	file_dialog.clear_filters()
+	file_dialog.add_filter("*.lvl", "Level file")
+	file_dialog.add_filter("*.res", "Binary Resource")
+	file_dialog.add_filter("*.tres", "Text Resource")
+	
 	file_dialog.popup_centered_ratio(0.9)
 
 func _on_file_selected(path: String) -> void:
 	match file_dialog.file_mode:
 		FileDialog.FILE_MODE_SAVE_FILE:
 			# Save
-			data.level_data.resource_path = path
+			data.level_data.file_path = path
 			save_level()
 		FileDialog.FILE_MODE_OPEN_FILE:
 			# Open
-			var res := load(path)
-			var valid := (res != null) and (res is LevelData)
-			if valid:
-				data.level_data = res
+			load_level(path)
 
 func _on_more_options_selected(idx: int) -> void:
 	var popup_menu := more_options.get_popup()

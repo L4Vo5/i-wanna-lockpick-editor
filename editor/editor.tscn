@@ -14,12 +14,12 @@
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="10_jx68y"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="12_2ius3"]
 
-[sub_resource type="Resource" id="Resource_2f3cl"]
+[sub_resource type="Resource" id="Resource_hjj1m"]
 script = ExtResource("8_alamw")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_r6shd"]
+[sub_resource type="Resource" id="Resource_8koih"]
 script = ExtResource("9_5wk1m")
 color = 1
 magnitude = 1
@@ -31,11 +31,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_mes27"]
+[sub_resource type="Resource" id="Resource_rfssg"]
 script = ExtResource("9_2s68o")
-amount = SubResource("Resource_2f3cl")
+amount = SubResource("Resource_hjj1m")
 outer_color = 1
-locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_r6shd")])
+locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_8koih")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -46,19 +46,19 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_mqxwk"]
+[sub_resource type="Resource" id="Resource_scil7"]
 script = ExtResource("8_alamw")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_iq6yb"]
+[sub_resource type="Resource" id="Resource_m6s3p"]
 script = ExtResource("12_2ius3")
-amount = SubResource("Resource_mqxwk")
+amount = SubResource("Resource_scil7")
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("level", "side_container", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "level_path_displayer", "more_options", "file_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("level", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "level_path_displayer", "more_options", "file_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -67,7 +67,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_244aj")
 level = NodePath("HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level")
-side_container = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs")
+side_tabs = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs")
 door_editor = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Doors")
 key_editor = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Keys")
 tile_editor = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Tiles")
@@ -199,6 +199,14 @@ collision_layer = 0
 collision_mask = 0
 in_keypad = true
 
+[node name="Fill" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="2"]
+modulate = Color(0.839216, 0.811765, 0.788235, 1)
+
+[node name="Number" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="9"]
+theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
+theme_override_colors/font_shadow_color = Color(0.211765, 0.188235, 0.160784, 1)
+theme_override_colors/font_outline_color = Color(0.921569, 0.890196, 0.866667, 1)
+
 [node name="GuiInputGrabber" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="11"]
 mouse_filter = 2
 
@@ -214,6 +222,7 @@ grow_vertical = 2
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
 positional_shadow_atlas_size = 0
+render_target_update_mode = 4
 
 [node name="Level" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("5_t6w1l")]
 level_data = ExtResource("6_n1ajy")
@@ -232,12 +241,12 @@ use_hidden_tabs_for_min_size = true
 
 [node name="Doors" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
 layout_mode = 2
-door_data = SubResource("Resource_mes27")
+door_data = SubResource("Resource_rfssg")
 
 [node name="Keys" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_iq6yb")
+key_data = SubResource("Resource_m6s3p")
 
 [node name="Tiles" type="MarginContainer" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs"]
 visible = false
