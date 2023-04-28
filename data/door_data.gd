@@ -55,10 +55,12 @@ class_name DoorData
 
 func set_curse(curse: Enums.curse, val: bool) -> void:
 	if _curses[curse] == val: return
-	_curses[curse] = val
 	if curse == Enums.curse.brown:
+		if has_color(Enums.colors.pure):
+			return
 		for lock in locks:
 			lock.is_cursed = val
+	_curses[curse] = val
 	changed.emit()
 
 func get_curse(curse: Enums.curse) -> bool:
@@ -106,7 +108,7 @@ func try_open() -> Dictionary:
 			can_master = false
 		else:
 			for lock in locks:
-				if lock.color in non_copiable_colors:
+				if lock.get_used_color() in non_copiable_colors:
 					can_master = false
 					break
 		if can_master:
@@ -166,10 +168,10 @@ func update_glitch_color(color: Enums.colors) -> void:
 		glitch_color = color
 
 func has_color(color: Enums.colors) -> bool:
-	if outer_color == color:
+	if get_used_color() == color:
 		return true
 	for lock in locks:
-		if lock.color == color:
+		if lock.get_used_color() == color:
 			return true
 	return false
 

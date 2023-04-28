@@ -8,7 +8,7 @@ var has_been_loaded := false
 	set(val):
 		version = val
 		check_version()
-@export var num_version: int = 1
+@export var num_version: int = SaveLoad.LATEST_FORMAT
 # Just in case it's needed
 @export var editor_version: String
 
@@ -33,9 +33,22 @@ signal changed_goal_position
 ## Just saves all positions for the tiles... I'll come up with something better later ok
 # It's a dict so it's not absurdly inefficient to check for repeats when placing new ones
 @export var tiles := {}
-@export var level_name := ""
+@export var name := "":
+	set(val):
+		if name == val: return
+		name = val
+		changed.emit()
+@export var author := "":
+	set(val):
+		if author == val: return
+		author = val
+		changed.emit()
 # For easier saving
-var file_path := ""
+var file_path := "":
+	set(val):
+		if file_path == val: return
+		file_path = val
+		changed.emit()
 
 func clear_outside_things() -> void:
 	var amount_deleted := 0
@@ -70,46 +83,10 @@ func clear_outside_things() -> void:
 	if amount_deleted != 0:
 		print("deleted %d outside things" % amount_deleted)
 
-# For my own reference lol
-const VERSIONS_LIST := [
-	"0.0.1.0",
-	"0.0.1.1",
-	"0.0.1.2",
-	"0.0.2.0", # Current
-]
-# Versions that are fully compatible with the current one
-const COMPATIBLE_VERSIONS := [
-	"0.0.1.0",
-	"0.0.1.1",
-	"0.0.1.2",
-	"0.0.2.0", # Current
-]
 func check_version() -> void:
 	if has_been_loaded: return
 	has_been_loaded = true
-	return
-	print("loading from version %s" % version)
-	if version == "" or version == null:
-		printerr("Why is this level being set to a null version?")
-		breakpoint
-		version = Global.game_version
-	match version.naturalnocasecmp_to(Global.game_version):
-		-1: # made in older version
-			print("Loading a level from older version \"%s\"" % version)
-			if version in COMPATIBLE_VERSIONS:
-				version = Global.game_version
-			else:
-				pass # currently unhandled
-		0:
-			pass
-		1: # made in newer version
-			var error_text := \
-"""This level was made in version %s.
-You're on version %s.
-There's currently no plan to try to handle this.
-Please install the new version.
-The application will now be closed.""" % [version, Global.game_version]
-			Global.fatal_error(error_text, Vector2i(500, 200))
+
 
 # Checks if the level is valid, and fixes any invalidness
 func check_valid() -> void:

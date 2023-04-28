@@ -1,6 +1,31 @@
 class_name SaveLoad
 
 const PRINT_LOAD := true
+const LATEST_FORMAT := 1
+
+static func get_image(level: LevelData) -> Image:
+	# Currently I'm not sure how to keep the advantages of the store_* and get_* functions without using FileAccess
+	var file := FileAccess.open("", FileAccess.WRITE_READ)
+	_save_v1(level, file)
+	
+	var data := file.get_buffer(file.get_length())
+	var img := Image.new()
+	var pixel_count := data.size() / 3 + 1
+	var image_size := (ceili(sqrt(pixel_count as float)))
+	data.resize(image_size*image_size*3)
+	img.set_data(image_size, image_size, false, Image.FORMAT_RGB8, data)
+	
+	return img
+
+
+		# Load image
+#		var img := Image.load_from_file("user://test.png")
+#		var new_file := FileAccess.open("invalid", FileAccess.WRITE_READ)
+#		new_file.store_buffer(img.get_data())
+#		new_file.seek(0)
+#		file = new_file
+#		file.get_16()
+#		lvl_data = _load_v1(file)
 
 static func save_level(level: LevelData) -> void:
 	var path := level.file_path
@@ -11,25 +36,34 @@ static func load_from(path: String) -> LevelData:
 	var file := FileAccess.open(path, FileAccess.READ)
 	var version := file.get_16()
 	var lvl_data: LevelData
-	if PRINT_LOAD: print("Loading from %s. version is %d " % [path, version])
+	var original_editor_version := file.get_pascal_string()
+	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version is %s" % [path, version, original_editor_version])
 	if version == 1:
 		lvl_data = _load_v1(file)
 	else:
-		assert(false, "File is version %d, which is unsupported " % version)
+		var error_text := \
+"""This level was made in editor version %s and uses the saving format N°%d.
+You're on version %s, which supports up to the saving format %d.
+Loading cancelled.""" % [original_editor_version, version, Global.game_version, LATEST_FORMAT]
+		Global.safe_error(error_text, Vector2i(700, 100))
+#		assert(false, "File is version %d, which is unsupported " % version)
 		return null
+	# Now that it's imported, it'll save with the latest version
+	lvl_data.num_version = LATEST_FORMAT
+	lvl_data.editor_version = Global.game_version
 	lvl_data.file_path = path
 	return lvl_data
 
 static func _save_v1(level: LevelData, file: FileAccess) -> void:
 	file.store_16(level.num_version)
 	file.store_pascal_string(level.editor_version)
-	file.store_pascal_string(level.level_name)
+	file.store_pascal_string(level.name)
+	file.store_pascal_string(level.author)
 	file.store_32(level.size.x)
 	file.store_32(level.size.y)
 	file.store_var(level.custom_lock_arrangements)
 	file.store_32(level.goal_position.x)
 	file.store_32(level.goal_position.y)
-	if PRINT_LOAD: print("saving player pos: %s" % str(level.player_spawn_position))
 	file.store_32(level.player_spawn_position.x)
 	file.store_32(level.player_spawn_position.y)
 	# Tiles
@@ -99,10 +133,8 @@ static func _save_complex_v1(file: FileAccess, n: ComplexNumber) -> void:
 
 static func _load_v1(file: FileAccess) -> LevelData:
 	var level := LevelData.new()
-	level.num_version = 1
-	level.editor_version = file.get_pascal_string()
-	level.level_name = file.get_pascal_string()
-	if PRINT_LOAD: print("editor version is %s" % level.editor_version)
+	level.name = file.get_pascal_string()
+	level.author = file.get_pascal_string()
 	level.size = Vector2i(file.get_32(), file.get_32())
 	level.custom_lock_arrangements = file.get_var()
 	level.goal_position = Vector2i(file.get_32(), file.get_32())

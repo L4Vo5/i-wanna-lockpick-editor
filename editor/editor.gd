@@ -2,6 +2,7 @@ extends Control
 class_name LockpickEditor
 
 @export var level: Level 
+@export var right_dock: MarginContainer
 @export var side_tabs: TabContainer
 @export var door_editor: DoorEditor
 @export var key_editor: KeyEditor
@@ -30,6 +31,9 @@ func _exit_tree() -> void:
 	Global.in_level_editor = false
 
 func _ready() -> void:
+	DirAccess.make_dir_absolute("user://levels")
+	file_dialog.current_dir = "levels"
+	move_levels("user://", "user://levels")
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
 	
@@ -53,9 +57,6 @@ func _ready() -> void:
 	save_as_button.pressed.connect(_on_save_as_pressed)
 	load_button.pressed.connect(_on_load_pressed)
 	
-	data.changed_level_path.connect(_update_level_path)
-	_update_level_path()
-	
 	level_path_displayer.tooltip_text = "The current level's path"
 	
 	file_dialog.add_filter("*.lvl", "Level file")
@@ -66,6 +67,7 @@ func _ready() -> void:
 	popup_menu.add_item("More extra options coming soon? xD")
 	popup_menu.index_pressed.connect(_on_more_options_selected)
 	
+	_update_level_path_display()
 
 func _update_mode() -> void:
 	var tab_editor := side_tabs.get_current_tab_control()
@@ -80,7 +82,7 @@ func _on_play_pressed() -> void:
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
-	side_tabs.visible = not data.disable_editing
+	right_dock.visible = not data.disable_editing
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
 	level.reset()
@@ -97,11 +99,14 @@ func save_level() -> void:
 			if ext in ["res", "tres"]:
 				if path.begins_with("res://"):
 					# One of the default levels, save it
+					data.level_data.resource_path = path
 					ResourceSaver.save(data.level_data)
 				else:
 					assert(false)
 			elif ext == "lvl":
+				data.level_data.resource_path = ""
 				SaveLoad.save_level(data.level_data)
+	_update_level_path_display()
 
 func load_level(path: String) -> void:
 	var ext := path.get_extension()
@@ -110,15 +115,24 @@ func load_level(path: String) -> void:
 		var res := load(path)
 		var valid := (res != null) and (res is LevelData)
 		if valid:
+			if not path.begins_with("res://"):
+				path = path.get_basename() + ".lvl"
+				res.resource_path = ""
 			data.level_data = res
 			res.file_path = path
 	elif ext == "lvl":
-		data.level_data = SaveLoad.load_from(path)
+		var new_level := SaveLoad.load_from(path)
+		if is_instance_valid(new_level):
+			data.level_data = new_level
 	else:
 		assert(false)
+	_update_level_path_display()
 
-func _update_level_path() -> void:
-	level_path_displayer.text = data.level_data.resource_path
+func _update_level_path_display() -> void:
+	if data.level_data.resource_path != "":
+		level_path_displayer.text = data.level_data.resource_path
+	else:
+		level_path_displayer.text = data.level_data.file_path
 
 func _on_save_as_pressed() -> void:
 	file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
@@ -152,9 +166,19 @@ func _on_more_options_selected(idx: int) -> void:
 	var popup_menu := more_options.get_popup()
 	match popup_menu.get_item_text(idx):
 		"Open Level Files Location":
-			var file_access := FileAccess.open("user://default_level.tres", FileAccess.READ)
-			OS.shell_open(ProjectSettings.globalize_path("user://"))
+			OS.shell_open(ProjectSettings.globalize_path("user://levels/"))
 		"More extra options coming soon? xD":
 			pass
 		_:
 			assert(false)
+
+const LEVEL_EXTENSIONS := ["res", "tres", "lvl"]
+# Moves all levels (incl. .res and .tres) from one location to another
+func move_levels(from: String, to: String) -> void:
+	var dir := DirAccess.open(from)
+	for file_name in dir.get_files():
+		print("moving " + file_name)
+		if file_name.get_extension() in LEVEL_EXTENSIONS:
+			var err := dir.rename(file_name, to.path_join(file_name))
+			if err != OK:
+				print("failed to move %s. error code %d" % [file_name, err])

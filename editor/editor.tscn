@@ -14,12 +14,12 @@
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="10_jx68y"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="12_2ius3"]
 
-[sub_resource type="Resource" id="Resource_hjj1m"]
+[sub_resource type="Resource" id="Resource_u0ibk"]
 script = ExtResource("8_alamw")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_8koih"]
+[sub_resource type="Resource" id="Resource_b5idi"]
 script = ExtResource("9_5wk1m")
 color = 1
 magnitude = 1
@@ -31,11 +31,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_rfssg"]
+[sub_resource type="Resource" id="Resource_7gmii"]
 script = ExtResource("9_2s68o")
-amount = SubResource("Resource_hjj1m")
+amount = SubResource("Resource_u0ibk")
 outer_color = 1
-locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_8koih")])
+locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_b5idi")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -46,19 +46,19 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_scil7"]
+[sub_resource type="Resource" id="Resource_cwl52"]
 script = ExtResource("8_alamw")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_m6s3p"]
+[sub_resource type="Resource" id="Resource_k5qgk"]
 script = ExtResource("12_2ius3")
-amount = SubResource("Resource_scil7")
+amount = SubResource("Resource_cwl52")
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("level", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "level_path_displayer", "more_options", "file_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("level", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "level_path_displayer", "more_options", "file_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -66,19 +66,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_244aj")
-level = NodePath("HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level")
-side_tabs = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs")
-door_editor = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Doors")
-key_editor = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Keys")
-tile_editor = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Tiles")
-level_properties_editor = NodePath("HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Level")
-level_container = NodePath("HBoxContainer/VBoxContainer/LevelContainer")
-play_button = NodePath("HBoxContainer/VBoxContainer/Tools/HBoxContainer/Play")
-save_button = NodePath("HBoxContainer/VBoxContainer/Tools/HBoxContainer/Save")
-save_as_button = NodePath("HBoxContainer/VBoxContainer/Tools/HBoxContainer/SaveAs")
-load_button = NodePath("HBoxContainer/VBoxContainer/Tools/HBoxContainer/Load")
-level_path_displayer = NodePath("HBoxContainer/VBoxContainer/Tools/HBoxContainer/LevelPath")
-more_options = NodePath("HBoxContainer/VBoxContainer/Tools/HBoxContainer/MoreOptions")
+level = NodePath("HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level")
+right_dock = NodePath("HSplitContainer/HBoxContainer2/RightDock")
+side_tabs = NodePath("HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs")
+door_editor = NodePath("HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs/Doors")
+key_editor = NodePath("HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs/Keys")
+tile_editor = NodePath("HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs/Tiles")
+level_properties_editor = NodePath("HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs/Level")
+level_container = NodePath("HSplitContainer/VBoxContainer/LevelContainer")
+play_button = NodePath("HSplitContainer/VBoxContainer/Tools/HBoxContainer/Play")
+save_button = NodePath("HSplitContainer/VBoxContainer/Tools/HBoxContainer/Save")
+save_as_button = NodePath("HSplitContainer/VBoxContainer/Tools/HBoxContainer/SaveAs")
+load_button = NodePath("HSplitContainer/VBoxContainer/Tools/HBoxContainer/Load")
+level_path_displayer = NodePath("HSplitContainer/VBoxContainer/Tools/HBoxContainer/LevelPath")
+more_options = NodePath("HSplitContainer/VBoxContainer/Tools/HBoxContainer/MoreOptions")
 file_dialog = NodePath("FileDialogue")
 
 [node name="Panel" type="Panel" parent="."]
@@ -89,7 +90,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -97,39 +98,39 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Tools" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="Tools" type="MarginContainer" parent="HSplitContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/Tools"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/VBoxContainer/Tools"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="Play" type="Button" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+[node name="Play" type="Button" parent="HSplitContainer/VBoxContainer/Tools/HBoxContainer"]
 layout_mode = 2
 text = "Play"
 
-[node name="Save" type="Button" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+[node name="Save" type="Button" parent="HSplitContainer/VBoxContainer/Tools/HBoxContainer"]
 layout_mode = 2
 text = "Save"
 
-[node name="SaveAs" type="Button" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+[node name="SaveAs" type="Button" parent="HSplitContainer/VBoxContainer/Tools/HBoxContainer"]
 layout_mode = 2
 text = "Save As..."
 
-[node name="Load" type="Button" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+[node name="Load" type="Button" parent="HSplitContainer/VBoxContainer/Tools/HBoxContainer"]
 layout_mode = 2
 text = "Load"
 
-[node name="MoreOptions" type="MenuButton" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+[node name="MoreOptions" type="MenuButton" parent="HSplitContainer/VBoxContainer/Tools/HBoxContainer"]
 layout_mode = 2
 text = "More..."
 
-[node name="LevelPath" type="LineEdit" parent="HBoxContainer/VBoxContainer/Tools/HBoxContainer"]
+[node name="LevelPath" type="LineEdit" parent="HSplitContainer/VBoxContainer/Tools/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 10
 text = "res://fgsdfgsdfgt.tres"
@@ -138,7 +139,7 @@ editable = false
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelContainer" type="Control" parent="HBoxContainer/VBoxContainer" node_paths=PackedStringArray("inner_container", "level", "level_viewport", "tile_map", "door_editor", "key_editor", "editor")]
+[node name="LevelContainer" type="Control" parent="HSplitContainer/VBoxContainer" node_paths=PackedStringArray("inner_container", "level", "level_viewport", "tile_map", "door_editor", "key_editor", "editor")]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -152,7 +153,7 @@ door_editor = NodePath("../../HBoxContainer2/RightDock/SideEditorTabs/Doors")
 key_editor = NodePath("../../HBoxContainer2/RightDock/SideEditorTabs/Keys")
 editor = NodePath("../../..")
 
-[node name="Panel" type="Panel" parent="HBoxContainer/VBoxContainer/LevelContainer"]
+[node name="Panel" type="Panel" parent="HSplitContainer/VBoxContainer/LevelContainer"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -161,7 +162,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer/LevelContainer"]
+[node name="ColorRect" type="ColorRect" parent="HSplitContainer/VBoxContainer/LevelContainer"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -171,13 +172,13 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0.0823529)
 
-[node name="LevelContainerInner" type="Control" parent="HBoxContainer/VBoxContainer/LevelContainer"]
+[node name="LevelContainerInner" type="Control" parent="HSplitContainer/VBoxContainer/LevelContainer"]
 clip_contents = true
 layout_mode = 1
 anchors_preset = 0
 mouse_filter = 2
 
-[node name="ColorRect" type="ColorRect" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner"]
+[node name="ColorRect" type="ColorRect" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -187,30 +188,30 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.54902, 0.54902, 0.54902, 1)
 
-[node name="GhostDoor" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner" instance=ExtResource("3_d13v5")]
+[node name="GhostDoor" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner" instance=ExtResource("3_d13v5")]
 visible = false
 layout_mode = 0
 mouse_filter = 2
 ignore_collisions = true
 
-[node name="GhostKey" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner" instance=ExtResource("4_tvl64")]
+[node name="GhostKey" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner" instance=ExtResource("4_tvl64")]
 visible = false
 collision_layer = 0
 collision_mask = 0
 in_keypad = true
 
-[node name="Fill" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="2"]
+[node name="Fill" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="2"]
 modulate = Color(0.839216, 0.811765, 0.788235, 1)
 
-[node name="Number" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="9"]
+[node name="Number" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="9"]
 theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
 theme_override_colors/font_shadow_color = Color(0.211765, 0.188235, 0.160784, 1)
 theme_override_colors/font_outline_color = Color(0.921569, 0.890196, 0.866667, 1)
 
-[node name="GuiInputGrabber" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="11"]
+[node name="GuiInputGrabber" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="11"]
 mouse_filter = 2
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -218,50 +219,51 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SubViewport" type="SubViewport" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/SubViewportContainer"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
 positional_shadow_atlas_size = 0
 render_target_update_mode = 4
 
-[node name="Level" parent="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("5_t6w1l")]
+[node name="Level" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("5_t6w1l")]
 level_data = ExtResource("6_n1ajy")
 exclude_player = true
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="HSplitContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RightDock" type="MarginContainer" parent="HBoxContainer/HBoxContainer2"]
+[node name="RightDock" type="MarginContainer" parent="HSplitContainer/HBoxContainer2"]
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="SideEditorTabs" type="TabContainer" parent="HBoxContainer/HBoxContainer2/RightDock"]
+[node name="SideEditorTabs" type="TabContainer" parent="HSplitContainer/HBoxContainer2/RightDock"]
 layout_mode = 2
 use_hidden_tabs_for_min_size = true
 
-[node name="Doors" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
+[node name="Doors" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
 layout_mode = 2
-door_data = SubResource("Resource_rfssg")
+door_data = SubResource("Resource_7gmii")
 
-[node name="Keys" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
+[node name="Keys" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_m6s3p")
+key_data = SubResource("Resource_k5qgk")
 
-[node name="Tiles" type="MarginContainer" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs"]
+[node name="Tiles" type="MarginContainer" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs"]
 visible = false
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Tiles"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs/Tiles"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs/Tiles/VBoxContainer"]
+[node name="Label" type="Label" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs/Tiles/VBoxContainer"]
 layout_mode = 2
 text = "Nothing here (yet?), but you still need to select this tab to edit tiles."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Level" parent="HBoxContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("10_jx68y")]
+[node name="Level" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("10_jx68y")]
 visible = false
 layout_mode = 2
 
@@ -271,6 +273,7 @@ exclusive = false
 popup_window = true
 extend_to_title = true
 access = 1
+root_subfolder = "levels"
 show_hidden_files = true
 
-[editable path="HBoxContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey"]
+[editable path="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey"]

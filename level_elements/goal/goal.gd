@@ -29,6 +29,7 @@ func _physics_process(delta: float) -> void:
 			for i in 20:
 				var part := spawn_particle()
 				part.velocity *= remap(time_since, 80, 120, 10, 20)
+				part.velocity *= lerpf(0.95, 1.05, randf())
 				part.hue = i * 360.0 / 20.0
 				part.type = 1
 	
@@ -45,7 +46,7 @@ func win() -> void:
 	sprite.frame = 2
 	won.emit()
 
-func spawn_particle() -> Node2D:
+func spawn_particle(put_first := true) -> Node2D:
 	# Spawn particle
 	var part := PART.instantiate()
 	if has_won:
@@ -55,13 +56,14 @@ func spawn_particle() -> Node2D:
 			part.velocity *= 10
 	# TODO: This more effectively?
 	particles_parent.add_child(part)
-	particles_parent.move_child(part, 0)
+	if put_first:
+		particles_parent.move_child(part, 0)
 	return part
 
 func _on_body_entered(body: Node2D) -> void:
 	win()
 	child_inside = true
-	child_inside_time = time
+	child_inside_time = time + 60
 	
 	for child in particles_parent.get_children():
 		if child.has_meta(&"fast"): continue

@@ -6,7 +6,8 @@ var in_editor := Engine.is_editor_hint()
 var in_level_editor := false
 var game_version = ProjectSettings.get_setting("application/config/game_version")
 @onready var key_pad: Control = %KeyPad
-@onready var error_dialog: AcceptDialog = %ErrorDialog
+@onready var fatal_error_dialog: AcceptDialog = %FatalError
+@onready var safe_error_dialog: AcceptDialog = %SafeError
 @onready var http_request: HTTPRequest = $HTTPRequest
 
 signal changed_level
@@ -99,11 +100,20 @@ func set_mode(mode: Modes) -> void:
 		_set_viewport_to_editor()
 
 func fatal_error(text: String, size: Vector2i) -> void:
-	error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	fatal_error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	
-	error_dialog.size = size
-	error_dialog.dialog_text = text
+	fatal_error_dialog.size = size
+	fatal_error_dialog.dialog_text = text
 	
-	error_dialog.popup_centered()
-	await error_dialog.visibility_changed
+	fatal_error_dialog.popup_centered()
+	await fatal_error_dialog.visibility_changed
 	get_tree().quit()
+
+func safe_error(text: String, size: Vector2i) -> void:
+	safe_error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	
+	safe_error_dialog.size = size
+	safe_error_dialog.dialog_text = text
+	
+	safe_error_dialog.popup_centered()
+	
