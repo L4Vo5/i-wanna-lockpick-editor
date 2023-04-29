@@ -14,12 +14,12 @@
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="10_jx68y"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="12_2ius3"]
 
-[sub_resource type="Resource" id="Resource_u0ibk"]
+[sub_resource type="Resource" id="Resource_7l251"]
 script = ExtResource("8_alamw")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_b5idi"]
+[sub_resource type="Resource" id="Resource_xrlm7"]
 script = ExtResource("9_5wk1m")
 color = 1
 magnitude = 1
@@ -31,11 +31,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_7gmii"]
+[sub_resource type="Resource" id="Resource_2arru"]
 script = ExtResource("9_2s68o")
-amount = SubResource("Resource_u0ibk")
+amount = SubResource("Resource_7l251")
 outer_color = 1
-locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_b5idi")])
+locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_xrlm7")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -46,14 +46,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_cwl52"]
+[sub_resource type="Resource" id="Resource_1qiyv"]
 script = ExtResource("8_alamw")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_k5qgk"]
+[sub_resource type="Resource" id="Resource_uu6fb"]
 script = ExtResource("12_2ius3")
-amount = SubResource("Resource_cwl52")
+amount = SubResource("Resource_1qiyv")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -199,14 +199,8 @@ visible = false
 collision_layer = 0
 collision_mask = 0
 in_keypad = true
-
-[node name="Fill" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="2"]
-modulate = Color(0.839216, 0.811765, 0.788235, 1)
-
-[node name="Number" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="9"]
-theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
-theme_override_colors/font_shadow_color = Color(0.211765, 0.188235, 0.160784, 1)
-theme_override_colors/font_outline_color = Color(0.921569, 0.890196, 0.866667, 1)
+metadata/_edit_vertical_guides_ = [32.0]
+metadata/_edit_horizontal_guides_ = [32.0]
 
 [node name="GuiInputGrabber" parent="HSplitContainer/VBoxContainer/LevelContainer/LevelContainerInner/GhostKey" index="11"]
 mouse_filter = 2
@@ -243,12 +237,12 @@ use_hidden_tabs_for_min_size = true
 
 [node name="Doors" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
 layout_mode = 2
-door_data = SubResource("Resource_7gmii")
+door_data = SubResource("Resource_2arru")
 
 [node name="Keys" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_k5qgk")
+key_data = SubResource("Resource_uu6fb")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/HBoxContainer2/RightDock/SideEditorTabs"]
 visible = false

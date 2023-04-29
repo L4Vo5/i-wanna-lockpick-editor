@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3 uid="uid://dxh60ujhqy0q4"]
+
+[sub_resource type="Gradient" id="Gradient_a2m5r"]
+offsets = PackedFloat32Array(0, 0.2, 0.8, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.12549, 1, 1, 1, 0.12549, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_74qpi"]
+gradient = SubResource("Gradient_a2m5r")
+width = 128
+
+[node name="DoorLockSeparator" type="Control"]
+custom_minimum_size = Vector2(0, 9)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 207.0
+offset_bottom = 9.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control2" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Sep" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+size_flags_stretch_ratio = 6.38
+texture = SubResource("GradientTexture1D_74qpi")
+expand_mode = 2
+
+[node name="Control" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
