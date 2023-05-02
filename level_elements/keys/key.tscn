@@ -13,14 +13,14 @@
 [ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="11_jnf8c"]
 [ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://level_elements/keys/spr_special_keys.png" id="12_gx03b"]
 
-[sub_resource type="Resource" id="Resource_w2h4u"]
+[sub_resource type="Resource" id="Resource_8n32n"]
 script = ExtResource("2_0fvvp")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_ogwck"]
+[sub_resource type="Resource" id="Resource_0c58s"]
 script = ExtResource("3_ngkr3")
-amount = SubResource("Resource_w2h4u")
+amount = SubResource("Resource_8n32n")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -35,11 +35,28 @@ height = 25.4556
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_i7153"]
 size = Vector2(12.7018, 10.5562)
 
-[node name="key" type="Area2D"]
+[node name="key" type="Node2D"]
+script = ExtResource("1_m20su")
+key_data = SubResource("Resource_0c58s")
+
+[node name="Collision" type="Area2D" parent="."]
+unique_name_in_owner = true
 collision_layer = 8
 collision_mask = 16
-script = ExtResource("1_m20su")
-key_data = SubResource("Resource_ogwck")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision"]
+position = Vector2(9.5, 10)
+shape = SubResource("CircleShape2D_mb7fb")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Collision"]
+position = Vector2(21, 21)
+rotation = -0.785398
+shape = SubResource("CapsuleShape2D_kspn0")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Collision"]
+position = Vector2(23.3488, 20.8131)
+rotation = 0.785398
+shape = SubResource("RectangleShape2D_i7153")
 
 [node name="Shadow" type="Sprite2D" parent="."]
 unique_name_in_owner = true
@@ -78,20 +95,6 @@ texture = ExtResource("9_vu1hx")
 centered = false
 hframes = 4
 vframes = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(9.5, 10)
-shape = SubResource("CircleShape2D_mb7fb")
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
-position = Vector2(21, 21)
-rotation = -0.785398
-shape = SubResource("CapsuleShape2D_kspn0")
-
-[node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
-position = Vector2(23.3488, 20.8131)
-rotation = 0.785398
-shape = SubResource("RectangleShape2D_i7153")
 
 [node name="Pickup" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true

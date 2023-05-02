@@ -137,6 +137,7 @@ radius = 32.3883
 blend_mode = 1
 
 [node name="kid" type="CharacterBody2D"]
+process_priority = -5
 collision_layer = 16
 collision_mask = 14
 script = ExtResource("1_ytpc6")
@@ -240,3 +241,12 @@ bus = &"Sfx"
 unique_name_in_owner = true
 stream = ExtResource("12_k1q47")
 bus = &"Sfx"
+
+[node name="Area2D" type="Area2D" parent="."]
+visible = false
+collision_layer = 16
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0.5, -10.5)
+shape = SubResource("RectangleShape2D_k1m2g")

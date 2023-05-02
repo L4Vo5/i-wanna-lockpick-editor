@@ -38,6 +38,8 @@ var key_counts := {
 	Enums.colors.master: ComplexNumber.new(),
 	Enums.colors.stone: ComplexNumber.new(),
 }
+# This function call was made to ensure that. it'll run every frame and double check that the objects don't change
+const ENSURE_KEY_COUNTS := true
 var star_keys := {
 	Enums.colors.glitch: false,
 	Enums.colors.black: false,
@@ -54,6 +56,9 @@ var star_keys := {
 	Enums.colors.master: false,
 	Enums.colors.stone: false,
 }
+# Not really a setter, just used for undo/redo
+func set_star_key(color: Enums.colors, val: bool) -> void:
+	star_keys[color] = val
 
 
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
@@ -68,6 +73,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var debris_parent: Node2D = %DebrisParent
 
 # undo/redo actions should be handled somewhere in here, too
+var undo_redo: GoodUndoRedo
 
 var player: Kid
 var goal: LevelGoal
@@ -78,12 +84,31 @@ var i_view := false
 # useful for levels with a lot of door copies
 var door_multiplier := 1
 
+func _init() -> void:
+	undo_redo = GoodUndoRedo.new()
+	if ENSURE_KEY_COUNTS:
+		_ensure_key_counts()
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action(&"i-view") and event.is_pressed() and not event.is_echo():
 		i_view = not i_view
 		changed_i_view.emit()
 	if event.is_action(&"restart") and event.is_pressed():
 		reset()
+	if event.is_action(&"undo") and event.is_pressed():
+		if exclude_player: return
+		if undo_redo.get_action_count() == 0: return
+		undo_redo.undo()
+		if undo_redo.get_last_action() == -1:
+			undo_redo._last_action = 0
+	if event is InputEventKey:
+		if event.keycode == KEY_C and event.is_pressed():
+			
+			undo_redo.start_action()
+			var player_action := player.get_undo_action()
+			undo_redo.add_do_method(player_action)
+			undo_redo.add_undo_method(player_action)
+			undo_redo.commit_action()
 
 var is_ready := false
 func _ready() -> void:
@@ -92,6 +117,12 @@ func _ready() -> void:
 	reset()
 	_update_player_spawn_position()
 
+var last_player_undo: Callable
+var last_saved_player_undo: Callable
+func _physics_process(delta: float) -> void:
+	if is_instance_valid(player):
+		if player.on_floor:
+			last_player_undo = player.get_undo_action()
 
 func reset() -> void:
 	if not is_ready: return
@@ -107,6 +138,7 @@ func reset() -> void:
 		star_keys[color] = false
 	i_view = false
 	tile_map.clear()
+	undo_redo.clear_history()
 	
 	# Spawn everything
 	# Player has to go first so the last one is deleted before objects are spawned
@@ -180,6 +212,7 @@ func _spawn_key(key_data: KeyData) -> Key:
 	key.key_data = key_data.duplicated()
 	key.set_meta(&"original_key_data", key_data)
 	key.clicked.connect(_on_key_clicked.bind(key))
+	key.level = self
 	keys.add_child(key)
 	return key
 
@@ -225,6 +258,10 @@ func _spawn_player() -> void:
 	player = PLAYER.instantiate()
 	player.position = level_data.player_spawn_position
 	add_child(player)
+	
+	undo_redo.start_action()
+	undo_redo.add_undo_method(player.get_undo_action())
+	undo_redo.commit_action()
 
 func _spawn_goal() -> void:
 	if is_instance_valid(goal):
@@ -273,3 +310,30 @@ func get_doors() -> Array[Door]:
 
 func add_debris_child(debris: Node) -> void:
 	debris_parent.add_child(debris)
+
+func _ensure_key_counts():
+	var original_key_counts = key_counts.duplicate()
+	if not is_ready: await ready
+	while true:
+		for color in original_key_counts:
+			assert(key_counts[color] == original_key_counts[color])
+		await get_tree().physics_frame
+
+## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
+func start_undo_action() -> void:
+	if last_player_undo == last_saved_player_undo:
+		if undo_redo.get_action_count() > 1:
+			undo_redo.start_merge_last()
+			return
+	undo_redo.start_action()
+	
+	undo_redo.add_do_method(last_player_undo)
+	undo_redo.add_undo_method(last_player_undo)
+	last_saved_player_undo = last_player_undo
+
+## This is called after start_undo_action to finish the action
+func end_undo_action() -> void:
+	undo_redo.commit_action(false)
+
+
+

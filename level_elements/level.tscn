@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://btuot74j1fbp4" path="res://editor/player_spawnpoint.png" id="4_ue311"]
 
 [node name="Level" type="Node2D"]
+process_priority = -10
 script = ExtResource("1_vj4eo")
 
 [node name="TileMap" type="TileMap" parent="."]

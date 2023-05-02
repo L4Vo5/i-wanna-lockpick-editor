@@ -1,5 +1,5 @@
 @tool
-extends Area2D
+extends Node2D
 class_name Key
 ## Key lol
 
@@ -28,20 +28,21 @@ signal clicked(event: InputEventMouseButton)
 @onready var snd_pickup: AudioStreamPlayer = %Pickup
 @onready var number: Label = %Number
 @onready var symbol: Sprite2D = %Symbol
+@onready var collision: Area2D = %Collision
 
 var level: Level = null
 
 var is_ready := false
 func _ready() -> void:
+	collision.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	if not Global.in_editor:
 		key_data = key_data.duplicate(true)
 	is_ready = true
 	if in_keypad:
-		collision_layer = 0
-		collision_mask = 0
+		collision.process_mode = Node.PROCESS_MODE_DISABLED
 	if hide_shadow:
 		shadow.hide()
-	body_entered.connect(on_collide)
+	collision.area_entered.connect(on_collide)
 	update_visual()
 	_connect_global_level()
 	Global.changed_level.connect(_connect_global_level)
@@ -53,11 +54,11 @@ func _gui_input(event: InputEvent) -> void:
 
 func _connect_global_level() -> void:
 	if in_keypad: return
-	if is_instance_valid(Global.current_level):
+	if is_instance_valid(level):
 		# needed to access the level glitch color (only necessary if it starts out not being glitch, which shouldn't happen in-game, but I want things to work while I test)
 		if key_data.color == Enums.colors.glitch:
 			update_visual()
-		Global.current_level.changed_glitch_color.connect(update_visual)
+		level.changed_glitch_color.connect(update_visual)
 
 func _process(_delta: float) -> void:
 	if key_data.color in [Enums.colors.master, Enums.colors.pure]:
@@ -107,15 +108,15 @@ func update_visual() -> void:
 		set_special_texture(key_data.color)
 	elif key_data.color == Enums.colors.glitch:
 		glitch.show()
-		if not in_keypad and is_instance_valid(Global.current_level) and Global.current_level.glitch_color != Enums.colors.glitch:
-			if Global.current_level.glitch_color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
+		if not in_keypad and is_instance_valid(level) and level.glitch_color != Enums.colors.glitch:
+			if level.glitch_color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
 				special.show()
-				set_special_texture(Global.current_level.glitch_color)
+				set_special_texture(level.glitch_color)
 				special.frame = special.frame % 4 + 4 * (special.vframes - 1)
 			else:
 				fill.show()
 				fill.frame = fill.frame % 4 + 4
-				fill.modulate = Rendering.key_colors[Global.current_level.glitch_color]
+				fill.modulate = Rendering.key_colors[level.glitch_color]
 	else:
 		fill.show()
 		outline.show()
@@ -145,36 +146,66 @@ func update_visual() -> void:
 			symbol.show()
 
 func on_collide(_who: Node2D) -> void:
-	if key_data.is_spent: return
+	if key_data.is_spent:
+		print("is spent so nvm")
+		return
 	on_pickup()
 
-func on_pickup() -> void:
+func undo() -> void:
+	show()
+	key_data.is_spent = false
+	collision.process_mode = Node.PROCESS_MODE_INHERIT
+	for area in collision.get_overlapping_areas():
+		on_collide(area)
+
+func redo() -> void:
 	key_data.is_spent = true
+	collision.process_mode = Node.PROCESS_MODE_DISABLED
+	hide()
+
+func on_pickup() -> void:
+	level.start_undo_action()
+	level.undo_redo.add_undo_method(undo)
+	level.undo_redo.add_do_method(redo)
+	key_data.is_spent = true
+	collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
 	var color := key_data.color
+	var current_count: ComplexNumber = level.key_counts[color]
+	var orig_count: ComplexNumber = current_count.duplicate()
+	var orig_star: bool = level.star_keys[color]
+	
 	if color == Enums.colors.glitch:
-		if not is_instance_valid(Global.current_level):
+		if not is_instance_valid(level):
 			printerr("Glitch key picked up, but there's no level")
 		else:
-			color = Global.current_level.glitch_color
-	if Global.current_level.star_keys[color]:
+			color = level.glitch_color
+	if level.star_keys[color]:
 		if key_data.type == Enums.key_types.unstar:
-			Global.current_level.star_keys[color] = false
+			level.star_keys[color] = false
 	else:
 		match key_data.type:
 			Enums.key_types.add:
-				Global.current_level.key_counts[color].add(key_data.amount)
+				current_count.add(key_data.amount)
 			Enums.key_types.exact:
-				Global.current_level.key_counts[color].set_to_this(key_data.amount)
+				current_count.set_to_this(key_data.amount)
 			Enums.key_types.rotor:
-				Global.current_level.key_counts[color].rotor()
+				current_count.rotor()
 			Enums.key_types.flip:
-				Global.current_level.key_counts[color].flip()
+				current_count.flip()
 			Enums.key_types.rotor_flip:
-				Global.current_level.key_counts[color].rotor().flip()
+				current_count.rotor().flip()
 			Enums.key_types.star:
-				Global.current_level.star_keys[color] = true
-	hide()
+				level.star_keys[color] = true
 	
+	if level.star_keys[color] != orig_star:
+		level.undo_redo.add_do_method(level.set_star_key.bind(color, level.star_keys[color]))
+		level.undo_redo.add_undo_method(level.set_star_key.bind(color, orig_star))
+	if not current_count.is_equal_to(orig_count):
+		level.undo_redo.add_do_method(current_count.set_to.bind(current_count.real_part, current_count.imaginary_part))
+		level.undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
+	level.end_undo_action()
+	
+	hide()
 	snd_pickup.pitch_scale = 1
 	if key_data.color == Enums.colors.master:
 		snd_pickup.stream = preload("res://level_elements/keys/master_pickup.wav")

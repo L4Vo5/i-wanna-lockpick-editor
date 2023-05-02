@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://wkjs6v6a35d" path="res://level_elements/keys/keypad/key_pad.tscn" id="2_2xxiq"]
 
 [node name="Global" type="Node2D"]
+process_priority = -99
 script = ExtResource("1_387qh")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]

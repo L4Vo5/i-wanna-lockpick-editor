@@ -2,6 +2,8 @@
 extends CharacterBody2D
 class_name Kid
 
+# WAITING4GODOT: Extra Area2D necessary because keys' Area2D's wouldn't detect the body_entered in time but do work with areas properly. https://github.com/godotengine/godot/issues/41648
+
 @onready var sprite := %AnimatedSprite2D as AnimatedSprite2D
 @onready var snd_jump := %Jump as AudioStreamPlayer
 @onready var snd_jump_2 := %Jump2 as AudioStreamPlayer
@@ -35,7 +37,7 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if Global.in_editor: return
-	on_floor = test_move(global_transform, Vector2(0, GRAVITY))
+	update_on_floor()
 	on_ceiling = test_move(global_transform, Vector2(0, -1))
 	auras()
 	run()
@@ -56,9 +58,15 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action("master") and event.is_pressed() and not event.is_echo():
 		update_master_equipped(true, true)
 
-var on_floor := false
+var on_floor := true
 var on_ceiling := false
 var d_jumps := 1
+
+func update_on_floor() -> void:
+	if velocity.y >= 0:
+		on_floor = test_move(global_transform, Vector2(0, GRAVITY))
+	else:
+		on_floor = false
 
 func run() -> void:
 	if Input.is_action_just_pressed(&"right"):
@@ -75,27 +83,34 @@ func run() -> void:
 		sprite.flip_h = false
 	elif velocity.x < 0:
 		sprite.flip_h = true
-	
+
+# Necessary for undo/redo
+var is_pressing_jump := false
 
 func fall_jump() -> void:
+	var last_is_pressing_jump := is_pressing_jump
+	is_pressing_jump = Input.is_action_pressed(&"jump")
+	var jump_just_pressed := is_pressing_jump and not last_is_pressing_jump
+	var jump_just_released := (not is_pressing_jump) and last_is_pressing_jump
 	if on_floor:
 		d_jumps = 1
 		velocity.y = 0
-		if Input.is_action_just_pressed(&"jump"):
+		if jump_just_pressed:
 			velocity.y = JUMP_1
 			snd_jump.play()
 	else:
 		velocity.y += GRAVITY
 		if velocity.y > MAX_VSPEED:
 			velocity.y = MAX_VSPEED
-		if on_ceiling and velocity.y < 0:
-			velocity.y = 0
-		elif Input.is_action_just_pressed(&"jump") and d_jumps > 0:
+		elif jump_just_pressed and d_jumps > 0:
 			d_jumps -= 1
 			velocity.y = JUMP_2
 			snd_jump_2.play()
-		elif Input.is_action_just_released(&"jump") and velocity.y < 0:
+		elif jump_just_released and velocity.y < 0:
 			velocity.y *= JUMP_REDUCTION
+	if on_ceiling and velocity.y < 0:
+		velocity.y = 0
+	update_on_floor()
 
 func detect_doors() -> void:
 	for vec in [
@@ -217,3 +232,28 @@ func master_anim() -> void:
 	var alpha := 0.8 + 0.2 * (sin(deg_to_rad(Global.physics_step * 4 % 360)))
 	equipped_master.modulate.a = alpha * 0.6
 	player_shine.scale = Vector2(alpha, alpha)
+
+# Returns a Callable that must be called to bring the kid back to whatever state it was in when this function was called
+func get_undo_action() -> Callable:
+	return _set_state.bind([
+		position,
+		velocity,
+		d_jumps,
+		sprite.flip_h,
+		master_equipped.duplicate(),
+		_last_master_equipped.duplicate(),
+		is_pressing_jump,
+		on_floor
+	])
+
+func _set_state(vars: Array) -> void:
+	position = vars[0]
+	velocity = vars[1]
+	d_jumps = vars[2]
+	sprite.flip_h = vars[3]
+	master_equipped.set_to_this(vars[4])
+	_last_master_equipped.set_to_this(vars[5])
+	var was_on_floor = vars[7]
+	if not was_on_floor:
+		is_pressing_jump = vars[6]
+	auras()
