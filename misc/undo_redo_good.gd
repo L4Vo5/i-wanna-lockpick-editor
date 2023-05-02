@@ -64,7 +64,7 @@ func undo() -> void:
 		_last_action -= 1
 
 func redo() -> void:
-	if _last_action < _max_action:
+	if _last_action <= _max_action:
 		_actions[_last_action].do()
 		_last_action += 1
 

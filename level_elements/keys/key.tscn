@@ -39,25 +39,6 @@ size = Vector2(12.7018, 10.5562)
 script = ExtResource("1_m20su")
 key_data = SubResource("Resource_0c58s")
 
-[node name="Collision" type="Area2D" parent="."]
-unique_name_in_owner = true
-collision_layer = 8
-collision_mask = 16
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision"]
-position = Vector2(9.5, 10)
-shape = SubResource("CircleShape2D_mb7fb")
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="Collision"]
-position = Vector2(21, 21)
-rotation = -0.785398
-shape = SubResource("CapsuleShape2D_kspn0")
-
-[node name="CollisionShape2D3" type="CollisionShape2D" parent="Collision"]
-position = Vector2(23.3488, 20.8131)
-rotation = 0.785398
-shape = SubResource("RectangleShape2D_i7153")
-
 [node name="Shadow" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.376471)
@@ -95,6 +76,25 @@ texture = ExtResource("9_vu1hx")
 centered = false
 hframes = 4
 vframes = 4
+
+[node name="Collision" type="Area2D" parent="."]
+unique_name_in_owner = true
+collision_layer = 8
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision"]
+position = Vector2(9.5, 10)
+shape = SubResource("CircleShape2D_mb7fb")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Collision"]
+position = Vector2(21, 21)
+rotation = -0.785398
+shape = SubResource("CapsuleShape2D_kspn0")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Collision"]
+position = Vector2(23.3488, 20.8131)
+rotation = 0.785398
+shape = SubResource("RectangleShape2D_i7153")
 
 [node name="Pickup" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true

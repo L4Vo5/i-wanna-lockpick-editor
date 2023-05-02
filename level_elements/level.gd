@@ -93,22 +93,21 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action(&"i-view") and event.is_pressed() and not event.is_echo():
 		i_view = not i_view
 		changed_i_view.emit()
-	if event.is_action(&"restart") and event.is_pressed():
+	elif event.is_action(&"restart") and event.is_pressed():
 		reset()
-	if event.is_action(&"undo") and event.is_pressed():
-		if exclude_player: return
-		if undo_redo.get_action_count() == 0: return
+	elif event.is_action(&"undo") and event.is_pressed():
+		if not Global.is_playing: return
 		undo_redo.undo()
 		if undo_redo.get_last_action() == -1:
 			undo_redo._last_action = 0
-	if event is InputEventKey:
-		if event.keycode == KEY_C and event.is_pressed():
-			
-			undo_redo.start_action()
-			var player_action := player.get_undo_action()
-			undo_redo.add_do_method(player_action)
-			undo_redo.add_undo_method(player_action)
-			undo_redo.commit_action()
+	# TODO: Make redo work properly (bugs related to standing on doors?)
+#	elif event.is_action(&"redo") and event.is_pressed():
+#		if not Global.is_playing: return
+#		undo_redo.redo()
+	elif event.is_action(&"savestate") and event.is_pressed():
+		if not Global.is_playing: return
+		start_undo_action()
+		end_undo_action()
 
 var is_ready := false
 func _ready() -> void:
@@ -254,6 +253,7 @@ func _spawn_player() -> void:
 		remove_child(player)
 		player.queue_free()
 		player = null
+	Global.is_playing = not exclude_player
 	if exclude_player: return
 	player = PLAYER.instantiate()
 	player.position = level_data.player_spawn_position

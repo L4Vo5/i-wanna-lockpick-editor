@@ -53,8 +53,14 @@ class_name DoorData
 		position = val
 		changed.emit()
 
-func set_curse(curse: Enums.curse, val: bool) -> void:
+func set_curse(curse: Enums.curse, val: bool, register_undo := false) -> void:
 	if _curses[curse] == val: return
+	var level: Level = Global.current_level
+	if register_undo:
+		level.start_undo_action()
+		level.undo_redo.add_do_method(set_curse.bind(curse, val))
+		level.undo_redo.add_undo_method(set_curse.bind(curse, _curses[curse]))
+		level.end_undo_action()
 	if curse == Enums.curse.brown:
 		if has_color(Enums.colors.pure):
 			return
@@ -86,39 +92,48 @@ func has_point(point: Vector2i) -> bool:
 func get_rect() -> Rect2i:
 	return Rect2i(position, size)
 
+const NON_COPIABLE_COLORS := [Enums.colors.master, Enums.colors.pure]
 ## try to open the door with the current level's keys.
 ## returns true if the door opened.
 ## (also tries changing the door's count)
 func try_open() -> Dictionary:
 	var return_dict := {
-		"opened" = false,
-		"master_key" = false,
-		"added_copy" = false, # can only happen with master keys
+		&"opened": false,
+		&"master_key": false,
+		&"added_copy": false, # can only happen with master keys
+		&"do_methods": [],
+		&"undo_methods": [],
 	}
 	if amount.is_zero(): return return_dict
 	if _curses[Enums.curse.ice] or _curses[Enums.curse.erosion] or _curses[Enums.curse.paint]: return return_dict
-	var used_outer_color := get_used_color()
 	
-	var player: Kid = Global.current_level.player
+	var used_outer_color := get_used_color()
+	var level: Level = Global.current_level
+	var player: Kid = level.player
+	
 	# try to open with master keys
 	if not player.master_equipped.is_zero():
 		var can_master := true
-		var non_copiable_colors := [Enums.colors.master, Enums.colors.pure]
-		if used_outer_color in non_copiable_colors:
+		if used_outer_color in NON_COPIABLE_COLORS:
 			can_master = false
 		else:
 			for lock in locks:
-				if lock.get_used_color() in non_copiable_colors:
+				if lock.get_used_color() in NON_COPIABLE_COLORS:
 					can_master = false
 					break
 		if can_master:
 			return_dict.master_key = true
+			return_dict.undo_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
 			var old_amount := amount.duplicate()
 			amount.sub(player.master_equipped)
+			return_dict.do_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
 			if amount.is_bigger_than(old_amount):
 				return_dict.added_copy = true
-			if not Global.current_level.star_keys[Enums.colors.master]:
-				Global.current_level.key_counts[Enums.colors.master].sub(player.master_equipped)
+			if not level.star_keys[Enums.colors.master]:
+				var count: ComplexNumber = level.key_counts[Enums.colors.master]
+				return_dict.undo_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
+				count.sub(player.master_equipped)
+				return_dict.do_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
 			if not Input.is_action_pressed(&"master"):
 				if not player.master_equipped.is_zero():
 					player.update_master_equipped(true, false)
@@ -126,7 +141,7 @@ func try_open() -> Dictionary:
 			return return_dict
 	# open normally
 	var diff := ComplexNumber.new()
-	var i_view: bool = Global.current_level.i_view if is_instance_valid(Global.current_level) else false
+	var i_view: bool = level.i_view
 	var open_dim := ComplexNumber.new()
 	var rotor := false
 	var flip := false
@@ -151,15 +166,26 @@ func try_open() -> Dictionary:
 	for lock_data in locks:
 		var used_lock_color := lock_data.get_used_color()
 		
-		var color_amount: ComplexNumber = Global.current_level.key_counts[used_lock_color]
+		var color_amount: ComplexNumber = level.key_counts[used_lock_color]
 		var diff_after_open := lock_data.open_with(color_amount, flip, rotor)
+		# open_with returns null if it couldn't be opened
 		if diff_after_open == null: return return_dict
 		diff.add(diff_after_open)
 	# it worked on all locks!
+	
+	return_dict.undo_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
 	amount.sub(open_dim)
-	if not Global.current_level.star_keys[used_outer_color]:
-		Global.current_level.key_counts[used_outer_color].add(diff)
-	Global.current_level.glitch_color = used_outer_color
+	return_dict.do_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
+	
+	if not level.star_keys[used_outer_color]:
+		var count: ComplexNumber = level.key_counts[used_outer_color]
+		return_dict.undo_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
+		count.add(diff)
+		return_dict.do_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
+	if level.glitch_color != used_outer_color:
+		return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", level.glitch_color))
+		level.glitch_color = used_outer_color
+		return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", used_outer_color))
 	return_dict.opened = true
 	return return_dict
 

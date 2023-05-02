@@ -1,181 +1,118 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=26 format=3 uid="uid://b12m5jhti4o55"]
+[gd_resource type="Resource" script_class="LevelData" load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://data/complex_number.gd" id="1_xbeh5"]
 [ext_resource type="Script" path="res://data/level_data.gd" id="1_yd7bo"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="2_mlvvy"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="2_w2blt"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="3_av807"]
 
-[sub_resource type="Resource" id="Resource_w62ac"]
+[sub_resource type="Resource" id="Resource_mmdgv"]
 script = ExtResource("1_xbeh5")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_ysm0k"]
+[sub_resource type="Resource" id="Resource_j2fqg"]
+script = ExtResource("2_w2blt")
+color = 3
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_kx1dj"]
+script = ExtResource("3_av807")
+amount = SubResource("Resource_mmdgv")
+outer_color = 3
+locks = Array[ExtResource("2_w2blt")]([SubResource("Resource_j2fqg")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(480, 192)
+
+[sub_resource type="Resource" id="Resource_dma43"]
+script = ExtResource("1_xbeh5")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_obk53"]
+script = ExtResource("2_w2blt")
+color = 3
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_i5n83"]
+script = ExtResource("3_av807")
+amount = SubResource("Resource_dma43")
+outer_color = 3
+locks = Array[ExtResource("2_w2blt")]([SubResource("Resource_obk53")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(288, 192)
+
+[sub_resource type="Resource" id="Resource_rpkd5"]
+script = ExtResource("1_xbeh5")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_34crs"]
 script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_w62ac")
+amount = SubResource("Resource_rpkd5")
 type = 0
-color = 1
-position = Vector2i(256, 320)
-
-[sub_resource type="Resource" id="Resource_46tld"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_od2b3"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_46tld")
-type = 0
-color = 11
-position = Vector2i(480, 320)
-
-[sub_resource type="Resource" id="Resource_ig208"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_6bs8q"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_ig208")
-type = 0
-color = 11
-position = Vector2i(544, 320)
-
-[sub_resource type="Resource" id="Resource_jgaki"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_ensox"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_jgaki")
-type = 0
-color = 11
-position = Vector2i(608, 320)
-
-[sub_resource type="Resource" id="Resource_vtpdn"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_pjsok"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_vtpdn")
-type = 0
-color = 1
-position = Vector2i(320, 320)
-
-[sub_resource type="Resource" id="Resource_7amag"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_xv41q"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_7amag")
-type = 0
-color = 1
-position = Vector2i(192, 320)
-
-[sub_resource type="Resource" id="Resource_c00dy"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_gqigg"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_c00dy")
-type = 0
-color = 1
-position = Vector2i(352, 272)
-
-[sub_resource type="Resource" id="Resource_oe2au"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_x02xb"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_oe2au")
-type = 0
-color = 1
-position = Vector2i(432, 272)
-
-[sub_resource type="Resource" id="Resource_vfk8f"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_sdtbo"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_vfk8f")
-type = 0
-color = 7
-position = Vector2i(512, 272)
-
-[sub_resource type="Resource" id="Resource_8fow0"]
-script = ExtResource("1_xbeh5")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_2uaic"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_8fow0")
-type = 1
-color = 10
-position = Vector2i(592, 272)
-
-[sub_resource type="Resource" id="Resource_d1e8d"]
-script = ExtResource("1_xbeh5")
-real_part = -1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_ljkxe"]
-script = ExtResource("2_mlvvy")
-amount = SubResource("Resource_d1e8d")
-type = 1
-color = 10
-position = Vector2i(640, 304)
+color = 3
+position = Vector2i(384, 448)
 
 [resource]
 script = ExtResource("1_yd7bo")
 version = "0.0.2.0"
 num_version = 1
 editor_version = ""
-doors = Array[Resource("res://data/door_data.gd")]([])
-keys = Array[ExtResource("2_mlvvy")]([SubResource("Resource_ysm0k"), SubResource("Resource_od2b3"), SubResource("Resource_6bs8q"), SubResource("Resource_ensox"), SubResource("Resource_pjsok"), SubResource("Resource_xv41q"), SubResource("Resource_gqigg"), SubResource("Resource_x02xb"), SubResource("Resource_sdtbo"), SubResource("Resource_2uaic"), SubResource("Resource_ljkxe")])
+doors = Array[ExtResource("3_av807")]([SubResource("Resource_kx1dj"), SubResource("Resource_i5n83")])
+keys = Array[ExtResource("2_mlvvy")]([SubResource("Resource_34crs")])
 size = Vector2i(800, 608)
-player_spawn_position = Vector2i(398, 352)
-goal_position = Vector2i(480, 400)
+player_spawn_position = Vector2i(398, 512)
+goal_position = Vector2i(384, 160)
 custom_lock_arrangements = {}
 tiles = {
-Vector2i(0, 11): true,
-Vector2i(1, 11): true,
-Vector2i(2, 11): true,
 Vector2i(2, 20): true,
-Vector2i(3, 11): true,
 Vector2i(3, 19): true,
-Vector2i(4, 11): true,
-Vector2i(5, 11): true,
 Vector2i(5, 19): true,
-Vector2i(6, 11): true,
-Vector2i(7, 11): true,
-Vector2i(8, 11): true,
-Vector2i(9, 11): true,
-Vector2i(10, 11): true,
-Vector2i(11, 11): true,
-Vector2i(12, 11): true,
-Vector2i(13, 11): true,
-Vector2i(14, 11): true,
-Vector2i(15, 11): true,
-Vector2i(16, 11): true,
-Vector2i(17, 11): true,
-Vector2i(18, 11): true,
-Vector2i(19, 11): true,
-Vector2i(20, 11): true,
-Vector2i(21, 11): true,
-Vector2i(22, 11): true,
-Vector2i(23, 11): true,
-Vector2i(24, 11): true
+Vector2i(9, 7): true,
+Vector2i(10, 7): true,
+Vector2i(10, 10): true,
+Vector2i(11, 7): true,
+Vector2i(11, 10): true,
+Vector2i(11, 13): true,
+Vector2i(12, 7): true,
+Vector2i(12, 10): true,
+Vector2i(12, 13): true,
+Vector2i(12, 16): true,
+Vector2i(13, 7): true,
+Vector2i(13, 10): true,
+Vector2i(13, 13): true,
+Vector2i(14, 7): true,
+Vector2i(14, 10): true,
+Vector2i(15, 7): true
 }
 name = ""
 author = ""

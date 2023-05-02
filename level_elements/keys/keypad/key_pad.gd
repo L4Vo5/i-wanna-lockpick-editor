@@ -23,9 +23,8 @@ func _ready() -> void:
 	generate_keys()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-#	if Global.in_level_editor:
-#		hide()
-#		return
+	if not Global.is_playing:
+		return
 	if event.is_action("keypad") and not event.is_echo():
 		if event.is_pressed():
 			show()

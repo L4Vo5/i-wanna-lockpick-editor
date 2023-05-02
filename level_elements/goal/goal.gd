@@ -14,8 +14,8 @@ const PART := preload("res://level_elements/goal/goal_particle.tscn")
 @onready var snd_win: AudioStreamPlayer = $Win
 
 func _ready() -> void:
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
+	area_entered.connect(_on_body_entered)
+	area_exited.connect(_on_body_exited)
 
 func _physics_process(delta: float) -> void:
 	# Should create particle on first step
@@ -40,11 +40,23 @@ func _physics_process(delta: float) -> void:
 
 func win() -> void:
 	if has_won: return
+	Global.current_level.start_undo_action()
+	Global.current_level.undo_redo.add_do_method(win)
+	Global.current_level.undo_redo.add_undo_method(undo_win)
+	Global.current_level.end_undo_action()
+	
 	snd_win.play()
 	has_won = true
 	win_time = time
 	sprite.frame = 2
 	won.emit()
+
+func undo_win() -> void:
+	has_won = false
+	sprite.frame = 1
+	
+	for child in particles_parent.get_children():
+		child.hue = 120
 
 func spawn_particle(put_first := true) -> Node2D:
 	# Spawn particle
@@ -76,73 +88,7 @@ func _on_body_entered(body: Node2D) -> void:
 		new.hue = child.hue
 		new.sat = child.sat
 		new.mode = child.mode
-#		print("%s vs %s" % [str(child.velocity), str(new.velocity)])
 		child.add_sibling(new)
 
 func _on_body_exited(body: Node2D) -> void:
 	child_inside = false
-
-"""
-CREATE
-
-floatA = 0
-floatY = 0
-starA = 0
-image_speed = 0
-alarm[0] = 6
-instance_create((x + 16), (y + 16), oGoalParticle)
-winA = 0
-hasWon = 0
-type = 0
-omegaID = -1
-
-ALARM 0
-
-alarm[0] = 6
-part = instance_create((x + 16), (y + 16), oGoalParticle)
-if ((instance_exists(oLevelWin) && (!instance_exists(oLevelOmega))) || type >= 3)
-{
-	with (oGoalParticle)
-		hue = 50
-}
-if (type == 1)
-{
-	with (oGoalParticle)
-		hue = 195
-}
-
-DRAW
-floatA = ((floatA + 2.5) % 360)
-floatY = (3 * sin(degtorad(floatA)))
-starA = ((starA + 1) % 360)
-winA *= 0.95
-if hasWon
-{
-	if (type != 1)
-	{
-		draw_sprite(sprite_index, 2, x, (y + floatY))
-		draw_sprite_ext(sprite_index, 3, x, (y + floatY), 1, 1, 0, c_white, winA)
-	}
-	else
-	{
-		draw_sprite(sprite_index, 5, x, (y + floatY))
-		draw_sprite_ext(sprite_index, 6, x, (y + floatY), 1, 1, 0, c_white, winA)
-	}
-	draw_set_blend_mode(bm_add)
-	draw_sprite_ext(sprOrbPart, 0, (x + 16), (y + 16), (2 * (1 - winA)), (2 * (1 - winA)), 0, c_white, (winA / 2))
-	draw_set_blend_mode(bm_normal)
-}
-else if (type == 0)
-	draw_sprite(sprite_index, 1, x, (y + floatY))
-else if (type >= 3)
-{
-	draw_sprite(sprite_index, 2, x, (y + floatY))
-	draw_set_blend_mode(bm_add)
-	draw_sprite_ext(sprStarOutline, 0, (x + 16), (y + 16), 0.5, 0.5, (-starA), make_color_rgb(120, 120, 40), 1)
-	draw_sprite_ext(sprStarOutline, 0, (x + 16), (y + 16), 0.3, 0.3, (-starA), make_color_rgb(120, 120, 40), 0.5)
-	draw_set_blend_mode(bm_normal)
-}
-else if (type == 1)
-	draw_sprite(sprite_index, 4, x, (y + floatY))
-
-"""

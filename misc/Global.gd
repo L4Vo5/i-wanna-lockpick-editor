@@ -4,6 +4,8 @@ extends Node
 # in the godot editor, as opposed to the level editor
 var in_editor := Engine.is_editor_hint()
 var in_level_editor := false
+## Will basically be true if there's a player moving around
+var is_playing := false
 var game_version = ProjectSettings.get_setting("application/config/game_version")
 @onready var key_pad: Control = %KeyPad
 @onready var fatal_error_dialog: AcceptDialog = %FatalError

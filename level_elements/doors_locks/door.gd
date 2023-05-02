@@ -57,8 +57,8 @@ func _ready() -> void:
 		door_data = door_data.duplicated()
 	update_everything()
 	copies.minimum_size_changed.connect(position_copies)
-	connect_level()
 	Global.changed_level.connect(connect_level)
+	connect_level()
 	if ignore_collisions:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
 
@@ -74,12 +74,12 @@ func _disconnect_door_data() -> void:
 	door_data.changed.disconnect(update_everything)
 
 func connect_level() -> void:
-	if is_instance_valid(Global.current_level):
-		Global.current_level.changed_i_view.connect(_on_changed_i_view)
-		Global.current_level.changed_glitch_color.connect(_on_changed_glitch_color)
+	level = Global.current_level
+	if is_instance_valid(level):
+		level.changed_i_view.connect(_on_changed_i_view)
+		level.changed_glitch_color.connect(_on_changed_glitch_color)
 		_on_changed_i_view()
 		_on_changed_glitch_color()
-		
 
 func _physics_process(_delta: float) -> void:
 	special_anim.frame = floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % special_anim.hframes * special_anim.vframes
@@ -108,15 +108,15 @@ func position_copies() -> void:
 	copies.position.x = -diff/2
 
 func _on_changed_i_view() -> void:
-	if not is_instance_valid(Global.current_level): return
+	if not is_instance_valid(level): return
 	if not is_instance_valid(door_data): return
 	var is_aligned := false
 	var is_flipped := false
-	if not Global.current_level.i_view and door_data.amount.real_part != 0:
+	if not level.i_view and door_data.amount.real_part != 0:
 		is_aligned = true
 		if door_data.amount.real_part < 0:
 			is_flipped = true
-	if Global.current_level.i_view and door_data.amount.imaginary_part != 0:
+	if level.i_view and door_data.amount.imaginary_part != 0:
 		is_aligned = true
 		if door_data.amount.imaginary_part < 0:
 			is_flipped = true
@@ -126,7 +126,7 @@ func _on_changed_i_view() -> void:
 	for lock in door_data.locks:
 		if not is_instance_valid(lock): continue
 		lock.dont_show_frame = not is_aligned
-		if Global.current_level.i_view:
+		if level.i_view:
 			lock.rotation.set_to(0, 1)
 		else:
 			lock.rotation.set_to(1, 0)
@@ -134,7 +134,7 @@ func _on_changed_i_view() -> void:
 			lock.rotation.flip()
 
 func _on_changed_glitch_color() -> void:
-	door_data.update_glitch_color(Global.current_level.glitch_color)
+	door_data.update_glitch_color(level.glitch_color)
 
 func i_view_colors() -> void:
 	if not using_i_view_colors: return
@@ -219,10 +219,16 @@ func update_curses() -> void:
 func try_open() -> void:
 	if not can_open: return
 	var should_create_debris := false
-	for i in Global.current_level.door_multiplier:
-		# "opened", "master_key", "added_copy"
+	for i in level.door_multiplier:
+		# "opened", "master_key", "added_copy", "do_methods", "undo_methods"
 		var result := door_data.try_open()
 		if result.opened:
+			level.start_undo_action()
+			for do_method in result.do_methods:
+				level.undo_redo.add_do_method(do_method)
+			for undo_method in result.undo_methods:
+				level.undo_redo.add_undo_method(undo_method)
+			
 			if result.added_copy:
 				snd_open.stream = preload("res://level_elements/doors_locks/copy.wav")
 			elif result.master_key:
@@ -236,9 +242,16 @@ func try_open() -> void:
 			snd_open.play()
 			should_create_debris = true
 		if door_data.amount.is_zero():
+			assert(level.undo_redo.is_building_action())
+			level.undo_redo.add_do_method(hide)
+			level.undo_redo.add_undo_method(show)
+			level.undo_redo.add_do_property(static_body, &"process_mode", Node.PROCESS_MODE_DISABLED)
+			level.undo_redo.add_undo_property(static_body, &"process_mode", Node.PROCESS_MODE_ALWAYS)
 			hide()
 			static_body.process_mode = Node.PROCESS_MODE_DISABLED
 			break
+	if level.undo_redo.is_building_action():
+		level.end_undo_action()
 	if should_create_debris:
 		create_debris()
 	can_open = false
@@ -246,19 +259,19 @@ func try_open() -> void:
 
 # do the effects for the curses
 func break_curse_ice() -> void:
-	door_data.set_curse(Enums.curse.ice, false)
+	door_data.set_curse(Enums.curse.ice, false, true)
 
 func break_curse_erosion() -> void:
-	door_data.set_curse(Enums.curse.erosion, false)
+	door_data.set_curse(Enums.curse.erosion, false, true)
 
 func break_curse_paint() -> void:
-	door_data.set_curse(Enums.curse.paint, false)
+	door_data.set_curse(Enums.curse.paint, false, true)
 
 func curse_brown() -> void:
-	door_data.set_curse(Enums.curse.brown, true)
+	door_data.set_curse(Enums.curse.brown, true, true)
 
 func break_curse_brown() -> void:
-	door_data.set_curse(Enums.curse.brown, false)
+	door_data.set_curse(Enums.curse.brown, false, true)
 
 func create_debris() -> void:
 	for x in floori(size.x / 16):
@@ -280,6 +293,5 @@ func create_debris() -> void:
 			if Global.in_editor:
 				add_child(debris)
 			else:
-				# TODO: don't put it on the root that's dum
-				Global.current_level.add_debris_child(debris)
+				level.add_debris_child(debris)
 			timer.start(20)
