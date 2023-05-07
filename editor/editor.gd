@@ -30,6 +30,12 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	Global.in_level_editor = false
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("play"):
+		print("A")
+		_on_play_pressed()
+		accept_event()
+
 func _ready() -> void:
 	DirAccess.make_dir_absolute("user://levels")
 	file_dialog.current_dir = "levels"

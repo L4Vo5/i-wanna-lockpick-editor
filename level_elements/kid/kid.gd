@@ -102,7 +102,7 @@ func fall_jump() -> void:
 		velocity.y += GRAVITY
 		if velocity.y > MAX_VSPEED:
 			velocity.y = MAX_VSPEED
-		elif jump_just_pressed and d_jumps > 0:
+		if jump_just_pressed and d_jumps > 0:
 			d_jumps -= 1
 			velocity.y = JUMP_2
 			snd_jump_2.play()

@@ -46,3 +46,9 @@ func duplicated() -> KeyData:
 
 func get_rect() -> Rect2i:
 	return Rect2i(position, Vector2i(32, 32))
+
+func get_used_color() -> Enums.colors:
+	if color == Enums.colors.glitch:
+		return Global.current_level.glitch_color
+	else:
+		return color

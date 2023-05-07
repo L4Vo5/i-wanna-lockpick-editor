@@ -169,19 +169,14 @@ func on_pickup() -> void:
 	level.undo_redo.add_do_method(redo)
 	key_data.is_spent = true
 	collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
-	var color := key_data.color
-	var current_count: ComplexNumber = level.key_counts[color]
+	var used_color := key_data.get_used_color()
+	var current_count: ComplexNumber = level.key_counts[used_color]
 	var orig_count: ComplexNumber = current_count.duplicate()
-	var orig_star: bool = level.star_keys[color]
+	var orig_star: bool = level.star_keys[used_color]
 	
-	if color == Enums.colors.glitch:
-		if not is_instance_valid(level):
-			printerr("Glitch key picked up, but there's no level")
-		else:
-			color = level.glitch_color
-	if level.star_keys[color]:
+	if level.star_keys[used_color]:
 		if key_data.type == Enums.key_types.unstar:
-			level.star_keys[color] = false
+			level.star_keys[used_color] = false
 	else:
 		match key_data.type:
 			Enums.key_types.add:
@@ -195,11 +190,11 @@ func on_pickup() -> void:
 			Enums.key_types.rotor_flip:
 				current_count.rotor().flip()
 			Enums.key_types.star:
-				level.star_keys[color] = true
+				level.star_keys[used_color] = true
 	
-	if level.star_keys[color] != orig_star:
-		level.undo_redo.add_do_method(level.set_star_key.bind(color, level.star_keys[color]))
-		level.undo_redo.add_undo_method(level.set_star_key.bind(color, orig_star))
+	if level.star_keys[used_color] != orig_star:
+		level.undo_redo.add_do_method(level.set_star_key.bind(used_color, level.star_keys[used_color]))
+		level.undo_redo.add_undo_method(level.set_star_key.bind(used_color, orig_star))
 	if not current_count.is_equal_to(orig_count):
 		level.undo_redo.add_do_method(current_count.set_to.bind(current_count.real_part, current_count.imaginary_part))
 		level.undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))

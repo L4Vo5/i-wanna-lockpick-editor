@@ -89,6 +89,7 @@ func _physics_process(_delta: float) -> void:
 		text = "×" + str(door_data.amount)
 	copies.text = text
 	i_view_colors()
+	open_cooldown = 0.01
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
