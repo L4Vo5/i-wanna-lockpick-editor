@@ -12,7 +12,11 @@ var has_been_loaded := false
 # Just in case it's needed
 @export var editor_version: String
 
+# currently only emitted by level when a door is placed or removed
+signal changed_doors
 @export var doors: Array[DoorData] = []
+# currently only emitted by level when a key is placed or removed
+signal changed_keys
 @export var keys: Array[KeyData] = []
 @export var size := Vector2i(800, 608)
 signal changed_player_spawn_position
@@ -56,10 +60,11 @@ func clear_outside_things() -> void:
 	var deleted_ones := []
 	for key in tiles.keys():
 		var pos = key * Vector2i(32, 32)
-		if pos.x < 0 or pos.y < 0 or pos.x + 32 > size.x or pos.y > size.y + 32:
+		if pos.x < 0 or pos.y < 0 or pos.x + 32 > size.x or pos.y + 32 > size.y:
 			deleted_ones.push_back(key)
 	for pos in deleted_ones:
-		assert(tiles.erase(pos) == true)
+		var worked := tiles.erase(pos)
+		assert(worked == true)
 	
 	amount_deleted += deleted_ones.size()
 	# doors

@@ -59,6 +59,8 @@ func clear_history() -> void:
 	_max_action = -1
 
 func undo() -> void:
+	assert(!is_building_action())
+	assert(_last_action >= 0)
 	if _last_action >= 0: 
 		_actions[_last_action].undo()
 		_last_action -= 1

@@ -32,7 +32,6 @@ func _exit_tree() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("play"):
-		print("A")
 		_on_play_pressed()
 		accept_event()
 
@@ -44,6 +43,7 @@ func _ready() -> void:
 	_update_mode()
 	
 	data.level_data = level.level_data
+	data.level = level
 	data.door_editor = door_editor
 	data.key_editor = key_editor
 	data.side_tabs = side_tabs

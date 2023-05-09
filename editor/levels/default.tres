@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=34 format=3 uid="uid://b12m5jhti4o55"]
+[gd_resource type="Resource" script_class="LevelData" load_steps=38 format=3 uid="uid://b12m5jhti4o55"]
 
 [ext_resource type="Script" path="res://data/complex_number.gd" id="1_xbeh5"]
 [ext_resource type="Script" path="res://data/level_data.gd" id="1_yd7bo"]
@@ -258,22 +258,43 @@ type = 0
 color = 3
 position = Vector2i(624, 208)
 
+[sub_resource type="Resource" id="Resource_qtcxi"]
+script = ExtResource("1_xbeh5")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_wekd3"]
+script = ExtResource("2_mlvvy")
+amount = SubResource("Resource_qtcxi")
+type = 0
+color = 11
+position = Vector2i(128, 528)
+
+[sub_resource type="Resource" id="Resource_2b8xf"]
+script = ExtResource("1_xbeh5")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_m6c65"]
+script = ExtResource("2_mlvvy")
+amount = SubResource("Resource_2b8xf")
+type = 0
+color = 5
+position = Vector2i(640, 480)
+
 [resource]
 script = ExtResource("1_yd7bo")
 version = "0.0.2.0"
 num_version = 1
 editor_version = ""
 doors = Array[ExtResource("3_av807")]([SubResource("Resource_fteja"), SubResource("Resource_vj5qq"), SubResource("Resource_dqnn1"), SubResource("Resource_a7d1f"), SubResource("Resource_6o7jf"), SubResource("Resource_hadtm")])
-keys = Array[ExtResource("2_mlvvy")]([SubResource("Resource_b27dp"), SubResource("Resource_2csxn"), SubResource("Resource_ddwxi"), SubResource("Resource_dwsug"), SubResource("Resource_tc8iw")])
+keys = Array[ExtResource("2_mlvvy")]([SubResource("Resource_b27dp"), SubResource("Resource_2csxn"), SubResource("Resource_ddwxi"), SubResource("Resource_dwsug"), SubResource("Resource_tc8iw"), SubResource("Resource_wekd3"), SubResource("Resource_m6c65")])
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(398, 512)
 goal_position = Vector2i(384, 64)
 custom_lock_arrangements = {}
 tiles = {
-Vector2i(2, 20): true,
 Vector2i(3, 13): true,
-Vector2i(3, 19): true,
-Vector2i(5, 19): true,
 Vector2i(9, 1): true,
 Vector2i(9, 2): true,
 Vector2i(9, 3): true,

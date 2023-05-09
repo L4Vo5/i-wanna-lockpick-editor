@@ -89,7 +89,6 @@ func _physics_process(_delta: float) -> void:
 		text = "×" + str(door_data.amount)
 	copies.text = text
 	i_view_colors()
-	open_cooldown = 0.01
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -97,6 +96,7 @@ func _gui_input(event: InputEvent) -> void:
 		# the event should be accepted on the signal receiver's side
 
 func update_everything() -> void:
+	_on_changed_i_view()
 	update_textures()
 	update_locks()
 	update_curses()
@@ -257,6 +257,7 @@ func try_open() -> void:
 		create_debris()
 	can_open = false
 	get_tree().create_timer(open_cooldown).timeout.connect(func(): can_open = true)
+	
 
 # do the effects for the curses
 func break_curse_ice() -> void:

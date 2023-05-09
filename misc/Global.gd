@@ -68,6 +68,27 @@ func inform_newer_version() -> void:
 func _open_download_page() -> void:
 	OS.shell_open("https://l4vo5.itch.io/i-wanna-lockpick-editor")
 
+## Disconnects every signal the emitter had connected to the receiver.
+## Returns how many signals were disconnected (so you can assert if you know beforehand)
+# WAITING4GODOT: This will not work on anonymous functions because get_object() returns bool instead of Object, so I have to use a workaround that only works for methods. Issue #73998
+func fully_disconnect(receiver: Object, emitter: Object) -> int:
+	var count := 0
+	for sig_data in emitter.get_signal_list():
+		assert(not sig_data.name is StringName) # maybe they'll update it 
+		var sig_name: String = sig_data.name
+		for connection_data in emitter.get_signal_connection_list(sig_name):
+			# WAITING4GODOT: I wanna be able to do connection_data.signal here
+			var sig: Signal = connection_data["signal"]
+			var call: Callable = connection_data.callable
+			var met = receiver.get(call.get_method())
+			if not met is Callable: continue
+			if sig.is_connected(met): 
+#			var obj: Object = call.get_object()
+#			if obj == receiver:
+#				print("%s is connected to %s" % [str(sig), str(call)])
+				sig.disconnect(call)
+				count += 1
+	return count
 
 
 func _process(delta: float) -> void:
@@ -118,4 +139,3 @@ func safe_error(text: String, size: Vector2i) -> void:
 	safe_error_dialog.dialog_text = text
 	
 	safe_error_dialog.popup_centered()
-	

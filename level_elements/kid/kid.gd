@@ -52,6 +52,8 @@ func _physics_process(_delta: float) -> void:
 		current_speed = 1
 	move_and_collide(velocity * Vector2(current_speed, 0))
 	move_and_collide(velocity * Vector2(0, 1))
+	# needs to stay updated for the level to know if it's save to save undo state
+	update_on_floor()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not is_instance_valid(Global.current_level): return
@@ -110,7 +112,6 @@ func fall_jump() -> void:
 			velocity.y *= JUMP_REDUCTION
 	if on_ceiling and velocity.y < 0:
 		velocity.y = 0
-	update_on_floor()
 
 func detect_doors() -> void:
 	for vec in [

@@ -152,6 +152,8 @@ func on_collide(_who: Node2D) -> void:
 	on_pickup()
 
 func undo() -> void:
+	# HACK: fix for undoing at the same time that key is picked up making the key be picked up again after undoing
+	await get_tree().physics_frame
 	show()
 	key_data.is_spent = false
 	collision.process_mode = Node.PROCESS_MODE_INHERIT

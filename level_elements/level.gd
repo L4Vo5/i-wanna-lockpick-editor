@@ -21,6 +21,10 @@ var glitch_color := Enums.colors.glitch:
 		exclude_player = val
 		_spawn_player()
 
+# echo of some of the level data's signals, since it's easier for other objects to hook into the level object which is less likely to change
+signal changed_doors
+signal changed_keys
+
 # Some code might depend on these complex numbers' changed signals, so don't change them to new numbers pls
 var key_counts := {
 	Enums.colors.glitch: ComplexNumber.new(),
@@ -96,10 +100,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	elif event.is_action(&"restart") and event.is_pressed():
 		reset()
 	elif event.is_action(&"undo") and event.is_pressed():
-		if not Global.is_playing: return
-		undo_redo.undo()
-		if undo_redo.get_last_action() == -1:
-			undo_redo._last_action = 0
+		undo.call_deferred()
 	# TODO: Make redo work properly (bugs related to standing on doors?)
 #	elif event.is_action(&"redo") and event.is_pressed():
 #		if not Global.is_playing: return
@@ -159,11 +160,14 @@ func _connect_level_data() -> void:
 	_update_player_spawn_position()
 	level_data.changed_goal_position.connect(_update_goal_position)
 	_update_goal_position()
+	level_data.changed_doors.connect(emit_signal.bind(&"changed_doors"))
+	level_data.changed_keys.connect(emit_signal.bind(&"changed_keys"))
 	reset()
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(level_data): return
-	level_data.changed_player_spawn_position.disconnect(_update_player_spawn_position)
+	var amount = Global.fully_disconnect(self, level_data)
+	assert(amount == 4)
 
 func _update_player_spawn_position() -> void:
 	if not is_ready: return
@@ -184,8 +188,10 @@ func add_door(door_data: DoorData) -> Door:
 	if is_space_occupied(door_data.get_rect()): return
 	if not door_data in level_data.doors:
 		level_data.doors.push_back(door_data)
+		level_data.changed_doors.emit()
 	return _spawn_door(door_data)
 
+## Makes a door physically appear (doesn't check collisions)
 func _spawn_door(door_data: DoorData) -> Door:
 	var door := DOOR.instantiate()
 	door.door_data = door_data.duplicated()
@@ -196,16 +202,21 @@ func _spawn_door(door_data: DoorData) -> Door:
 
 ## Removes a door from the level data
 func remove_door(door: Door) -> void:
-	level_data.doors.erase(door.get_meta(&"original_door_data"))
+	var pos := level_data.doors.find(door.get_meta(&"original_door_data"))
+	assert(pos != -1)
+	level_data.doors.remove_at(pos)
 	door.queue_free()
+	level_data.changed_doors.emit()
 
 ## Adds a key to the level data
 func add_key(key_data: KeyData) -> Key:
 	if is_space_occupied(key_data.get_rect()): return
 	if not key_data in level_data.keys:
 		level_data.keys.push_back(key_data)
+		level_data.changed_keys.emit()
 	return _spawn_key(key_data)
 
+## Makes a key physically appear (doesn't check collisions)
 func _spawn_key(key_data: KeyData) -> Key:
 	var key := KEY.instantiate()
 	key.key_data = key_data.duplicated()
@@ -217,8 +228,11 @@ func _spawn_key(key_data: KeyData) -> Key:
 
 ## Removes a key from the level data
 func remove_key(key: Key) -> void:
-	level_data.keys.erase(key.get_meta(&"original_key_data"))
+	var pos := level_data.keys.find(key.get_meta(&"original_key_data"))
+	assert(pos != -1)
+	level_data.keys.remove_at(pos)
 	key.queue_free()
+	level_data.changed_keys.emit()
 
 func place_player_spawn(coord: Vector2i) -> void:
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"player_spawn"]): return
@@ -301,13 +315,6 @@ func _on_door_clicked(event: InputEventMouseButton, door: Door):
 func _on_key_clicked(event: InputEventMouseButton, key: Key):
 	key_clicked.emit(event, key)
 
-func get_doors() -> Array[Door]:
-	var arr: Array[Door] = []
-	for child in get_children():
-		if child is Door:
-			arr.push_back(child)
-	return arr
-
 func add_debris_child(debris: Node) -> void:
 	debris_parent.add_child(debris)
 
@@ -334,6 +341,15 @@ func start_undo_action() -> void:
 ## This is called after start_undo_action to finish the action
 func end_undo_action() -> void:
 	undo_redo.commit_action(false)
+	# WAITING4GODOT: let me null callables damn it
+	last_saved_player_undo = func(): pass
 
+# for legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
+func undo() -> void:
+	if not Global.is_playing: return
+	undo_redo.undo()
+	last_player_undo = player.get_undo_action()
+	if undo_redo.get_last_action() == -1:
+		undo_redo._last_action = 0
 
 

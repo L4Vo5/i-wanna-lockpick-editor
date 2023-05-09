@@ -139,38 +139,48 @@ func try_open() -> Dictionary:
 					player.update_master_equipped(true, false)
 			return_dict.opened = true
 			return return_dict
-	# open normally
-	var diff := ComplexNumber.new()
-	var i_view: bool = level.i_view
-	var open_dim := ComplexNumber.new()
-	var rotor := false
-	var flip := false
-	if amount.real_part > 0:
-		open_dim.set_to(1, 0)
-	elif amount.real_part < 0:
-		open_dim.set_to(-1, 0)
-		flip = true
-	if i_view or amount.real_part == 0:
-		if amount.imaginary_part > 0:
-			open_dim.set_to(0, 1)
-			rotor = true
-			flip = false
-		elif amount.imaginary_part < 0:
-			open_dim.set_to(0, -1)
-			rotor = true
-			flip = false
-		elif not i_view: # just in case idk
-			assert(amount.is_zero(), "what??")
-			printerr("Can't open a door with 0 copies!")
 	
-	for lock_data in locks:
-		var used_lock_color := lock_data.get_used_color()
-		
-		var color_amount: ComplexNumber = level.key_counts[used_lock_color]
-		var diff_after_open := lock_data.open_with(color_amount, flip, rotor)
-		# open_with returns null if it couldn't be opened
-		if diff_after_open == null: return return_dict
-		diff.add(diff_after_open)
+	# open normally
+	var i_view: bool = level.i_view
+	var open_dim := ComplexNumber.new_with(1, 0)
+	
+	# when there's both real and imaginary copies, it should try opening the door twice, first for the currently-focused one (real if no i-view, imaginary if i-view)
+	# but also, even the currently-focused one should be skipped if there are 0 copies 
+	# so this variable dictates, for real and then imaginary copies: [should it even try?, should it rotor the locks?, should it flip them?]
+	var dims_try_rotor_flip := [
+		[amount.real_part != 0, false, amount.real_part < 0],
+		[amount.imaginary_part != 0, true, amount.imaginary_part < 0]]
+	
+	if i_view: # if i-view, try imaginary copies first
+		dims_try_rotor_flip.reverse()
+	
+	var diff: ComplexNumber
+	var did_it_open: bool
+	for try_rotor_flip in dims_try_rotor_flip:
+		var try: bool = try_rotor_flip[0]
+		var rotor: bool = try_rotor_flip[1]
+		var flip: bool = try_rotor_flip[2]
+		if not try: continue
+		diff = ComplexNumber.new_with(0, 0)
+		did_it_open = true
+		for lock_data in locks:
+			var used_lock_color := lock_data.get_used_color()
+			
+			var key_amount: ComplexNumber = level.key_counts[used_lock_color]
+			var diff_after_open := lock_data.open_with(key_amount, flip, rotor)
+			# open_with returns null if it couldn't be opened
+			if diff_after_open == null:
+				did_it_open = false
+				break
+			diff.add(diff_after_open)
+		if did_it_open: # it worked for the first dimension, don't try again
+			if rotor:
+				open_dim.rotor()
+			if flip:
+				open_dim.flip()
+			break
+	
+	if not did_it_open: return return_dict
 	# it worked on all locks!
 	
 	return_dict.undo_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))

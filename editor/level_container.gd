@@ -11,6 +11,10 @@ class_name LevelContainer
 @export var door_editor: DoorEditor
 @export var key_editor: KeyEditor
 
+@export var ghost_door: Door
+@export var ghost_key: Key
+@export var ghost_canvas_group: CanvasGroup
+
 @export var editor: LockpickEditor
 var editor_data: EditorData
 
@@ -28,6 +32,19 @@ func _ready() -> void:
 	level.key_clicked.connect(_on_key_clicked)
 	resized.connect(_on_resized)
 	level_viewport.size = Vector2i(800, 608)
+	ghost_canvas_group.self_modulate.a = 0.5
+	
+	await get_tree().process_frame
+	editor_data.side_tabs.tab_changed.connect(_retry_ghosts)
+	editor_data.level.changed_doors.connect(_retry_ghosts)
+	editor_data.level.changed_keys.connect(_retry_ghosts)
+	editor_data.changed_is_playing.connect(func():
+		# fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
+		if not editor_data.is_playing:
+			await get_tree().process_frame
+		_retry_ghosts())
+	_place_ghost_door()
+	_place_ghost_key()
 
 func _on_door_clicked(event: InputEventMouseButton, door: Door) -> void:
 	if editor_data.disable_editing: return
@@ -93,6 +110,8 @@ func _gui_input(event: InputEvent) -> void:
 #			if editor_data.tilemap_edit:
 				if remove_tile_on_mouse():
 					accept_event()
+		_place_ghost_door()
+		_place_ghost_key()
 	
 
 
@@ -139,7 +158,7 @@ func place_goal_on_mouse() -> void:
 func get_mouse_coord(grid_size: int) -> Vector2i:
 	return Vector2i(get_global_mouse_position() - get_level_pos()) / Vector2i(grid_size, grid_size) * Vector2i(grid_size, grid_size)
 
-func get_mouse_tile_coord(grid_size) -> Vector2i:
+func get_mouse_tile_coord(grid_size: int) -> Vector2i:
 	return Vector2i((get_global_mouse_position() - get_level_pos()) / Vector2(grid_size, grid_size))
 
 func is_mouse_out_of_bounds() -> bool:
@@ -150,3 +169,35 @@ func is_mouse_out_of_bounds() -> bool:
 
 func get_level_pos() -> Vector2:
 	return level_viewport.get_parent().global_position + level.global_position
+
+func _retry_ghosts() -> void:
+	ghost_key.hide()
+	ghost_door.hide()
+	_place_ghost_door()
+	_place_ghost_key()
+
+func _place_ghost_door() -> void:
+	if not editor_data.doors or editor_data.is_playing:
+		ghost_door.hide()
+		return
+	ghost_door.door_data = door_editor.door_data
+	var maybe_pos := get_mouse_coord(32)
+	if not Rect2i(Vector2i.ZERO, level.level_data.size).has_point(maybe_pos):
+		ghost_door.hide()
+		return
+	if not level.is_space_occupied(Rect2i(maybe_pos, ghost_door.get_rect().size)):
+		ghost_door.position = maybe_pos
+		ghost_door.show()
+
+func _place_ghost_key() -> void:
+	if not editor_data.keys or editor_data.is_playing:
+		ghost_key.hide()
+		return
+	ghost_key.key_data = key_editor.key_data
+	var maybe_pos := get_mouse_coord(16)
+	if not Rect2i(Vector2i.ZERO, level.level_data.size).has_point(maybe_pos):
+		ghost_key.hide()
+		return
+	if not level.is_space_occupied(Rect2i(maybe_pos, Vector2i(32, 32))):
+		ghost_key.position = maybe_pos
+		ghost_key.show()

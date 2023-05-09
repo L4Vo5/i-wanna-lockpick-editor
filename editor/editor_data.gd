@@ -11,9 +11,15 @@ var level_data: LevelData:
 		_connect_level_data()
 		changed_level_data.emit()
 
-var is_playing := false
+signal changed_is_playing
+var is_playing := false:
+	set(val):
+		if is_playing == val: return
+		is_playing = val
+		changed_is_playing.emit()
 var disable_editing := false
 
+var level: Level
 var door_editor: DoorEditor
 var key_editor: KeyEditor
 var side_tabs: TabContainer
