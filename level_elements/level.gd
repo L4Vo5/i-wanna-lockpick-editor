@@ -126,6 +126,7 @@ func _physics_process(delta: float) -> void:
 
 func reset() -> void:
 	if not is_ready: return
+	var start := Time.get_ticks_msec()
 	# Clear everything
 	for child in doors.get_children():
 		child.queue_free()
@@ -150,6 +151,7 @@ func reset() -> void:
 		_spawn_tile(tile_coord)
 	_spawn_goal()
 	_spawn_player()
+	print("reset() took %dms" % (Time.get_ticks_msec() - start))
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return

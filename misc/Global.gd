@@ -1,8 +1,9 @@
 @tool
 extends Node
 
-# in the godot editor, as opposed to the level editor
+# in the godot editor, as opposed to the level editor (exported or f5)
 var in_editor := Engine.is_editor_hint()
+# in the level editor (as opposed to like, an individual level)
 var in_level_editor := false
 ## Will basically be true if there's a player moving around
 var is_playing := false
