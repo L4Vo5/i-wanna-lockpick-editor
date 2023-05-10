@@ -58,7 +58,8 @@ func _connect_global_level() -> void:
 		# needed to access the level glitch color (only necessary if it starts out not being glitch, which shouldn't happen in-game, but I want things to work while I test)
 		if key_data.color == Enums.colors.glitch:
 			update_visual()
-		level.changed_glitch_color.connect(update_visual)
+		if not level.changed_glitch_color.is_connected(update_visual):
+			level.changed_glitch_color.connect(update_visual)
 
 func _process(_delta: float) -> void:
 	if key_data.color in [Enums.colors.master, Enums.colors.pure]:

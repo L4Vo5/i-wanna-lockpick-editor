@@ -1,9 +1,6 @@
-[gd_scene load_steps=26 format=3 uid="uid://h5opptcugh0i"]
+[gd_scene load_steps=20 format=3 uid="uid://h5opptcugh0i"]
 
 [ext_resource type="Script" path="res://level_elements/doors_locks/door.gd" id="1_sybd2"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="2_h6u5i"]
-[ext_resource type="Script" path="res://data/lock_data.gd" id="3_cjud2"]
-[ext_resource type="Script" path="res://data/door_data.gd" id="4_q43he"]
 [ext_resource type="Texture2D" uid="uid://cfhmg7cp4bhcs" path="res://level_elements/doors_locks/textures/door_color_light.png" id="5_x4fy6"]
 [ext_resource type="Texture2D" uid="uid://bnnlmpfvgiaga" path="res://level_elements/doors_locks/textures/door_color_mid.png" id="6_yqky5"]
 [ext_resource type="Texture2D" uid="uid://252neirmxm6w" path="res://level_elements/doors_locks/textures/door_color_dark.png" id="7_fd7pd"]
@@ -22,38 +19,6 @@
 [ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://level_elements/doors_locks/open.wav" id="20_k8bk1"]
 [ext_resource type="FontFile" uid="uid://d3wvfkvx16abd" path="res://fonts/consolab.ttf" id="21_81h8m"]
 
-[sub_resource type="Resource" id="Resource_lrhk2"]
-script = ExtResource("2_h6u5i")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_ewqbb"]
-script = ExtResource("3_cjud2")
-color = 1
-magnitude = 1
-sign = 0
-value_type = 0
-lock_type = 0
-size = Vector2i(18, 18)
-position = Vector2i(7, 7)
-lock_arrangement = 0
-dont_show_lock = false
-
-[sub_resource type="Resource" id="Resource_m3ecb"]
-script = ExtResource("4_q43he")
-amount = SubResource("Resource_lrhk2")
-outer_color = 1
-locks = Array[ExtResource("3_cjud2")]([SubResource("Resource_ewqbb")])
-size = Vector2i(32, 32)
-_curses = {
-0: false,
-1: false,
-2: false,
-3: false
-}
-glitch_color = 13
-position = Vector2i(0, 0)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
 size = Vector2(1, 1)
 
@@ -62,7 +27,6 @@ custom_minimum_size = Vector2(32, 32)
 offset_right = 32.0
 offset_bottom = 32.0
 script = ExtResource("1_sybd2")
-door_data = SubResource("Resource_m3ecb")
 
 [node name="ColorLight" type="NinePatchRect" parent="."]
 unique_name_in_owner = true

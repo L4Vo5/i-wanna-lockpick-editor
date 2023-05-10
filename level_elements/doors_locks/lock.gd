@@ -25,39 +25,64 @@ signal changed_lock_data
 @onready var lock_count_number := %LockCountDraw
 @onready var lock_template := %LockTemplate as Sprite2D
 
-@onready var is_ready := true
+var is_ready := false
 
 @export var ignore_position := false
 
 ## There's too many connections, so this makes them more organized...
 ## For each method, what LockData signals is it called from?
-const CONNECTIONS = {
-	&"update_position": [&"changed_position"],
-	&"update_size": [&"changed_size"],
-	&"update_lock_size": [&"changed_minimum_size"],
-	&"update_frame_visible": [&"changed_dont_show_frame"],
-	&"update_frame_texture": [&"changed_sign", &"changed_rotation"],
-	&"update_colors": [&"changed_color", &"changed_glitch", &"changed_is_cursed"],
-	&"regenerate_locks": [&"changed_lock_type", &"changed_magnitude", &"changed_sign", &"changed_value_type", &"changed_dont_show_lock", &"changed_lock_arrangement", &"changed_rotation", ],
+# Believe it or not, making it a variable is about twice as fast as a constant, since the constant needs me to construct the callable references myself from the signal names
+var CONNECTIONS = {
+	update_position: [&"changed_position"],
+	update_size: [&"changed_size"],
+	update_lock_size: [&"changed_minimum_size"],
+	update_frame_visible: [&"changed_dont_show_frame"],
+	update_frame_texture: [&"changed_sign", &"changed_rotation"],
+	update_colors: [&"changed_color", &"changed_glitch", &"changed_is_cursed"],
+	regenerate_locks: [&"changed_lock_type", &"changed_magnitude", &"changed_sign", &"changed_value_type", &"changed_dont_show_lock", &"changed_lock_arrangement", &"changed_rotation", ],
 }
 
 func connect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
+	if not is_ready: return
+	assert(PerfManager.start(&"Lock::connect_lock_data"))
 	# Connect all the signals
-	for method in CONNECTIONS.keys():
-		for sig in CONNECTIONS[method]:
-			lock_data.connect(sig, Callable(self, method))
+	lock_data.changed_position.connect(update_position)
+	lock_data.changed_size.connect(update_size)
+	lock_data.changed_minimum_size.connect(update_lock_size)
+	lock_data.changed_dont_show_frame.connect(update_frame_visible)
+	lock_data.changed_sign.connect(update_frame_texture)
+	lock_data.changed_rotation.connect(update_frame_texture)
+	lock_data.changed_color.connect(update_colors)
+	lock_data.changed_glitch.connect(update_colors)
+	lock_data.changed_is_cursed.connect(update_colors)
+	lock_data.changed_lock_type.connect(regenerate_locks)
+	lock_data.changed_magnitude.connect(regenerate_locks)
+	lock_data.changed_sign.connect(regenerate_locks)
+	lock_data.changed_value_type.connect(regenerate_locks)
+	lock_data.changed_dont_show_lock.connect(regenerate_locks)
+	lock_data.changed_lock_arrangement.connect(regenerate_locks)
+	lock_data.changed_rotation.connect(regenerate_locks)
+	
 	# Call the methods to update everything now
-	if not is_ready:
-		await ready
-	for method in CONNECTIONS.keys():
-		Callable(self, method).call()
+	update_position()
+	update_size()
+	update_lock_size()
+	update_frame_visible()
+	update_frame_texture()
+	update_colors()
+	regenerate_locks()
+	assert(PerfManager.end(&"Lock::connect_lock_data"))
 
 func disconnect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
 	for method in CONNECTIONS.keys():
 		for sig in CONNECTIONS[method]:
-			lock_data.disconnect(sig, Callable(self, method))
+			lock_data.disconnect(sig, method)
+
+func _ready() -> void:
+	is_ready = true
+	connect_lock_data()
 
 func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(lock_data): return
@@ -138,6 +163,7 @@ func update_colors() -> void:
 
 # PERF: Currently it takes about 2ms to draw the 24-lock variation, 1ms for the 8-lock. Just draw the locks manually instead of using nodes. Maybe same for the LockCountDraw: make it a static method or even just draw it in this class. Would make it not show properly if the number exceeds the box and it goes offscreen, but the number shouldn't exceed the box in the first place. 
 func regenerate_locks() -> void:
+	assert(PerfManager.start(&"Lock::regenerate_locks"))
 	var amount := lock_data.get_complex_amount().multiply_by(lock_data.rotation)
 	var sign := amount.sign_1d()
 	var value_type := amount.value_type_1d()
@@ -175,5 +201,6 @@ func regenerate_locks() -> void:
 				lock_count_number.lock_type = 2 if lock_data.dont_show_lock else 0 if value_type == Enums.value.real else 1 if value_type == Enums.value.imaginary else 2
 				# Add 4 for the frame size
 				lock_data.minimum_size = lock_count_number.custom_minimum_size + Vector2(4, 4)
+	assert(PerfManager.end(&"Lock::regenerate_locks"))
 
 

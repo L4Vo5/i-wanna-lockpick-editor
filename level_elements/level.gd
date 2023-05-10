@@ -126,7 +126,7 @@ func _physics_process(delta: float) -> void:
 
 func reset() -> void:
 	if not is_ready: return
-	var start := Time.get_ticks_msec()
+	assert(PerfManager.start("Level::reset"))
 	# Clear everything
 	for child in doors.get_children():
 		child.queue_free()
@@ -151,7 +151,9 @@ func reset() -> void:
 		_spawn_tile(tile_coord)
 	_spawn_goal()
 	_spawn_player()
-	print("reset() took %dms" % (Time.get_ticks_msec() - start))
+	assert(PerfManager.end("Level::reset"))
+#	PerfManager.print_report()
+#	PerfManager.clear()
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
@@ -195,11 +197,18 @@ func add_door(door_data: DoorData) -> Door:
 
 ## Makes a door physically appear (doesn't check collisions)
 func _spawn_door(door_data: DoorData) -> Door:
+	assert(PerfManager.start("Level::_spawn_door"))
 	var door := DOOR.instantiate()
-	door.door_data = door_data.duplicated()
+	assert(PerfManager.start("Level::_spawn_door (duplicating door data)"))
+	var dd := door_data.duplicated()
+	assert(PerfManager.end("Level::_spawn_door (duplicating door data)"))
+	door.door_data = dd
 	door.set_meta(&"original_door_data", door_data)
 	door.clicked.connect(_on_door_clicked.bind(door))
+	assert(PerfManager.start("Level::_spawn_door (adding child)"))
 	doors.add_child(door)
+	assert(PerfManager.end("Level::_spawn_door (adding child)"))
+	assert(PerfManager.end("Level::_spawn_door"))
 	return door
 
 ## Removes a door from the level data

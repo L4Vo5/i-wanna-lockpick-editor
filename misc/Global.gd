@@ -78,8 +78,7 @@ func fully_disconnect(receiver: Object, emitter: Object) -> int:
 		assert(not sig_data.name is StringName) # maybe they'll update it 
 		var sig_name: String = sig_data.name
 		for connection_data in emitter.get_signal_connection_list(sig_name):
-			# WAITING4GODOT: I wanna be able to do connection_data.signal here
-			var sig: Signal = connection_data["signal"]
+			var sig: Signal = connection_data.signal
 			var call: Callable = connection_data.callable
 			var met = receiver.get(call.get_method())
 			if not met is Callable: continue
@@ -103,6 +102,7 @@ func _physics_process(delta: float) -> void:
 	if not in_editor:
 		# TODO: No real need to do this every frame
 		key_pad.update_pos()
+		PerfManager.check_balances()
 
 # sets the viewport according to gameplay settings
 func _set_viewport_to_gameplay() -> void:

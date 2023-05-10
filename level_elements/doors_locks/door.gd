@@ -51,22 +51,25 @@ var level: Level = null
 
 var is_ready := false
 func _ready() -> void:
+	assert(PerfManager.start("Door::_ready"))
 	is_ready = true
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
-	if not Global.in_editor:
-		door_data = door_data.duplicated()
-	update_everything()
 	copies.minimum_size_changed.connect(position_copies)
 	Global.changed_level.connect(connect_level)
-	connect_level()
 	if ignore_collisions:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
+	if not Global.in_editor and is_instance_valid(door_data):
+		door_data = door_data.duplicated() # will trigger update_everything
+	else:
+		update_everything()
+	connect_level()
+	assert(PerfManager.end("Door::_ready"))
 
 func _connect_door_data() -> void:
 	if not is_instance_valid(door_data): return
 	# TODO: Don't be lazy lol. locks are hard to create so this might suck for editor performance
 	door_data.changed.connect(update_everything)
-	if not is_ready: await ready
+	if not is_ready: return
 	update_everything()
 
 func _disconnect_door_data() -> void:
@@ -84,6 +87,7 @@ func connect_level() -> void:
 func _physics_process(_delta: float) -> void:
 	special_anim.frame = floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % special_anim.hframes * special_anim.vframes
 	
+	if not is_instance_valid(door_data): return
 	var text := ""
 	if not door_data.amount.is_value(1,0):
 		text = "×" + str(door_data.amount)
@@ -95,13 +99,31 @@ func _gui_input(event: InputEvent) -> void:
 		clicked.emit(event)
 		# the event should be accepted on the signal receiver's side
 
+var update_everything_count := 0
+
 func update_everything() -> void:
+	if not is_instance_valid(door_data): return
+	assert(PerfManager.start(&"Door::update_everything"))
+	update_everything_count += 1
+#	if door_data.locks.size() == 2 and not Global.in_editor:
+#		if Global.has_meta("who"):
+#			var who = Global.get_meta("who")
+#			if is_instance_valid(who) and who == self:
+#				assert(false, str(update_everything_count))
+#		else:
+#			Global.set_meta("who", self)
+#			assert(false, str(update_everything_count))
+#	print(update_everything_count)
+	if update_everything_count > 1 and not ignore_collisions:
+		print("update_everything_count is %d" % update_everything_count)
+	
 	_on_changed_i_view()
 	update_textures()
 	update_locks()
 	update_curses()
 	if not ignore_position:
 		position = door_data.position
+	assert(PerfManager.end(&"Door::update_everything"))
 
 func position_copies() -> void:
 	copies.size.x = size.x
@@ -135,9 +157,11 @@ func _on_changed_i_view() -> void:
 			lock.rotation.flip()
 
 func _on_changed_glitch_color() -> void:
+	if not is_instance_valid(door_data): return
 	door_data.update_glitch_color(level.glitch_color)
 
 func i_view_colors() -> void:
+	if not is_instance_valid(door_data): return
 	if not using_i_view_colors: return
 	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
 	frame_light.modulate = Color.from_hsv(hue, Rendering.frame_s_v[1][0], Rendering.frame_s_v[1][1])
@@ -145,6 +169,7 @@ func i_view_colors() -> void:
 	frame_dark.modulate = Color.from_hsv(hue, Rendering.frame_s_v[2][0], Rendering.frame_s_v[2][1])
 
 func update_textures() -> void:
+	if not is_instance_valid(door_data): return
 	custom_minimum_size = door_data.size
 	size = door_data.size
 	position_copies()
@@ -203,6 +228,8 @@ func update_textures() -> void:
 		color_dark.modulate = Rendering.color_colors[used_color][2]
 
 func update_locks() -> void:
+	if not is_instance_valid(door_data): return
+	assert(PerfManager.start(&"Door::update_locks"))
 	for lock in lock_holder.get_children():
 		lock.queue_free()
 	for lock in door_data.locks:
@@ -210,8 +237,10 @@ func update_locks() -> void:
 		new_lock.clicked.connect(func(event): lock_clicked.emit(event, new_lock))
 		new_lock.lock_data = lock
 		lock_holder.add_child(new_lock)
+	assert(PerfManager.end(&"Door::update_locks"))
 
 func update_curses() -> void:
+	if not is_instance_valid(door_data): return
 	ice.visible = door_data.get_curse(Enums.curse.ice)
 	erosion.visible = door_data.get_curse(Enums.curse.erosion)
 	paint.visible = door_data.get_curse(Enums.curse.paint)

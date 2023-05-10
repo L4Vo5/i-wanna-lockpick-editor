@@ -23,6 +23,7 @@ config/game_version="0.2.0.2"
 
 Global="*res://misc/Global.tscn"
 Rendering="*res://rendering/rendering_singleton.tscn"
+PerfManager="*res://misc/perf_manager.gd"
 
 [debug]
 
