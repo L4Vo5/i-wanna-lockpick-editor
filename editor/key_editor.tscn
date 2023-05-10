@@ -5,14 +5,14 @@
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_nbql1"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="3_a0u5f"]
 
-[sub_resource type="Resource" id="Resource_i0ltm"]
+[sub_resource type="Resource" id="Resource_6ip7m"]
 script = ExtResource("2_nbql1")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_3k2v1"]
+[sub_resource type="Resource" id="Resource_mxcqd"]
 script = ExtResource("3_a0u5f")
-amount = SubResource("Resource_i0ltm")
+amount = SubResource("Resource_6ip7m")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -21,7 +21,7 @@ position = Vector2i(0, 0)
 offset_right = 269.0
 offset_bottom = 592.0
 script = ExtResource("1_a031y")
-key_data = SubResource("Resource_3k2v1")
+key_data = SubResource("Resource_mxcqd")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -48,7 +48,7 @@ layout_mode = 2
 
 [node name="key" parent="VBoxContainer/TopStuff/TheKey/KeyHolder" instance=ExtResource("1_2kdyu")]
 unique_name_in_owner = true
-key_data = SubResource("Resource_3k2v1")
+key_data = SubResource("Resource_mxcqd")
 in_keypad = true
 ignore_position = true
 metadata/_edit_vertical_guides_ = [32.0]

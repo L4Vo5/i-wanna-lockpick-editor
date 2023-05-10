@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 # each key is [total time, sub-time] where sub-time deducts other measured times that happened in between
@@ -7,12 +8,14 @@ var balance := {}
 var stack: Array[Array] = []
 
 func _input(event: InputEvent) -> void:
+	if Global.in_editor: return
 	if event is InputEventKey:
 		if event.is_pressed():
 			if event.keycode == KEY_F12:
 				print_report()
 
 func start(who: StringName) -> bool:
+	if Global.in_editor: return true
 	_create(who)
 	# "pause" the last one
 	if stack.size() != 0:
@@ -23,6 +26,7 @@ func start(who: StringName) -> bool:
 	return true
 
 func end(who: StringName) -> bool:
+	if Global.in_editor: return true
 	var data = stack.pop_back()
 	assert(data[0] == who)
 	data[3] += Time.get_ticks_usec() - data[2]
@@ -36,17 +40,20 @@ func end(who: StringName) -> bool:
 	return true
 
 func clear() -> void:
+	if Global.in_editor: return
 	check_balances()
 	times.clear()
 	balance.clear()
 	stack.clear()
 
 func check_balances() -> void:
+	if Global.in_editor: return
 	for b in balance.values():
 		assert(b == 0)
 	assert(stack.is_empty())
 
 func print_report() -> void:
+	if Global.in_editor: return
 	check_balances()
 	for key in times:
 		print_rich("%s: [b]%s[/b] ms total, [b]%s[/b] ms self" % [key, times[key][0] / 1000.0, times[key][1] / 1000.0])
@@ -58,10 +65,13 @@ func _create(who: StringName) -> void:
 		times[who] = [0, 0]
 
 func _ready() -> void:
+	if Global.in_editor: return
+	print("node count before: %d" % get_tree().get_node_count())
 	var l = preload("res://level_elements/level.tscn").instantiate()
 	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")
 	add_child(l)
-	test_func(l.reset, 1)
+	test_func(l.reset, 3)
+	print("node count after: %d" % get_tree().get_node_count())
 	l.queue_free()
 
 func test_func(f: Callable, repetitions: int) -> void:

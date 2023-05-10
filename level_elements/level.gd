@@ -128,9 +128,11 @@ func reset() -> void:
 	if not is_ready: return
 	assert(PerfManager.start("Level::reset"))
 	# Clear everything
-	for child in doors.get_children():
-		child.queue_free()
+	for door in doors.get_children():
+		doors.remove_child(door)
+		door.queue_free()
 	for key in keys.get_children():
+		keys.remove_child(key)
 		key.queue_free()
 	glitch_color = Enums.colors.glitch
 	for color in key_counts.keys():
@@ -216,6 +218,7 @@ func remove_door(door: Door) -> void:
 	var pos := level_data.doors.find(door.get_meta(&"original_door_data"))
 	assert(pos != -1)
 	level_data.doors.remove_at(pos)
+	doors.remove_child(door)
 	door.queue_free()
 	level_data.changed_doors.emit()
 
@@ -242,6 +245,7 @@ func remove_key(key: Key) -> void:
 	var pos := level_data.keys.find(key.get_meta(&"original_key_data"))
 	assert(pos != -1)
 	level_data.keys.remove_at(pos)
+	keys.remove_child(key)
 	key.queue_free()
 	level_data.changed_keys.emit()
 
