@@ -35,7 +35,7 @@ func _ready() -> void:
 	ghost_canvas_group.self_modulate.a = 0.5
 	
 	await get_tree().process_frame
-	editor_data.side_tabs.tab_changed.connect(_retry_ghosts)
+	editor_data.side_tabs.tab_changed.connect(_retry_ghosts.unbind(1))
 	editor_data.level.changed_doors.connect(_retry_ghosts)
 	editor_data.level.changed_keys.connect(_retry_ghosts)
 	editor_data.changed_is_playing.connect(func():

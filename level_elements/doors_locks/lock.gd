@@ -25,8 +25,6 @@ signal changed_lock_data
 @onready var lock_count_number := %LockCountDraw
 @onready var lock_template := %LockTemplate as Sprite2D
 
-var is_ready := false
-
 @export var ignore_position := false
 
 ## There's too many connections, so this makes them more organized...
@@ -44,7 +42,7 @@ var CONNECTIONS = {
 
 func connect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
-	if not is_ready: return
+	if not is_node_ready(): return
 	assert(PerfManager.start(&"Lock::connect_lock_data"))
 	# Connect all the signals
 	lock_data.changed_position.connect(update_position)
@@ -81,7 +79,6 @@ func disconnect_lock_data() -> void:
 			lock_data.disconnect(sig, method)
 
 func _ready() -> void:
-	is_ready = true
 	connect_lock_data()
 
 func _physics_process(_delta: float) -> void:

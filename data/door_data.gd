@@ -18,6 +18,7 @@ class_name DoorData
 		if outer_color == val: return
 		outer_color = val
 		changed.emit()
+# Please don't push_back on these or anything!! use add_lock or remove_lock
 @export var locks: Array[LockData] = []:
 	set(val):
 		if locks == val: return
@@ -29,6 +30,7 @@ class_name DoorData
 			if is_instance_valid(l):
 				l.changed.connect(emit_changed)
 		changed.emit()
+
 @export var size := Vector2i(32, 32):
 	set(val):
 		if size == val: return
@@ -52,6 +54,16 @@ class_name DoorData
 		if position == val: return
 		position = val
 		changed.emit()
+
+func add_lock(lock: LockData) -> void:
+	locks.push_back(lock)
+	lock.changed.connect(emit_changed)
+	changed.emit()
+
+func remove_lock_at(pos: int) -> void:
+	locks[pos].changed.disconnect(emit_changed)
+	locks.remove_at(pos)
+	changed.emit()
 
 func set_curse(curse: Enums.curse, val: bool, register_undo := false) -> void:
 	if _curses[curse] == val: return

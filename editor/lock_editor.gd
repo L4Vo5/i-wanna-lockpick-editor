@@ -13,7 +13,7 @@ signal delete
 			lock_data.changed_minimum_size.connect(_update_min_size)
 			if lock_data.size == Vector2i(50, 50):
 				lock_data.changed_size.connect(func(): breakpoint)
-		if not is_ready: await ready
+		if not is_node_ready(): await ready
 		arrangement_chooser.lock_data = lock_data
 		lock.lock_data = val
 		_set_to_lock_data()
@@ -34,7 +34,7 @@ signal delete
 @onready var position_y: SpinBox = %Y
 @export var lock_number := 1:
 	set(val):
-		if not is_ready: await ready
+		if not is_node_ready(): await ready
 		lock_number = val
 		lock_n.text = "Lock %d" % lock_number
 @export var door_size := Vector2i(32, 32):
@@ -45,10 +45,7 @@ signal delete
 
 
 
-var is_ready := false
 func _ready() -> void:
-	is_ready = true
-	
 	delete_button.pressed.connect(func(): delete.emit())
 	width.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
 	height.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
@@ -114,7 +111,7 @@ func _set_to_lock_data() -> void:
 
 func _update_min_size() -> void:
 	if _setting_to_data: return
-	if not is_ready: await ready
+	if not is_node_ready(): await ready
 	width.min_value = lock_data.minimum_size.x
 	height.min_value = lock_data.minimum_size.y
 
@@ -199,12 +196,12 @@ func _update_arrangement() -> void:
 
 func _update_position() -> void:
 	if _setting_to_data: return
-	if not is_ready: await ready
+	if not is_node_ready(): await ready
 	lock_data.position = Vector2i(roundi(position_x.value), roundi(position_y.value))
 
 func _update_max_pos() -> void:
 	if _setting_to_data: return
-	if not is_ready: await ready
+	if not is_node_ready(): await ready
 	var old_pos := Vector2(position_x.max_value, position_y.max_value)
 	position_x.max_value = door_size.x - lock_data.size.x
 	position_y.max_value = door_size.y - lock_data.size.y

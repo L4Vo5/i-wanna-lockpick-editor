@@ -32,12 +32,10 @@ signal clicked(event: InputEventMouseButton)
 
 var level: Level = null
 
-var is_ready := false
 func _ready() -> void:
 	collision.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	if not Global.in_editor:
 		key_data = key_data.duplicate(true)
-	is_ready = true
 	if in_keypad:
 		collision.process_mode = Node.PROCESS_MODE_DISABLED
 	if hide_shadow:
@@ -81,7 +79,7 @@ func set_special_texture(color: Enums.colors) -> void:
 			special.vframes = 4
 
 func update_visual() -> void:
-	if not is_ready: return
+	if not is_node_ready(): return
 	if not is_instance_valid(key_data): return
 	if not ignore_position: position = key_data.position
 	fill.hide()

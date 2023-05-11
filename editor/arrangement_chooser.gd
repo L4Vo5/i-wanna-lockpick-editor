@@ -11,9 +11,7 @@ signal changed_arrangement
 
 @onready var option_button: OptionButton = %OptionButton
 
-var is_ready := false
 func _ready() -> void:
-	is_ready = true
 	option_button.item_selected.connect(_on_item_selected)
 
 func _on_item_selected(idx: int) -> void:
@@ -26,7 +24,7 @@ func _connect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
 	lock_data.changed_magnitude.connect(_update_options)
 	lock_data.changed_lock_arrangement.connect(_set_option)
-	if not is_ready: await ready
+	if not is_node_ready(): await ready
 	_update_options()
 	_set_option()
 

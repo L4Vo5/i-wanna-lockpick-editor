@@ -110,9 +110,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		start_undo_action()
 		end_undo_action()
 
-var is_ready := false
 func _ready() -> void:
-	is_ready = true
 	Global.current_level = self
 	reset()
 	_update_player_spawn_position()
@@ -125,7 +123,7 @@ func _physics_process(delta: float) -> void:
 			last_player_undo = player.get_undo_action()
 
 func reset() -> void:
-	if not is_ready: return
+	if not is_node_ready(): return
 	assert(PerfManager.start("Level::reset"))
 	# Clear everything
 	for door in doors.get_children():
@@ -176,12 +174,12 @@ func _disconnect_level_data() -> void:
 	assert(amount == 4)
 
 func _update_player_spawn_position() -> void:
-	if not is_ready: return
+	if not is_node_ready(): return
 	player_spawn_point.visible = Global.in_level_editor
 	player_spawn_point.position = level_data.player_spawn_position
 
 func _update_goal_position() -> void:
-	if not is_ready: return
+	if not is_node_ready(): return
 	goal.position = level_data.goal_position + Vector2i(16, 16)
 
 # Editor functions
@@ -335,7 +333,7 @@ func add_debris_child(debris: Node) -> void:
 
 func _ensure_key_counts():
 	var original_key_counts = key_counts.duplicate()
-	if not is_ready: await ready
+	if not is_node_ready(): await ready
 	while true:
 		for color in original_key_counts:
 			assert(key_counts[color] == original_key_counts[color])
@@ -357,9 +355,9 @@ func start_undo_action() -> void:
 func end_undo_action() -> void:
 	undo_redo.commit_action(false)
 	# WAITING4GODOT: let me null callables damn it
-	last_saved_player_undo = func(): pass
+#	last_saved_player_undo = func(): pass
 
-# for legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
+# For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
 func undo() -> void:
 	if not Global.is_playing: return
 	undo_redo.undo()

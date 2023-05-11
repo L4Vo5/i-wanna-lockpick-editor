@@ -7,6 +7,18 @@ var balance := {}
 # inner array is [name, start time, sub-start time, sub-time sum]
 var stack: Array[Array] = []
 
+func _ready() -> void:
+	if Global.in_editor: return
+	if Global.is_exported: return
+	return
+	print("node count before: %d" % get_tree().get_node_count())
+	var l = preload("res://level_elements/level.tscn").instantiate()
+	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")
+	add_child(l)
+	await test_func(l.reset, 30)
+	print("node count after: %d" % get_tree().get_node_count())
+	l.queue_free()
+
 func _input(event: InputEvent) -> void:
 	if Global.in_editor: return
 	if event is InputEventKey:
@@ -64,16 +76,6 @@ func _create(who: StringName) -> void:
 	if not times.has(who):
 		times[who] = [0, 0]
 
-func _ready() -> void:
-	if Global.in_editor: return
-	print("node count before: %d" % get_tree().get_node_count())
-	var l = preload("res://level_elements/level.tscn").instantiate()
-	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")
-	add_child(l)
-	test_func(l.reset, 3)
-	print("node count after: %d" % get_tree().get_node_count())
-	l.queue_free()
-
 func test_func(f: Callable, repetitions: int) -> void:
 	clear()
 	var who := "test_func (%s)" % f.get_method()
@@ -83,6 +85,9 @@ func test_func(f: Callable, repetitions: int) -> void:
 		f.call()
 		end(who)
 		time_collections.push_back(times.duplicate(true))
+		# Must wait for a frame for nodes to be freed
+		await get_tree().process_frame
+		await get_tree().physics_frame
 		clear()
 	# time for statistics babey
 	start("Statistic calculations")

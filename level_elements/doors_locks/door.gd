@@ -37,13 +37,11 @@ var can_open := true
 var using_i_view_colors := false
 var level: Level = null
 
-
-var is_ready := false
+func is_ready(): return is_node_ready()
 func _ready() -> void:
 	assert(PerfManager.start("Door::_ready"))
 	_create_canvas_items()
 	
-	is_ready = true
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	copies.minimum_size_changed.connect(position_copies)
 	Global.changed_level.connect(connect_level)
@@ -64,7 +62,7 @@ func _connect_door_data() -> void:
 	if not is_instance_valid(door_data): return
 	# TODO: Don't be lazy lol. locks are hard to create so this might suck for editor performance
 	door_data.changed.connect(update_everything)
-	if not is_ready: return
+	if not is_node_ready(): return
 	update_everything()
 
 func _disconnect_door_data() -> void:
@@ -329,6 +327,7 @@ func _draw_base() -> void:
 	assert(GLITCH_2_RECT.size == GLITCH_BASE_SHARED.get_size())
 	assert(BASE_ANIM_TILE_SIZE * Vector2(4, 1) == BASE_MASTER.get_size())
 	assert(BASE_ANIM_TILE_SIZE * Vector2(4, 1) == BASE_PURE.get_size())
+	assert(PerfManager.start("Door:_draw_base"))
 	
 	RenderingServer.canvas_item_clear(door_base)
 	RenderingServer.canvas_item_clear(door_glitch)
@@ -343,6 +342,7 @@ func _draw_base() -> void:
 		is_glitch = true
 		if door_data.glitch_color == Enums.colors.glitch:
 			RenderingServer.canvas_item_add_nine_patch(door_glitch, rect, BASE_TEX_RECT, GLITCH_BASE.get_rid(), BASE_DIST, BASE_DIST)
+			assert(PerfManager.end("Door:_draw_base"))
 			return
 		else:
 			used_color = door_data.glitch_color
@@ -366,6 +366,7 @@ func _draw_base() -> void:
 			RenderingServer.canvas_item_add_nine_patch(door_base, rect, BASE_TEX_RECT, BASE_LIGHT.get_rid(), BASE_DIST, BASE_DIST, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false, Rendering.color_colors[used_color][1])
 			RenderingServer.canvas_item_add_nine_patch(door_base, rect, BASE_TEX_RECT, BASE_MID.get_rid(), BASE_DIST, BASE_DIST, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, true, Rendering.color_colors[used_color][0])
 			RenderingServer.canvas_item_add_nine_patch(door_base, rect, BASE_TEX_RECT, BASE_DARK.get_rid(), BASE_DIST, BASE_DIST, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false, Rendering.color_colors[used_color][2])
+	assert(PerfManager.end("Door:_draw_base"))
 
 # Frame. Duh.
 var door_frame: RID
@@ -377,12 +378,14 @@ const FRAME_TL := Vector2(4, 4)
 const FRAME_BR := Vector2(4, 4)
 func _draw_frame() -> void:
 	if not is_instance_valid(door_data): return
+	assert(PerfManager.start("Door:_draw_frame"))
 	var rect := Rect2(Vector2.ZERO,door_data.size)
 	RenderingServer.canvas_item_clear(door_frame)
 	var frame_palette = Rendering.frame_colors[Enums.sign.positive if door_data.amount.real_part >= 0 else Enums.sign.negative]
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_LIGHT.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false,  frame_palette[1])
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_MID.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, true, frame_palette[0])
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_DARK.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false, frame_palette[2])
+	assert(PerfManager.end("Door:_draw_frame"))
 
 
 func _draw() -> void:

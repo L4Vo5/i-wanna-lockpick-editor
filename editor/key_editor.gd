@@ -5,7 +5,7 @@ class_name KeyEditor
 @export var key_data: KeyData:
 	set(val):
 		key_data = val.duplicated()
-		if not is_ready: await ready
+		if not is_node_ready(): await ready
 		# TODO: Allow editing keys in the level (currently not done to be consistent with door editing)
 		key.key_data = key_data
 		_set_to_key_data()
@@ -21,9 +21,7 @@ func _init() -> void:
 		key_data = KeyData.new()
 		key_data.color = Enums.colors.white
 
-var is_ready := false
 func _ready() -> void:
-	is_ready = true
 	key.key_data = key_data
 	
 	color_choice.clear()

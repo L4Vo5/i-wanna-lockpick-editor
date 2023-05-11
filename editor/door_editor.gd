@@ -5,7 +5,7 @@ class_name DoorEditor
 @export var door_data: DoorData:
 	set(val):
 		door_data = val.duplicated()
-		if not is_ready: await ready
+		if not is_node_ready(): await ready
 		# TODO: Allow editing doors in the level (currently not done so you can't resize them)
 		door.door_data = door_data
 		_set_to_door_data()
@@ -37,9 +37,7 @@ func _init() -> void:
 		lock.color = Enums.colors.white
 		door_data.locks.push_back(lock)
 
-var is_ready := false
 func _ready() -> void:
-	is_ready = true
 	door.door_data = door_data
 	width.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
 	height.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
@@ -132,15 +130,11 @@ func _update_lock_editors_door_size() -> void:
 func _add_new_lock() -> void:
 	var new_lock := LockData.new()
 	new_lock.color = door_data.outer_color
-	door_data.locks.push_back(new_lock)
-	# TODO: Make the door simply add a lock
-	door.update_locks()
+	door_data.add_lock(new_lock)
 	# TODO: Simply add an editor
 	_regen_lock_editors()
 
 func _delete_lock(i: int) -> void:
-	door_data.locks.remove_at(i)
-	# TODO: Make the door simply remove a lock
-	door.update_locks()
+	door_data.remove_lock_at(i)
 	# TODO: Simply remove an editor
 	_regen_lock_editors()

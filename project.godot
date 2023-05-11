@@ -27,10 +27,11 @@ PerfManager="*res://misc/perf_manager.gd"
 
 [debug]
 
+gdscript/warnings/shadowed_global_identifier=0
+gdscript/warnings/static_called_on_instance=0
+gdscript/warnings/redundant_await=0
 gdscript/warnings/assert_always_true=2
 gdscript/warnings/assert_always_false=0
-gdscript/warnings/redundant_await=0
-gdscript/warnings/shadowed_global_identifier=0
 gdscript/warnings/int_as_enum_without_cast=0
 
 [display]

@@ -123,7 +123,7 @@ var rotation := ComplexNumber.new_with(1, 0):
 		if is_instance_valid(rotation):
 			if rotation.changed.is_connected(_emit_changed_rotation):
 				rotation.changed.disconnect(_emit_changed_rotation)
-		if rotation == val: return
+		if rotation.is_equal_to(val): return
 		rotation = val
 		if is_instance_valid(rotation):
 			rotation.changed.connect(_emit_changed_rotation)
