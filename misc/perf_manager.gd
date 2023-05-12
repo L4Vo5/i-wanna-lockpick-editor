@@ -10,7 +10,6 @@ var stack: Array[Array] = []
 func _ready() -> void:
 	if Global.in_editor: return
 	if Global.is_exported: return
-	return
 	print("node count before: %d" % get_tree().get_node_count())
 	var l = preload("res://level_elements/level.tscn").instantiate()
 #	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")

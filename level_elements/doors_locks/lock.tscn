@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://ds64ntew1oani"]
+[gd_scene load_steps=10 format=3 uid="uid://ds64ntew1oani"]
 
 [ext_resource type="Script" path="res://level_elements/doors_locks/lock.gd" id="1_dmr10"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_cl4uo"]
@@ -7,7 +7,6 @@
 [ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="5_uhm7n"]
 [ext_resource type="Texture2D" uid="uid://cv2iv6p4kmp7v" path="res://level_elements/doors_locks/textures/glitch_lock_1.png" id="6_1g38v"]
 [ext_resource type="Texture2D" uid="uid://cpwl77uktqrf2" path="res://level_elements/doors_locks/textures/lock_frame_texture_pos.png" id="7_olvo5"]
-[ext_resource type="Texture2D" uid="uid://b13b2mwiwafpk" path="res://level_elements/doors_locks/textures/locks.png" id="8_e3r8c"]
 [ext_resource type="PackedScene" uid="uid://ce3p2ey51goxn" path="res://level_elements/doors_locks/lock_count_draw.tscn" id="9_nchff"]
 
 [sub_resource type="Resource" id="Resource_dcpsd"]
@@ -33,6 +32,7 @@ lock_data = SubResource("Resource_dcpsd")
 
 [node name="Color" type="ColorRect" parent="."]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 mouse_filter = 2
 color = Color(0.839216, 0.811765, 0.788235, 1)
@@ -53,7 +53,6 @@ scale = Vector2(18, 0.28125)
 texture = ExtResource("4_eep47")
 centered = false
 hframes = 4
-frame = 2
 
 [node name="Control" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -85,17 +84,8 @@ patch_margin_top = 2
 patch_margin_right = 2
 patch_margin_bottom = 2
 
-[node name="Locks" type="Node2D" parent="."]
+[node name="TEMPLOCKS" type="Node2D" parent="."]
 unique_name_in_owner = true
-modulate = Color(0.172549, 0.12549, 0.0784314, 1)
-position = Vector2(2, 2)
-
-[node name="LockTemplate" type="Sprite2D" parent="."]
-unique_name_in_owner = true
-visible = false
-texture = ExtResource("8_e3r8c")
-hframes = 16
-vframes = 2
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 2

@@ -21,9 +21,8 @@ signal changed_lock_data
 @onready var stone_texture: TextureRect = %StoneTexture
 @onready var glitch: NinePatchRect = %Glitch
 
-@onready var locks_parent := %Locks as Node2D
 @onready var lock_count_number := %LockCountDraw
-@onready var lock_template := %LockTemplate as Sprite2D
+@onready var templocks: Node2D = %TEMPLOCKS
 
 @export var ignore_position := false
 
@@ -118,11 +117,9 @@ func update_lock_size() -> void:
 func update_frame_visible() -> void:
 	if lock_data.dont_show_frame:
 		frame.hide()
-		locks_parent.hide()
 		lock_count_number.hide()
 	else:
 		frame.show()
-		locks_parent.show()
 		lock_count_number.show()
 
 func update_frame_texture() -> void:
@@ -168,7 +165,7 @@ func update_colors() -> void:
 
 # PERF: Currently it takes about 2ms to draw the 24-lock variation, 1ms for the 8-lock. Just draw the locks manually instead of using nodes. Maybe same for the LockCountDraw: make it a static method or even just draw it in this class. Would make it not show properly if the number exceeds the box and it goes offscreen, but the number shouldn't exceed the box in the first place. 
 func regenerate_locks() -> void:
-#	assert(LOCKS_TEXTURE.get_size() == (LOCKS_SIZE * Vector2(6, 1)))
+	assert(LOCKS_TEXTURE.get_size() == (LOCKS_SIZE * Vector2(16, 2)))
 	assert(PerfManager.start(&"Lock::regenerate_locks"))
 	RenderingServer.canvas_item_clear(locks)
 	var amount := lock_data.get_complex_amount().multiply_by(lock_data.rotation)
@@ -177,8 +174,6 @@ func regenerate_locks() -> void:
 	# magnitude is the same lol
 	var magnitude := lock_data.magnitude
 	lock_count_number.text = ""
-	for child in locks_parent.get_children():
-		child.queue_free()
 	match lock_data.lock_type:
 		Enums.lock_types.blast:
 			lock_count_number.modulate = Rendering.lock_colors[sign]
@@ -191,17 +186,13 @@ func regenerate_locks() -> void:
 		Enums.lock_types.normal:
 			var arrangement = Rendering.get_lock_arrangement(magnitude, lock_data.lock_arrangement)
 			if arrangement != null:
-				locks_parent.modulate = Rendering.lock_colors[sign]
+				RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
 				lock_data.minimum_size = arrangement[0]
 				for lock_position in arrangement[1]:
 					var frame: int = lock_position[1] + (16 if value_type == Enums.value.imaginary else 0)
-					var pos: Vector2i = lock_position[0]
-					var lock := lock_template.duplicate() as Sprite2D
-#					RenderingServer.canvas_item_add_texture_rect_region(locks, Rect2(pos, LOCKS_SIZE), LOCKS_TEXTURE, Rect2(Vector2(LOCKS_SIZE.x * frame, 0), LOCKS_SIZE), )
-					lock.show()
-					lock.frame = frame
-					lock.position = pos
-					locks_parent.add_child(lock)
+					var pos: Vector2i = lock_position[0] + Vector2i(-4, -4) # -6 for the centered, +2 for the frame
+					var offset = Vector2(frame, 0) if frame < 16 else Vector2(frame-16, 1)
+					RenderingServer.canvas_item_add_texture_rect_region(locks, Rect2(pos, LOCKS_SIZE), LOCKS_TEXTURE, Rect2(offset * LOCKS_SIZE, LOCKS_SIZE))
 			else:
 				lock_count_number.modulate = Rendering.lock_colors[sign]
 				lock_count_number.text = str(magnitude)
@@ -216,10 +207,12 @@ const LOCKS_SIZE := Vector2(12, 12)
 
 func _create_canvas_items() -> void:
 	locks = RenderingServer.canvas_item_create()
-	RenderingServer.canvas_item_set_parent(locks, get_canvas_item())
 #	RenderingServer.canvas_item_set_draw_index(locks, 0)
 	
 #	RenderingServer.canvas_item_set_material(door_glitch, GLITCH_MATERIAL.get_rid())
+	await ready
+	
+	RenderingServer.canvas_item_set_parent(locks, templocks.get_canvas_item())
 
 func _destroy_canvas_items() -> void:
 	RenderingServer.free_rid(locks)
