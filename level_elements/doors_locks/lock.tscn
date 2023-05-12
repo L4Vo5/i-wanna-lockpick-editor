@@ -53,6 +53,7 @@ scale = Vector2(18, 0.28125)
 texture = ExtResource("4_eep47")
 centered = false
 hframes = 4
+frame = 3
 
 [node name="Control" type="MarginContainer" parent="."]
 layout_mode = 2

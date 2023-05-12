@@ -76,6 +76,7 @@ static func _save_complex_v1(file: FileAccess, n: ComplexNumber) -> void:
 	file.store_64(n.imaginary_part)
 
 static func load_v1(file: FileAccess) -> LevelData:
+	assert(PerfManager.start("SaveLoadV1::load_v1"))
 	var level := LevelData.new()
 	level.name = file.get_pascal_string()
 	level.author = file.get_pascal_string()
@@ -99,9 +100,12 @@ static func load_v1(file: FileAccess) -> LevelData:
 	var door_amount := file.get_32()
 	if SaveLoad.PRINT_LOAD: print("door count is %d" % door_amount)
 	level.doors.resize(door_amount)
+	assert(PerfManager.start("SaveLoadV1::load_v1 (loading doors)"))
 	for i in door_amount:
 		level.doors[i] = _load_door_v1(file)
+	assert(PerfManager.end("SaveLoadV1::load_v1 (loading doors)"))
 	
+	assert(PerfManager.end("SaveLoadV1::load_v1"))
 	return level
 
 static func _load_key_v1(file: FileAccess) -> KeyData:

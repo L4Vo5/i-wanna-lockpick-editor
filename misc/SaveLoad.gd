@@ -34,6 +34,7 @@ static func save_level(level: LevelData) -> void:
 	V1.save_v1(level, file)
 
 static func load_from(path: String) -> LevelData:
+	assert(PerfManager.start("SaveLoad::load_from"))
 	var file := FileAccess.open(path, FileAccess.READ)
 	var version := file.get_16()
 	var lvl_data: LevelData
@@ -48,9 +49,11 @@ You're on version %s, which supports up to the saving format %d.
 Loading cancelled.""" % [original_editor_version, version, Global.game_version, LATEST_FORMAT]
 		Global.safe_error(error_text, Vector2i(700, 100))
 #		assert(false, "File is version %d, which is unsupported " % version)
+		assert(PerfManager.end("SaveLoad::load_from"))
 		return null
 	# Now that it's imported, it'll save with the latest version
 	lvl_data.num_version = LATEST_FORMAT
 	lvl_data.editor_version = Global.game_version
 	lvl_data.file_path = path
+	assert(PerfManager.end("SaveLoad::load_from"))
 	return lvl_data
