@@ -6,6 +6,16 @@ const RENDERED_PATH := "res://rendering/doors_locks/rendered_textures/"
 ## This is how much each frame takes, not the speed at which they increase
 const SPECIAL_ANIM_SPEED := 0.2
 
+signal changed_special_anim_frame
+var special_anim_frame := 0:
+	set(val):
+		if val == special_anim_frame: return
+		special_anim_frame = val
+		changed_special_anim_frame.emit()
+
+func _physics_process(delta: float) -> void:
+	special_anim_frame = floori(Global.time / SPECIAL_ANIM_SPEED) % 4
+
 # Order: main, clear, dark
 var frame_colors := generate_colors({
 	Enums.sign.positive: ["584027", "84603C", "2C2014"],
@@ -85,13 +95,74 @@ func get_lock_arrangement(lock_count: int, option: int):
 	
 	if option >= all_options.size(): return null # remember option starts at 0 but size at 1
 	return all_options[option]
+#	return fix_lock_arrangement(all_options[option])
+
+#func fix_lock_arrangement(arrangement: Array) -> Array:
+#	var arr = arrangement.duplicate(true)
+#	for l in arr[2]:
+#		# l[2] is type 
+#		# l[3] is rotation
+#		# l[4] is flip_h
+#		# type: 4, 2, 1
+#		var a = 0
+#		a = [4, 2, 1][l[2]]
+#		if l.size() == 5 and l[4]:
+#			a = 8-a
+#		a = ((a % 16) + 16) % 16
+#		a += 4 * (l[3]/90)
+#		a = ((a % 16) + 16) % 16
+#		l[0] = Vector2i(l[0], l[1])
+#		l[1] = a
+#		l.resize(2)
+#	arr[0] = Vector2i(arr[0], arr[1])
+#	arr[1] = arr[2]
+#	arr.resize(2)
+##	print(arrangement)
+#	return arr
+#
+#func _ready() -> void:
+#	var new_arrangements := {}
+#	for lock_amount in LOCK_ARRANGEMENTS.keys():
+#		new_arrangements[lock_amount] = []
+#		for arr in LOCK_ARRANGEMENTS[lock_amount]:
+#			var new_arr := fix_lock_arrangement(arr)
+#
+#
+#			new_arrangements[lock_amount].push_back(new_arr)
+#	var str = "{"
+#	str += "\n"
+#	for key in new_arrangements.keys():
+#		var arr = new_arrangements[key][0]
+#		var amount = arr[1].size()
+#		str += "	" + str(key) + ": [\n"
+#
+#		str += "		[" + str(arr[0]) + ", "
+#		for l in arr[1]:
+#			str += "" + str(l) + ", "
+##			str += "["
+##			str += str(l[0]) + ""
+##			str += "]"
+##			if amount > 0:
+##				str += "\n"
+#
+#		str += "]\n	],\n"
+#
+#	str = str.replace("(", "Vector2i(")
+#
+#	str += "\n}"
+#	print(str)
+#	DisplayServer.clipboard_set(str)
+
 
 # the keys are lock count with multiple arrays inside. each array corresponds to a lock arrangement
 # a lock arrangement is [width, height, [lock_1_position, ...]]
 # width and height will change lock_data's `size`
 # each lock position is [x, y, type, rotation_degrees, flip_h]
 # type being 0 (straight) 1 (45°) 2 (the other weird angle, 22.5°?). flip_h is optional, default false
-const LOCK_ARRANGEMENTS := {
+# TODO: fix lock arrangements:
+# [x, y, angle]
+# where angle is 0 to 15 and denotes the angle in 22.5° increments
+const LOCK_ARRANGEMENTS_OLD := {
 	1: [
 		[18, 18, [[7, 7, 0, 0]]]
 	],
@@ -185,5 +256,97 @@ const LOCK_ARRANGEMENTS := {
 		[26, 68, 2, 270, false], 
 		[52, 68, 2, 90, true], 
 		]]
+	],
+}
+
+const LOCK_ARRANGEMENTS := {
+	1: [
+		[Vector2i(18, 18), [[Vector2i(7, 7), 4]]]
+	],
+	2: [
+		[Vector2i(18, 50), [[Vector2i(7, 13), 4], [Vector2i(7, 34), 12]]]
+	],
+	3: [
+		[Vector2i(18, 50), [
+		[Vector2i(7, 9), 2],
+		[Vector2i(7, 23), 2],
+		[Vector2i(7, 37), 2]]]
+	],
+	4: [
+		[Vector2i(50, 50), [
+		[Vector2i(13, 13), 2],
+		[Vector2i(33, 13), 6],
+		[Vector2i(33, 33), 10],
+		[Vector2i(13, 33), 14]]]
+	],
+	5: [
+		[Vector2i(50, 50), [
+		[Vector2i(23, 11), 4],
+		[Vector2i(11, 18), 1],
+		[Vector2i(35, 18), 7],
+		[Vector2i(32, 35), 10],
+		[Vector2i(14, 35), 14]]]
+	],
+	6: [
+		[Vector2i(50, 50), [
+		[Vector2i(23, 10), 4],
+		[Vector2i(11, 15), 1],
+		[Vector2i(35, 15), 7],
+		[Vector2i(11, 31), 15],
+		[Vector2i(35, 31), 9],
+		[Vector2i(23, 36), 12]]]
+	],
+	8: [
+		[Vector2i(50, 50), [
+		[Vector2i(23, 8), 4],
+		[Vector2i(23, 38), 12],
+		[Vector2i(8, 23), 0],
+		[Vector2i(38, 23), 8],
+		[Vector2i(13, 13), 2],
+		[Vector2i(33, 13), 6],
+		[Vector2i(13, 33), 14],
+		[Vector2i(33, 33), 10]]]
+	],
+	12: [
+		[Vector2i(50, 50), [
+		[Vector2i(23, 8), 4],
+		[Vector2i(23, 38), 12],
+		[Vector2i(8, 23), 0],
+		[Vector2i(38, 23), 8],
+		[Vector2i(16, 16), 2],
+		[Vector2i(30, 16), 6],
+		[Vector2i(16, 30), 14],
+		[Vector2i(30, 30), 10],
+		[Vector2i(6, 6), 2],
+		[Vector2i(40, 6), 6],
+		[Vector2i(6, 40), 14],
+		[Vector2i(40, 40), 10]]]
+	],
+	24: [
+		[Vector2i(82, 82), [
+		[Vector2i(39, 8), 4],
+		[Vector2i(39, 24), 4],
+		[Vector2i(39, 54), 12],
+		[Vector2i(39, 70), 12],
+		[Vector2i(8, 39), 0], 
+		[Vector2i(24, 39), 0],
+		[Vector2i(54, 39), 8],
+		[Vector2i(70, 39), 8],
+		[Vector2i(15, 15), 2],
+		[Vector2i(29, 29), 2],
+		[Vector2i(63, 15), 6],
+		[Vector2i(49, 29), 6],
+		[Vector2i(15, 63), 14],
+		[Vector2i(29, 49), 14],
+		[Vector2i(63, 63), 10],
+		[Vector2i(49, 49), 10],
+		[Vector2i(10, 26), 1],
+		[Vector2i(68, 26), 7],
+		[Vector2i(10, 52), 15],
+		[Vector2i(68, 52), 9],
+		[Vector2i(26, 10), 3],
+		[Vector2i(52, 10), 5],
+		[Vector2i(26, 68), 13],
+		[Vector2i(52, 68), 11]]]
 	],
 }

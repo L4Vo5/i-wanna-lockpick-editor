@@ -13,9 +13,10 @@ func _ready() -> void:
 	return
 	print("node count before: %d" % get_tree().get_node_count())
 	var l = preload("res://level_elements/level.tscn").instantiate()
-	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")
+#	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")
+	l.level_data = SaveLoad.load_from("user://levels/big_doors.lvl")
 	add_child(l)
-	await test_func(l.reset, 30)
+	await test_func(l.reset, 3)
 	print("node count after: %d" % get_tree().get_node_count())
 	l.queue_free()
 
@@ -78,7 +79,7 @@ func _create(who: StringName) -> void:
 
 func test_func(f: Callable, repetitions: int) -> void:
 	clear()
-	var who := "test_func (%s)" % f.get_method()
+	var who := "test_func (%s, %d repetitions)" % [f.get_method(), repetitions]
 	var time_collections := []
 	for i in repetitions:
 		start(who)

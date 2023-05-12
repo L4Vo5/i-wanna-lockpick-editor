@@ -1,0 +1,60 @@
+[gd_scene load_steps=3 format=3 uid="uid://bsrd4od22l5qi"]
+
+[ext_resource type="Texture2D" uid="uid://b13b2mwiwafpk" path="res://level_elements/doors_locks/textures/locks.png" id="1_4jaxq"]
+
+[sub_resource type="GDScript" id="GDScript_gp4ua"]
+script/source = "extends Node2D
+
+func _ready() -> void:
+	var x = 0
+	var y = 0
+	for type in 2:
+		for a in 16:
+#	for _f in 6:
+#		for hf in 2:
+#			for rot in 4:
+				var data = angle_to(-a)
+				var pos = Vector2(12, 12) * Vector2(x, y)
+				var lock : Sprite2D = %LockTemplate.duplicate() as Sprite2D
+				lock.show()
+				lock.frame = data[0] + [0, 3][type]
+				lock.rotation_degrees = data[1]
+				lock.flip_h = data[2]
+				lock.position = pos + Vector2(6, 6)
+				add_child(lock)
+				x += 1
+				if x >= 16:
+					x = 0
+					y += 1
+
+func angle_to(a: int) -> Array:
+	a = a % 16
+	a = a + 16
+	a = a % 16
+	var frame = 0
+	var rotation = (a / 4 + 1) * -90
+	var flip = 0
+	if a % 4 == 0:
+		frame = 0
+	elif a % 4 == 2:
+		frame = 1
+	else:
+		frame = 2
+#		rotation -= 90
+		if a % 4 == 1:
+			rotation -= 90
+			flip = 1
+#		else:
+#			flip = 1
+#			rotation += 180
+	return [frame, rotation, flip]
+"
+
+[node name="Node2D" type="Node2D"]
+script = SubResource("GDScript_gp4ua")
+
+[node name="LockTemplate" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("1_4jaxq")
+hframes = 6
