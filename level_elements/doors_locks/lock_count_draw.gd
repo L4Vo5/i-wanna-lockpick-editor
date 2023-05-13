@@ -27,6 +27,7 @@ const I = 10
 
 @export var text := "":
 	set(val):
+		if text == val: return
 		text = val
 		_update_size()
 		queue_redraw()
@@ -42,6 +43,7 @@ func _update_size() -> void:
 		custom_minimum_size = Vector2i.ZERO
 		size = Vector2i.ZERO
 		return
+	assert(PerfManager.start("LockCountDraw::_update_size"))
 	var text_size = Vector2i(CHAR_SIZE * Vector2i(text.length(), 1))
 	text_size.y -= 1
 	match lock_type:
@@ -60,10 +62,13 @@ func _update_size() -> void:
 			text_size.x -= CHARS_REACH[CHARSET.find(text[text.length()-1])][1]
 	custom_minimum_size = text_size
 	size = text_size
+	assert(PerfManager.end("LockCountDraw::_update_size"))
 
 func _draw() -> void:
 	if text == "":
 		return
+	
+	assert(PerfManager.start("LockCountDraw::_draw"))
 	
 	var offset := Vector2i.ZERO
 	match lock_type:
@@ -90,3 +95,4 @@ func _draw() -> void:
 				Rect2(Vector2(CHAR_SIZE.x * i, 0), CHAR_SIZE)
 			)
 		pos.x += CHAR_SIZE.x
+	assert(PerfManager.end("LockCountDraw::_draw"))

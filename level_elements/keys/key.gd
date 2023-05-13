@@ -61,7 +61,7 @@ func _connect_global_level() -> void:
 
 func _process(_delta: float) -> void:
 	if key_data.color in [Enums.colors.master, Enums.colors.pure]:
-		var frame := floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % 4
+		var frame := floori(Global.time / Rendering.SPECIAL_ANIM_LENGTH) % 4
 		if frame == 3:
 			frame = 1
 		special.frame = (special.frame % 4) + frame * 4

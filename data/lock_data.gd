@@ -53,13 +53,14 @@ signal changed_size
 		changed.emit()
 
 ## minimum size (editor info. the editor itself should enforce this to be the actual minimum size)
+## TODO: since it's editor-only, it doesn't emit changed(), to avoid redrawing locks xd bad fix ik
 signal changed_minimum_size
 var minimum_size := Vector2i(0, 0):
 	set(val):
 		if minimum_size == val: return
 		minimum_size = val
 		changed_minimum_size.emit()
-		changed.emit()
+#		changed.emit()
 
 ## position in door
 signal changed_position
@@ -118,23 +119,12 @@ var dont_show_frame := false:
 
 signal changed_rotation
 ## rotation for rendering i-view and negative doors without destructively affecting the lock data
-var rotation := ComplexNumber.new_with(1, 0):
+var rotation := 0:
 	set(val):
-		if is_instance_valid(rotation):
-			if rotation.changed.is_connected(_emit_changed_rotation):
-				rotation.changed.disconnect(_emit_changed_rotation)
-		if rotation.is_equal_to(val): return
+		if rotation == val: return
 		rotation = val
-		if is_instance_valid(rotation):
-			rotation.changed.connect(_emit_changed_rotation)
-		_emit_changed_rotation()
-
-func _emit_changed_rotation() -> void:
-	changed_rotation.emit()
-	changed.emit()
-
-func _init() -> void:
-	rotation = rotation.duplicate()
+		changed_rotation.emit()
+		changed.emit()
 
 func duplicated() -> LockData:
 	return duplicate()
@@ -192,6 +182,7 @@ func open_with(key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> Compl
 
 ## no-nonsense returns the lockdata's amount as a complex number
 func get_complex_amount() -> ComplexNumber:
+	assert(PerfManager.start("LockData::get_complex_amount()"))
 	var val := magnitude
 	if sign == Enums.sign.negative: val *= -1
 	var num := ComplexNumber.new()
@@ -199,7 +190,22 @@ func get_complex_amount() -> ComplexNumber:
 		num.real_part = val
 	else:
 		num.imaginary_part = val
+	assert(PerfManager.end("LockData::get_complex_amount()"))
 	return num
+
+## returns the sign after applying the current rotation
+func get_sign_rot() -> Enums.sign:
+	if rotation == 0 or (rotation == 90 and value_type == Enums.value.real) or (rotation == 270 and value_type == Enums.value.imaginary):
+		return sign
+	else:
+		return 1 - sign
+
+## returns the value type after applying the current rotation
+func get_value_rot() -> Enums.value:
+	if rotation == 0 or rotation == 180:
+		return value_type
+	else:
+		return 1 - value_type
 
 const flip_sign_dict := {
 	Enums.sign.positive: Enums.sign.negative,

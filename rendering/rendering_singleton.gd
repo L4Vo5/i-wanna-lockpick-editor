@@ -2,19 +2,10 @@
 extends Node
 
 const RENDERED_PATH := "res://rendering/doors_locks/rendered_textures/"
-## Animation speed of special keys and doors (master, pure)
-## This is how much each frame takes, not the speed at which they increase
-const SPECIAL_ANIM_SPEED := 0.2
-
-signal changed_special_anim_frame
-var special_anim_frame := 0:
-	set(val):
-		if val == special_anim_frame: return
-		special_anim_frame = val
-		changed_special_anim_frame.emit()
-
-func _physics_process(delta: float) -> void:
-	special_anim_frame = floori(Global.time / SPECIAL_ANIM_SPEED) % 4
+## Animation of special keys and doors (master, pure):
+## length and duration of each frame
+const SPECIAL_ANIM_LENGTH := 0.8
+const SPECIAL_ANIM_DURATION := 0.2
 
 # Order: main, clear, dark
 var frame_colors := generate_colors({
@@ -84,17 +75,22 @@ func generate_colors(from: Dictionary) -> Dictionary:
 	return dict
 
 func get_lock_arrangement(lock_count: int, option: int):
+	# this function needs to be fast because it's just weird for this to take too long lmao. so no merging arrays anymore
+	# ASSUMPTION: there's only one default arrangement per count
 	if option <= -1: return null
+	assert(PerfManager.start("Rendering::get_lock_arrangement"))
 	var level := Global.current_level
-	var all_options := []
-	# technically less efficient to merge the arrays... but by default, the first array will have only one element and the second not that many more, so it shouldn't be a problem
+	var use_level := false
 	if LOCK_ARRANGEMENTS.has(lock_count):
-		all_options.append_array(LOCK_ARRANGEMENTS[lock_count])
-	if is_instance_valid(level) and level.level_data.custom_lock_arrangements.has(lock_count):
-		all_options.append_array(level.level_data.custom_lock_arrangements[lock_count])
-	
-	if option >= all_options.size(): return null # remember option starts at 0 but size at 1
-	return all_options[option]
+		if option > 0:
+			use_level = true
+			option -= 1
+	else:
+		use_level = true
+	var options = level.level_data.custom_lock_arrangements.get(lock_count) if use_level and is_instance_valid(level) else LOCK_ARRANGEMENTS.get(lock_count)
+	assert(PerfManager.end("Rendering::get_lock_arrangement"))
+	if options == null or option >= options.size(): return null # remember option starts at 0 but size at 1
+	return options[option]
 
 
 

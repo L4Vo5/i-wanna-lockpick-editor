@@ -47,10 +47,10 @@ func _ready() -> void:
 	Global.changed_level.connect(connect_level)
 	if ignore_collisions:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
-	if not Global.in_editor and is_instance_valid(door_data):
-		door_data = door_data.duplicated() # will trigger update_everything
-	else:
-		update_everything()
+#	if not Global.in_editor and is_instance_valid(door_data):
+#		door_data = door_data.duplicated() # will trigger update_everything
+#	else:
+	update_everything()
 	connect_level()
 	assert(PerfManager.end("Door::_ready"))
 
@@ -78,9 +78,6 @@ func connect_level() -> void:
 		_on_changed_glitch_color()
 
 func _physics_process(_delta: float) -> void:
-	# TODO: not every frame (done for the gold/pure anims)
-	_draw_base()
-	
 	if not is_instance_valid(door_data): return
 	var text := ""
 	if not door_data.amount.is_value(1,0):
@@ -143,18 +140,18 @@ func _on_changed_i_view() -> void:
 		is_aligned = true
 		if door_data.amount.imaginary_part < 0:
 			is_flipped = true
-	using_i_view_colors = not is_aligned
+	using_i_view_colors = not is_aligned and not door_data.amount.is_zero()
 	if not using_i_view_colors:
 		update_textures()
 	for lock in door_data.locks:
 		if not is_instance_valid(lock): continue
 		lock.dont_show_frame = not is_aligned
 		if level.i_view:
-			lock.rotation.set_to(0, 1)
+			lock.rotation = 90
 		else:
-			lock.rotation.set_to(1, 0)
+			lock.rotation = 0
 		if is_flipped:
-			lock.rotation.flip()
+			lock.rotation += 180
 
 func _on_changed_glitch_color() -> void:
 	if not is_instance_valid(door_data): return
@@ -182,12 +179,16 @@ func update_locks() -> void:
 	assert(PerfManager.start(&"Door::update_locks"))
 	for lock in lock_holder.get_children():
 		lock.queue_free()
+	var new_lock: Lock
 	for lock in door_data.locks:
-		var new_lock := LOCK.instantiate()
-		new_lock.clicked.connect(func(event): lock_clicked.emit(event, new_lock))
+		new_lock = LOCK.instantiate()
+		new_lock.clicked.connect(_on_lock_clicked.bind(new_lock))
 		new_lock.lock_data = lock
 		lock_holder.add_child(new_lock)
 	assert(PerfManager.end(&"Door::update_locks"))
+
+func _on_lock_clicked(event: InputEventMouseButton, lock: Lock) -> void:
+	lock_clicked.emit(event, lock)
 
 func update_curses() -> void:
 	if not is_instance_valid(door_data): return
@@ -280,13 +281,13 @@ func create_debris() -> void:
 func _create_canvas_items() -> void:
 	door_base = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_parent(door_base, get_canvas_item())
-	RenderingServer.canvas_item_set_draw_index(door_base, 0)
+#	RenderingServer.canvas_item_set_draw_index(door_base, 0)
 	door_glitch = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_parent(door_glitch, get_canvas_item())
-	RenderingServer.canvas_item_set_draw_index(door_glitch, 1)
+#	RenderingServer.canvas_item_set_draw_index(door_glitch, 1)
 	door_frame = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_parent(door_frame, get_canvas_item())
-	RenderingServer.canvas_item_set_draw_index(door_frame, 2)
+#	RenderingServer.canvas_item_set_draw_index(door_frame, 2)
 	
 	RenderingServer.canvas_item_set_material(door_glitch, GLITCH_MATERIAL.get_rid())
 
@@ -303,6 +304,8 @@ const BASE_DARK := preload("res://level_elements/doors_locks/textures/door_color
 const BASE_STONE := preload("res://level_elements/doors_locks/textures/stone_texture.png")
 const BASE_MASTER := preload("res://level_elements/doors_locks/textures/gold_gradient.png")
 const BASE_PURE := preload("res://level_elements/doors_locks/textures/pure_gradient.png")
+const GLITCH_MASTER := preload("res://level_elements/doors_locks/textures/gold_glitch.png")
+const GLITCH_PURE := preload("res://level_elements/doors_locks/textures/pure_glitch.png")
 
 const BASE_TEX_RECT := Rect2(0, 0, 13, 15)
 const BASE_DIST := Vector2(6, 7)
@@ -313,8 +316,6 @@ var door_glitch: RID
 const GLITCH_MATERIAL := preload("res://rendering/glitch.material")
 const GLITCH_BASE := preload("res://level_elements/doors_locks/textures/glitch_door.png")
 const GLITCH_BASE_SHARED := preload("res://level_elements/doors_locks/textures/glitch_door_2.png")
-const GLITCH_MASTER := preload("res://level_elements/doors_locks/textures/gold_glitch_door.png")
-const GLITCH_PURE := preload("res://level_elements/doors_locks/textures/pure_glitch_door.png")
 const GLITCH_2_RECT := Rect2(0, 0, 58, 58)
 const GLITCH_2_DIST := Vector2(6, 6)
 
@@ -337,9 +338,7 @@ func _draw_base() -> void:
 		used_color = Enums.colors.brown
 	
 	# Glitch is a special boy...
-	var is_glitch := false
 	if used_color == Enums.colors.glitch:
-		is_glitch = true
 		if door_data.glitch_color == Enums.colors.glitch:
 			RenderingServer.canvas_item_add_nine_patch(door_glitch, rect, BASE_TEX_RECT, GLITCH_BASE.get_rid(), BASE_DIST, BASE_DIST)
 			assert(PerfManager.end("Door:_draw_base"))
@@ -351,12 +350,16 @@ func _draw_base() -> void:
 	
 	match used_color:
 		Enums.colors.master, Enums.colors.pure:
-			var tex = (BASE_MASTER if used_color == Enums.colors.master else BASE_PURE) if not is_glitch else (GLITCH_MASTER if used_color == Enums.colors.master else GLITCH_PURE)
-			var frame = floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % 4
-			if is_glitch:
-				frame = 0
-			RenderingServer.canvas_item_add_texture_rect_region(door_base, rect, tex,
-			Rect2(BASE_ANIM_TILE_SIZE.x * frame, 0, BASE_ANIM_TILE_SIZE.x, BASE_ANIM_TILE_SIZE.y))
+			if door_data.outer_color == Enums.colors.glitch:
+				var tex := GLITCH_MASTER if used_color == Enums.colors.master else GLITCH_PURE
+				RenderingServer.canvas_item_add_texture_rect(door_base, rect, tex, true)
+			else:
+				var tex := BASE_MASTER if used_color == Enums.colors.master else BASE_PURE
+				for i in 4:
+					RenderingServer.canvas_item_add_animation_slice(door_base, Rendering.SPECIAL_ANIM_LENGTH, i * Rendering.SPECIAL_ANIM_DURATION, (i+1) * Rendering.SPECIAL_ANIM_DURATION)
+					RenderingServer.canvas_item_add_texture_rect_region(door_base, rect, tex, Rect2(Vector2(i, 0) * BASE_ANIM_TILE_SIZE, BASE_ANIM_TILE_SIZE))
+				RenderingServer.canvas_item_add_animation_slice(door_base, 1, 0, 1)
+			
 		Enums.colors.stone:
 			RenderingServer.canvas_item_add_texture_rect(door_base, rect, BASE_STONE.get_rid(), true)
 		Enums.colors.none:

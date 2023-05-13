@@ -41,11 +41,11 @@ func _draw() -> void:
 		glitch.show()
 		glitch.frame = 0
 	elif color == Enums.colors.pure:
-		var anim_frame := floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % 4
+		var anim_frame := floori(Global.time / Rendering.SPECIAL_ANIM_DURATION) % 4
 		draw_texture_rect_region(preload("res://level_elements/doors_locks/textures/pure_gradient.png"), Rect2(1,1,14,14), Rect2(anim_frame,0,1,64)
 		)
 	elif color == Enums.colors.master:
-		var anim_frame := floori(Global.time / Rendering.SPECIAL_ANIM_SPEED) % 4
+		var anim_frame := floori(Global.time / Rendering.SPECIAL_ANIM_DURATION) % 4
 		draw_texture_rect_region(preload("res://level_elements/doors_locks/textures/gold_gradient.png"), Rect2(1,1,14,14), Rect2(anim_frame,0,1,64)
 		)
 	elif color == Enums.colors.stone:

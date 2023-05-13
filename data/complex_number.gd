@@ -69,17 +69,6 @@ func sub(other: ComplexNumber) -> ComplexNumber:
 	changed.emit()
 	return self
 
-# (a + bi) * (c + di)
-# (a + bi) * c + (a + bi) * di
-# ac + bci + adi + bdii
-# (ac - bd) + (bc + ad)i
-func multiply_by(other: ComplexNumber) -> ComplexNumber:
-	var oldr := _real_part
-	_real_part = oldr * other._real_part - _imaginary_part * other._imaginary_part
-	_imaginary_part = oldr * other._imaginary_part + _imaginary_part * other._real_part
-	changed.emit()
-	return self
-
 func is_equal_to(other: ComplexNumber) -> bool:
 	return _real_part == other._real_part and _imaginary_part == other._imaginary_part
 

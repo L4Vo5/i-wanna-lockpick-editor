@@ -39,13 +39,13 @@ const COLOR_NAMES := {
 
 # 0 shall generally be considered positive
 enum sign {
-	positive,
-	negative,
+	positive = 0,
+	negative = 1,
 }
 
 enum value {
-	real,
-	imaginary
+	real = 0,
+	imaginary = 1
 }
 
 enum curse {

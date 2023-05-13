@@ -11,8 +11,6 @@ signal delete
 		lock_data = val
 		if is_instance_valid(lock_data):
 			lock_data.changed_minimum_size.connect(_update_min_size)
-			if lock_data.size == Vector2i(50, 50):
-				lock_data.changed_size.connect(func(): breakpoint)
 		if not is_node_ready(): await ready
 		arrangement_chooser.lock_data = lock_data
 		lock.lock_data = val

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=85 format=3]
+[gd_resource type="Resource" script_class="LevelData" load_steps=154 format=3]
 
 [ext_resource type="Script" path="res://data/complex_number.gd" id="1_ks5ek"]
 [ext_resource type="Script" path="res://data/level_data.gd" id="1_yd7bo"]
@@ -678,6 +678,734 @@ _curses = {
 glitch_color = 13
 position = Vector2i(192, 32)
 
+[sub_resource type="Resource" id="Resource_ddopn"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_y5rps"]
+script = ExtResource("2_j1ang")
+color = 1
+magnitude = 24
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_2drxm"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_ddopn")
+outer_color = 11
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_y5rps")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(576, 64)
+
+[sub_resource type="Resource" id="Resource_op38f"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_hhyhj"]
+script = ExtResource("2_j1ang")
+color = 1
+magnitude = 24
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_m1omd"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_op38f")
+outer_color = 12
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_hhyhj")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(480, 64)
+
+[sub_resource type="Resource" id="Resource_pkqt3"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_a77ad"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_pkqt3")
+outer_color = 12
+locks = Array[ExtResource("2_j1ang")]([])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(672, 160)
+
+[sub_resource type="Resource" id="Resource_vf6y4"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_60p33"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_vf6y4")
+outer_color = 11
+locks = Array[ExtResource("2_j1ang")]([])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(672, 64)
+
+[sub_resource type="Resource" id="Resource_fge3h"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_eivmd"]
+script = ExtResource("2_j1ang")
+color = 1
+magnitude = 4
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_yonx2"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_fge3h")
+outer_color = 1
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_eivmd")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(512, 256)
+
+[sub_resource type="Resource" id="Resource_fulch"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_pbqm6"]
+script = ExtResource("2_j1ang")
+color = 1
+magnitude = 24
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_x7lr1"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_fulch")
+outer_color = 12
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_pbqm6")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(608, 256)
+
+[sub_resource type="Resource" id="Resource_367rj"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_f54cp"]
+script = ExtResource("2_j1ang")
+color = 11
+magnitude = 24
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_la1li"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_367rj")
+outer_color = 12
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_f54cp")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(608, 352)
+
+[sub_resource type="Resource" id="Resource_l0yyl"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_pq4g3"]
+script = ExtResource("2_j1ang")
+color = 12
+magnitude = 24
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_qt8we"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_l0yyl")
+outer_color = 11
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_pq4g3")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(512, 352)
+
+[sub_resource type="Resource" id="Resource_te8ll"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_f50we"]
+script = ExtResource("2_j1ang")
+color = 12
+magnitude = 24
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = -1
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_7nqc2"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_te8ll")
+outer_color = 11
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_f50we")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(384, 0)
+
+[sub_resource type="Resource" id="Resource_j6km1"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_6nisg"]
+script = ExtResource("2_j1ang")
+color = 12
+magnitude = 38
+sign = 1
+value_type = 1
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = -1
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_l1tpu"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_j6km1")
+outer_color = 5
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_6nisg")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(64, 256)
+
+[sub_resource type="Resource" id="Resource_yjvxr"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_qrt6v"]
+script = ExtResource("2_j1ang")
+color = 12
+magnitude = 38
+sign = 1
+value_type = 0
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = -1
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_tqfe5"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_yjvxr")
+outer_color = 5
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_qrt6v")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(128, 352)
+
+[sub_resource type="Resource" id="Resource_qa7yp"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_47n25"]
+script = ExtResource("2_j1ang")
+color = 10
+magnitude = 24
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_373uv"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_qa7yp")
+outer_color = 1
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_47n25")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(704, 352)
+
+[sub_resource type="Resource" id="Resource_ebgfn"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_urh6l"]
+script = ExtResource("2_j1ang")
+color = 7
+magnitude = 24
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(82, 82)
+position = Vector2i(7, 7)
+lock_arrangement = -1
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_tpdb2"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_ebgfn")
+outer_color = 1
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_urh6l")])
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(640, 448)
+
+[sub_resource type="Resource" id="Resource_ax64u"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_whvsn"]
+script = ExtResource("2_j1ang")
+color = 14
+magnitude = 8
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(50, 50)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_jmape"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_ax64u")
+outer_color = 1
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_whvsn")])
+size = Vector2i(64, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(416, 288)
+
+[sub_resource type="Resource" id="Resource_s4jfk"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_6ri11"]
+script = ExtResource("2_j1ang")
+color = 14
+magnitude = 8
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(212, 80)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_msva7"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_s4jfk")
+outer_color = 1
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_6ri11")])
+size = Vector2i(224, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(0, 512)
+
+[sub_resource type="Resource" id="Resource_qnr44"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_n3u02"]
+script = ExtResource("2_j1ang")
+color = 11
+magnitude = 8
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(50, 50)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_wlb57"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_qnr44")
+outer_color = 11
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_n3u02")])
+size = Vector2i(64, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(128, 64)
+
+[sub_resource type="Resource" id="Resource_qj2gy"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_7vdcm"]
+script = ExtResource("2_j1ang")
+color = 13
+magnitude = 8
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(50, 50)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_a7lse"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_qj2gy")
+outer_color = 1
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_7vdcm")])
+size = Vector2i(64, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(352, 352)
+
+[sub_resource type="Resource" id="Resource_73li6"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_1ry8k"]
+script = ExtResource("2_j1ang")
+color = 13
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_qoc8m"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_73li6")
+outer_color = 13
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_1ry8k")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(544, 544)
+
+[sub_resource type="Resource" id="Resource_1mmfj"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_n8c4y"]
+script = ExtResource("2_j1ang")
+color = 11
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_5uwha"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_1mmfj")
+outer_color = 13
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_n8c4y")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(512, 544)
+
+[sub_resource type="Resource" id="Resource_lobjd"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_t27dq"]
+script = ExtResource("2_j1ang")
+color = 5
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_ixcqw"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_lobjd")
+outer_color = 13
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_t27dq")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(480, 544)
+
+[sub_resource type="Resource" id="Resource_twkww"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_qlmwj"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_twkww")
+outer_color = 4
+locks = Array[ExtResource("2_j1ang")]([])
+size = Vector2i(64, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(448, 448)
+
+[sub_resource type="Resource" id="Resource_osvcf"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_bjwbk"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_osvcf")
+outer_color = 11
+locks = Array[ExtResource("2_j1ang")]([])
+size = Vector2i(64, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(512, 448)
+
+[sub_resource type="Resource" id="Resource_c2k38"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_sbsu3"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_c2k38")
+outer_color = 14
+locks = Array[ExtResource("2_j1ang")]([])
+size = Vector2i(32, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(608, 448)
+
+[sub_resource type="Resource" id="Resource_67b3m"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_fltbl"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_67b3m")
+outer_color = 12
+locks = Array[ExtResource("2_j1ang")]([])
+size = Vector2i(32, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(576, 448)
+
+[sub_resource type="Resource" id="Resource_1kjft"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_3ks8h"]
+script = ExtResource("2_j1ang")
+color = 13
+magnitude = 8
+sign = 0
+value_type = 1
+lock_type = 0
+size = Vector2i(50, 50)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_ti7qq"]
+script = ExtResource("3_ebbb6")
+amount = SubResource("Resource_1kjft")
+outer_color = 11
+locks = Array[ExtResource("2_j1ang")]([SubResource("Resource_3ks8h")])
+size = Vector2i(64, 64)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(256, 352)
+
 [sub_resource type="Resource" id="Resource_lm6mm"]
 script = ExtResource("1_ks5ek")
 real_part = 1
@@ -779,7 +1507,7 @@ script = ExtResource("1_yd7bo")
 version = "0.0.2.0"
 num_version = 1
 editor_version = ""
-doors = Array[ExtResource("3_ebbb6")]([SubResource("Resource_bs634"), SubResource("Resource_mvk2q"), SubResource("Resource_7r4n6"), SubResource("Resource_o7mk7"), SubResource("Resource_6r3rl"), SubResource("Resource_qfvom"), SubResource("Resource_qw0od"), SubResource("Resource_a71ci"), SubResource("Resource_c00bh"), SubResource("Resource_necmc"), SubResource("Resource_xxw7h"), SubResource("Resource_8sutq"), SubResource("Resource_fji62"), SubResource("Resource_lgaav"), SubResource("Resource_86b3c"), SubResource("Resource_vb4wu"), SubResource("Resource_3wq18"), SubResource("Resource_uo00d"), SubResource("Resource_eoaip"), SubResource("Resource_r758w"), SubResource("Resource_4crtd")])
+doors = Array[ExtResource("3_ebbb6")]([SubResource("Resource_bs634"), SubResource("Resource_mvk2q"), SubResource("Resource_7r4n6"), SubResource("Resource_o7mk7"), SubResource("Resource_6r3rl"), SubResource("Resource_qfvom"), SubResource("Resource_qw0od"), SubResource("Resource_a71ci"), SubResource("Resource_c00bh"), SubResource("Resource_necmc"), SubResource("Resource_xxw7h"), SubResource("Resource_8sutq"), SubResource("Resource_fji62"), SubResource("Resource_lgaav"), SubResource("Resource_86b3c"), SubResource("Resource_vb4wu"), SubResource("Resource_3wq18"), SubResource("Resource_uo00d"), SubResource("Resource_eoaip"), SubResource("Resource_r758w"), SubResource("Resource_4crtd"), SubResource("Resource_2drxm"), SubResource("Resource_m1omd"), SubResource("Resource_a77ad"), SubResource("Resource_60p33"), SubResource("Resource_yonx2"), SubResource("Resource_x7lr1"), SubResource("Resource_la1li"), SubResource("Resource_qt8we"), SubResource("Resource_7nqc2"), SubResource("Resource_l1tpu"), SubResource("Resource_tqfe5"), SubResource("Resource_373uv"), SubResource("Resource_tpdb2"), SubResource("Resource_jmape"), SubResource("Resource_msva7"), SubResource("Resource_wlb57"), SubResource("Resource_a7lse"), SubResource("Resource_qoc8m"), SubResource("Resource_5uwha"), SubResource("Resource_ixcqw"), SubResource("Resource_qlmwj"), SubResource("Resource_bjwbk"), SubResource("Resource_sbsu3"), SubResource("Resource_fltbl"), SubResource("Resource_ti7qq")])
 keys = Array[ExtResource("2_pq4il")]([SubResource("Resource_tdqyl"), SubResource("Resource_e8c3x"), SubResource("Resource_m8rhx"), SubResource("Resource_i7bfe"), SubResource("Resource_2ce1e"), SubResource("Resource_xns5f"), SubResource("Resource_n1ahd"), SubResource("Resource_udb77")])
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(366, 512)

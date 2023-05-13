@@ -1,12 +1,13 @@
 @tool
 extends Node
 
-# each key is [total time, sub-time] where sub-time deducts other measured times that happened in between
+# each key is [total time, sub-time, count] where sub-time deducts other measured times that happened in between, and count is times called
 var times := {}
 var balance := {}
 # inner array is [name, start time, sub-start time, sub-time sum]
 var stack: Array[Array] = []
 
+var baseline_time := 0.0
 func _ready() -> void:
 	if Global.in_editor: return
 	if Global.is_exported: return
@@ -15,7 +16,7 @@ func _ready() -> void:
 	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")
 #	l.level_data = SaveLoad.load_from("user://levels/big_doors.lvl")
 	add_child(l)
-	await test_func(l.reset, 3)
+	await test_func(l.reset, 30)
 	print("node count after: %d" % get_tree().get_node_count())
 	l.queue_free()
 
@@ -28,7 +29,10 @@ func _input(event: InputEvent) -> void:
 
 func start(who: StringName) -> bool:
 	if Global.in_editor: return true
-	_create(who)
+	if not balance.has(who):
+		balance[who] = 0
+	if not times.has(who):
+		times[who] = [0, 0, 0]
 	# "pause" the last one
 	if stack.size() != 0:
 		var i := stack.size() - 1
@@ -42,6 +46,7 @@ func end(who: StringName) -> bool:
 	var data = stack.pop_back()
 	assert(data[0] == who)
 	data[3] += Time.get_ticks_usec() - data[2]
+	times[who][2] += 1
 	times[who][1] += data[3]
 	times[who][0] += Time.get_ticks_usec() - data[1]
 	balance[who] -= 1
@@ -68,13 +73,7 @@ func print_report() -> void:
 	if Global.in_editor: return
 	check_balances()
 	for key in times:
-		print_rich("%s: [b]%s[/b] ms total, [b]%s[/b] ms self" % [key, times[key][0] / 1000.0, times[key][1] / 1000.0])
-
-func _create(who: StringName) -> void:
-	if not balance.has(who):
-		balance[who] = 0
-	if not times.has(who):
-		times[who] = [0, 0]
+		print_rich("%s (%d calls): [b]%s[/b] total, [b]%s[/b] self" % [key, times[key][2], get_time_string(times[key][0]), get_time_string(times[key][1])])
 
 func test_func(f: Callable, repetitions: int) -> void:
 	print_report()
@@ -97,12 +96,13 @@ func test_func(f: Callable, repetitions: int) -> void:
 	for time in time_collections:
 		for key in time:
 			if not sum.has(key):
-				sum[key] = [0, 0]
+				sum[key] = [0, 0, 0]
 			sum[key][0] += time[key][0]
 			sum[key][1] += time[key][1]
+			sum[key][2] += time[key][2]
 	var avgs := {}
 	for key in sum:
-		avgs[key] = [sum[key][0] / float(amount), sum[key][1] / float(amount)]
+		avgs[key] = [sum[key][0] / float(amount), sum[key][1] / float(amount), sum[key][2] / float(amount)]
 	var sds := {}
 	for time in time_collections:
 		for key in time:
@@ -116,7 +116,7 @@ func test_func(f: Callable, repetitions: int) -> void:
 	print_rich("%s: total [b]%s[/b], avg [b]%s[/b]" % [who, get_time_string(sum[who][0]), get_time_string(avgs[who][0])])
 	for key in sum:
 		if key == who: continue
-		print_rich("%s: avg [b]%s[/b], sd [b]%s[/b]" % [key, get_time_string(avgs[key][1]), get_time_string(sds[key][1])])
+		print_rich("%s (%d calls): avg [b]%s[/b], sd [b]%s[/b]" % [key, avgs[key][2], get_time_string(avgs[key][1]), get_time_string(sds[key][1])])
 	end("Statistic calculations")
 	print_report()
 	clear()
