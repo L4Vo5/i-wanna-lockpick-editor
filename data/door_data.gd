@@ -94,10 +94,12 @@ func duplicated() -> DoorData:
 	dupe.size = size
 	dupe.position = position
 	dupe._curses = _curses.duplicate()
-	dupe.amount = amount.duplicate()
+	dupe.amount = amount.duplicated()
 	
+	assert(PerfManager.start("DoorData::duplicated (locks)"))
 	for l in locks:
 		dupe.locks.push_back(l.duplicated())
+	assert(PerfManager.end("DoorData::duplicated (locks)"))
 	assert(PerfManager.end("DoorData::duplicated"))
 	return dupe
 
@@ -139,7 +141,7 @@ func try_open() -> Dictionary:
 		if can_master:
 			return_dict.master_key = true
 			return_dict.undo_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
-			var old_amount := amount.duplicate()
+			var old_amount := amount.duplicated()
 			amount.sub(player.master_equipped)
 			return_dict.do_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
 			if amount.is_bigger_than(old_amount):

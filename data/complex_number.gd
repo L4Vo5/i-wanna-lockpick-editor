@@ -21,15 +21,21 @@ var _real_part := 0
 var _imaginary_part := 0
 
 static func new_with(r: int, i: int) -> ComplexNumber:
-	var kc := ComplexNumber.new()
-	kc.set_to(r, i)
-	return kc
+	var c := ComplexNumber.new()
+	c._real_part = r
+	c._imaginary_part = i
+	return c
+
+func duplicated() -> ComplexNumber:
+	var c := ComplexNumber.new()
+	c._real_part = real_part
+	c._imaginary_part = imaginary_part
+	return c
 
 func set_real_part(val: int) -> void:
 	if _real_part == val: return
 	_real_part = val
 	changed.emit()
-
 
 func set_to(r: int, i: int) -> ComplexNumber:
 	_real_part = r

@@ -126,8 +126,18 @@ var rotation := 0:
 		changed_rotation.emit()
 		changed.emit()
 
+# WAITING4GODOT: Lmao a manual gdscript duplicate is faster than the default?
 func duplicated() -> LockData:
-	return duplicate()
+	var lock := LockData.new()
+	lock.color = color
+	lock.magnitude = magnitude
+	lock.sign = sign
+	lock.value_type = value_type
+	lock.size = size
+	lock.position = position
+	lock.lock_arrangement = lock_arrangement
+	lock.dont_show_lock = dont_show_lock
+	return lock
 
 func get_used_color() -> Enums.colors:
 	var used_color := color
@@ -146,7 +156,7 @@ const value_type_to_ComplexNumber_var: Dictionary = {
 func open_with(key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> ComplexNumber:
 	# listen... it works lmao
 	if flipped or is_rotor:
-		var temp_lock: LockData = duplicate(true)
+		var temp_lock: LockData = duplicated()
 		if flipped:
 			temp_lock.flip_sign()
 		if is_rotor:
@@ -157,7 +167,7 @@ func open_with(key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> Compl
 		if key_count.real_part == 0 and key_count.imaginary_part == 0:
 			return null
 		else:
-			return key_count.duplicate().flip()
+			return key_count.duplicated().flip()
 	if lock_type == Enums.lock_types.blank:
 		if key_count.real_part != 0 or key_count.imaginary_part != 0:
 			return null

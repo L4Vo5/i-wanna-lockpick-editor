@@ -172,7 +172,7 @@ func on_pickup() -> void:
 	collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
 	var used_color := key_data.get_used_color()
 	var current_count: ComplexNumber = level.key_counts[used_color]
-	var orig_count: ComplexNumber = current_count.duplicate()
+	var orig_count: ComplexNumber = current_count.duplicated()
 	var orig_star: bool = level.star_keys[used_color]
 	
 	if level.star_keys[used_color]:

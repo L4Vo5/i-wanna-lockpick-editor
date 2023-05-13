@@ -194,7 +194,7 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 	if not obj_on:
 		master_equipped.set_to(0, 0)
 	else:
-		var original_count := master_equipped.duplicate()
+		var original_count := master_equipped.duplicated()
 		var i_view: bool = Global.current_level.i_view
 		master_equipped.set_to(0,0)
 		if not i_view:
@@ -241,8 +241,8 @@ func get_undo_action() -> Callable:
 		velocity,
 		d_jumps,
 		sprite.flip_h,
-		master_equipped.duplicate(),
-		_last_master_equipped.duplicate(),
+		master_equipped.duplicated(),
+		_last_master_equipped.duplicated(),
 		is_pressing_jump,
 		on_floor
 	])

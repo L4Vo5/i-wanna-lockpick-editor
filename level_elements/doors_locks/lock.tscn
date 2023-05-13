@@ -31,6 +31,4 @@ layout_mode = 2
 [node name="LockCountDraw" parent="CenterContainer" instance=ExtResource("9_nchff")]
 unique_name_in_owner = true
 modulate = Color(0.172549, 0.12549, 0.0784314, 1)
-custom_minimum_size = Vector2(0, 0)
 layout_mode = 2
-text = ""
