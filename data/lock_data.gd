@@ -133,6 +133,7 @@ func duplicated() -> LockData:
 	lock.magnitude = magnitude
 	lock.sign = sign
 	lock.value_type = value_type
+	lock.lock_type = lock_type
 	lock.size = size
 	lock.position = position
 	lock.lock_arrangement = lock_arrangement

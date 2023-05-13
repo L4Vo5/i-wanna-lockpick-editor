@@ -199,9 +199,7 @@ func add_door(door_data: DoorData) -> Door:
 func _spawn_door(door_data: DoorData) -> Door:
 	assert(PerfManager.start("Level::_spawn_door"))
 	var door := DOOR.instantiate()
-	assert(PerfManager.start("Level::_spawn_door (duplicating door data)"))
 	var dd := door_data.duplicated()
-	assert(PerfManager.end("Level::_spawn_door (duplicating door data)"))
 	door.door_data = dd
 	door.set_meta(&"original_door_data", door_data)
 	door.clicked.connect(_on_door_clicked.bind(door))

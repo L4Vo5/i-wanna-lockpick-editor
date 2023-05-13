@@ -23,8 +23,8 @@ class_name Kid
 const GRAVITY := 0.4
 # slightly nerfed to accomodate for difference in peak jump
 # this is because gamemaker gets the wrong curve by like. rounding or something.
-const JUMP_1 := -8.5 + 0.3
-const JUMP_2 := -7.0 + 0.2
+const JUMP_1 := -8.5# + 0.3
+const JUMP_2 := -7.0# + 0.2
 const MAX_VSPEED := 9.0
 const JUMP_REDUCTION := 0.45
 
@@ -98,7 +98,7 @@ func fall_jump() -> void:
 		d_jumps = 1
 		velocity.y = 0
 		if jump_just_pressed:
-			velocity.y = JUMP_1
+			velocity.y = JUMP_1 + GRAVITY
 			snd_jump.play()
 	else:
 		velocity.y += GRAVITY
@@ -106,10 +106,11 @@ func fall_jump() -> void:
 			velocity.y = MAX_VSPEED
 		if jump_just_pressed and d_jumps > 0:
 			d_jumps -= 1
-			velocity.y = JUMP_2
+			velocity.y = JUMP_2 + GRAVITY
 			snd_jump_2.play()
 		elif jump_just_released and velocity.y < 0:
 			velocity.y *= JUMP_REDUCTION
+	
 	if on_ceiling and velocity.y < 0:
 		velocity.y = 0
 

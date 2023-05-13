@@ -88,7 +88,7 @@ func _init() -> void:
 	amount.changed.connect(emit_changed)
 
 func duplicated() -> DoorData:
-	assert(PerfManager.start("DoorData::duplicated"))
+#	assert(PerfManager.start("DoorData::duplicated"))
 	var dupe := DoorData.new()
 	dupe.outer_color = outer_color
 	dupe.size = size
@@ -96,11 +96,11 @@ func duplicated() -> DoorData:
 	dupe._curses = _curses.duplicate()
 	dupe.amount = amount.duplicated()
 	
-	assert(PerfManager.start("DoorData::duplicated (locks)"))
+#	assert(PerfManager.start("DoorData::duplicated (locks)"))
 	for l in locks:
 		dupe.locks.push_back(l.duplicated())
-	assert(PerfManager.end("DoorData::duplicated (locks)"))
-	assert(PerfManager.end("DoorData::duplicated"))
+#	assert(PerfManager.end("DoorData::duplicated (locks)"))
+#	assert(PerfManager.end("DoorData::duplicated"))
 	return dupe
 
 func has_point(point: Vector2i) -> bool:

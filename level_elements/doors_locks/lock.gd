@@ -12,8 +12,6 @@ signal changed_lock_data
 		lock_data = val
 		connect_lock_data()
 
-@onready var lock_count_number := %LockCountDraw
-
 @export var ignore_position := false
 
 func connect_lock_data() -> void:
@@ -70,10 +68,11 @@ func update_lock_size() -> void:
 
 
 func update_frame_visible() -> void:
-	if lock_data.dont_show_frame:
-		lock_count_number.hide()
-	else:
-		lock_count_number.show()
+	return
+#	if lock_data.dont_show_frame:
+#		RenderingServer.canvas_item_set_visible(locks, false)
+#	else:
+#		RenderingServer.canvas_item_set_visible(locks, true)
 
 # Base is frame + color
 func draw_base() -> void:
@@ -108,7 +107,7 @@ func draw_base() -> void:
 		Enums.colors.master, Enums.colors.pure:
 			if lock_data.color == Enums.colors.glitch:
 				var tex := GLITCH_MASTER if used_color == Enums.colors.master else GLITCH_PURE
-				RenderingServer.canvas_item_add_texture_rect(base, rect, tex, true)
+				RenderingServer.canvas_item_add_texture_rect(base, rect, tex)
 			else:
 				var tex := BASE_MASTER if used_color == Enums.colors.master else BASE_PURE
 				for i in 4:
@@ -128,38 +127,58 @@ func draw_locks() -> void:
 	assert(LOCKS_TEXTURE.get_size() == (LOCKS_SIZE * Vector2(16, 2)))
 	assert(PerfManager.start(&"Lock::draw_locks"))
 	RenderingServer.canvas_item_clear(locks)
+	if lock_data.dont_show_frame:
+		assert(PerfManager.end(&"Lock::draw_locks"))
+		return
 	var sign := lock_data.get_sign_rot()
 	var value_type := lock_data.get_value_rot()
 	# magnitude is the same lol
 	var magnitude := lock_data.magnitude
-	lock_count_number.text = ""
+#	lock_count_number.text = ""
 	match lock_data.lock_type:
 		Enums.lock_types.blast:
-			lock_count_number.modulate = Rendering.lock_colors[sign]
-			lock_count_number.text = "x" if value_type == Enums.value.real else "+"
-			lock_count_number.lock_type = 2
+			RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
+			var s := "x" if value_type == Enums.value.real else "+"
+			LockCountDraw.draw_text(locks, s, 2)
+			
+			var si := LockCountDraw.get_min_size(s, 2)
+			lock_data.minimum_size = si + Vector2i(4, 4) # 4 for the frame size
+			RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (si)) / 2))
+			
 		Enums.lock_types.all:
-			lock_count_number.modulate = Rendering.lock_colors[sign]
-			lock_count_number.text = "="
-			lock_count_number.lock_type = 2
+			RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
+			LockCountDraw.draw_text(locks, "=", 2)
+			
+			var si := LockCountDraw.get_min_size("=", 2)
+			lock_data.minimum_size = si + Vector2i(4, 4) # 4 for the frame size
+			RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (si)) / 2))
+			
+		Enums.lock_types.blank:
+			lock_data.minimum_size = Vector2i(1, 1)
 		Enums.lock_types.normal:
 			var arrangement = Rendering.get_lock_arrangement(magnitude, lock_data.lock_arrangement)
 			if arrangement != null:
 				RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
 				lock_data.minimum_size = arrangement[0]
-				var offset := (lock_data.size - lock_data.minimum_size) / 2
-				RenderingServer.canvas_item_set_transform(locks, Transform2D(0, offset))
+				
+				RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (lock_data.minimum_size)) / 2))
+				
 				for lock_position in arrangement[1]:
 					var frame: int = lock_position[1] + (16 if value_type == Enums.value.imaginary else 0)
 					var pos: Vector2i = lock_position[0] + Vector2i(-4, -4) # -6 for the centered, +2 for the frame
 					var tex_offset = Vector2(frame, 0) if frame < 16 else Vector2(frame-16, 1)
 					RenderingServer.canvas_item_add_texture_rect_region(locks, Rect2(pos, LOCKS_SIZE), LOCKS_TEXTURE, Rect2(tex_offset * LOCKS_SIZE, LOCKS_SIZE))
 			else:
-				lock_count_number.modulate = Rendering.lock_colors[sign]
-				lock_count_number.text = str(magnitude)
-				lock_count_number.lock_type = 2 if lock_data.dont_show_lock else 0 if value_type == Enums.value.real else 1 if value_type == Enums.value.imaginary else 2
-				# Add 4 for the frame size
-				lock_data.minimum_size = lock_count_number.custom_minimum_size + Vector2(4, 4)
+				
+				RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
+				var s := str(magnitude)
+				var type := 2 if lock_data.dont_show_lock else 0 if value_type == Enums.value.real else 1 if value_type == Enums.value.imaginary else 2
+				LockCountDraw.draw_text(locks, s, type)
+				
+				var si := LockCountDraw.get_min_size(s, type)
+				lock_data.minimum_size = si + Vector2i(4, 4) # 4 for the frame size
+				RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (si)) / 2))
+				
 	assert(PerfManager.end(&"Lock::draw_locks"))
 
 var locks: RID

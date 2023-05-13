@@ -1,20 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://ds64ntew1oani"]
+[gd_scene load_steps=2 format=3 uid="uid://ds64ntew1oani"]
 
 [ext_resource type="Script" path="res://level_elements/doors_locks/lock.gd" id="1_dmr10"]
-[ext_resource type="Script" path="res://data/lock_data.gd" id="2_cl4uo"]
-[ext_resource type="PackedScene" uid="uid://ce3p2ey51goxn" path="res://level_elements/doors_locks/lock_count_draw.tscn" id="9_nchff"]
-
-[sub_resource type="Resource" id="Resource_extep"]
-script = ExtResource("2_cl4uo")
-color = 1
-magnitude = 1
-sign = 0
-value_type = 0
-lock_type = 0
-size = Vector2i(18, 18)
-position = Vector2i(7, 7)
-lock_arrangement = 0
-dont_show_lock = false
 
 [node name="Lock" type="MarginContainer"]
 custom_minimum_size = Vector2(18, 18)
@@ -23,12 +9,3 @@ offset_top = 7.0
 offset_right = 25.0
 offset_bottom = 25.0
 script = ExtResource("1_dmr10")
-lock_data = SubResource("Resource_extep")
-
-[node name="CenterContainer" type="CenterContainer" parent="."]
-layout_mode = 2
-
-[node name="LockCountDraw" parent="CenterContainer" instance=ExtResource("9_nchff")]
-unique_name_in_owner = true
-modulate = Color(0.172549, 0.12549, 0.0784314, 1)
-layout_mode = 2

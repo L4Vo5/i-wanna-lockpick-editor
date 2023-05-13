@@ -6,7 +6,6 @@ signal clicked(event: InputEventMouseButton)
 signal lock_clicked(event: InputEventMouseButton, lock: Lock)
 #signal lock_clicked(which: int)
 
-const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tscn")
 const FRAME_POS := preload("res://level_elements/doors_locks/textures/door_frame_texture_pos.png")
 const FRAME_NEG := preload("res://level_elements/doors_locks/textures/door_frame_texture_neg.png")
@@ -111,8 +110,8 @@ func update_everything() -> void:
 #			Global.set_meta("who", self)
 #			assert(false, str(update_everything_count))
 #	print(update_everything_count)
-	if update_everything_count > 1 and not ignore_collisions:
-		print("update_everything_count is %d" % update_everything_count)
+#	if update_everything_count > 1 and not ignore_collisions:
+#		print("update_everything_count is %d" % update_everything_count)
 	
 	_on_changed_i_view()
 	update_textures()
@@ -161,6 +160,8 @@ func i_view_colors() -> void:
 	if not is_instance_valid(door_data): return
 	if not using_i_view_colors: return
 	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
+	# TODO
+	return
 	assert(false, "todo")
 #	frame_light.modulate = Color.from_hsv(hue, Rendering.frame_s_v[1][0], Rendering.frame_s_v[1][1])
 #	frame_mid.modulate = Color.from_hsv(hue, Rendering.frame_s_v[0][0], Rendering.frame_s_v[0][1])
@@ -181,7 +182,7 @@ func update_locks() -> void:
 		lock.queue_free()
 	var new_lock: Lock
 	for lock in door_data.locks:
-		new_lock = LOCK.instantiate()
+		new_lock = Lock.new()
 		new_lock.clicked.connect(_on_lock_clicked.bind(new_lock))
 		new_lock.lock_data = lock
 		lock_holder.add_child(new_lock)
@@ -352,7 +353,7 @@ func _draw_base() -> void:
 		Enums.colors.master, Enums.colors.pure:
 			if door_data.outer_color == Enums.colors.glitch:
 				var tex := GLITCH_MASTER if used_color == Enums.colors.master else GLITCH_PURE
-				RenderingServer.canvas_item_add_texture_rect(door_base, rect, tex, true)
+				RenderingServer.canvas_item_add_texture_rect(door_base, rect, tex)
 			else:
 				var tex := BASE_MASTER if used_color == Enums.colors.master else BASE_PURE
 				for i in 4:
