@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://wa0a5416mt10"]
+[gd_scene load_steps=37 format=3 uid="uid://wa0a5416mt10"]
 
 [ext_resource type="Script" path="res://level_elements/kid/kid.gd" id="1_ytpc6"]
 [ext_resource type="Texture2D" uid="uid://ba3rni1j8cxj2" path="res://level_elements/kid/auras/spr_rgb_auras.png" id="2_rggjw"]
@@ -11,9 +11,12 @@
 [ext_resource type="AudioStream" uid="uid://cyhxjfoc58xsi" path="res://level_elements/kid/snd_DJump.wav" id="9_lbvgj"]
 [ext_resource type="AudioStream" uid="uid://u8s05mqpl74l" path="res://level_elements/kid/master_equip.wav" id="10_76avb"]
 [ext_resource type="AudioStream" uid="uid://cq7dau6jysyu8" path="res://level_elements/kid/master_unequip.wav" id="11_wa6iq"]
+[ext_resource type="Texture2D" uid="uid://d3ivkuvxae2ma" path="res://level_elements/kid/auras/spr_white_aura.png" id="11_yki3j"]
 [ext_resource type="AudioStream" uid="uid://d302bvepvw5no" path="res://level_elements/kid/master_anti_equip.wav" id="12_k1q47"]
+[ext_resource type="Script" path="res://level_elements/kid/white_aura.gd" id="12_ujqrp"]
 [ext_resource type="Texture2D" uid="uid://b5gv2xg17yxyx" path="res://level_elements/kid/spr_player_shine.png" id="13_2esid"]
 [ext_resource type="Texture2D" uid="uid://bwhaubn3y72qr" path="res://level_elements/kid/spr_key_master_equip.png" id="14_skcwr"]
+[ext_resource type="Texture2D" uid="uid://brhuewom1ulsy" path="res://level_elements/kid/i_view.png" id="15_i0yau"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1m2g"]
 size = Vector2(11, 21)
@@ -136,6 +139,9 @@ radius = 32.3883
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_csn0j"]
 blend_mode = 1
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_jjlei"]
+blend_mode = 1
+
 [node name="kid" type="CharacterBody2D"]
 process_priority = -5
 collision_layer = 16
@@ -216,6 +222,18 @@ unique_name_in_owner = true
 visible = false
 texture = ExtResource("14_skcwr")
 hframes = 2
+
+[node name="IView" type="Sprite2D" parent="AnimatedSprite2D"]
+unique_name_in_owner = true
+position = Vector2(-25, -30)
+texture = ExtResource("15_i0yau")
+centered = false
+
+[node name="SprWhiteAura" type="Sprite2D" parent="AnimatedSprite2D"]
+unique_name_in_owner = true
+material = SubResource("CanvasItemMaterial_jjlei")
+texture = ExtResource("11_yki3j")
+script = ExtResource("12_ujqrp")
 
 [node name="Jump" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true

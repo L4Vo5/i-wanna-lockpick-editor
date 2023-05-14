@@ -24,6 +24,7 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if Global.in_editor: return
+	if Global.is_exported: return
 	if event is InputEventKey:
 		if event.is_pressed():
 			if event.keycode == KEY_F12:

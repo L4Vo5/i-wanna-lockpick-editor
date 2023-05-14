@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=179 format=3]
+[gd_resource type="Resource" script_class="LevelData" load_steps=181 format=3 uid="uid://bftkojmf1hybs"]
 
 [ext_resource type="Script" path="res://data/complex_number.gd" id="1_ks5ek"]
 [ext_resource type="Script" path="res://data/level_data.gd" id="1_yd7bo"]
@@ -1806,13 +1806,25 @@ type = 0
 color = 1
 position = Vector2i(192, 480)
 
+[sub_resource type="Resource" id="Resource_l7wkn"]
+script = ExtResource("1_ks5ek")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_trgqa"]
+script = ExtResource("2_pq4il")
+amount = SubResource("Resource_l7wkn")
+type = 0
+color = 11
+position = Vector2i(384, 416)
+
 [resource]
 script = ExtResource("1_yd7bo")
 version = "0.0.2.0"
 num_version = 1
 editor_version = ""
 doors = Array[ExtResource("3_ebbb6")]([SubResource("Resource_bs634"), SubResource("Resource_mvk2q"), SubResource("Resource_7r4n6"), SubResource("Resource_o7mk7"), SubResource("Resource_6r3rl"), SubResource("Resource_qfvom"), SubResource("Resource_qw0od"), SubResource("Resource_a71ci"), SubResource("Resource_c00bh"), SubResource("Resource_necmc"), SubResource("Resource_xxw7h"), SubResource("Resource_8sutq"), SubResource("Resource_fji62"), SubResource("Resource_lgaav"), SubResource("Resource_86b3c"), SubResource("Resource_vb4wu"), SubResource("Resource_3wq18"), SubResource("Resource_uo00d"), SubResource("Resource_eoaip"), SubResource("Resource_r758w"), SubResource("Resource_4crtd"), SubResource("Resource_2drxm"), SubResource("Resource_m1omd"), SubResource("Resource_a77ad"), SubResource("Resource_60p33"), SubResource("Resource_yonx2"), SubResource("Resource_x7lr1"), SubResource("Resource_la1li"), SubResource("Resource_qt8we"), SubResource("Resource_7nqc2"), SubResource("Resource_l1tpu"), SubResource("Resource_tqfe5"), SubResource("Resource_373uv"), SubResource("Resource_tpdb2"), SubResource("Resource_jmape"), SubResource("Resource_msva7"), SubResource("Resource_wlb57"), SubResource("Resource_qoc8m"), SubResource("Resource_5uwha"), SubResource("Resource_ixcqw"), SubResource("Resource_qlmwj"), SubResource("Resource_bjwbk"), SubResource("Resource_sbsu3"), SubResource("Resource_fltbl"), SubResource("Resource_ti7qq"), SubResource("Resource_x3wjd"), SubResource("Resource_3y880"), SubResource("Resource_7fr47"), SubResource("Resource_boyjt"), SubResource("Resource_hakvp"), SubResource("Resource_coxlj"), SubResource("Resource_dkokv"), SubResource("Resource_y53yg"), SubResource("Resource_6onw5"), SubResource("Resource_cgyxg"), SubResource("Resource_2ya5y"), SubResource("Resource_ipctw")])
-keys = Array[ExtResource("2_pq4il")]([SubResource("Resource_2ce1e"), SubResource("Resource_xns5f"), SubResource("Resource_n1ahd"), SubResource("Resource_udb77")])
+keys = Array[ExtResource("2_pq4il")]([SubResource("Resource_2ce1e"), SubResource("Resource_xns5f"), SubResource("Resource_n1ahd"), SubResource("Resource_udb77"), SubResource("Resource_trgqa")])
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(366, 512)
 goal_position = Vector2i(416, 480)

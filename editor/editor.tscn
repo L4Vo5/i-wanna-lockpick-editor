@@ -6,21 +6,21 @@
 [ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="4_tvl64"]
 [ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/door_editor.tscn" id="5_ld4m3"]
 [ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="5_t6w1l"]
-[ext_resource type="Resource" uid="uid://b12m5jhti4o55" path="res://editor/levels/default.tres" id="6_n1ajy"]
+[ext_resource type="Resource" uid="uid://bftkojmf1hybs" path="res://editor/levels/default.tres" id="6_n1ajy"]
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/key_editor.tscn" id="7_nmnlx"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="8_alamw"]
-[ext_resource type="Script" path="res://data/door_data.gd" id="9_2s68o"]
-[ext_resource type="Script" path="res://data/lock_data.gd" id="9_5wk1m"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="8_dl2d3"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="9_2gd6c"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="10_4nhvr"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="10_jx68y"]
-[ext_resource type="Script" path="res://data/key_data.gd" id="12_2ius3"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="12_ttbfj"]
 
-[sub_resource type="Resource" id="Resource_to187"]
-script = ExtResource("8_alamw")
+[sub_resource type="Resource" id="Resource_307st"]
+script = ExtResource("8_dl2d3")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_64y2j"]
-script = ExtResource("9_5wk1m")
+[sub_resource type="Resource" id="Resource_wyg6l"]
+script = ExtResource("9_2gd6c")
 color = 1
 magnitude = 1
 sign = 0
@@ -31,11 +31,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_bwriw"]
-script = ExtResource("9_2s68o")
-amount = SubResource("Resource_to187")
+[sub_resource type="Resource" id="Resource_e22i4"]
+script = ExtResource("10_4nhvr")
+amount = SubResource("Resource_307st")
 outer_color = 1
-locks = Array[ExtResource("9_5wk1m")]([SubResource("Resource_64y2j")])
+locks = Array[ExtResource("9_2gd6c")]([SubResource("Resource_wyg6l")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -46,14 +46,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_ml0dc"]
-script = ExtResource("8_alamw")
+[sub_resource type="Resource" id="Resource_vnbmc"]
+script = ExtResource("8_dl2d3")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_k8nha"]
-script = ExtResource("12_2ius3")
-amount = SubResource("Resource_ml0dc")
+[sub_resource type="Resource" id="Resource_v318k"]
+script = ExtResource("12_ttbfj")
+amount = SubResource("Resource_vnbmc")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -245,12 +245,12 @@ use_hidden_tabs_for_min_size = true
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
 layout_mode = 2
-door_data = SubResource("Resource_bwriw")
+door_data = SubResource("Resource_e22i4")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_k8nha")
+key_data = SubResource("Resource_v318k")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false

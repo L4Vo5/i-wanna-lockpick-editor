@@ -12,11 +12,23 @@ var frame_colors := generate_colors({
 	Enums.sign.positive: ["584027", "84603C", "2C2014"],
 	Enums.sign.negative: ["D8BFA7", "EBDFD3", "C49F7B"],
 })
-var frame_s_v := [
+const frame_s_v := [
 	[70.0 / 100.0, 90.0 / 100.0],
 	[50.0 / 100.0, 100.0 / 100.0],
 	[100.0 / 100.0, 75.0 / 100.0]
 ]
+var i_view_palette := [
+		Color.from_hsv(0, frame_s_v[0][0], frame_s_v[0][1]),
+		Color.from_hsv(0, frame_s_v[1][0], frame_s_v[1][1]),
+		Color.from_hsv(0, frame_s_v[2][0], frame_s_v[2][1]),
+]
+
+func _physics_process(delta: float) -> void:
+		# TODO: use shader instead? it's way too inefficient to update a bunch of sprites each frame, right?
+	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
+	i_view_palette[0] = Color.from_hsv(hue, Rendering.frame_s_v[0][0], Rendering.frame_s_v[0][1])
+	i_view_palette[1] = Color.from_hsv(hue, Rendering.frame_s_v[1][0], Rendering.frame_s_v[1][1])
+	i_view_palette[2] = Color.from_hsv(hue, Rendering.frame_s_v[2][0], Rendering.frame_s_v[2][1])
 
 var lock_colors := {
 	Enums.sign.positive: Color("2C2014"),
@@ -60,9 +72,9 @@ var key_colors := generate_colors({
 #	Enums.colors.stone: ,
 })
 
-var key_number_colors: Array[Color] = [Color("EBE3DD"), Color("363029")]
+const key_number_colors: Array[Color] = [Color("EBE3DD"), Color("363029")]
 
-func generate_colors(from: Dictionary) -> Dictionary:
+static func generate_colors(from: Dictionary) -> Dictionary:
 	var dict := {}
 	for key in from.keys():
 		if from[key] is Array:

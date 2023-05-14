@@ -20,6 +20,9 @@ class_name Kid
 @onready var snd_master_unequip: AudioStreamPlayer = %MasterUnequip
 @onready var snd_master_anti_equip: AudioStreamPlayer = %MasterAntiEquip
 @onready var equipped_master: Sprite2D = %EquippedMaster
+@onready var i_view: Sprite2D = %IView
+@onready var spr_white_aura: Sprite2D = %SprWhiteAura
+
 const GRAVITY := 0.4
 # slightly nerfed to accomodate for difference in peak jump
 # this is because gamemaker gets the wrong curve by like. rounding or something.
@@ -37,6 +40,8 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if Global.in_editor: return
+	if i_view.visible:
+		i_view.modulate = Rendering.i_view_palette[1]
 	update_on_floor()
 	on_ceiling = test_move(global_transform, Vector2(0, -1))
 	auras()
@@ -183,11 +188,15 @@ func _on_aura_touch_door(body: Node2D) -> void:
 
 func connect_level() -> void:
 	if is_instance_valid(Global.current_level):
-		Global.current_level.changed_i_view.connect(update_master_equipped)
-		# TODO: fix this when autowrap works properly
-		var the_signal: Signal = Global.current_level.key_counts[Enums.colors.master].changed
-		the_signal.connect(update_master_equipped.bind(false, false, true))
+		Global.current_level.changed_i_view.connect(_on_changed_i_view)
+		_on_changed_i_view(false)
+		Global.current_level.key_counts[Enums.colors.master].changed.connect(update_master_equipped.bind(false, false, true))
 
+func _on_changed_i_view(show_anim := true) -> void:
+	i_view.visible = Global.current_level.i_view
+	if show_anim:
+		spr_white_aura.animate()
+	update_master_equipped()
 
 func update_master_equipped(switch_state := false, play_sounds := true, unequip_if_different := false) -> void:
 	# if the objective is for it to be "on" or not

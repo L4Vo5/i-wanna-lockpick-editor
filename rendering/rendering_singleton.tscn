@@ -3,4 +3,5 @@
 [ext_resource type="Script" path="res://rendering/rendering_singleton.gd" id="1_ylnkg"]
 
 [node name="RenderingSingleton" type="Node2D"]
+process_priority = -500
 script = ExtResource("1_ylnkg")

@@ -75,6 +75,8 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var tile_map: TileMap = %TileMap
 @onready var player_spawn_point: Sprite2D = %PlayerSpawnPoint
 @onready var debris_parent: Node2D = %DebrisParent
+@onready var i_view_sound_1: AudioStreamPlayer = %IViewSound1
+@onready var i_view_sound_2: AudioStreamPlayer = %IViewSound2
 
 # undo/redo actions should be handled somewhere in here, too
 var undo_redo: GoodUndoRedo
@@ -82,7 +84,11 @@ var undo_redo: GoodUndoRedo
 var player: Kid
 var goal: LevelGoal
 signal changed_i_view
-var i_view := false
+var i_view := false:
+	set(val):
+		if i_view == val: return
+		i_view = val
+		changed_i_view.emit()
 
 # multiplier to how many times doors should try to be opened/copied
 # useful for levels with a lot of door copies
@@ -95,8 +101,10 @@ func _init() -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action(&"i-view") and event.is_pressed() and not event.is_echo():
-		i_view = not i_view
-		changed_i_view.emit()
+		if Global.is_playing:
+			i_view = not i_view
+			i_view_sound_1.play()
+			i_view_sound_2.play()
 	elif event.is_action(&"restart") and event.is_pressed():
 		reset()
 	elif event.is_action(&"undo") and event.is_pressed():

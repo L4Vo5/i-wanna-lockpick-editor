@@ -1,0 +1,16 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://l76dtncdtd7r"
+path="res://.godot/imported/ms_ui_gothic.fnt-e567de6ac4c4424ef61b0e06ccf5a045.fontdata"
+
+[deps]
+
+source_file="res://fonts/ms_ui_gothic.fnt"
+dest_files=["res://.godot/imported/ms_ui_gothic.fnt-e567de6ac4c4424ef61b0e06ccf5a045.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true

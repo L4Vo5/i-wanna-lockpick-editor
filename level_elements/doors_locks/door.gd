@@ -82,7 +82,8 @@ func _physics_process(_delta: float) -> void:
 	if not door_data.amount.is_value(1,0):
 		text = "×" + str(door_data.amount)
 	copies.text = text
-	i_view_colors()
+	if using_i_view_colors:
+		_draw_frame()
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -156,24 +157,13 @@ func _on_changed_glitch_color() -> void:
 	if not is_instance_valid(door_data): return
 	door_data.update_glitch_color(level.glitch_color)
 
-func i_view_colors() -> void:
-	if not is_instance_valid(door_data): return
-	if not using_i_view_colors: return
-	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
-	# TODO
-	return
-	assert(false, "todo")
-#	frame_light.modulate = Color.from_hsv(hue, Rendering.frame_s_v[1][0], Rendering.frame_s_v[1][1])
-#	frame_mid.modulate = Color.from_hsv(hue, Rendering.frame_s_v[0][0], Rendering.frame_s_v[0][1])
-#	frame_dark.modulate = Color.from_hsv(hue, Rendering.frame_s_v[2][0], Rendering.frame_s_v[2][1])
-
 func update_textures() -> void:
 	if not is_instance_valid(door_data): return
 	custom_minimum_size = door_data.size
 	size = door_data.size
 	position_copies()
 	static_body.scale = size
-	i_view_colors()
+	_draw_frame()
 
 func update_locks() -> void:
 	if not is_instance_valid(door_data): return
@@ -385,7 +375,12 @@ func _draw_frame() -> void:
 	assert(PerfManager.start("Door:_draw_frame"))
 	var rect := Rect2(Vector2.ZERO,door_data.size)
 	RenderingServer.canvas_item_clear(door_frame)
-	var frame_palette = Rendering.frame_colors[Enums.sign.positive if door_data.amount.real_part >= 0 else Enums.sign.negative]
+	var frame_palette: Array
+	if using_i_view_colors:
+		frame_palette = Rendering.i_view_palette
+	else:
+		frame_palette = Rendering.frame_colors[Enums.sign.positive if door_data.amount.real_part >= 0 else Enums.sign.negative]
+	
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_LIGHT.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false,  frame_palette[1])
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_MID.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, true, frame_palette[0])
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_DARK.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false, frame_palette[2])
