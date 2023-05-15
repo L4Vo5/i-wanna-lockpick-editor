@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=7 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_vj4eo"]
 [ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="3_0buld"]
 [ext_resource type="Texture2D" uid="uid://btuot74j1fbp4" path="res://editor/player_spawnpoint.png" id="4_ue311"]
 [ext_resource type="AudioStream" uid="uid://boradxidfn753" path="res://level_elements/keys/signflip_pickup.wav" id="4_vwt7f"]
 [ext_resource type="AudioStream" uid="uid://gfisy8ng12wn" path="res://level_elements/snd_camera.wav" id="5_ibfus"]
+[ext_resource type="AudioStream" uid="uid://cep2ftgrg225e" path="res://level_elements/undo.wav" id="6_c0ycv"]
 
 [node name="Level" type="Node2D"]
 process_priority = -10
@@ -38,3 +39,8 @@ stream = ExtResource("4_vwt7f")
 [node name="IViewSound2" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("5_ibfus")
+
+[node name="UndoSound" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("6_c0ycv")
+pitch_scale = 0.6
