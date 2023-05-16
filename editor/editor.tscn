@@ -14,12 +14,12 @@
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="10_jx68y"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="12_ttbfj"]
 
-[sub_resource type="Resource" id="Resource_307st"]
+[sub_resource type="Resource" id="Resource_ibfde"]
 script = ExtResource("8_dl2d3")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_wyg6l"]
+[sub_resource type="Resource" id="Resource_p202m"]
 script = ExtResource("9_2gd6c")
 color = 1
 magnitude = 1
@@ -31,11 +31,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_e22i4"]
+[sub_resource type="Resource" id="Resource_d43w3"]
 script = ExtResource("10_4nhvr")
-amount = SubResource("Resource_307st")
+amount = SubResource("Resource_ibfde")
 outer_color = 1
-locks = Array[ExtResource("9_2gd6c")]([SubResource("Resource_wyg6l")])
+locks = Array[ExtResource("9_2gd6c")]([SubResource("Resource_p202m")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -46,14 +46,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_vnbmc"]
+[sub_resource type="Resource" id="Resource_tkk7u"]
 script = ExtResource("8_dl2d3")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_v318k"]
+[sub_resource type="Resource" id="Resource_vsl6b"]
 script = ExtResource("12_ttbfj")
-amount = SubResource("Resource_vnbmc")
+amount = SubResource("Resource_tkk7u")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -245,12 +245,12 @@ use_hidden_tabs_for_min_size = true
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
 layout_mode = 2
-door_data = SubResource("Resource_e22i4")
+door_data = SubResource("Resource_d43w3")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_v318k")
+key_data = SubResource("Resource_vsl6b")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false

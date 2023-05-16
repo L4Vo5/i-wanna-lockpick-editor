@@ -89,3 +89,4 @@ script = ExtResource("8_slq0m")
 unique_name_in_owner = true
 stream = ExtResource("8_7yh2l")
 volume_db = -8.432
+bus = &"Sfx"

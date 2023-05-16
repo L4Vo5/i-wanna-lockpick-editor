@@ -77,6 +77,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var debris_parent: Node2D = %DebrisParent
 @onready var i_view_sound_1: AudioStreamPlayer = %IViewSound1
 @onready var i_view_sound_2: AudioStreamPlayer = %IViewSound2
+@onready var undo_sound: AudioStreamPlayer = %UndoSound
 
 # undo/redo actions should be handled somewhere in here, too
 var undo_redo: GoodUndoRedo
@@ -366,6 +367,7 @@ func end_undo_action() -> void:
 # For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
 func undo() -> void:
 	if not Global.is_playing: return
+	undo_sound.play()
 	undo_redo.undo()
 	last_player_undo = player.get_undo_action()
 	if undo_redo.get_last_action() == -1:

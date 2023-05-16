@@ -225,12 +225,14 @@ hframes = 2
 
 [node name="IView" type="Sprite2D" parent="AnimatedSprite2D"]
 unique_name_in_owner = true
+visible = false
 position = Vector2(-25, -30)
 texture = ExtResource("15_i0yau")
 centered = false
 
 [node name="SprWhiteAura" type="Sprite2D" parent="AnimatedSprite2D"]
 unique_name_in_owner = true
+visible = false
 material = SubResource("CanvasItemMaterial_jjlei")
 texture = ExtResource("11_yki3j")
 script = ExtResource("12_ujqrp")
@@ -260,11 +262,11 @@ unique_name_in_owner = true
 stream = ExtResource("12_k1q47")
 bus = &"Sfx"
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="MatchingArea" type="Area2D" parent="."]
 visible = false
 collision_layer = 16
 collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MatchingArea"]
 position = Vector2(0.5, -10.5)
 shape = SubResource("RectangleShape2D_k1m2g")

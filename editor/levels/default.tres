@@ -1,6 +1,20 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3 uid="uid://bftkojmf1hybs"]
+[gd_resource type="Resource" script_class="LevelData" load_steps=6 format=3]
 
+[ext_resource type="Script" path="res://data/complex_number.gd" id="1_h4giu"]
 [ext_resource type="Script" path="res://data/level_data.gd" id="1_yd7bo"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="2_n5wyf"]
+
+[sub_resource type="Resource" id="Resource_j4x5w"]
+script = ExtResource("1_h4giu")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_t0dme"]
+script = ExtResource("2_n5wyf")
+amount = SubResource("Resource_j4x5w")
+type = 0
+color = 1
+position = Vector2i(400, 384)
 
 [resource]
 script = ExtResource("1_yd7bo")
@@ -8,7 +22,7 @@ version = "0.0.2.0"
 num_version = 1
 editor_version = ""
 doors = Array[Resource("res://data/door_data.gd")]([])
-keys = Array[Resource("res://data/key_data.gd")]([])
+keys = Array[ExtResource("2_n5wyf")]([SubResource("Resource_t0dme")])
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(366, 512)
 goal_position = Vector2i(416, 480)

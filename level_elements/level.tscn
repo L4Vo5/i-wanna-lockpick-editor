@@ -35,12 +35,16 @@ unique_name_in_owner = true
 [node name="IViewSound1" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("4_vwt7f")
+bus = &"Sfx"
 
 [node name="IViewSound2" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("5_ibfus")
+bus = &"Sfx"
 
 [node name="UndoSound" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("6_c0ycv")
+volume_db = -4.437
 pitch_scale = 0.6
+bus = &"Sfx"

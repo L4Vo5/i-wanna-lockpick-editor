@@ -6,12 +6,12 @@
 [ext_resource type="Script" path="res://data/lock_data.gd" id="3_lgu6v"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="4_0vpgp"]
 
-[sub_resource type="Resource" id="Resource_t6pb4"]
+[sub_resource type="Resource" id="Resource_ft56r"]
 script = ExtResource("2_hl0ia")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_on1j7"]
+[sub_resource type="Resource" id="Resource_ru8o5"]
 script = ExtResource("3_lgu6v")
 color = 1
 magnitude = 1
@@ -23,11 +23,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_f187s"]
+[sub_resource type="Resource" id="Resource_d5p8k"]
 script = ExtResource("4_0vpgp")
-amount = SubResource("Resource_t6pb4")
+amount = SubResource("Resource_ft56r")
 outer_color = 1
-locks = Array[ExtResource("3_lgu6v")]([SubResource("Resource_on1j7")])
+locks = Array[ExtResource("3_lgu6v")]([SubResource("Resource_ru8o5")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -42,7 +42,7 @@ position = Vector2i(0, 0)
 offset_right = 281.0
 offset_bottom = 606.0
 script = ExtResource("1_qqghd")
-door_data = SubResource("Resource_f187s")
+door_data = SubResource("Resource_d5p8k")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -71,7 +71,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 ignore_position = true
-door_data = SubResource("Resource_f187s")
+door_data = SubResource("Resource_d5p8k")
 ignore_collisions = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
