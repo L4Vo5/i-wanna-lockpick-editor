@@ -50,7 +50,6 @@ func _convert():
 #	file.close()
 #	print("Done importing " + font_name + "!")
 	print("New content of " + font_name + " copied to clipboard!")
-	#print(new_content)
 
 func string_from_to(string, start_substr: String, end_substr: String) -> String:
 	var start = string.find(start_substr) + len(start_substr)

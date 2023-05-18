@@ -66,11 +66,12 @@ func clear() -> void:
 	balance.clear()
 	stack.clear()
 
-func check_balances() -> void:
-	if Global.in_editor: return
+func check_balances() -> bool:
+	if Global.in_editor: return true
 	for b in balance.values():
 		assert(b == 0)
 	assert(stack.is_empty())
+	return true
 
 func print_report() -> void:
 	if Global.in_editor: return

@@ -200,7 +200,5 @@ func _update_position() -> void:
 func _update_max_pos() -> void:
 	if _setting_to_data: return
 	if not is_node_ready(): await ready
-	var old_pos := Vector2(position_x.max_value, position_y.max_value)
 	position_x.max_value = door_size.x - lock_data.size.x
 	position_y.max_value = door_size.y - lock_data.size.y
-	var new_pos := Vector2(position_x.max_value, position_y.max_value)

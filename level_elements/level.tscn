@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=11 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_vj4eo"]
 [ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="3_0buld"]
@@ -6,6 +6,10 @@
 [ext_resource type="AudioStream" uid="uid://boradxidfn753" path="res://level_elements/keys/signflip_pickup.wav" id="4_vwt7f"]
 [ext_resource type="AudioStream" uid="uid://gfisy8ng12wn" path="res://level_elements/snd_camera.wav" id="5_ibfus"]
 [ext_resource type="AudioStream" uid="uid://cep2ftgrg225e" path="res://level_elements/undo.wav" id="6_c0ycv"]
+[ext_resource type="Texture2D" uid="uid://bbwl23eeyrnd7" path="res://level_elements/autorun_off.png" id="7_das53"]
+[ext_resource type="Texture2D" uid="uid://b5mtdgi8eorra" path="res://level_elements/autorun_on.png" id="8_gkakb"]
+[ext_resource type="AudioStream" uid="uid://yukdfqp7sr3g" path="res://level_elements/autorun.wav" id="9_pu2ug"]
+[ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="10_wssbq"]
 
 [node name="Level" type="Node2D"]
 process_priority = -10
@@ -32,19 +36,41 @@ offset = Vector2(-13, -34)
 [node name="DebrisParent" type="Node2D" parent="."]
 unique_name_in_owner = true
 
-[node name="IViewSound1" type="AudioStreamPlayer" parent="."]
+[node name="IView1" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("4_vwt7f")
 bus = &"Sfx"
 
-[node name="IViewSound2" type="AudioStreamPlayer" parent="."]
+[node name="IView2" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("5_ibfus")
 bus = &"Sfx"
 
-[node name="UndoSound" type="AudioStreamPlayer" parent="."]
+[node name="Undo" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("6_c0ycv")
 volume_db = -4.437
 pitch_scale = 0.6
 bus = &"Sfx"
+
+[node name="AutorunOff" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(4, 3)
+texture = ExtResource("7_das53")
+centered = false
+
+[node name="AutorunOn" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(4, 3)
+texture = ExtResource("8_gkakb")
+centered = false
+
+[node name="Autorun" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("9_pu2ug")
+
+[node name="HoverHighlight" parent="." instance=ExtResource("10_wssbq")]
+unique_name_in_owner = true
+color = Color(1, 1, 1, 0.74902)

@@ -46,9 +46,6 @@ func _ready() -> void:
 	Global.changed_level.connect(connect_level)
 	if ignore_collisions:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
-#	if not Global.in_editor and is_instance_valid(door_data):
-#		door_data = door_data.duplicated() # will trigger update_everything
-#	else:
 	update_everything()
 	connect_level()
 	assert(PerfManager.end("Door::_ready"))
@@ -94,25 +91,11 @@ var update_everything_count := 0
 func update_everything() -> void:
 	if not is_instance_valid(door_data): return
 	assert(PerfManager.start(&"Door::update_everything"))
-#	for child in get_children():
-#		if child.has_method("hide"):
-#			child.hide()
 	
 	_draw_base()
 	_draw_frame()
 	
 	update_everything_count += 1
-#	if door_data.locks.size() == 2 and not Global.in_editor:
-#		if Global.has_meta("who"):
-#			var who = Global.get_meta("who")
-#			if is_instance_valid(who) and who == self:
-#				assert(false, str(update_everything_count))
-#		else:
-#			Global.set_meta("who", self)
-#			assert(false, str(update_everything_count))
-#	print(update_everything_count)
-#	if update_everything_count > 1 and not ignore_collisions:
-#		print("update_everything_count is %d" % update_everything_count)
 	
 	_on_changed_i_view()
 	update_textures()
@@ -385,7 +368,3 @@ func _draw_frame() -> void:
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_MID.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, true, frame_palette[0])
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_DARK.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false, frame_palette[2])
 	assert(PerfManager.end("Door:_draw_frame"))
-
-
-func _draw() -> void:
-	pass

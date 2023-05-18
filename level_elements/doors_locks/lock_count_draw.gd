@@ -39,6 +39,8 @@ const I = 10
 		_update_size()
 		queue_redraw()
 
+# WAITING4GODOT: static funcs...
+@warning_ignore("shadowed_variable")
 static func get_min_size(text: String, lock_type: int) -> Vector2i:
 	if text == "":
 		return Vector2i.ZERO
@@ -66,11 +68,12 @@ func _update_size() -> void:
 	custom_minimum_size = s
 	draw_text(get_canvas_item(), text, lock_type)
 
+# WAITING4GODOT: static funcs...
+@warning_ignore("shadowed_variable")
 static func draw_text(rid: RID, text: String, lock_type: int) -> void:
 	if text == "":
 		return
 	RenderingServer.canvas_item_clear(rid)
-	
 	assert(PerfManager.start("LockCountDraw::draw_text"))
 	var offset := Vector2i.ZERO
 	match lock_type:
@@ -105,35 +108,4 @@ static func draw_text(rid: RID, text: String, lock_type: int) -> void:
 	return
 
 func _draw() -> void:
-	if text == "":
-		return
-#	draw_text(get_canvas_item(), text, lock_type)
-#	return
-	assert(PerfManager.start("LockCountDraw::_draw"))
-	
-	var offset := Vector2i.ZERO
-	match lock_type:
-		0: # real
-			draw_texture_rect_region(FONT,
-				Rect2(offset, CHAR_SIZE),
-				Rect2(Vector2(CHAR_SIZE.x * L, 0), CHAR_SIZE)
-			)
-			offset.x += 11
-		1: # imaginary
-			offset.x -= CHARS_REACH[CHARSET.find(text[0])][0]
-			draw_texture_rect_region(FONT,
-				Rect2(offset + Vector2i(text.length() * CHAR_SIZE.x,0), CHAR_SIZE),
-				Rect2(Vector2(CHAR_SIZE.x * I, 0), CHAR_SIZE)
-			)
-		2: # don't show
-			offset.x -= CHARS_REACH[CHARSET.find(text[0])][0]
-	var pos := Vector2i(0, 0)
-	for c in text:
-		var i := CHARSET.find(c)
-		if i != -1:
-			draw_texture_rect_region(FONT,
-				Rect2(pos + offset, CHAR_SIZE),
-				Rect2(Vector2(CHAR_SIZE.x * i, 0), CHAR_SIZE)
-			)
-		pos.x += CHAR_SIZE.x
-	assert(PerfManager.end("LockCountDraw::_draw"))
+	draw_text(get_canvas_item(), text, lock_type)

@@ -152,6 +152,15 @@ script = ExtResource("1_ytpc6")
 position = Vector2(0.5, -10.5)
 shape = SubResource("RectangleShape2D_k1m2g")
 
+[node name="Shadow" type="AnimatedSprite2D" parent="."]
+unique_name_in_owner = true
+modulate = Color(0, 0, 0, 0.34902)
+position = Vector2(3, -6)
+sprite_frames = SubResource("SpriteFrames_2if8x")
+animation = &"idle"
+centered = false
+offset = Vector2(-17, -23)
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(0, -9)

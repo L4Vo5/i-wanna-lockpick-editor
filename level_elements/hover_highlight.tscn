@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://dh01y4njdul08"]
+
+[ext_resource type="Script" path="res://level_elements/hoverer.gd" id="1_356qf"]
+
+[node name="HoverHighlight" type="Node2D"]
+script = ExtResource("1_356qf")
+
+[node name="Line2D" type="Line2D" parent="."]
+unique_name_in_owner = true
+points = PackedVector2Array(20, 0, 20, 20, 0, 20, 0, 0, 20, 0)
+width = 2.0
+begin_cap_mode = 1
+antialiased = true

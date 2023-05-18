@@ -6,7 +6,7 @@ func _ready() -> void:
 	set_physics_process(false)
 
 var angle := 0
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	angle += 5
 	var sin := sin(deg_to_rad(angle))
 	var cos := cos(deg_to_rad(angle))

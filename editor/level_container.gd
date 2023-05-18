@@ -18,6 +18,12 @@ class_name LevelContainer
 @export var editor: LockpickEditor
 var editor_data: EditorData
 
+@export var danger_highlight: HoverHighlight
+@export var selected_highlight: HoverHighlight
+var current_selected: Node:
+	get:
+		return selected_highlight.current_obj
+
 #var level_offset :=  Vector2(0, 0)
 
 const OBJ_SIZE := Vector2(800, 608)
@@ -56,6 +62,7 @@ func _on_door_clicked(event: InputEventMouseButton, door: Door) -> void:
 		if event.pressed:
 			editor_data.door_editor.door_data = door.door_data
 			editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.door_editor)
+			selected_highlight.adapt_to(door)
 
 func _on_key_clicked(event: InputEventMouseButton, key: Key) -> void:
 	if editor_data.disable_editing: return
@@ -67,6 +74,7 @@ func _on_key_clicked(event: InputEventMouseButton, key: Key) -> void:
 		if event.pressed:
 			editor_data.key_editor.key_data = key.key_data
 			editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.key_editor)
+			selected_highlight.adapt_to(key)
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
@@ -77,11 +85,11 @@ func _gui_input(event: InputEvent) -> void:
 					place_tile_on_mouse()
 					accept_event()
 				elif editor_data.doors:
-					place_door_on_mouse()
-					accept_event()
+					if place_door_on_mouse():
+						accept_event()
 				elif editor_data.keys:
-					place_key_on_mouse()
-					accept_event()
+					if place_key_on_mouse():
+						accept_event()
 				elif editor_data.level_properties:
 					if editor_data.player_spawn:
 						place_player_spawn_on_mouse()
@@ -89,6 +97,9 @@ func _gui_input(event: InputEvent) -> void:
 					elif editor_data.goal_position:
 						place_goal_on_mouse()
 						accept_event()
+			if is_instance_valid(selected_highlight.current_obj):
+				if not selected_highlight.current_obj.get_rect().intersects(Rect2(get_mouse_coord(1), Vector2.ONE)):
+					selected_highlight.stop_adapting()
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
 #				if editor_data.tilemap_edit:
@@ -110,9 +121,10 @@ func _gui_input(event: InputEvent) -> void:
 #			if editor_data.tilemap_edit:
 				if remove_tile_on_mouse():
 					accept_event()
-		_place_ghost_door()
-		_place_ghost_key()
-	
+
+func _physics_process(_delta: float) -> void:
+	_place_ghost_door()
+	_place_ghost_key()
 
 
 func place_tile_on_mouse() -> void:
@@ -127,21 +139,32 @@ func remove_tile_on_mouse() -> bool:
 	var coord = get_mouse_tile_coord(32)
 	return level.remove_tile(coord)
 
-func place_door_on_mouse() -> void:
-	if editor_data.disable_editing: return
-	if is_mouse_out_of_bounds(): return
+func place_door_on_mouse() -> bool:
+	if editor_data.disable_editing: return false
+	if is_mouse_out_of_bounds(): return false
 	var coord = get_mouse_coord(32)
 	var door_data := door_editor.door.door_data.duplicated()
 	door_data.position = coord
-	level.add_door(door_data)
+	var door := level.add_door(door_data)
+	if not is_instance_valid(door): return false
+	selected_highlight.adapt_to(door)
+	level.hover_highlight.adapt_to(door)
+	danger_highlight.stop_adapting()
+	return true
 
-func place_key_on_mouse() -> void:
-	if editor_data.disable_editing: return
-	if is_mouse_out_of_bounds(): return
+func place_key_on_mouse() -> bool:
+	if editor_data.disable_editing: return false
+	if is_mouse_out_of_bounds(): return false
 	var coord = get_mouse_coord(16)
 	var key_data := key_editor.key.key_data.duplicated()
 	key_data.position = coord
-	level.add_key(key_data)
+	var key := level.add_key(key_data)
+	if not is_instance_valid(key): return false
+	selected_highlight.adapt_to(key)
+	level.hover_highlight.adapt_to(key)
+	danger_highlight.stop_adapting()
+	accept_event()
+	return true
 
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
@@ -182,12 +205,26 @@ func _place_ghost_door() -> void:
 		return
 	ghost_door.door_data = door_editor.door_data
 	var maybe_pos := get_mouse_coord(32)
+	ghost_door.position = maybe_pos
 	if not Rect2i(Vector2i.ZERO, level.level_data.size).has_point(maybe_pos):
 		ghost_door.hide()
+		danger_highlight.hide()
 		return
 	if not level.is_space_occupied(Rect2i(maybe_pos, ghost_door.get_rect().size)):
-		ghost_door.position = maybe_pos
 		ghost_door.show()
+	else:
+		ghost_door.hide()
+		
+	if (
+	not is_instance_valid(level.hovering_over)
+	and not ghost_door.visible
+	# TODO: This is just a double-check, but looks weird since tiles can't be hovered on yet
+#	and not level.is_space_occupied(Rect2i(get_mouse_coord(1), Vector2.ONE))
+	):
+		danger_highlight.show()
+		danger_highlight.adapt_to(ghost_door)
+	else:
+		danger_highlight.hide()
 
 func _place_ghost_key() -> void:
 	if not editor_data.keys or editor_data.is_playing:

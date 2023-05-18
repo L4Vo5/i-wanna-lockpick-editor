@@ -4,9 +4,10 @@ class_name Kid
 
 # WAITING4GODOT: Extra Area2D necessary because keys' Area2D's wouldn't detect the body_entered in time but do work with areas properly. https://github.com/godotengine/godot/issues/41648
 
-@onready var sprite := %AnimatedSprite2D as AnimatedSprite2D
-@onready var snd_jump := %Jump as AudioStreamPlayer
-@onready var snd_jump_2 := %Jump2 as AudioStreamPlayer
+@onready var sprite: AnimatedSprite2D = %AnimatedSprite2D
+@onready var shadow: AnimatedSprite2D = %Shadow
+@onready var snd_jump: AudioStreamPlayer = %Jump
+@onready var snd_jump_2: AudioStreamPlayer = %Jump2
 @onready var spr_brown_aura: Sprite2D = %SprBrownAura
 @onready var spr_brown_aura_2: Sprite2D = %SprBrownAura2
 @onready var spr_red_aura: Sprite2D = %SprRedAura
@@ -20,7 +21,7 @@ class_name Kid
 @onready var snd_master_unequip: AudioStreamPlayer = %MasterUnequip
 @onready var snd_master_anti_equip: AudioStreamPlayer = %MasterAntiEquip
 @onready var equipped_master: Sprite2D = %EquippedMaster
-@onready var i_view: Sprite2D = %IView
+@onready var spr_i_view: Sprite2D = %IView
 @onready var spr_white_aura: Sprite2D = %SprWhiteAura
 
 const GRAVITY := 0.4
@@ -32,6 +33,7 @@ const MAX_VSPEED := 9.0
 const JUMP_REDUCTION := 0.45
 
 var master_equipped := ComplexNumber.new()
+signal changed_autorun
 
 func _ready() -> void:
 	aura_area.body_entered.connect(_on_aura_touch_door)
@@ -40,8 +42,8 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if Global.in_editor: return
-	if i_view.visible:
-		i_view.modulate = Rendering.i_view_palette[1]
+	if spr_i_view.visible:
+		spr_i_view.modulate = Rendering.i_view_palette[1]
 	update_on_floor()
 	on_ceiling = test_move(global_transform, Vector2(0, -1))
 	auras()
@@ -51,8 +53,11 @@ func _physics_process(_delta: float) -> void:
 	anim()
 	master_anim()
 	var current_speed := 3
-	if on_floor and velocity.y == 0 and Input.is_action_pressed(&"fast"):
-		current_speed = 6
+	if on_floor and velocity.y == 0:
+		if Input.is_action_pressed(&"fast"):
+			current_speed = 6 if not Global.current_level.is_autorun_on else 3
+		else:
+			current_speed = 3 if not Global.current_level.is_autorun_on else 6
 	if Input.is_action_pressed(&"slow"):
 		current_speed = 1
 	move_and_collide(velocity * Vector2(current_speed, 0))
@@ -62,7 +67,7 @@ func _physics_process(_delta: float) -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not is_instance_valid(Global.current_level): return
-	if event.is_action("master") and event.is_pressed() and not event.is_echo():
+	if event.is_action_pressed(&"master") and not event.is_echo():
 		update_master_equipped(true, true)
 
 var on_floor := true
@@ -90,6 +95,7 @@ func run() -> void:
 		sprite.flip_h = false
 	elif velocity.x < 0:
 		sprite.flip_h = true
+	shadow.flip_h = sprite.flip_h
 
 # Necessary for undo/redo
 var is_pressing_jump := false
@@ -144,6 +150,8 @@ func anim() -> void:
 		sprite.play(&"idle")
 	else:
 		sprite.play(&"walk")
+	shadow.animation = sprite.animation
+	shadow.frame = sprite.frame
 
 func auras() -> void:
 	if not is_instance_valid(Global.current_level): return
@@ -193,7 +201,7 @@ func connect_level() -> void:
 		Global.current_level.key_counts[Enums.colors.master].changed.connect(update_master_equipped.bind(false, false, true))
 
 func _on_changed_i_view(show_anim := true) -> void:
-	i_view.visible = Global.current_level.i_view
+	spr_i_view.visible = Global.current_level.i_view
 	if show_anim:
 		spr_white_aura.animate()
 	update_master_equipped()
@@ -262,6 +270,7 @@ func _set_state(vars: Array) -> void:
 	velocity = vars[1]
 	d_jumps = vars[2]
 	sprite.flip_h = vars[3]
+	shadow.flip_h = sprite.flip_h
 	master_equipped.set_to_this(vars[4])
 	_last_master_equipped.set_to_this(vars[5])
 	var was_on_floor = vars[7]

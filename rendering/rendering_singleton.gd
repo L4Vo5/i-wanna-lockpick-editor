@@ -23,7 +23,7 @@ var i_view_palette := [
 		Color.from_hsv(0, frame_s_v[2][0], frame_s_v[2][1]),
 ]
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 		# TODO: use shader instead? it's way too inefficient to update a bunch of sprites each frame, right?
 	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
 	i_view_palette[0] = Color.from_hsv(hue, Rendering.frame_s_v[0][0], Rendering.frame_s_v[0][1])

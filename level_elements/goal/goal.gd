@@ -17,7 +17,7 @@ func _ready() -> void:
 	area_entered.connect(_on_body_entered)
 	area_exited.connect(_on_body_exited)
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	# Should create particle on first step
 	var step = 3 if child_inside else 6
 	
@@ -72,7 +72,7 @@ func spawn_particle(put_first := true) -> Node2D:
 		particles_parent.move_child(part, 0)
 	return part
 
-func _on_body_entered(body: Node2D) -> void:
+func _on_body_entered(_body: Node2D) -> void:
 	win()
 	child_inside = true
 	child_inside_time = time + 60
@@ -90,5 +90,5 @@ func _on_body_entered(body: Node2D) -> void:
 		new.mode = child.mode
 		child.add_sibling(new)
 
-func _on_body_exited(body: Node2D) -> void:
+func _on_body_exited(_body: Node2D) -> void:
 	child_inside = false

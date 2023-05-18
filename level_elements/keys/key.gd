@@ -4,6 +4,8 @@ class_name Key
 ## Key lol
 
 signal clicked(event: InputEventMouseButton)
+signal mouse_entered
+signal mouse_exited
 
 @export var key_data: KeyData:
 	set(val):
@@ -29,6 +31,7 @@ signal clicked(event: InputEventMouseButton)
 @onready var number: Label = %Number
 @onready var symbol: Sprite2D = %Symbol
 @onready var collision: Area2D = %Collision
+@onready var input_grabber: Control = $GuiInputGrabber
 
 var level: Level = null
 
@@ -44,7 +47,15 @@ func _ready() -> void:
 	update_visual()
 	_connect_global_level()
 	Global.changed_level.connect(_connect_global_level)
-	$GuiInputGrabber.gui_input.connect(_gui_input)
+	
+	input_grabber.gui_input.connect(_gui_input)
+	input_grabber.mouse_entered.connect(_on_mouse_entered)
+	input_grabber.mouse_exited.connect(_on_mouse_exited)
+
+func _on_mouse_entered() -> void:
+	mouse_entered.emit()
+func _on_mouse_exited() -> void:
+	mouse_exited.emit()
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -218,3 +229,6 @@ func on_pickup() -> void:
 	else:
 		snd_pickup.stream = preload("res://level_elements/keys/key_pickup.wav")
 	snd_pickup.play()
+
+func get_rect() -> Rect2:
+	return input_grabber.get_rect()

@@ -46,7 +46,7 @@ func _ready() -> void:
 
 @onready var update_dialog: AcceptDialog = $Update/UpdateDialog
 var newer_version := ""
-func _http_request_completed(result, response_code, headers, body: PackedByteArray):
+func _http_request_completed(_result, _response_code, _headers, body: PackedByteArray):
 	var s := body.get_string_from_ascii()
 	var start := s.find("The current version is ")
 	start += "The current version is ".length()
@@ -80,14 +80,14 @@ func fully_disconnect(receiver: Object, emitter: Object) -> int:
 		var sig_name: String = sig_data.name
 		for connection_data in emitter.get_signal_connection_list(sig_name):
 			var sig: Signal = connection_data.signal
-			var call: Callable = connection_data.callable
-			var met = receiver.get(call.get_method())
+			var callable: Callable = connection_data.callable
+			var met = receiver.get(callable.get_method())
 			if not met is Callable: continue
 			if sig.is_connected(met): 
-#			var obj: Object = call.get_object()
+#			var obj: Object = callable.get_object()
 #			if obj == receiver:
-#				print("%s is connected to %s" % [str(sig), str(call)])
-				sig.disconnect(call)
+#				print("%s is connected to %s" % [str(sig), str(callable)])
+				sig.disconnect(callable)
 				count += 1
 	return count
 
@@ -101,9 +101,9 @@ func _physics_process(delta: float) -> void:
 	RenderingServer.global_shader_parameter_set(&"FPS_TIME", physics_time)
 	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
 	if not in_editor:
-		# TODO: No real need to do this every frame
+		# PERF: No real need to do this every frame
 		key_pad.update_pos()
-		PerfManager.check_balances()
+		assert(PerfManager.check_balances())
 
 # sets the viewport according to gameplay settings
 func _set_viewport_to_gameplay() -> void:

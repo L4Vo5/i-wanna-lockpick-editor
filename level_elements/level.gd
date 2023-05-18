@@ -75,9 +75,17 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var tile_map: TileMap = %TileMap
 @onready var player_spawn_point: Sprite2D = %PlayerSpawnPoint
 @onready var debris_parent: Node2D = %DebrisParent
-@onready var i_view_sound_1: AudioStreamPlayer = %IViewSound1
-@onready var i_view_sound_2: AudioStreamPlayer = %IViewSound2
-@onready var undo_sound: AudioStreamPlayer = %UndoSound
+@onready var i_view_sound_1: AudioStreamPlayer = %IView1
+@onready var i_view_sound_2: AudioStreamPlayer = %IView2
+@onready var undo_sound: AudioStreamPlayer = %Undo
+@onready var autorun_sound: AudioStreamPlayer = %Autorun
+@onready var autorun_off: Sprite2D = %AutorunOff
+@onready var autorun_on: Sprite2D = %AutorunOn
+
+@onready var hover_highlight: HoverHighlight = %HoverHighlight
+var hovering_over: Node:
+	get:
+		return hover_highlight.current_obj
 
 # undo/redo actions should be handled somewhere in here, too
 var undo_redo: GoodUndoRedo
@@ -91,9 +99,13 @@ var i_view := false:
 		i_view = val
 		changed_i_view.emit()
 
+var is_autorun_on := false
+var autorun_tween: Tween
+
 # multiplier to how many times doors should try to be opened/copied
 # useful for levels with a lot of door copies
 var door_multiplier := 1
+
 
 func _init() -> void:
 	undo_redo = GoodUndoRedo.new()
@@ -101,23 +113,44 @@ func _init() -> void:
 		_ensure_key_counts()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.is_action(&"i-view") and event.is_pressed() and not event.is_echo():
+	if event.is_action_pressed(&"i-view") and not event.is_echo():
 		if Global.is_playing:
 			i_view = not i_view
 			i_view_sound_1.play()
 			i_view_sound_2.play()
-	elif event.is_action(&"restart") and event.is_pressed():
+	elif event.is_action_pressed(&"restart") and not event.is_echo():
 		reset()
-	elif event.is_action(&"undo") and event.is_pressed():
+	elif event.is_action_pressed(&"undo"): # echos are allowed
 		undo.call_deferred()
 	# TODO: Make redo work properly (bugs related to standing on doors?)
 #	elif event.is_action(&"redo") and event.is_pressed():
 #		if not Global.is_playing: return
 #		undo_redo.redo()
-	elif event.is_action(&"savestate") and event.is_pressed():
+	elif event.is_action_pressed(&"savestate"):
 		if not Global.is_playing: return
 		start_undo_action()
 		end_undo_action()
+	elif event.is_action_pressed(&"autorun") and not event.is_echo():
+		is_autorun_on = !is_autorun_on
+		var used: Sprite2D
+		if is_autorun_on:
+			autorun_sound.pitch_scale = 1
+			autorun_off.hide()
+			used = autorun_on
+		else:
+			autorun_sound.pitch_scale = 0.7
+			autorun_on.hide()
+			used = autorun_off
+		autorun_sound.play()
+		if is_instance_valid(autorun_tween):
+			autorun_tween.kill()
+		autorun_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+		used.show()
+		used.modulate.a = 0
+		
+		autorun_tween.tween_property(used, "modulate:a", 1, 0.1)
+		autorun_tween.tween_interval(0.5)
+		autorun_tween.tween_property(used, "modulate:a", 0, 0.5)
 
 func _ready() -> void:
 	Global.current_level = self
@@ -126,7 +159,7 @@ func _ready() -> void:
 
 var last_player_undo: Callable
 var last_saved_player_undo: Callable
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if is_instance_valid(player):
 		if player.on_floor:
 			last_player_undo = player.get_undo_action()
@@ -146,9 +179,10 @@ func reset() -> void:
 		key_counts[color].set_to(0, 0)
 	for color in star_keys.keys():
 		star_keys[color] = false
-	i_view = false
 	tile_map.clear()
 	undo_redo.clear_history()
+	i_view = false
+	is_autorun_on = false
 	
 	# Spawn everything
 	# Player has to go first so the last one is deleted before objects are spawned
@@ -196,9 +230,9 @@ func _update_goal_position() -> void:
 signal door_clicked(event: InputEventMouseButton, door: Door)
 signal key_clicked(event: InputEventMouseButton, key: Key)
 
-## Adds a door to the level data
+## Adds a door to the level data. Returns null if it wasn't added
 func add_door(door_data: DoorData) -> Door:
-	if is_space_occupied(door_data.get_rect()): return
+	if is_space_occupied(door_data.get_rect()): return null
 	if not door_data in level_data.doors:
 		level_data.doors.push_back(door_data)
 		level_data.changed_doors.emit()
@@ -212,6 +246,8 @@ func _spawn_door(door_data: DoorData) -> Door:
 	door.door_data = dd
 	door.set_meta(&"original_door_data", door_data)
 	door.clicked.connect(_on_door_clicked.bind(door))
+	door.mouse_entered.connect(_on_door_mouse_entered.bind(door))
+	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
 	assert(PerfManager.start("Level::_spawn_door (adding child)"))
 	doors.add_child(door)
 	assert(PerfManager.end("Level::_spawn_door (adding child)"))
@@ -227,9 +263,9 @@ func remove_door(door: Door) -> void:
 	door.queue_free()
 	level_data.changed_doors.emit()
 
-## Adds a key to the level data
+## Adds a key to the level data. Returns null if it wasn't added
 func add_key(key_data: KeyData) -> Key:
-	if is_space_occupied(key_data.get_rect()): return
+	if is_space_occupied(key_data.get_rect()): return null
 	if not key_data in level_data.keys:
 		level_data.keys.push_back(key_data)
 		level_data.changed_keys.emit()
@@ -241,6 +277,8 @@ func _spawn_key(key_data: KeyData) -> Key:
 	key.key_data = key_data.duplicated()
 	key.set_meta(&"original_key_data", key_data)
 	key.clicked.connect(_on_key_clicked.bind(key))
+	key.mouse_entered.connect(_on_key_mouse_entered.bind(key))
+	key.mouse_exited.connect(_on_key_mouse_exited.bind(key))
 	key.level = self
 	keys.add_child(key)
 	return key
@@ -305,9 +343,11 @@ func _spawn_goal() -> void:
 	goal.position = level_data.goal_position + Vector2i(16, 16)
 	add_child(goal)
 
-## Returns true if there's a tile, door, key, or player spawn position inside the given rect
+## Returns true if there's a tile, door, key, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
 # TODO: Optimize this obviously. mainly tiles OBVIOUSLY
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = []) -> bool:
+	if not is_space_inside(rect):
+		return true
 	if not &"doors" in exclusions:
 		for door in level_data.doors:
 			if door.get_rect().intersects(rect):
@@ -329,11 +369,27 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = []) -> bool:
 				return true
 	return false
 
+## Returns true if the space is fully inside the level
+func is_space_inside(rect: Rect2i) -> bool:
+	return Rect2i(Vector2i.ZERO, level_data.size).encloses(rect)
+
 func _on_door_clicked(event: InputEventMouseButton, door: Door):
 	door_clicked.emit(event, door)
 
 func _on_key_clicked(event: InputEventMouseButton, key: Key):
 	key_clicked.emit(event, key)
+
+func _on_door_mouse_entered(door: Door) -> void:
+	hover_highlight.adapt_to(door)
+
+func _on_door_mouse_exited(door: Door) -> void:
+	hover_highlight.stop_adapting_to(door)
+
+func _on_key_mouse_entered(key: Key) -> void:
+	hover_highlight.adapt_to(key)
+
+func _on_key_mouse_exited(key: Key) -> void:
+	hover_highlight.stop_adapting_to(key)
 
 func add_debris_child(debris: Node) -> void:
 	debris_parent.add_child(debris)
