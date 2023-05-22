@@ -263,6 +263,20 @@ func remove_door(door: Door) -> void:
 	door.queue_free()
 	level_data.changed_doors.emit()
 
+## Moves a given door. Returns false if the move failed
+func move_door(door: Door, new_position: Vector2i) -> bool:
+	var door_data: DoorData = door.get_meta(&"original_door_data")
+	var i := level_data.doors.find(door_data)
+	assert(i != -1)
+	assert(door_data.get_rect() == Rect2i(door_data.position, door_data.get_rect().size))
+	var rect := Rect2i(new_position, door_data.get_rect().size)
+	if not is_space_occupied(rect, [], [door_data]):
+		door_data.position = new_position
+		door.door_data.position = new_position
+		return true
+	else:
+		return false
+
 ## Adds a key to the level data. Returns null if it wasn't added
 func add_key(key_data: KeyData) -> Key:
 	if is_space_occupied(key_data.get_rect()): return null
@@ -285,12 +299,28 @@ func _spawn_key(key_data: KeyData) -> Key:
 
 ## Removes a key from the level data
 func remove_key(key: Key) -> void:
-	var pos := level_data.keys.find(key.get_meta(&"original_key_data"))
-	assert(pos != -1)
-	level_data.keys.remove_at(pos)
+	var i := level_data.keys.find(key.get_meta(&"original_key_data"))
+	assert(i != -1)
+	level_data.keys.remove_at(i)
 	keys.remove_child(key)
 	key.queue_free()
 	level_data.changed_keys.emit()
+
+## Moves a given key. Returns false if the move failed
+func move_key(key: Key, new_position: Vector2i) -> bool:
+	var key_data: KeyData = key.get_meta(&"original_key_data")
+	var i := level_data.keys.find(key_data)
+	assert(i != -1)
+	assert(key_data.get_rect() == Rect2i(key_data.position, key_data.get_rect().size))
+	var rect := Rect2i(new_position, key_data.get_rect().size)
+	if not is_space_occupied(rect, [], [key_data]):
+		print("Moved key to %s" % str(new_position))
+		key_data.position = new_position
+		key.key_data.position = new_position
+		return true
+	else:
+		print("failed to move key")
+		return false
 
 func place_player_spawn(coord: Vector2i) -> void:
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"player_spawn"]): return
@@ -345,15 +375,17 @@ func _spawn_goal() -> void:
 
 ## Returns true if there's a tile, door, key, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
 # TODO: Optimize this obviously. mainly tiles OBVIOUSLY
-func is_space_occupied(rect: Rect2i, exclusions: Array[String] = []) -> bool:
+func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects: Array[Object] = []) -> bool:
 	if not is_space_inside(rect):
 		return true
 	if not &"doors" in exclusions:
 		for door in level_data.doors:
+			if door in excluded_objects: continue
 			if door.get_rect().intersects(rect):
 				return true
 	if not &"keys" in exclusions:
 		for key in level_data.keys:
+			if key in excluded_objects: continue
 			if key.get_rect().intersects(rect):
 				return true
 	if not &"goal" in exclusions:

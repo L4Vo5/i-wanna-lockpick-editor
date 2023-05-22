@@ -1,6 +1,8 @@
 extends Node2D
 class_name HoverHighlight
 
+signal adapted_to(obj: Node)
+
 var current_obj: Node
 
 @onready var line: Line2D = %Line2D
@@ -8,7 +10,6 @@ var current_obj: Node
 	set(val):
 		color = val
 		modulate = color
-		print(modulate)
 @export var width := 2:
 	set(val):
 		width = val
@@ -58,4 +59,4 @@ func adapt_to(obj: Node) -> void:
 		line.add_point(Vector2(32, 32))
 		line.add_point(Vector2(0, 32))
 		line.add_point(Vector2(0, 0))
-
+	adapted_to.emit(obj)

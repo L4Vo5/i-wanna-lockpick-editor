@@ -27,6 +27,7 @@ var side_tab_doors: DoorEditor
 var side_tab_keys: KeyEditor
 var side_tab_tile: MarginContainer
 var side_tab_level: LevelPropertiesEditor
+var selected_highlight: HoverHighlight
 
 # what's currently being edited
 var tilemap_edit := false
@@ -36,6 +37,12 @@ var keys := false
 var level_properties := false
 var player_spawn := false
 var goal_position := false
+var selected: Node:
+	get:
+		return selected_highlight.current_obj
+# Initial position in a drag action
+var drag_position: Vector2i
+var is_dragging := false
 
 
 ###

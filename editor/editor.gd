@@ -20,8 +20,6 @@ class_name LockpickEditor
 
 @export var file_dialog: FileDialog
 
-var selected = null
-
 var data := EditorData.new()
 
 func _enter_tree() -> void:

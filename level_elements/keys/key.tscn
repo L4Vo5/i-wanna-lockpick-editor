@@ -13,14 +13,14 @@
 [ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="11_jnf8c"]
 [ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://level_elements/keys/spr_special_keys.png" id="12_gx03b"]
 
-[sub_resource type="Resource" id="Resource_8n32n"]
+[sub_resource type="Resource" id="Resource_k5lmb"]
 script = ExtResource("2_0fvvp")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_0c58s"]
+[sub_resource type="Resource" id="Resource_jn77e"]
 script = ExtResource("3_ngkr3")
-amount = SubResource("Resource_8n32n")
+amount = SubResource("Resource_k5lmb")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -35,9 +35,14 @@ height = 25.4556
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_i7153"]
 size = Vector2(12.7018, 10.5562)
 
-[node name="key" type="Node2D"]
+[node name="key" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 32.0
+offset_bottom = 31.0
+mouse_filter = 1
 script = ExtResource("1_m20su")
-key_data = SubResource("Resource_0c58s")
+key_data = SubResource("Resource_jn77e")
 
 [node name="Shadow" type="Sprite2D" parent="."]
 unique_name_in_owner = true
@@ -79,6 +84,7 @@ vframes = 4
 
 [node name="Collision" type="Area2D" parent="."]
 unique_name_in_owner = true
+visible = false
 collision_layer = 8
 collision_mask = 16
 
@@ -103,6 +109,7 @@ bus = &"Sfx"
 
 [node name="Number" type="Label" parent="."]
 unique_name_in_owner = true
+layout_mode = 0
 offset_left = 1.0
 offset_top = 8.0
 offset_right = 40.0
@@ -127,7 +134,9 @@ hframes = 3
 frame = 2
 
 [node name="GuiInputGrabber" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 32.0
 offset_bottom = 31.0
+mouse_filter = 1

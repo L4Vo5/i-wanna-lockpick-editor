@@ -1,11 +1,9 @@
 @tool
-extends Node2D
+extends Control
 class_name Key
 ## Key lol
 
 signal clicked(event: InputEventMouseButton)
-signal mouse_entered
-signal mouse_exited
 
 @export var key_data: KeyData:
 	set(val):
@@ -31,7 +29,7 @@ signal mouse_exited
 @onready var number: Label = %Number
 @onready var symbol: Sprite2D = %Symbol
 @onready var collision: Area2D = %Collision
-@onready var input_grabber: Control = $GuiInputGrabber
+#@onready var input_grabber: Control = $GuiInputGrabber
 
 var level: Level = null
 
@@ -41,6 +39,7 @@ func _ready() -> void:
 		key_data = key_data.duplicate(true)
 	if in_keypad:
 		collision.process_mode = Node.PROCESS_MODE_DISABLED
+#		input_grabber.hide()
 	if hide_shadow:
 		shadow.hide()
 	collision.area_entered.connect(on_collide)
@@ -48,9 +47,9 @@ func _ready() -> void:
 	_connect_global_level()
 	Global.changed_level.connect(_connect_global_level)
 	
-	input_grabber.gui_input.connect(_gui_input)
-	input_grabber.mouse_entered.connect(_on_mouse_entered)
-	input_grabber.mouse_exited.connect(_on_mouse_exited)
+#	input_grabber.gui_input.connect(_gui_input)
+#	input_grabber.mouse_entered.connect(_on_mouse_entered)
+#	input_grabber.mouse_exited.connect(_on_mouse_exited)
 
 func _on_mouse_entered() -> void:
 	mouse_entered.emit()
@@ -230,5 +229,5 @@ func on_pickup() -> void:
 		snd_pickup.stream = preload("res://level_elements/keys/key_pickup.wav")
 	snd_pickup.play()
 
-func get_rect() -> Rect2:
-	return input_grabber.get_rect()
+#func get_rect() -> Rect2:
+#	return input_grabber.get_global_rect()

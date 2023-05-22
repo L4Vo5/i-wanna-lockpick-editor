@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=23 format=3 uid="uid://bftkojmf1hybs"]
+[gd_resource type="Resource" script_class="LevelData" load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://data/complex_number.gd" id="1_h4giu"]
 [ext_resource type="Script" path="res://data/level_data.gd" id="1_yd7bo"]
@@ -100,7 +100,7 @@ _curses = {
 3: false
 }
 glitch_color = 13
-position = Vector2i(576, 224)
+position = Vector2i(448, 192)
 
 [sub_resource type="Resource" id="Resource_sl3na"]
 script = ExtResource("1_h4giu")
@@ -132,7 +132,7 @@ _curses = {
 3: false
 }
 glitch_color = 13
-position = Vector2i(352, 128)
+position = Vector2i(288, 128)
 
 [sub_resource type="Resource" id="Resource_c8bch"]
 script = ExtResource("1_h4giu")
@@ -164,7 +164,71 @@ _curses = {
 3: false
 }
 glitch_color = 13
-position = Vector2i(416, 128)
+position = Vector2i(544, 160)
+
+[sub_resource type="Resource" id="Resource_dskpu"]
+script = ExtResource("1_h4giu")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_1kwe8"]
+script = ExtResource("2_cqis0")
+color = 1
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_25rrc"]
+script = ExtResource("3_210qy")
+amount = SubResource("Resource_dskpu")
+outer_color = 1
+locks = Array[ExtResource("2_cqis0")]([SubResource("Resource_1kwe8")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(416, 96)
+
+[sub_resource type="Resource" id="Resource_6nylp"]
+script = ExtResource("1_h4giu")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_g8civ"]
+script = ExtResource("2_cqis0")
+color = 1
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_bpaqx"]
+script = ExtResource("3_210qy")
+amount = SubResource("Resource_6nylp")
+outer_color = 1
+locks = Array[ExtResource("2_cqis0")]([SubResource("Resource_g8civ")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(576, 64)
 
 [sub_resource type="Resource" id="Resource_j4x5w"]
 script = ExtResource("1_h4giu")
@@ -176,14 +240,14 @@ script = ExtResource("2_n5wyf")
 amount = SubResource("Resource_j4x5w")
 type = 0
 color = 1
-position = Vector2i(400, 384)
+position = Vector2i(576, 304)
 
 [resource]
 script = ExtResource("1_yd7bo")
 version = "0.0.2.0"
 num_version = 1
 editor_version = ""
-doors = Array[ExtResource("3_210qy")]([SubResource("Resource_6ttf5"), SubResource("Resource_jvut5"), SubResource("Resource_khsiw"), SubResource("Resource_t535c"), SubResource("Resource_siku0")])
+doors = Array[ExtResource("3_210qy")]([SubResource("Resource_6ttf5"), SubResource("Resource_jvut5"), SubResource("Resource_khsiw"), SubResource("Resource_t535c"), SubResource("Resource_siku0"), SubResource("Resource_25rrc"), SubResource("Resource_bpaqx")])
 keys = Array[ExtResource("2_n5wyf")]([SubResource("Resource_t0dme")])
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(366, 512)
