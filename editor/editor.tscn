@@ -1,27 +1,27 @@
 [gd_scene load_steps=20 format=3 uid="uid://ddjn4lk6mcp3k"]
 
-[ext_resource type="Script" path="res://editor/editor.gd" id="1_244aj"]
-[ext_resource type="Script" path="res://editor/level_container.gd" id="2_4nmqi"]
-[ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="3_d13v5"]
-[ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="4_tvl64"]
-[ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/door_editor.tscn" id="5_ld4m3"]
-[ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="5_t6w1l"]
-[ext_resource type="Resource" uid="uid://bftkojmf1hybs" path="res://editor/levels/default.tres" id="6_n1ajy"]
-[ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="7_j211y"]
-[ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/key_editor.tscn" id="7_nmnlx"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="8_dl2d3"]
-[ext_resource type="Script" path="res://data/lock_data.gd" id="9_2gd6c"]
-[ext_resource type="Script" path="res://data/door_data.gd" id="10_4nhvr"]
-[ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="10_jx68y"]
-[ext_resource type="Script" path="res://data/key_data.gd" id="12_ttbfj"]
+[ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
+[ext_resource type="Script" path="res://editor/level_container.gd" id="2_kqd34"]
+[ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="3_4sapt"]
+[ext_resource type="Resource" uid="uid://bs3mwbecmqa6f" path="res://editor/levels/default.tres" id="4_80bf4"]
+[ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_55fwv"]
+[ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="6_n53nq"]
+[ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="7_8vfxp"]
+[ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/door_editor.tscn" id="8_5qjay"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="11_psli5"]
+[ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/key_editor.tscn" id="12_cr7ft"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
+[ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 
-[sub_resource type="Resource" id="Resource_g6vjh"]
-script = ExtResource("8_dl2d3")
+[sub_resource type="Resource" id="Resource_prgm7"]
+script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_btcno"]
-script = ExtResource("9_2gd6c")
+[sub_resource type="Resource" id="Resource_lkad3"]
+script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
 sign = 0
@@ -32,11 +32,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_fvvq7"]
-script = ExtResource("10_4nhvr")
-amount = SubResource("Resource_g6vjh")
+[sub_resource type="Resource" id="Resource_rx1s6"]
+script = ExtResource("11_psli5")
+amount = SubResource("Resource_prgm7")
 outer_color = 1
-locks = Array[ExtResource("9_2gd6c")]([SubResource("Resource_btcno")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_lkad3")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -47,14 +47,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_vkdtl"]
-script = ExtResource("8_dl2d3")
+[sub_resource type="Resource" id="Resource_11kpb"]
+script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_282xs"]
-script = ExtResource("12_ttbfj")
-amount = SubResource("Resource_vkdtl")
+[sub_resource type="Resource" id="Resource_k7iwa"]
+script = ExtResource("13_tk2t1")
+amount = SubResource("Resource_11kpb")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -66,7 +66,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_244aj")
+script = ExtResource("1_n4qnf")
 level = NodePath("HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level")
 right_dock = NodePath("HSplitContainer/RightDock")
 side_tabs = NodePath("HSplitContainer/RightDock/SideEditorTabs")
@@ -145,7 +145,7 @@ clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("2_4nmqi")
+script = ExtResource("2_kqd34")
 inner_container = NodePath("LevelContainerInner")
 level = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level")
 level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport")
@@ -195,6 +195,7 @@ mouse_filter = 2
 color = Color(0.54902, 0.54902, 0.54902, 1)
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -206,30 +207,30 @@ grow_vertical = 2
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
 positional_shadow_atlas_size = 0
-render_target_update_mode = 4
+render_target_update_mode = 0
 
-[node name="Level" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("5_t6w1l")]
-level_data = ExtResource("6_n1ajy")
+[node name="Level" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("3_4sapt")]
+level_data = ExtResource("4_80bf4")
 exclude_player = true
 
 [node name="CanvasGroup" type="CanvasGroup" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level"]
 
-[node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup" instance=ExtResource("3_d13v5")]
+[node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup" instance=ExtResource("5_55fwv")]
 visible = false
 mouse_filter = 2
 ignore_collisions = true
 
-[node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup" instance=ExtResource("4_tvl64")]
+[node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup" instance=ExtResource("6_n53nq")]
 visible = false
 in_keypad = true
 metadata/_edit_vertical_guides_ = [32.0]
 metadata/_edit_horizontal_guides_ = [32.0]
 
-[node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level" instance=ExtResource("7_j211y")]
+[node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level" instance=ExtResource("7_8vfxp")]
 color = Color(1, 1, 1, 1)
 width = 3
 
-[node name="DangerHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level" instance=ExtResource("7_j211y")]
+[node name="DangerHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level" instance=ExtResource("7_8vfxp")]
 color = Color(1, 0, 0, 0.74902)
 
 [node name="RightDock" type="MarginContainer" parent="HSplitContainer"]
@@ -239,14 +240,14 @@ layout_mode = 2
 layout_mode = 2
 use_hidden_tabs_for_min_size = true
 
-[node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("5_ld4m3")]
+[node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_fvvq7")
+door_data = SubResource("Resource_rx1s6")
 
-[node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("7_nmnlx")]
+[node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_282xs")
+key_data = SubResource("Resource_k7iwa")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
@@ -261,7 +262,7 @@ text = "Nothing here (yet?), but you still need to select this tab to edit tiles
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Level" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("10_jx68y")]
+[node name="Level" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("14_dug7w")]
 visible = false
 layout_mode = 2
 

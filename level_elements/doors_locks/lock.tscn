@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ds64ntew1oani"]
 
-[ext_resource type="Script" path="res://level_elements/doors_locks/lock.gd" id="1_dmr10"]
+[ext_resource type="Script" path="res://level_elements/doors_locks/lock.gd" id="1_tp0hg"]
 
 [node name="Lock" type="MarginContainer"]
 custom_minimum_size = Vector2(18, 18)
@@ -8,4 +8,4 @@ offset_left = 7.0
 offset_top = 7.0
 offset_right = 25.0
 offset_bottom = 25.0
-script = ExtResource("1_dmr10")
+script = ExtResource("1_tp0hg")

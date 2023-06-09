@@ -87,11 +87,17 @@ func _on_play_pressed() -> void:
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
 	right_dock.visible = not data.disable_editing
+	data.danger_highlight.stop_adapting()
+	data.hover_highlight.stop_adapting()
+	data.selected_highlight.stop_adapting()
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
 	level.reset()
 	play_button.release_focus()
+	# fix for things staying focused when playing
+	set_focus_mode(Control.FOCUS_ALL)
 	grab_focus()
+	set_focus_mode(Control.FOCUS_NONE)
 
 func save_level() -> void:
 	if not Global.in_editor:

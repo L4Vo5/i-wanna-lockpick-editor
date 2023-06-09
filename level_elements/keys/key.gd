@@ -8,12 +8,9 @@ signal clicked(event: InputEventMouseButton)
 @export var key_data: KeyData:
 	set(val):
 		if key_data == val: return
-		if is_instance_valid(key_data):
-			key_data.changed.disconnect(update_visual)
+		_disconnect_key_data()
 		key_data = val
-		if is_instance_valid(key_data):
-			key_data.changed.connect(update_visual)
-			update_visual()
+		_connect_key_data()
 ## Ignores player input and glitch color
 @export var in_keypad := false
 @export var hide_shadow := false
@@ -68,6 +65,19 @@ func _connect_global_level() -> void:
 			update_visual()
 		if not level.changed_glitch_color.is_connected(update_visual):
 			level.changed_glitch_color.connect(update_visual)
+
+func _connect_key_data() -> void:
+	if not is_instance_valid(key_data): return
+	key_data.changed.connect(update_visual)
+	update_visual()
+	# look... ok?
+	show()
+	if not is_node_ready(): return
+	collision.process_mode = Node.PROCESS_MODE_INHERIT
+
+func _disconnect_key_data() -> void:
+	if is_instance_valid(key_data):
+		key_data.changed.disconnect(update_visual)
 
 func _process(_delta: float) -> void:
 	if key_data.color in [Enums.colors.master, Enums.colors.pure]:

@@ -1,12 +1,12 @@
 [gd_scene load_steps=9 format=3 uid="uid://h5opptcugh0i"]
 
-[ext_resource type="Script" path="res://level_elements/doors_locks/door.gd" id="1_sybd2"]
-[ext_resource type="PackedScene" uid="uid://dh6h46bjp6c2s" path="res://level_elements/doors_locks/curses/erosion.tscn" id="16_pntfj"]
-[ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/paint.tscn" id="17_oiull"]
-[ext_resource type="PackedScene" uid="uid://dnfyqi6rplh85" path="res://level_elements/doors_locks/curses/ice.tscn" id="18_qg5bk"]
-[ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/brown_curse.tscn" id="19_oyr8q"]
-[ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://level_elements/doors_locks/open.wav" id="20_k8bk1"]
-[ext_resource type="FontFile" uid="uid://d3wvfkvx16abd" path="res://fonts/consolab.ttf" id="21_81h8m"]
+[ext_resource type="Script" path="res://level_elements/doors_locks/door.gd" id="1_pj0ca"]
+[ext_resource type="PackedScene" uid="uid://dh6h46bjp6c2s" path="res://level_elements/doors_locks/curses/erosion.tscn" id="2_t0ev5"]
+[ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/paint.tscn" id="3_bjor7"]
+[ext_resource type="PackedScene" uid="uid://dnfyqi6rplh85" path="res://level_elements/doors_locks/curses/ice.tscn" id="4_cxymq"]
+[ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/brown_curse.tscn" id="5_1uhdk"]
+[ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://level_elements/doors_locks/open.wav" id="6_uslf4"]
+[ext_resource type="FontFile" uid="uid://d3wvfkvx16abd" path="res://fonts/consolab.ttf" id="7_1kpw0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
 size = Vector2(1, 1)
@@ -15,7 +15,7 @@ size = Vector2(1, 1)
 custom_minimum_size = Vector2(32, 32)
 offset_right = 32.0
 offset_bottom = 32.0
-script = ExtResource("1_sybd2")
+script = ExtResource("1_pj0ca")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 unique_name_in_owner = true
@@ -33,25 +33,25 @@ unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Erosion" parent="." instance=ExtResource("16_pntfj")]
+[node name="Erosion" parent="." instance=ExtResource("2_t0ev5")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Paint" parent="." instance=ExtResource("17_oiull")]
+[node name="Paint" parent="." instance=ExtResource("3_bjor7")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Ice" parent="." instance=ExtResource("18_qg5bk")]
+[node name="Ice" parent="." instance=ExtResource("4_cxymq")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BrownCurse" parent="." instance=ExtResource("19_oyr8q")]
+[node name="BrownCurse" parent="." instance=ExtResource("5_1uhdk")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -59,7 +59,7 @@ mouse_filter = 2
 
 [node name="Open" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
-stream = ExtResource("20_k8bk1")
+stream = ExtResource("6_uslf4")
 bus = &"Sfx"
 
 [node name="Control" type="Control" parent="."]
@@ -75,6 +75,6 @@ offset_bottom = 12.0
 theme_override_colors/font_color = Color(0.921569, 0.890196, 0.866667, 1)
 theme_override_colors/font_outline_color = Color(0.211765, 0.188235, 0.160784, 1)
 theme_override_constants/outline_size = 6
-theme_override_fonts/font = ExtResource("21_81h8m")
+theme_override_fonts/font = ExtResource("7_1kpw0")
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1

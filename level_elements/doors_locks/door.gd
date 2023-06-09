@@ -20,6 +20,8 @@ var can_open := true
 		_disconnect_door_data()
 		door_data = val
 		_connect_door_data()
+# used to be meta, but found enough uses to keep it around
+var original_door_data: DoorData
 @export var ignore_collisions := false
 
 @onready var static_body := %StaticBody2D as StaticBody2D
@@ -60,6 +62,10 @@ func _connect_door_data() -> void:
 	door_data.changed.connect(update_everything)
 	if not is_node_ready(): return
 	update_everything()
+	# look.... ok?
+	
+	show()
+	static_body.process_mode = Node.PROCESS_MODE_INHERIT
 
 func _disconnect_door_data() -> void:
 	if not is_instance_valid(door_data): return
@@ -201,7 +207,7 @@ func try_open() -> void:
 			level.undo_redo.add_do_method(hide)
 			level.undo_redo.add_undo_method(show)
 			level.undo_redo.add_do_property(static_body, &"process_mode", Node.PROCESS_MODE_DISABLED)
-			level.undo_redo.add_undo_property(static_body, &"process_mode", Node.PROCESS_MODE_ALWAYS)
+			level.undo_redo.add_undo_property(static_body, &"process_mode", Node.PROCESS_MODE_INHERIT)
 			hide()
 			static_body.process_mode = Node.PROCESS_MODE_DISABLED
 			break
@@ -211,7 +217,6 @@ func try_open() -> void:
 		create_debris()
 	can_open = false
 	get_tree().create_timer(open_cooldown).timeout.connect(func(): can_open = true)
-	
 
 # do the effects for the curses
 func break_curse_ice() -> void:

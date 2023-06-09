@@ -11,14 +11,16 @@ var baseline_time := 0.0
 func _ready() -> void:
 	if Global.in_editor: return
 	if Global.is_exported: return
-	return
+#	return
 	print("node count before: %d" % get_tree().get_node_count())
 	var l = preload("res://level_elements/level.tscn").instantiate()
 	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")
 #	l.level_data = SaveLoad.load_from("user://levels/many_counts.lvl")
 #	l.level_data = SaveLoad.load_from("user://levels/big_doors.lvl")
 	add_child(l)
-	await test_func(l.reset, 30)
+	# by making l reset now, we can test only soft resets if we also bind false
+	l.reset()
+	await test_func(l.reset.bind(true), 30)
 	print("node count after: %d" % get_tree().get_node_count())
 	l.queue_free()
 
@@ -78,11 +80,12 @@ func print_report() -> void:
 	check_balances()
 	for key in times:
 		print_rich("%s (%d calls): [b]%s[/b] total, [b]%s[/b] self" % [key, times[key][2], get_time_string(times[key][0]), get_time_string(times[key][1])])
+	clear()
 
 func test_func(f: Callable, repetitions: int) -> void:
 	print_report()
 	clear()
-	var who := "test_func (%s, %d repetitions)" % [f.get_method(), repetitions]
+	var who := "==== test_func (%s, %d repetitions) ====" % [f.get_method(), repetitions]
 	var time_collections := []
 	for i in repetitions:
 		start(who)

@@ -20,6 +20,9 @@ var editor_data: EditorData
 
 @export var danger_highlight: HoverHighlight
 @export var selected_highlight: HoverHighlight
+var hover_highlight: HoverHighlight:
+	get:
+		return editor_data.hover_highlight
 
 #var level_offset :=  Vector2(0, 0)
 
@@ -34,18 +37,19 @@ func _ready() -> void:
 	level.key_clicked.connect(_on_key_clicked)
 	resized.connect(_on_resized)
 	level_viewport.size = Vector2i(800, 608)
+	level_viewport.get_parent().show()
 	ghost_canvas_group.self_modulate.a = 0.5
 	
 	await get_tree().process_frame
 	editor_data.selected_highlight = selected_highlight
+	editor_data.danger_highlight = danger_highlight
+	editor_data.hover_highlight = level.hover_highlight
+	
 	editor_data.side_tabs.tab_changed.connect(_retry_ghosts.unbind(1))
 	editor_data.level.changed_doors.connect(_retry_ghosts)
 	editor_data.level.changed_keys.connect(_retry_ghosts)
-	editor_data.changed_is_playing.connect(func():
-		# fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
-		if not editor_data.is_playing:
-			await get_tree().process_frame
-		_retry_ghosts())
+	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
+	editor_data.changed_is_playing.connect(_retry_ghosts, CONNECT_DEFERRED)
 	_place_ghost_door()
 	_place_ghost_key()
 	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
@@ -57,7 +61,7 @@ func _on_door_clicked(event: InputEventMouseButton, door: Door) -> void:
 			level.remove_door(door)
 			accept_event()
 			selected_highlight.stop_adapting()
-			level.hover_highlight.stop_adapting()
+			hover_highlight.stop_adapting()
 	elif event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			editor_data.door_editor.door_data = door.door_data
@@ -71,7 +75,7 @@ func _on_key_clicked(event: InputEventMouseButton, key: Key) -> void:
 			level.remove_key(key)
 			accept_event()
 			selected_highlight.stop_adapting()
-			level.hover_highlight.stop_adapting()
+			hover_highlight.stop_adapting()
 	elif event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			editor_data.key_editor.key_data = key.key_data
@@ -83,6 +87,7 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
+				grab_focus()
 				if editor_data.tilemap_edit:
 					place_tile_on_mouse()
 					accept_event()
@@ -125,9 +130,15 @@ func _gui_input(event: InputEvent) -> void:
 				if remove_tile_on_mouse():
 					accept_event()
 
+# TODO: Improve this whole thing to make sense :)
 func _physics_process(_delta: float) -> void:
 	_place_ghost_door()
 	_place_ghost_key()
+	if editor_data.is_dragging:
+		ghost_door.hide()
+		ghost_key.hide()
+		selected_highlight.adapt_to(editor_data.selected)
+		hover_highlight.hide()
 
 func consider_unselect() -> void:
 	if is_instance_valid(selected_highlight.current_obj):
@@ -155,7 +166,7 @@ func place_door_on_mouse() -> bool:
 	var door := level.add_door(door_data)
 	if not is_instance_valid(door): return false
 	selected_highlight.adapt_to(door)
-	level.hover_highlight.adapt_to(door)
+	hover_highlight.adapt_to(door)
 	danger_highlight.stop_adapting()
 	return true
 
@@ -168,7 +179,7 @@ func place_key_on_mouse() -> bool:
 	var key := level.add_key(key_data)
 	if not is_instance_valid(key): return false
 	selected_highlight.adapt_to(key)
-	level.hover_highlight.adapt_to(key)
+	hover_highlight.adapt_to(key)
 	danger_highlight.stop_adapting()
 	return true
 
@@ -200,7 +211,6 @@ func relocate_selected() -> void:
 	if selected is Door:
 		level.move_door(selected, new_coord)
 	elif selected is Key:
-		print("Trying to move key xD")
 		level.move_key(selected, new_coord)
 	else:
 		assert(false)

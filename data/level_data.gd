@@ -102,7 +102,15 @@ func check_valid() -> void:
 	# Currently, weird sizes aren't allowed
 	size = Vector2i(800, 608)
 	# Clamp player spawn to the grid + inside the level
+	var original_pos := player_spawn_position
 	player_spawn_position = player_spawn_position.clamp(Vector2i(14, 32), size - Vector2i(32 - 14, 0))
 	player_spawn_position -= Vector2i(14, 0)
 	player_spawn_position = player_spawn_position.snapped(Vector2i(32, 32))
 	player_spawn_position += Vector2i(14, 0)
+	if player_spawn_position != original_pos:
+		push_warning("WARNING: Invalid player position. Corrected.")
+	# Doors shouldn't have a count of 0
+	for door in doors:
+		if door.amount.is_zero():
+			push_warning("WARNING: Door had count 0. Corrected.")
+			door.amount.set_real_part(1)

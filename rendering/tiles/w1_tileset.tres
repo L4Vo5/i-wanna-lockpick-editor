@@ -1,9 +1,9 @@
 [gd_resource type="TileSet" load_steps=3 format=3 uid="uid://56svi3hkvtjv"]
 
-[ext_resource type="Texture2D" uid="uid://c7gp7isvc6cij" path="res://rendering/tiles/World1.png" id="1_gsg1x"]
+[ext_resource type="Texture2D" uid="uid://c7gp7isvc6cij" path="res://rendering/tiles/World1.png" id="1_ybcms"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fb8ee"]
-texture = ExtResource("1_gsg1x")
+texture = ExtResource("1_ybcms")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)

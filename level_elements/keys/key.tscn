@@ -1,25 +1,25 @@
 [gd_scene load_steps=18 format=3 uid="uid://b0dwb73yoj3sr"]
 
-[ext_resource type="Script" path="res://level_elements/keys/key.gd" id="1_m20su"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="2_0fvvp"]
-[ext_resource type="Script" path="res://data/key_data.gd" id="3_ngkr3"]
-[ext_resource type="Texture2D" uid="uid://rek5hwp2r3c4" path="res://level_elements/keys/spr_key_shadow.png" id="4_8n3em"]
-[ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="5_x10q2"]
-[ext_resource type="Texture2D" uid="uid://dr8mnidwq7oss" path="res://level_elements/keys/spr_glitch.png" id="6_6kxlr"]
-[ext_resource type="Texture2D" uid="uid://c3yg2n17xq0nk" path="res://level_elements/keys/spr_key_fill.png" id="7_3kknv"]
-[ext_resource type="Texture2D" uid="uid://krj3m6t0k1jc" path="res://level_elements/keys/spr_key_outline.png" id="8_yrtx4"]
-[ext_resource type="Texture2D" uid="uid://b6k20y7s4yqy7" path="res://level_elements/keys/spr_key_master.png" id="9_vu1hx"]
-[ext_resource type="AudioStream" uid="uid://cvfd3d4c881kw" path="res://level_elements/keys/key_pickup.wav" id="10_8nl5u"]
-[ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="11_jnf8c"]
-[ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://level_elements/keys/spr_special_keys.png" id="12_gx03b"]
+[ext_resource type="Script" path="res://level_elements/keys/key.gd" id="1_rurb5"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="2_280nl"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="3_j3yb5"]
+[ext_resource type="Texture2D" uid="uid://rek5hwp2r3c4" path="res://level_elements/keys/spr_key_shadow.png" id="4_ojsbs"]
+[ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="5_v3m1s"]
+[ext_resource type="Texture2D" uid="uid://dr8mnidwq7oss" path="res://level_elements/keys/spr_glitch.png" id="6_rbnyw"]
+[ext_resource type="Texture2D" uid="uid://c3yg2n17xq0nk" path="res://level_elements/keys/spr_key_fill.png" id="7_cj060"]
+[ext_resource type="Texture2D" uid="uid://krj3m6t0k1jc" path="res://level_elements/keys/spr_key_outline.png" id="8_5r7i8"]
+[ext_resource type="Texture2D" uid="uid://b6k20y7s4yqy7" path="res://level_elements/keys/spr_key_master.png" id="9_3t8lm"]
+[ext_resource type="AudioStream" uid="uid://cvfd3d4c881kw" path="res://level_elements/keys/key_pickup.wav" id="10_mlryn"]
+[ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="11_f7y7t"]
+[ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://level_elements/keys/spr_special_keys.png" id="12_4mi1v"]
 
 [sub_resource type="Resource" id="Resource_k5lmb"]
-script = ExtResource("2_0fvvp")
+script = ExtResource("2_280nl")
 real_part = 1
 imaginary_part = 0
 
 [sub_resource type="Resource" id="Resource_jn77e"]
-script = ExtResource("3_ngkr3")
+script = ExtResource("3_j3yb5")
 amount = SubResource("Resource_k5lmb")
 type = 0
 color = 1
@@ -41,43 +41,43 @@ anchors_preset = 0
 offset_right = 32.0
 offset_bottom = 31.0
 mouse_filter = 1
-script = ExtResource("1_m20su")
+script = ExtResource("1_rurb5")
 key_data = SubResource("Resource_jn77e")
 
 [node name="Shadow" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.376471)
 position = Vector2(3, 3)
-texture = ExtResource("4_8n3em")
+texture = ExtResource("4_ojsbs")
 centered = false
 hframes = 5
 
 [node name="SprGlitch" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
-material = ExtResource("5_x10q2")
-texture = ExtResource("6_6kxlr")
+material = ExtResource("5_v3m1s")
+texture = ExtResource("6_rbnyw")
 centered = false
 hframes = 4
 
 [node name="Fill" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 modulate = Color(0.839216, 0.811765, 0.788235, 1)
-texture = ExtResource("7_3kknv")
+texture = ExtResource("7_cj060")
 centered = false
 hframes = 4
 vframes = 2
 
 [node name="Outline" type="Sprite2D" parent="."]
 unique_name_in_owner = true
-texture = ExtResource("8_yrtx4")
+texture = ExtResource("8_5r7i8")
 centered = false
 hframes = 4
 
 [node name="Special" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
-texture = ExtResource("9_vu1hx")
+texture = ExtResource("9_3t8lm")
 centered = false
 hframes = 4
 vframes = 4
@@ -104,7 +104,7 @@ shape = SubResource("RectangleShape2D_i7153")
 
 [node name="Pickup" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
-stream = ExtResource("10_8nl5u")
+stream = ExtResource("10_mlryn")
 bus = &"Sfx"
 
 [node name="Number" type="Label" parent="."]
@@ -122,14 +122,14 @@ theme_override_constants/shadow_offset_x = 0
 theme_override_constants/shadow_offset_y = 0
 theme_override_constants/outline_size = 1
 theme_override_constants/shadow_outline_size = 10
-theme_override_fonts/font = ExtResource("11_jnf8c")
+theme_override_fonts/font = ExtResource("11_f7y7t")
 theme_override_font_sizes/font_size = 22
 
 [node name="Symbol" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
 position = Vector2(9, 24)
-texture = ExtResource("12_gx03b")
+texture = ExtResource("12_4mi1v")
 hframes = 3
 frame = 2
 

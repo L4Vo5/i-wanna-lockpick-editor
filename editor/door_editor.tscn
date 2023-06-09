@@ -1,18 +1,18 @@
 [gd_scene load_steps=9 format=3 uid="uid://dqsf6y71ncn36"]
 
-[ext_resource type="Script" path="res://editor/door_editor.gd" id="1_qqghd"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="2_hl0ia"]
-[ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="2_ye8wh"]
-[ext_resource type="Script" path="res://data/lock_data.gd" id="3_lgu6v"]
-[ext_resource type="Script" path="res://data/door_data.gd" id="4_0vpgp"]
+[ext_resource type="Script" path="res://editor/door_editor.gd" id="1_66io0"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="2_jx360"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="3_3plxf"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="4_1c01c"]
+[ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_c2ium"]
 
-[sub_resource type="Resource" id="Resource_ql87h"]
-script = ExtResource("2_hl0ia")
+[sub_resource type="Resource" id="Resource_mwmfp"]
+script = ExtResource("2_jx360")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_uavj2"]
-script = ExtResource("3_lgu6v")
+[sub_resource type="Resource" id="Resource_2d2s7"]
+script = ExtResource("3_3plxf")
 color = 1
 magnitude = 1
 sign = 0
@@ -23,11 +23,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_lajpm"]
-script = ExtResource("4_0vpgp")
-amount = SubResource("Resource_ql87h")
+[sub_resource type="Resource" id="Resource_blehy"]
+script = ExtResource("4_1c01c")
+amount = SubResource("Resource_mwmfp")
 outer_color = 1
-locks = Array[ExtResource("3_lgu6v")]([SubResource("Resource_uavj2")])
+locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_2d2s7")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -41,8 +41,8 @@ position = Vector2i(0, 0)
 [node name="DoorEditor" type="MarginContainer"]
 offset_right = 281.0
 offset_bottom = 606.0
-script = ExtResource("1_qqghd")
-door_data = SubResource("Resource_lajpm")
+script = ExtResource("1_66io0")
+door_data = SubResource("Resource_blehy")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -67,11 +67,11 @@ layout_mode = 2
 [node name="TheDoor" type="CenterContainer" parent="VBoxContainer/TopStuff"]
 layout_mode = 2
 
-[node name="Door" parent="VBoxContainer/TopStuff/TheDoor" instance=ExtResource("2_ye8wh")]
+[node name="Door" parent="VBoxContainer/TopStuff/TheDoor" instance=ExtResource("5_c2ium")]
 unique_name_in_owner = true
 layout_mode = 2
 ignore_position = true
-door_data = SubResource("Resource_lajpm")
+door_data = SubResource("Resource_blehy")
 ignore_collisions = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]

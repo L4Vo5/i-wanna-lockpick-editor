@@ -106,6 +106,9 @@ var autorun_tween: Tween
 # useful for levels with a lot of door copies
 var door_multiplier := 1
 
+# will be true if level data hasn't changed
+var can_soft_reset := false
+
 
 func _init() -> void:
 	undo_redo = GoodUndoRedo.new()
@@ -164,28 +167,56 @@ func _physics_process(_delta: float) -> void:
 		if player.on_floor:
 			last_player_undo = player.get_undo_action()
 
-func reset() -> void:
+# force_hard_reset is for benchmarking purposes
+func reset(force_hard_reset := false) -> void:
 	if not is_node_ready(): return
 	assert(PerfManager.start("Level::reset"))
-	# Clear everything
-	for door in doors.get_children():
-		doors.remove_child(door)
-		door.queue_free()
-	for key in keys.get_children():
-		keys.remove_child(key)
-		key.queue_free()
+	if can_soft_reset and not force_hard_reset:
+		soft_reset()
+	else:
+		hard_reset()
+	
 	glitch_color = Enums.colors.glitch
+	
 	for color in key_counts.keys():
 		key_counts[color].set_to(0, 0)
 	for color in star_keys.keys():
 		star_keys[color] = false
-	tile_map.clear()
+	
 	undo_redo.clear_history()
 	i_view = false
 	is_autorun_on = false
 	
+	can_soft_reset = true
+	assert(PerfManager.end("Level::reset"))
+#	PerfManager.print_report()
+#	PerfManager.clear()
+
+# Hard resets by erasing and respawning everything
+func hard_reset() -> void:
+	if not is_node_ready(): return
+		
+	assert(PerfManager.start("Level::hard_reset"))
+	# Clear everything
+	assert(PerfManager.start("Level::hard_reset (clearing)"))
+	# deleting the children in revere is faster than in the normal order
+	# AND faster than queue_freeing the doors/keys variables
+	var c := doors.get_children()
+	c.reverse()
+	for door in c:
+		doors.remove_child(door)
+		door.queue_free()
+	
+	c = keys.get_children()
+	c.reverse()
+	for key in c:
+		keys.remove_child(key)
+		key.queue_free()
+	
+	tile_map.clear()
+	assert(PerfManager.end("Level::hard_reset (clearing)"))
+	
 	# Spawn everything
-	# Player has to go first so the last one is deleted before objects are spawned
 	for door_data in level_data.doors:
 		_spawn_door(door_data)
 	for key_data in level_data.keys:
@@ -194,9 +225,29 @@ func reset() -> void:
 		_spawn_tile(tile_coord)
 	_spawn_goal()
 	_spawn_player()
-	assert(PerfManager.end("Level::reset"))
-#	PerfManager.print_report()
-#	PerfManager.clear()
+	assert(PerfManager.end("Level::hard_reset"))
+
+func soft_reset() -> void:
+	if not is_node_ready(): return
+	if not can_soft_reset:
+		reset()
+		return
+	assert(PerfManager.start("Level::soft_reset"))
+	
+	# update doors and keys
+	for door in doors.get_children():
+		door.door_data = door.get_meta(&"original_door_data").duplicated()
+	for key in keys.get_children():
+		key.key_data = key.get_meta(&"original_key_data").duplicated()
+	
+	# (tilemap stays as it is)
+	
+	# technically should just reposition the player and goal
+	# this will kill and respawn them. not bad for performance tho since they're individual objects
+	_spawn_goal()
+	_spawn_player()
+	
+	assert(PerfManager.end("Level::soft_reset"))
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
@@ -209,12 +260,16 @@ func _connect_level_data() -> void:
 	_update_goal_position()
 	level_data.changed_doors.connect(emit_signal.bind(&"changed_doors"))
 	level_data.changed_keys.connect(emit_signal.bind(&"changed_keys"))
+	# not actually needed, since when it changes on editor level reflects the changes always
+#	level_data.changed.connect(set.bind(&"can_soft_reset", false))
+	can_soft_reset = false
 	reset()
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(level_data): return
 	var amount = Global.fully_disconnect(self, level_data)
 	assert(amount == 4)
+	can_soft_reset = false
 
 func _update_player_spawn_position() -> void:
 	if not is_node_ready(): return
@@ -314,12 +369,10 @@ func move_key(key: Key, new_position: Vector2i) -> bool:
 	assert(key_data.get_rect() == Rect2i(key_data.position, key_data.get_rect().size))
 	var rect := Rect2i(new_position, key_data.get_rect().size)
 	if not is_space_occupied(rect, [], [key_data]):
-		print("Moved key to %s" % str(new_position))
 		key_data.position = new_position
 		key.key_data.position = new_position
 		return true
 	else:
-		print("failed to move key")
 		return false
 
 func place_player_spawn(coord: Vector2i) -> void:
