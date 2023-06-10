@@ -24,6 +24,7 @@ config/game_version="0.2.1.0"
 Global="*res://misc/Global.tscn"
 Rendering="*res://rendering/rendering_singleton.tscn"
 PerfManager="*res://misc/perf_manager.gd"
+NodePool="*res://misc/node_pool.gd"
 
 [debug]
 

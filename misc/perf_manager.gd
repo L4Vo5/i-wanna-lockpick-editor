@@ -11,17 +11,42 @@ var baseline_time := 0.0
 func _ready() -> void:
 	if Global.in_editor: return
 	if Global.is_exported: return
-#	return
+	return
 	print("node count before: %d" % get_tree().get_node_count())
 	var l = preload("res://level_elements/level.tscn").instantiate()
-	l.level_data = SaveLoad.load_from("user://levels/many doors.lvl")
+	var levels := [
+		SaveLoad.load_from("user://levels/many doors.lvl"),
+		SaveLoad.load_from("user://levels/many_counts.lvl"),
+		SaveLoad.load_from("user://levels/big_doors.lvl"),
+	]
+	l.level_data = levels[0]
 #	l.level_data = SaveLoad.load_from("user://levels/many_counts.lvl")
 #	l.level_data = SaveLoad.load_from("user://levels/big_doors.lvl")
 	add_child(l)
 	# by making l reset now, we can test only soft resets if we also bind false
 	l.reset()
-	await test_func(l.reset.bind(true), 30)
+#	await test_func(l.reset.bind(true), 30)
+	var i := [0]
+	await test_func(func():
+		i[0] += 1
+		l.level_data = levels[i[0]%3]
+		l.reset(true)
+	, 60)
+#	await test_func(func():
+#		i[0] += 1
+#		l = preload("res://level_elements/level.tscn").instantiate()
+#		l.dont_make_current = true
+#
+#		l.level_data = levels[i[0]%3]
+##		l.level_data = levels[2]
+#		add_child(l)
+#		l.reset(true)
+#		await get_tree().process_frame
+#		remove_child(l)
+#		l.queue_free()
+#	, 30)
 	print("node count after: %d" % get_tree().get_node_count())
+	print("instantiated %d nodes in total" % NodePool.total_instantiated_nodes)
 	l.queue_free()
 
 func _input(event: InputEvent) -> void:

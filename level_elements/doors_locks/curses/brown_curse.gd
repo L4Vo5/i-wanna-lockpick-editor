@@ -22,5 +22,5 @@ func spawn_particles() -> void:
 			part.position = position
 			part.position.x += randf_range(4, 12) + 16 * x
 			part.position.y += randf_range(4, 12) + 16 * y
-			add_child(part)
+			add_child(part, false, Node.INTERNAL_MODE_BACK)
 	pass

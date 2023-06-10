@@ -21,6 +21,9 @@ var glitch_color := Enums.colors.glitch:
 		exclude_player = val
 		_spawn_player()
 
+# makes it so the level doesn't set Global.current_level to itself
+var dont_make_current := false
+
 # echo of some of the level data's signals, since it's easier for other objects to hook into the level object which is less likely to change
 signal changed_doors
 signal changed_keys
@@ -156,7 +159,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		autorun_tween.tween_property(used, "modulate:a", 0, 0.5)
 
 func _ready() -> void:
-	Global.current_level = self
+	if not dont_make_current:
+		Global.current_level = self
 	reset()
 	_update_player_spawn_position()
 
@@ -171,10 +175,65 @@ func _physics_process(_delta: float) -> void:
 func reset(force_hard_reset := false) -> void:
 	if not is_node_ready(): return
 	assert(PerfManager.start("Level::reset"))
-	if can_soft_reset and not force_hard_reset:
-		soft_reset()
-	else:
-		hard_reset()
+	
+	if true:
+		assert(PerfManager.start("Level::reset (doors)"))
+		var needed_doors := level_data.doors.size()
+		var current_doors := doors.get_child_count()
+		# redo the current ones
+		for i in mini(needed_doors, current_doors):
+			var door := doors.get_child(i)
+			door.original_door_data = level_data.doors[i]
+			door.door_data = door.original_door_data.duplicated()
+		# shave off the rest
+		if current_doors > needed_doors:
+			for _i in current_doors - needed_doors:
+				var door := doors.get_child(-1)
+				doors.remove_child(door)
+				disconnect_door(door)
+				NodePool.return_node(door)
+		# or add them
+		else:
+			for i in range(current_doors, needed_doors):
+				_spawn_door(level_data.doors[i])
+		assert(PerfManager.end("Level::reset (doors)"))
+		
+		assert(PerfManager.start("Level::reset (keys)"))
+		var needed_keys := level_data.keys.size()
+		var current_keys := keys.get_child_count()
+		
+		# redo the current ones
+		for i in mini(needed_keys, current_keys):
+			var key := keys.get_child(i)
+			key.set_meta(&"original_key_data", level_data.keys[i])
+			key.key_data = level_data.keys[i].duplicated()
+#			key.original_key_data = level_data.keys[i]
+#			key.door_data = key.original_key_data
+		# shave off the rest
+		if current_keys > needed_keys:
+			for _i in current_keys - needed_keys:
+				var key := keys.get_child(-1)
+				keys.remove_child(key)
+				disconnect_key(key)
+				NodePool.return_node(key)
+		# or add them
+		else:
+			for i in range(current_keys, needed_keys):
+				_spawn_key(level_data.keys[i])
+		
+		assert(PerfManager.end("Level::reset (keys)"))
+		tile_map.clear()
+		for tile_coord in level_data.tiles:
+			_spawn_tile(tile_coord)
+		
+		_spawn_goal()
+		_spawn_player()
+		
+	
+#	if can_soft_reset and not force_hard_reset:
+#		soft_reset()
+#	else:
+#		hard_reset()
 	
 	glitch_color = Enums.colors.glitch
 	
@@ -201,26 +260,30 @@ func hard_reset() -> void:
 	assert(PerfManager.start("Level::hard_reset (clearing)"))
 	# deleting the children in revere is faster than in the normal order
 	# AND faster than queue_freeing the doors/keys variables
-	var c := doors.get_children()
-	c.reverse()
-	for door in c:
-		doors.remove_child(door)
-		door.queue_free()
-	
-	c = keys.get_children()
-	c.reverse()
-	for key in c:
-		keys.remove_child(key)
-		key.queue_free()
+	remove_all_pooled()
+#	var c
+#	c = keys.get_children()
+#	c.reverse()
+#	for key in c:
+#		keys.remove_child(key)
+#		key.queue_free()
 	
 	tile_map.clear()
 	assert(PerfManager.end("Level::hard_reset (clearing)"))
 	
 	# Spawn everything
+#	var i := doors.get_index()
+#	remove_child(doors)
 	for door_data in level_data.doors:
 		_spawn_door(door_data)
+#	add_child(doors)
+#	move_child(doors, i)
+#	i = keys.get_index()
+#	remove_child(keys)
 	for key_data in level_data.keys:
 		_spawn_key(key_data)
+#	add_child(keys)
+#	move_child(keys, i)
 	for tile_coord in level_data.tiles:
 		_spawn_tile(tile_coord)
 	_spawn_goal()
@@ -296,13 +359,14 @@ func add_door(door_data: DoorData) -> Door:
 ## Makes a door physically appear (doesn't check collisions)
 func _spawn_door(door_data: DoorData) -> Door:
 	assert(PerfManager.start("Level::_spawn_door"))
-	var door := DOOR.instantiate()
+	assert(PerfManager.start("Level::_spawn_door (instantiating)"))
+	var door: Door = NodePool.pool_node(DOOR)
+#	var door := DOOR.instantiate()
+	assert(PerfManager.end("Level::_spawn_door (instantiating)"))
 	var dd := door_data.duplicated()
 	door.door_data = dd
 	door.set_meta(&"original_door_data", door_data)
-	door.clicked.connect(_on_door_clicked.bind(door))
-	door.mouse_entered.connect(_on_door_mouse_entered.bind(door))
-	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
+	connect_door(door)
 	assert(PerfManager.start("Level::_spawn_door (adding child)"))
 	doors.add_child(door)
 	assert(PerfManager.end("Level::_spawn_door (adding child)"))
@@ -315,7 +379,9 @@ func remove_door(door: Door) -> void:
 	assert(pos != -1)
 	level_data.doors.remove_at(pos)
 	doors.remove_child(door)
-	door.queue_free()
+	disconnect_door(door)
+#	door.queue_free()
+	NodePool.return_node(door)
 	level_data.changed_doors.emit()
 
 ## Moves a given door. Returns false if the move failed
@@ -342,12 +408,10 @@ func add_key(key_data: KeyData) -> Key:
 
 ## Makes a key physically appear (doesn't check collisions)
 func _spawn_key(key_data: KeyData) -> Key:
-	var key := KEY.instantiate()
+	var key: Key = NodePool.pool_node(KEY)
 	key.key_data = key_data.duplicated()
 	key.set_meta(&"original_key_data", key_data)
-	key.clicked.connect(_on_key_clicked.bind(key))
-	key.mouse_entered.connect(_on_key_mouse_entered.bind(key))
-	key.mouse_exited.connect(_on_key_mouse_exited.bind(key))
+	connect_key(key)
 	key.level = self
 	keys.add_child(key)
 	return key
@@ -358,6 +422,7 @@ func remove_key(key: Key) -> void:
 	assert(i != -1)
 	level_data.keys.remove_at(i)
 	keys.remove_child(key)
+	disconnect_key(key)
 	key.queue_free()
 	level_data.changed_keys.emit()
 
@@ -485,6 +550,9 @@ func _ensure_key_counts():
 	while true:
 		for color in original_key_counts:
 			assert(key_counts[color] == original_key_counts[color])
+		if not is_node_ready() or is_queued_for_deletion() or not is_instance_valid(get_tree()):
+			push_warning("warning: stopped ensuring key counts for this level")
+			return
 		await get_tree().physics_frame
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
@@ -514,4 +582,40 @@ func undo() -> void:
 	if undo_redo.get_last_action() == -1:
 		undo_redo._last_action = 0
 
+func connect_door(door: Door) -> void:
+	door.clicked.connect(_on_door_clicked.bind(door))
+	door.mouse_entered.connect(_on_door_mouse_entered.bind(door))
+	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
 
+func disconnect_door(door: Door) -> void:
+	door.clicked.disconnect(_on_door_clicked.bind(door))
+	door.mouse_entered.disconnect(_on_door_mouse_entered.bind(door))
+	door.mouse_exited.disconnect(_on_door_mouse_exited.bind(door))
+
+func connect_key(key: Key) -> void:
+	key.clicked.connect(_on_key_clicked.bind(key))
+	key.mouse_entered.connect(_on_key_mouse_entered.bind(key))
+	key.mouse_exited.connect(_on_key_mouse_exited.bind(key))
+
+func disconnect_key(key: Key) -> void:
+	key.clicked.disconnect(_on_key_clicked.bind(key))
+	key.mouse_entered.disconnect(_on_key_mouse_entered.bind(key))
+	key.mouse_exited.disconnect(_on_key_mouse_exited.bind(key))
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EXIT_TREE:
+		remove_all_pooled()
+
+func remove_all_pooled() -> void:
+	var c := doors.get_children()
+	c.reverse()
+	for door in c:
+		doors.remove_child(door)
+		disconnect_door(door)
+		NodePool.return_node(door)
+	c = keys.get_children()
+	c.reverse()
+	for key in c:
+		keys.remove_child(key)
+		disconnect_key(key)
+		NodePool.return_node(key)

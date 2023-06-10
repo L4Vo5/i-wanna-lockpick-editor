@@ -6,6 +6,7 @@ signal clicked(event: InputEventMouseButton)
 signal lock_clicked(event: InputEventMouseButton, lock: Lock)
 #signal lock_clicked(which: int)
 
+const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tscn")
 const FRAME_POS := preload("res://level_elements/doors_locks/textures/door_frame_texture_pos.png")
 const FRAME_NEG := preload("res://level_elements/doors_locks/textures/door_frame_texture_neg.png")
@@ -38,7 +39,6 @@ var original_door_data: DoorData
 var using_i_view_colors := false
 var level: Level = null
 
-func is_ready(): return is_node_ready()
 func _ready() -> void:
 	assert(PerfManager.start("Door::_ready"))
 	_create_canvas_items()
@@ -157,14 +157,28 @@ func update_textures() -> void:
 func update_locks() -> void:
 	if not is_instance_valid(door_data): return
 	assert(PerfManager.start(&"Door::update_locks"))
-	for lock in lock_holder.get_children():
-		lock.queue_free()
-	var new_lock: Lock
-	for lock in door_data.locks:
-		new_lock = Lock.new()
-		new_lock.clicked.connect(_on_lock_clicked.bind(new_lock))
-		new_lock.lock_data = lock
-		lock_holder.add_child(new_lock)
+	
+	var needed_locks := door_data.locks.size()
+	var current_locks := lock_holder.get_child_count()
+	# redo the current ones
+	for i in mini(needed_locks, current_locks):
+		var lock := lock_holder.get_child(i)
+		lock.lock_data = door_data.locks[i]
+	# shave off the rest
+	if current_locks > needed_locks:
+		for _i in current_locks - needed_locks:
+			var lock := lock_holder.get_child(-1)
+			lock_holder.remove_child(lock)
+			lock.clicked.disconnect(_on_lock_clicked)
+			NodePool.return_node(lock)
+	# or add them
+	else:
+		for i in range(current_locks, needed_locks):
+			var new_lock = NodePool.pool_node(LOCK)
+			new_lock.clicked.connect(_on_lock_clicked.bind(new_lock))
+			new_lock.lock_data = door_data.locks[i]
+			lock_holder.add_child(new_lock)
+	
 	assert(PerfManager.end(&"Door::update_locks"))
 
 func _on_lock_clicked(event: InputEventMouseButton, lock: Lock) -> void:

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dh6h46bjp6c2s" path="res://level_elements/doors_locks/curses/erosion.tscn" id="2_t0ev5"]
 [ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/paint.tscn" id="3_bjor7"]
 [ext_resource type="PackedScene" uid="uid://dnfyqi6rplh85" path="res://level_elements/doors_locks/curses/ice.tscn" id="4_cxymq"]
-[ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/brown_curse.tscn" id="5_1uhdk"]
+[ext_resource type="PackedScene" uid="uid://8b3sdv51pkn1" path="res://level_elements/doors_locks/curses/brown_curse.tscn" id="5_1uhdk"]
 [ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://level_elements/doors_locks/open.wav" id="6_uslf4"]
 [ext_resource type="FontFile" uid="uid://d3wvfkvx16abd" path="res://fonts/consolab.ttf" id="7_1kpw0"]
 

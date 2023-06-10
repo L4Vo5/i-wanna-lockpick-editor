@@ -6,9 +6,14 @@ const V1 := preload("res://misc/saving_versions/save_load_v1.gd")
 
 static func get_image(level: LevelData) -> Image:
 	# Currently I'm not sure how to keep the advantages of the store_* and get_* functions without using FileAccess
-	var file := FileAccess.open("", FileAccess.WRITE_READ)
+#	var file := FileAccess.open("", FileAccess.WRITE_READ)
+	var path := level.file_path
+	var file := FileAccess.open(path, FileAccess.WRITE)
 	V1.save_v1(level, file)
+	file.close()
 	
+	file = FileAccess.open(path, FileAccess.READ)
+	print(file.get_length())
 	var data := file.get_buffer(file.get_length())
 	var img := Image.new()
 	var pixel_count := data.size() / 3 + 1
@@ -32,6 +37,14 @@ static func save_level(level: LevelData) -> void:
 	var path := level.file_path
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	V1.save_v1(level, file)
+	file.close()
+	
+	var image := get_image(level)
+	path = level.file_path.get_basename() + ".png"
+	print("saving to " + path)
+	var err := image.save_png(path)
+	if err != OK:
+		print("error saving image: " + str(err))
 
 static func load_from(path: String) -> LevelData:
 	assert(PerfManager.start("SaveLoad::load_from"))

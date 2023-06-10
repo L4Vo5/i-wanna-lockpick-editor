@@ -3,9 +3,9 @@ extends Node
 
 const RENDERED_PATH := "res://rendering/doors_locks/rendered_textures/"
 ## Animation of special keys and doors (master, pure):
-## length and duration of each frame
+## length of the whole animation, and duration of each frame
 const SPECIAL_ANIM_LENGTH := 0.8
-const SPECIAL_ANIM_DURATION := 0.2
+const SPECIAL_ANIM_DURATION := 0.8 / 4.0
 
 # Order: main, clear, dark
 var frame_colors := generate_colors({

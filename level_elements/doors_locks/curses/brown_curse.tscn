@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://8b3sdv51pkn1"]
 
 [ext_resource type="Script" path="res://level_elements/doors_locks/curses/brown_curse.gd" id="1_dkia3"]
 
