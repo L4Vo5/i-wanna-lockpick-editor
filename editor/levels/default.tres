@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=73 format=3 uid="uid://bs3mwbecmqa6f"]
+[gd_resource type="Resource" script_class="LevelData" load_steps=79 format=3 uid="uid://bs3mwbecmqa6f"]
 
 [ext_resource type="Script" path="res://data/complex_number.gd" id="1_2738f"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_gvoh1"]
@@ -442,6 +442,70 @@ _curses = {
 glitch_color = 13
 position = Vector2i(416, 416)
 
+[sub_resource type="Resource" id="Resource_x0nae"]
+script = ExtResource("1_2738f")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_qn6oh"]
+script = ExtResource("2_gvoh1")
+color = 1
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_ut3xu"]
+script = ExtResource("3_x1ajv")
+amount = SubResource("Resource_x0nae")
+outer_color = 1
+locks = Array[ExtResource("2_gvoh1")]([SubResource("Resource_qn6oh")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(640, 224)
+
+[sub_resource type="Resource" id="Resource_urg8f"]
+script = ExtResource("1_2738f")
+real_part = 3
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_48pq8"]
+script = ExtResource("2_gvoh1")
+color = 1
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Resource" id="Resource_5umuq"]
+script = ExtResource("3_x1ajv")
+amount = SubResource("Resource_urg8f")
+outer_color = 1
+locks = Array[ExtResource("2_gvoh1")]([SubResource("Resource_48pq8")])
+size = Vector2i(32, 32)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+position = Vector2i(640, 448)
+
 [sub_resource type="Resource" id="Resource_j4x5w"]
 script = ExtResource("1_2738f")
 real_part = 1
@@ -603,7 +667,7 @@ script = ExtResource("5_ng5dl")
 version = "0.0.2.0"
 num_version = 1
 editor_version = ""
-doors = Array[ExtResource("3_x1ajv")]([SubResource("Resource_6ttf5"), SubResource("Resource_jvut5"), SubResource("Resource_khsiw"), SubResource("Resource_t535c"), SubResource("Resource_siku0"), SubResource("Resource_25rrc"), SubResource("Resource_bpaqx"), SubResource("Resource_cfyb3"), SubResource("Resource_37saf"), SubResource("Resource_rgjyr"), SubResource("Resource_tksnk"), SubResource("Resource_cn8br"), SubResource("Resource_lswig"), SubResource("Resource_6h7b4")])
+doors = Array[ExtResource("3_x1ajv")]([SubResource("Resource_6ttf5"), SubResource("Resource_jvut5"), SubResource("Resource_khsiw"), SubResource("Resource_t535c"), SubResource("Resource_siku0"), SubResource("Resource_25rrc"), SubResource("Resource_bpaqx"), SubResource("Resource_cfyb3"), SubResource("Resource_37saf"), SubResource("Resource_rgjyr"), SubResource("Resource_tksnk"), SubResource("Resource_cn8br"), SubResource("Resource_lswig"), SubResource("Resource_6h7b4"), SubResource("Resource_ut3xu"), SubResource("Resource_5umuq")])
 keys = Array[ExtResource("4_hag16")]([SubResource("Resource_t0dme"), SubResource("Resource_30i26"), SubResource("Resource_y54ju"), SubResource("Resource_p32pp"), SubResource("Resource_rrvfs"), SubResource("Resource_r7fh1"), SubResource("Resource_vd2lq"), SubResource("Resource_4d5s7"), SubResource("Resource_ueo62"), SubResource("Resource_jpriv"), SubResource("Resource_vmvtt"), SubResource("Resource_qvqwc"), SubResource("Resource_vpjqu")])
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(366, 512)

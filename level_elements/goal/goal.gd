@@ -16,6 +16,7 @@ const PART := preload("res://level_elements/goal/goal_particle.tscn")
 func _ready() -> void:
 	area_entered.connect(_on_body_entered)
 	area_exited.connect(_on_body_exited)
+	preprocess(58)
 
 func _physics_process(_delta: float) -> void:
 	# Should create particle on first step
@@ -92,3 +93,11 @@ func _on_body_entered(_body: Node2D) -> void:
 
 func _on_body_exited(_body: Node2D) -> void:
 	child_inside = false
+
+func preprocess(amount: int) -> void:
+	assert(PerfManager.start("Goal::preprocess (%d)" % amount))
+	for i in amount:
+		_physics_process(0)
+		for part in particles_parent.get_children():
+			part._physics_process(0)
+	assert(PerfManager.end("Goal::preprocess (%d)" % amount))
