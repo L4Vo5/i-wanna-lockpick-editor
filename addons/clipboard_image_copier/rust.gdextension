@@ -1,0 +1,18 @@
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = 4.1
+
+[libraries]
+="look, this is the only reliable way I found to make comments"
+="there's currently a bug that makes release binaries crash godot"
+="windows.debug.x86_64 = "res://../rust/target/debug/clipboard_image_copier.dll""
+windows.debug.x86_64 = "res://addons/clipboard_image_copier/clipboard_image_copier_windows.dll"
+="windows.release.x86_64 = "res://rust/target/debug/clipboard_image_copier.dll""
+windows.release.x86_64 = "res://addons/clipboard_image_copier/clipboard_image_copier_windows.dll"
+linux.debug.x86_64 = "res://addons/clipboard_image_copier/clipboard_image_copier_linux.so"
+linux.release.x86_64 = "res://addons/clipboard_image_copier/clipboard_image_copier_linux.so"
+macos.debug = "res://addons/clipboard_image_copier/clipboard_image_copier_mac.dylib"
+macos.release = "res://addons/clipboard_image_copier/clipboard_image_copier_mac.dylib"
+="TODO: these likely won't work"
+macos.debug.arm64 = "res://addons/clipboard_image_copier/clipboard_image_copier_mac.dylib"
+macos.release.arm64 = "res://addons/clipboard_image_copier/clipboard_image_copier_mac.dylib"

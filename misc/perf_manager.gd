@@ -50,7 +50,7 @@ func _ready() -> void:
 	l.queue_free()
 
 func _input(event: InputEvent) -> void:
-	if Global.in_editor: return
+#	if Global.in_editor: return
 	if Global.is_exported: return
 	if event is InputEventKey:
 		if event.is_pressed():
@@ -58,7 +58,7 @@ func _input(event: InputEvent) -> void:
 				print_report()
 
 func start(who: StringName) -> bool:
-	if Global.in_editor: return true
+#	if Global.in_editor: return true
 	if not balance.has(who):
 		balance[who] = 0
 	if not times.has(who):
@@ -72,7 +72,7 @@ func start(who: StringName) -> bool:
 	return true
 
 func end(who: StringName) -> bool:
-	if Global.in_editor: return true
+#	if Global.in_editor: return true
 	var data = stack.pop_back()
 	assert(data[0] == who)
 	data[3] += Time.get_ticks_usec() - data[2]
@@ -87,7 +87,7 @@ func end(who: StringName) -> bool:
 	return true
 
 func clear() -> void:
-	if Global.in_editor: return
+#	if Global.in_editor: return
 	check_balances()
 	times.clear()
 	balance.clear()
@@ -101,7 +101,7 @@ func check_balances() -> bool:
 	return true
 
 func print_report() -> void:
-	if Global.in_editor: return
+#	if Global.in_editor: return
 	check_balances()
 	for key in times:
 		print_rich("%s (%d calls): [b]%s[/b] total, [b]%s[/b] self" % [key, times[key][2], get_time_string(times[key][0]), get_time_string(times[key][1])])

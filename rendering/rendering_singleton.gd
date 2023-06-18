@@ -24,7 +24,7 @@ var i_view_palette := [
 ]
 
 func _physics_process(_delta: float) -> void:
-		# TODO: use shader instead? it's way too inefficient to update a bunch of sprites each frame, right?
+		# PERF: use shader instead? it's way too inefficient to update a bunch of sprites each frame, right?
 	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
 	i_view_palette[0] = Color.from_hsv(hue, Rendering.frame_s_v[0][0], Rendering.frame_s_v[0][1])
 	i_view_palette[1] = Color.from_hsv(hue, Rendering.frame_s_v[1][0], Rendering.frame_s_v[1][1])
@@ -107,7 +107,7 @@ func get_lock_arrangement(lock_count: int, option: int):
 
 
 # the keys are lock count with multiple arrays inside. each array corresponds to a lock arrangement
-# a lock arrangement is [width, height, [lock_1_position, ...]]
+# a lock arrangement is [size, [lock_1_position, ...]]
 # width and height will change lock_data's `size`
 # each lock position is [position, angle]
 # where angle is 0 to 15 and denotes the angle in 22.5° increments
