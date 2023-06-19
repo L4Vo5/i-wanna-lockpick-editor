@@ -26,9 +26,18 @@ var physics_time := 0.0
 var physics_step := 0
 var _current_mode := Modes.GAMEPLAY
 
+var image_copier
+var image_copier_exists:
+	get:
+		return is_instance_valid(image_copier)
+
 enum Modes {
 	GAMEPLAY, EDITOR
 }
+
+func _init() -> void:
+	if ClassDB.class_exists(&"ClipboardImageCopier"):
+		image_copier = ClassDB.instantiate(&"ClipboardImageCopier")
 
 func _ready() -> void:
 	if in_editor:
@@ -141,3 +150,26 @@ func safe_error(text: String, size: Vector2i) -> void:
 	safe_error_dialog.dialog_text = text
 	
 	safe_error_dialog.popup_centered()
+
+func show_notification(what: String) -> void:
+	print("Global Notification: " + what)
+
+# Wrapper for the ClipboardImageCopier class,
+# to ensure there's no errors if the gdextension doesn't work
+func get_image_from_clipboard() -> Image:
+	if image_copier_exists:
+		return image_copier.get_image_from_clipboard()
+	return null
+
+func get_image_from_clipboard_or_error() -> Variant:
+	if image_copier_exists:
+		return image_copier.get_image_from_clipboard_or_error()
+	return "ClipboardImageCopier doesn't exist"
+
+func copy_image_to_clipboard(image: Image) -> void:
+	if image_copier_exists:
+		var res = image_copier.copy_image_to_clipboard(image)
+		if res != "":
+			print("Error when copying image: " + res)
+	else:
+		print(":(")

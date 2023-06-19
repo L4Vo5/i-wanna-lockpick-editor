@@ -194,10 +194,12 @@ func update_curses() -> void:
 func try_open() -> void:
 	if not can_open: return
 	var should_create_debris := false
+	var opened_at_all := false
 	for i in level.door_multiplier:
 		# "opened", "master_key", "added_copy", "do_methods", "undo_methods"
 		var result := door_data.try_open()
 		if result.opened:
+			opened_at_all = true
 			level.start_undo_action()
 			for do_method in result.do_methods:
 				level.undo_redo.add_do_method(do_method)
@@ -225,6 +227,7 @@ func try_open() -> void:
 			hide()
 			static_body.process_mode = Node.PROCESS_MODE_DISABLED
 			break
+	if not opened_at_all: return
 	if level.undo_redo.is_building_action():
 		level.end_undo_action()
 	if should_create_debris:

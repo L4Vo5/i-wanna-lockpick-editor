@@ -10,53 +10,49 @@ script = ExtResource("1_000i2")
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="PlayerSpawn" type="VBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="SpawnPos" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="SpawnPos" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/SpawnPos"]
+[node name="Label" type="Label" parent="VBoxContainer/SpawnPos"]
 layout_mode = 2
 text = "Player Spawn: "
 
-[node name="PlayerSpawnCoord" type="Label" parent="VBoxContainer/PlayerSpawn/SpawnPos"]
+[node name="PlayerSpawnCoord" type="Label" parent="VBoxContainer/SpawnPos"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "(0, 0)"
 
-[node name="GoalPos" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="GoalPos" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/GoalPos"]
+[node name="Label" type="Label" parent="VBoxContainer/GoalPos"]
 layout_mode = 2
 text = "Goal: "
 
-[node name="GoalCoord" type="Label" parent="VBoxContainer/PlayerSpawn/GoalPos"]
+[node name="GoalCoord" type="Label" parent="VBoxContainer/GoalPos"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "(0, 0)"
 
-[node name="WhatToPlace" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="WhatToPlace" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/WhatToPlace"]
+[node name="Label" type="Label" parent="VBoxContainer/WhatToPlace"]
 layout_mode = 2
 text = "Left click should place: "
 
-[node name="WhatToPlace" type="OptionButton" parent="VBoxContainer/PlayerSpawn/WhatToPlace"]
+[node name="WhatToPlace" type="OptionButton" parent="VBoxContainer/WhatToPlace"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="LevelName" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="LevelName" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/LevelName"]
+[node name="Label" type="Label" parent="VBoxContainer/LevelName"]
 layout_mode = 2
 text = "Level name: "
 
-[node name="LevelName" type="LineEdit" parent="VBoxContainer/PlayerSpawn/LevelName"]
+[node name="LevelName" type="LineEdit" parent="VBoxContainer/LevelName"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -64,14 +60,14 @@ placeholder_text = "(unnamed)"
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelAuthor" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="LevelAuthor" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/LevelAuthor"]
+[node name="Label" type="Label" parent="VBoxContainer/LevelAuthor"]
 layout_mode = 2
 text = "Level author/s: "
 
-[node name="LevelAuthor" type="LineEdit" parent="VBoxContainer/PlayerSpawn/LevelAuthor"]
+[node name="LevelAuthor" type="LineEdit" parent="VBoxContainer/LevelAuthor"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -79,84 +75,115 @@ placeholder_text = "(unknown)"
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelSize" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="LevelSize" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/LevelSize"]
+[node name="Label" type="Label" parent="VBoxContainer/LevelSize"]
 layout_mode = 2
 text = "Level size: "
 
-[node name="LevelSize" type="Label" parent="VBoxContainer/PlayerSpawn/LevelSize"]
+[node name="LevelSize" type="Label" parent="VBoxContainer/LevelSize"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="LevelPath" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="LevelPath" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/LevelPath"]
+[node name="Label" type="Label" parent="VBoxContainer/LevelPath"]
 layout_mode = 2
 text = "Level path: "
 
-[node name="LevelPath" type="Label" parent="VBoxContainer/PlayerSpawn/LevelPath"]
+[node name="LevelPath" type="Label" parent="VBoxContainer/LevelPath"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 autowrap_mode = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
 visible = false
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/PlayerSpawn/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Level Image "
 
-[node name="Label2" type="Label" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Label2" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Button" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 10
 text = "Refresh"
 
-[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer/CenterContainer"]
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/MarginContainer/VBoxContainer/CenterContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer/CenterContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer/CenterContainer"]
 layout_mode = 2
 text = "(none yet)"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="Button" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 text = "Copy to Clipboad"
 
-[node name="Button2" type="Button" parent="VBoxContainer/PlayerSpawn/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="Button2" type="Button" parent="VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 text = "Paste (Import)"
 
-[node name="LevelFormat" type="HBoxContainer" parent="VBoxContainer/PlayerSpawn"]
+[node name="LevelImage" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LevelImage" type="Label" parent="VBoxContainer/LevelImage"]
+layout_mode = 2
+text = "Level Image:"
+
+[node name="NoImage" type="Label" parent="VBoxContainer/LevelImage"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "(no image)"
+
+[node name="LevelImageRect" type="TextureRect" parent="VBoxContainer/LevelImage"]
+unique_name_in_owner = true
+layout_mode = 2
+stretch_mode = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/LevelImage"]
+layout_mode = 2
+
+[node name="CopyToClipboard" type="Button" parent="VBoxContainer/LevelImage/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Copy to Clipboard"
+
+[node name="Label" type="Label" parent="VBoxContainer/LevelImage"]
+visible = false
+layout_mode = 2
+text = "(Save level to refresh image)"
+
+[node name="LevelFormat" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 10
 alignment = 1
 
-[node name="Label" type="Label" parent="VBoxContainer/PlayerSpawn/LevelFormat"]
+[node name="Label" type="Label" parent="VBoxContainer/LevelFormat"]
 layout_mode = 2
 text = "Level Save Format: "
 
-[node name="LevelFormat" type="Label" parent="VBoxContainer/PlayerSpawn/LevelFormat"]
+[node name="LevelFormat" type="Label" parent="VBoxContainer/LevelFormat"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"

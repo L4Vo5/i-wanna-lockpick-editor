@@ -15,6 +15,7 @@ class_name LockpickEditor
 @export var save_button: Button
 @export var save_as_button: Button
 @export var load_button: Button
+@export var load_from_clipboard_button: Button
 @export var level_path_displayer: LineEdit
 @export var more_options: MenuButton
 
@@ -60,6 +61,7 @@ func _ready() -> void:
 	save_button.pressed.connect(save_level)
 	save_as_button.pressed.connect(_on_save_as_pressed)
 	load_button.pressed.connect(_on_load_pressed)
+	load_from_clipboard_button.pressed.connect(_on_load_from_clipboard_pressed)
 	
 	level_path_displayer.tooltip_text = "The current level's path"
 	
@@ -161,6 +163,14 @@ func _on_load_pressed() -> void:
 	file_dialog.add_filter("*.tres", "Text Resource")
 	
 	file_dialog.popup_centered_ratio(0.9)
+
+func _on_load_from_clipboard_pressed() -> void:
+	var img := Global.get_image_from_clipboard()
+	if img == null:
+		Global.show_notification("No image in clipboard (or other error)")
+	else:
+		
+		pass
 
 func _on_file_selected(path: String) -> void:
 	match file_dialog.file_mode:

@@ -28,6 +28,10 @@ var _level_data: LevelData:
 @onready var level_name: LineEdit = %LevelName
 @onready var level_author: LineEdit = %LevelAuthor
 
+@onready var no_image: Label = %NoImage
+@onready var level_image_rect: TextureRect = %LevelImageRect
+@onready var copy_to_clipboard: Button = %CopyToClipboard
+
 func _connect_level_data() -> void:
 	if not is_instance_valid(_level_data): return
 	_level_data.changed_player_spawn_position.connect(_on_changed_player_spawn_pos)
@@ -52,9 +56,12 @@ func _ready() -> void:
 	_on_what_to_place_changed()
 	level_name.text_changed.connect(_on_set_name)
 	level_author.text_changed.connect(_on_set_author)
+	Global.changed_level.connect(_reload_image)
+	copy_to_clipboard.pressed.connect(_copy_image_to_clipboard)
 
 func _update_level_data() -> void:
 	_level_data = editor_data.level_data
+	_reload_image()
 
 func _on_changed_player_spawn_pos() -> void:
 	if not is_node_ready(): return
@@ -86,3 +93,16 @@ func _on_set_name(new_name: String) -> void:
 
 func _on_set_author(new_author: String) -> void:
 	_level_data.author = new_author
+
+func _reload_image() -> void:
+#	if not visible: return
+	var img := SaveLoad.get_image(Global.current_level.level_data)
+	if img != null:
+		level_image_rect.texture = ImageTexture.create_from_image(img)
+	else:
+		level_image_rect.texture = null
+
+func _copy_image_to_clipboard() -> void:
+	_reload_image() # Just to make sure it's updated
+	if level_image_rect.texture != null:
+		Global.copy_image_to_clipboard(level_image_rect.texture.get_image())
