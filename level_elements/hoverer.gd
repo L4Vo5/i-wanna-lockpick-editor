@@ -3,7 +3,13 @@ class_name HoverHighlight
 
 signal adapted_to(obj: Node)
 
-var current_obj: Node
+var current_obj: Node:
+	set(val):
+		current_obj = val if is_instance_valid(val) else null
+	get:
+		if not is_instance_valid(current_obj):
+			stop_adapting()
+		return current_obj
 
 @onready var line: Line2D = %Line2D
 @export var color: Color:
@@ -34,7 +40,15 @@ func stop_adapting() -> void:
 func _hide_all() -> void:
 	line.hide()
 
+func is_adapting() -> bool:
+	return is_instance_valid(current_obj)
+
 func adapt_to(obj: Node) -> void:
+	if not is_instance_valid(obj):
+		stop_adapting()
+		return
+	if obj == current_obj:
+		return
 	current_obj = obj
 	_hide_all()
 	if obj is Door:

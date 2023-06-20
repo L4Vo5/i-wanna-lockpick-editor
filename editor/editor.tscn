@@ -16,12 +16,12 @@
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 
-[sub_resource type="Resource" id="Resource_y3r6o"]
+[sub_resource type="Resource" id="Resource_xcwyu"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_8csem"]
+[sub_resource type="Resource" id="Resource_ms3wx"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -33,11 +33,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_2djvo"]
+[sub_resource type="Resource" id="Resource_adfgg"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_y3r6o")
+amount = SubResource("Resource_xcwyu")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_8csem")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_ms3wx")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -48,14 +48,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_lor8q"]
+[sub_resource type="Resource" id="Resource_0imu0"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_60rjd"]
+[sub_resource type="Resource" id="Resource_2fssg"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_lor8q")
+amount = SubResource("Resource_0imu0")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -114,12 +114,12 @@ script = ExtResource("2_jw8xc")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/LeftSide/Tools/Container"]
 layout_mode = 2
-horizontal_scroll_mode = 0
+size_flags_horizontal = 3
+horizontal_scroll_mode = 2
 vertical_scroll_mode = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
 [node name="Play" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
@@ -257,12 +257,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_2djvo")
+door_data = SubResource("Resource_adfgg")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_60rjd")
+key_data = SubResource("Resource_2fssg")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false

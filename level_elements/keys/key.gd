@@ -3,8 +3,6 @@ extends Control
 class_name Key
 ## Key lol
 
-signal clicked(event: InputEventMouseButton)
-
 @export var key_data: KeyData:
 	set(val):
 		if key_data == val: return
@@ -52,10 +50,6 @@ func _on_mouse_entered() -> void:
 	mouse_entered.emit()
 func _on_mouse_exited() -> void:
 	mouse_exited.emit()
-
-func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		clicked.emit(event)
 
 func _connect_global_level() -> void:
 	if in_keypad: return

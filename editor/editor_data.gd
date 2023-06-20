@@ -49,11 +49,6 @@ var danger_highlight: HoverHighlight
 var selected_highlight: HoverHighlight
 
 
-# Initial position in a drag action
-var drag_position: Vector2i
-var is_dragging := false
-
-
 ###
 
 func _connect_level_data() -> void:

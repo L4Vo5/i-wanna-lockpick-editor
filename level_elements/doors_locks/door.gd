@@ -2,7 +2,6 @@
 extends MarginContainer
 class_name Door
 
-signal clicked(event: InputEventMouseButton)
 signal lock_clicked(event: InputEventMouseButton, lock: Lock)
 #signal lock_clicked(which: int)
 
@@ -87,11 +86,6 @@ func _physics_process(_delta: float) -> void:
 	copies.text = text
 	if using_i_view_colors:
 		_draw_frame()
-
-func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		clicked.emit(event)
-		# the event should be accepted on the signal receiver's side
 
 var update_everything_count := 0
 func update_everything() -> void:

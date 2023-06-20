@@ -345,8 +345,8 @@ func _update_goal_position() -> void:
 
 # Editor functions
 
-signal door_clicked(event: InputEventMouseButton, door: Door)
-signal key_clicked(event: InputEventMouseButton, key: Key)
+signal door_gui_input(event: InputEvent, door: Door)
+signal key_gui_input(event: InputEvent, key: Key)
 
 ## Adds a door to the level data. Returns null if it wasn't added
 func add_door(door_data: DoorData) -> Door:
@@ -523,11 +523,11 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 func is_space_inside(rect: Rect2i) -> bool:
 	return Rect2i(Vector2i.ZERO, level_data.size).encloses(rect)
 
-func _on_door_clicked(event: InputEventMouseButton, door: Door):
-	door_clicked.emit(event, door)
+func _on_door_gui_input(event: InputEvent, door: Door):
+	door_gui_input.emit(event, door)
 
-func _on_key_clicked(event: InputEventMouseButton, key: Key):
-	key_clicked.emit(event, key)
+func _on_key_gui_input(event: InputEvent, key: Key):
+	key_gui_input.emit(event, key)
 
 func _on_door_mouse_entered(door: Door) -> void:
 	hover_highlight.adapt_to(door)
@@ -583,22 +583,22 @@ func undo() -> void:
 		undo_redo._last_action = 0
 
 func connect_door(door: Door) -> void:
-	door.clicked.connect(_on_door_clicked.bind(door))
+	door.gui_input.connect(_on_door_gui_input.bind(door))
 	door.mouse_entered.connect(_on_door_mouse_entered.bind(door))
 	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
 
 func disconnect_door(door: Door) -> void:
-	door.clicked.disconnect(_on_door_clicked.bind(door))
+	door.gui_input.disconnect(_on_door_gui_input.bind(door))
 	door.mouse_entered.disconnect(_on_door_mouse_entered.bind(door))
 	door.mouse_exited.disconnect(_on_door_mouse_exited.bind(door))
 
 func connect_key(key: Key) -> void:
-	key.clicked.connect(_on_key_clicked.bind(key))
+	key.gui_input.connect(_on_key_gui_input.bind(key))
 	key.mouse_entered.connect(_on_key_mouse_entered.bind(key))
 	key.mouse_exited.connect(_on_key_mouse_exited.bind(key))
 
 func disconnect_key(key: Key) -> void:
-	key.clicked.disconnect(_on_key_clicked.bind(key))
+	key.gui_input.disconnect(_on_key_gui_input.bind(key))
 	key.mouse_entered.disconnect(_on_key_mouse_entered.bind(key))
 	key.mouse_exited.disconnect(_on_key_mouse_exited.bind(key))
 
