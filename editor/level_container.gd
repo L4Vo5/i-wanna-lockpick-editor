@@ -33,7 +33,7 @@ var is_dragging := false:
 		return is_dragging
 	set(val):
 		is_dragging = val and selected_obj != null and not Input.is_action_pressed(&"unbound_action")
-var drag_position := Vector2i.ZERO
+var drag_offset := Vector2i.ZERO
 var selected_obj: Node:
 	set(val):
 		selected_highlight.adapt_to(val)
@@ -75,8 +75,7 @@ func _ready() -> void:
 	editor_data.level.changed_keys.connect(_retry_ghosts)
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_retry_ghosts, CONNECT_DEFERRED)
-	_place_ghost_door()
-	_place_ghost_key()
+	_retry_ghosts()
 	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
 
 func _on_door_gui_input(event: InputEvent, door: Door) -> void:
@@ -149,7 +148,7 @@ func _gui_input(event: InputEvent) -> void:
 					accept_event()
 	elif event is InputEventMouseMotion:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			if is_instance_valid(editor_data.selected) && is_dragging:
+			if selected_obj && is_dragging:
 				relocate_selected()
 			elif Input.is_action_pressed(&"unbound_action"):
 				if editor_data.doors:
@@ -172,6 +171,7 @@ func _gui_input(event: InputEvent) -> void:
 #			if editor_data.tilemap_edit:
 				if remove_tile_on_mouse():
 					accept_event()
+		_retry_ghosts()
 
 # TODO: Improve this whole thing to make sense :)
 #func _physics_process(_delta: float) -> void:
@@ -189,9 +189,9 @@ func _gui_input(event: InputEvent) -> void:
 #			selected_obj = null
 
 func select_thing(obj: Node) -> void:
+	# is_dragging is set to true by _on_selected_highlight_adapted_to
 	selected_obj = obj
 	hovered_obj = obj
-	is_dragging = true
 	danger_obj = null
 	_retry_ghosts()
 
@@ -262,21 +262,30 @@ func relocate_selected() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
 	if not is_dragging: return
-	if not is_instance_valid(editor_data.selected): return
-	var selected := editor_data.selected
+	if not is_instance_valid(selected_obj): return
 	var grid_size := 32
-	if selected is Door:
+	if selected_obj is Door:
 		grid_size = 32
-	elif selected is Key:
+	elif selected_obj is Key:
 		grid_size = 16
-	var old_coord := round_coord(drag_position, grid_size)
-	var new_coord := get_mouse_coord(grid_size)
-	if selected is Door:
-		level.move_door(selected, new_coord)
-	elif selected is Key:
-		level.move_key(selected, new_coord)
+	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
+	var cond: bool
+	var obj_pos: Vector2i = selected_obj.position
+	if selected_obj is Door:
+		cond = level.move_door(selected_obj, used_coord)
+	elif selected_obj is Key:
+		cond = level.move_key(selected_obj, used_coord)
 	else:
 		assert(false)
+	
+	if not cond and obj_pos != used_coord:
+		_place_danger_obj()
+	else:
+		danger_obj = null
+	# refreshes the position
+	selected_obj = selected_obj
+	hovered_obj = hovered_obj
+
 
 
 func get_mouse_coord(grid_size: int) -> Vector2i:
@@ -313,49 +322,64 @@ func _retry_ghosts() -> void:
 	ghost_door.hide()
 	
 	if not is_dragging:
-		_place_ghost_door()
-		_place_ghost_key()
+		_place_ghosts()
 
-func _place_ghost_door() -> void:
-	if not editor_data.doors or editor_data.is_playing:
-		ghost_door.hide()
-		return
-	ghost_door.door_data = door_editor.door_data
-	var maybe_pos := get_mouse_coord(32)
-	ghost_door.position = maybe_pos
-	if not Rect2i(Vector2i.ZERO, level.level_data.size).has_point(maybe_pos):
-		ghost_door.hide()
-		danger_obj = null
-		return
-	if not level.is_space_occupied(Rect2i(maybe_pos, ghost_door.get_rect().size)):
-		ghost_door.show()
-	else:
-		ghost_door.hide()
+func _place_ghosts() -> void:
+	assert(not is_dragging)
+	for i in 2:
+		var grid_size: int = [32, 16][i]
+		var obj: Node = [ghost_door, ghost_key][i]
+		var cond: bool = [editor_data.doors, editor_data.keys][i]
 		
-	if (
-	not is_instance_valid(level.hovering_over)
-	and not ghost_door.visible
-	# TODO: This is just a double-check, but looks weird since tiles can't be hovered on yet
-#	and not level.is_space_occupied(Rect2i(get_mouse_coord(1), Vector2.ONE))
-	):
-		danger_obj = ghost_door
-	else:
-		danger_obj = null
+		if not cond or editor_data.is_playing:
+			continue
+		if obj is Door:
+			obj.door_data = door_editor.door_data
+		elif obj is Key:
+			obj.key_data = key_editor.key_data
+		var maybe_pos := get_mouse_coord(grid_size)
+		obj.position = maybe_pos
+		
+		if not Rect2i(Vector2i.ZERO, level.level_data.size).has_point(maybe_pos):
+			obj.hide()
+		elif not level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
+			obj.show()
+		else:
+			obj.hide()
+		
+		if (
+		not is_instance_valid(level.hovering_over)
+		and not obj.visible
+		# TODO: This is just a double-check, but looks weird since tiles can't be hovered on yet
+	#	and not level.is_space_occupied(Rect2i(get_mouse_coord(1), Vector2.ONE))
+		):
+			danger_obj = obj
+		else:
+			danger_obj = null
 
-func _place_ghost_key() -> void:
-	if not editor_data.keys or editor_data.is_playing:
-		ghost_key.hide()
-		return
-	ghost_key.key_data = key_editor.key_data
-	var maybe_pos := get_mouse_coord(16)
-	if not Rect2i(Vector2i.ZERO, level.level_data.size).has_point(maybe_pos):
-		ghost_key.hide()
-		return
-	if not level.is_space_occupied(Rect2i(maybe_pos, Vector2i(32, 32))):
-		ghost_key.position = maybe_pos
-		ghost_key.show()
+# places the danger obj only. this overrides the ghosts obvs
+func _place_danger_obj() -> void:
+	for i in 2:
+		var grid_size: int = [32, 16][i]
+		var obj: Node = [ghost_door, ghost_key][i]
+		var cond: bool = [editor_data.doors, editor_data.keys][i]
+		
+		if not cond or editor_data.is_playing:
+			continue
+		if obj is Door:
+			obj.door_data = door_editor.door_data
+		elif obj is Key:
+			obj.key_data = key_editor.key_data
+		
+		var maybe_pos := get_mouse_coord(grid_size)
+		if is_dragging:
+			maybe_pos -= round_coord(drag_offset, grid_size)
+		obj.position = maybe_pos
+		danger_obj = obj
+
 
 func _on_selected_highlight_adapted_to(_obj: Node) -> void:
 	if (Input.get_mouse_button_mask() & MOUSE_BUTTON_MASK_LEFT):
-		drag_position = get_mouse_coord(1)
-		is_dragging = true
+		if not is_dragging:
+			is_dragging = true
+			drag_offset = get_mouse_coord(1) - Vector2i(_obj.position)

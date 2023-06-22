@@ -47,8 +47,9 @@ func adapt_to(obj: Node) -> void:
 	if not is_instance_valid(obj):
 		stop_adapting()
 		return
-	if obj == current_obj:
-		return
+	# we allow the same object to be passed several times, in case position needs to be adjusted
+#	if obj == current_obj:
+#		return
 	current_obj = obj
 	_hide_all()
 	if obj is Door:

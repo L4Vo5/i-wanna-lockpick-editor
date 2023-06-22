@@ -39,10 +39,6 @@ var goal_position := false
 
 # object selection / dragging / highlight / etc
 # note that hover_highlight is part of the level
-var selected: Node:
-	get:
-		return selected_highlight.current_obj
-
 
 var hover_highlight: HoverHighlight
 var danger_highlight: HoverHighlight
