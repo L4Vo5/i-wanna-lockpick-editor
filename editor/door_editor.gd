@@ -102,6 +102,12 @@ func _update_door_size() -> void:
 
 func _update_door_amount() -> void:
 	if _setting_to_data: return
+	if real_copies.value == 0 and imaginary_copies.value == 0:
+		if real_copies.value != door_data.amount.real_part:
+			real_copies.value = -door_data.amount.real_part
+		if imaginary_copies.value != door_data.amount.imaginary_part:
+			imaginary_copies.value = -door_data.amount.imaginary_part
+		return
 	door_data.amount.set_to(int(real_copies.value), int(imaginary_copies.value))
 
 func _update_door_color() -> void:
