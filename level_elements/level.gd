@@ -315,7 +315,6 @@ func soft_reset() -> void:
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
 	# Must do this in case level data has no version
-	level_data.check_version()
 	level_data.check_valid()
 	level_data.changed_player_spawn_position.connect(_update_player_spawn_position)
 	_update_player_spawn_position()

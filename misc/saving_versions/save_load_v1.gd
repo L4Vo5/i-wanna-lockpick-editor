@@ -1,5 +1,5 @@
 
-static func save_v1(level: LevelData, file: FileAccess) -> void:
+static func save(level: LevelData, file: FileAccess) -> void:
 	file.store_16(level.num_version)
 	file.store_pascal_string(level.editor_version)
 	file.store_pascal_string(level.name)
@@ -20,25 +20,25 @@ static func save_v1(level: LevelData, file: FileAccess) -> void:
 	# Keys
 	file.store_32(level.keys.size())
 	for key in level.keys:
-		_save_key_v1(file, key)
+		_save_key(file, key)
 	# Doors
 	file.store_32(level.doors.size())
 	for door in level.doors:
-		_save_door_v1(file, door)
+		_save_door(file, door)
 
-static func _save_key_v1(file: FileAccess, key: KeyData) -> void:
-	_save_complex_v1(file, key.amount)
+static func _save_key(file: FileAccess, key: KeyData) -> void:
+	_save_complex(file, key.amount)
 	file.store_32(key.position.x)
 	file.store_32(key.position.y)
 	# color is 4 bytes, type is 3. 7 bytes total
 	# bits are: 01112222, 1 = type, 2 = color
 	file.store_8((key.type << 4) + key.color)
 
-static func _save_door_v1(file: FileAccess, door: DoorData) -> void:
+static func _save_door(file: FileAccess, door: DoorData) -> void:
 	# In the current version:
 	# Glitch color should always start as glitch
 	# Doors can never start browned
-	_save_complex_v1(file, door.amount)
+	_save_complex(file, door.amount)
 	file.store_32(door.position.x)
 	file.store_32(door.position.y)
 	file.store_32(door.size.x)
@@ -52,9 +52,9 @@ static func _save_door_v1(file: FileAccess, door: DoorData) -> void:
 	file.store_8((curses << 4) + door.outer_color)
 	file.store_16(door.locks.size())
 	for lock in door.locks:
-		_save_lock_v1(file, lock)
+		_save_lock(file, lock)
 
-static func _save_lock_v1(file: FileAccess, lock:LockData) -> void:
+static func _save_lock(file: FileAccess, lock:LockData) -> void:
 	file.store_32(lock.position.x)
 	file.store_32(lock.position.y)
 	file.store_32(lock.size.x)
@@ -71,12 +71,12 @@ static func _save_lock_v1(file: FileAccess, lock:LockData) -> void:
 	bit_data += lock.lock_type << 7
 	file.store_16(bit_data)
 
-static func _save_complex_v1(file: FileAccess, n: ComplexNumber) -> void:
+static func _save_complex(file: FileAccess, n: ComplexNumber) -> void:
 	file.store_64(n.real_part)
 	file.store_64(n.imaginary_part)
 
-static func load_v1(file: FileAccess) -> LevelData:
-	assert(PerfManager.start("SaveLoadV1::load_v1"))
+static func load(file: FileAccess) -> LevelData:
+	assert(PerfManager.start("SaveLoadV1::load"))
 	var level := LevelData.new()
 	level.name = file.get_pascal_string()
 	level.author = file.get_pascal_string()
@@ -95,22 +95,22 @@ static func load_v1(file: FileAccess) -> LevelData:
 	if SaveLoad.PRINT_LOAD: print("key count is %d" % key_amount)
 	level.keys.resize(key_amount)
 	for i in key_amount:
-		level.keys[i] = _load_key_v1(file)
+		level.keys[i] = _load_key(file)
 	
 	var door_amount := file.get_32()
 	if SaveLoad.PRINT_LOAD: print("door count is %d" % door_amount)
 	level.doors.resize(door_amount)
-	assert(PerfManager.start("SaveLoadV1::load_v1 (loading doors)"))
+	assert(PerfManager.start("SaveLoadV1::load (loading doors)"))
 	for i in door_amount:
-		level.doors[i] = _load_door_v1(file)
-	assert(PerfManager.end("SaveLoadV1::load_v1 (loading doors)"))
+		level.doors[i] = _load_door(file)
+	assert(PerfManager.end("SaveLoadV1::load (loading doors)"))
 	
-	assert(PerfManager.end("SaveLoadV1::load_v1"))
+	assert(PerfManager.end("SaveLoadV1::load"))
 	return level
 
-static func _load_key_v1(file: FileAccess) -> KeyData:
+static func _load_key(file: FileAccess) -> KeyData:
 	var key := KeyData.new()
-	key.amount = _load_complex_v1(file)
+	key.amount = _load_complex(file)
 	key.position = Vector2i(file.get_32(), file.get_32())
 	var type_and_color := file.get_8()
 	key.color = type_and_color & 0b1111
@@ -118,10 +118,10 @@ static func _load_key_v1(file: FileAccess) -> KeyData:
 	
 	return key
 
-static func _load_door_v1(file: FileAccess) -> DoorData:
+static func _load_door(file: FileAccess) -> DoorData:
 	var door := DoorData.new()
 	
-	door.amount = _load_complex_v1(file)
+	door.amount = _load_complex(file)
 	door.position = Vector2i(file.get_32(), file.get_32())
 	door.size = Vector2i(file.get_32(), file.get_32())
 	
@@ -135,11 +135,11 @@ static func _load_door_v1(file: FileAccess) -> DoorData:
 	var lock_amount := file.get_16()
 	door.locks.resize(lock_amount)
 	for i in lock_amount:
-		door.locks[i] = _load_lock_v1(file)
+		door.locks[i] = _load_lock(file)
 	
 	return door
 
-static func _load_lock_v1(file: FileAccess) -> LockData:
+static func _load_lock(file: FileAccess) -> LockData:
 	var lock := LockData.new()
 	lock.position = Vector2i(file.get_32(), file.get_32())
 	lock.size = Vector2i(file.get_32(), file.get_32())
@@ -158,6 +158,6 @@ static func _load_lock_v1(file: FileAccess) -> LockData:
 	
 	return lock
 
-static func _load_complex_v1(file: FileAccess) -> ComplexNumber:
+static func _load_complex(file: FileAccess) -> ComplexNumber:
 	return ComplexNumber.new_with(file.get_64(), file.get_64())
 

@@ -620,7 +620,6 @@ position = Vector2i(304, 416)
 
 [resource]
 script = ExtResource("5_ng5dl")
-version = "0.0.2.0"
 num_version = 1
 editor_version = ""
 doors = Array[ExtResource("3_x1ajv")]([SubResource("Resource_khsiw"), SubResource("Resource_t535c"), SubResource("Resource_siku0"), SubResource("Resource_25rrc"), SubResource("Resource_bpaqx"), SubResource("Resource_cfyb3"), SubResource("Resource_37saf"), SubResource("Resource_rgjyr"), SubResource("Resource_tksnk"), SubResource("Resource_cn8br"), SubResource("Resource_lswig"), SubResource("Resource_6h7b4"), SubResource("Resource_ut3xu"), SubResource("Resource_5umuq"), SubResource("Resource_8exh6")])

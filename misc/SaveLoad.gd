@@ -1,15 +1,13 @@
 class_name SaveLoad
 
 const PRINT_LOAD := true
-const LATEST_FORMAT := 1
+const LATEST_FORMAT := 2
 const V1 := preload("res://misc/saving_versions/save_load_v1.gd")
 const V2 := preload("res://misc/saving_versions/save_load_v2.gd")
 
 static func get_image(level: LevelData) -> Image:
-	# Currently it forcibly saves the .lvl file.
-	# This should be changed when format is updated to 2.
-	
 	var path := level.file_path
+	var data: PackedByteArray
 	if path == "":
 		# it's probably a built-in .res or .tres
 		path = level.resource_path
@@ -17,13 +15,13 @@ static func get_image(level: LevelData) -> Image:
 			return null
 		
 		ResourceSaver.save(level)
+		var file := FileAccess.open(path, FileAccess.READ)
+		data = file.get_buffer(file.get_length())
 	else:
-		var file := FileAccess.open(path, FileAccess.WRITE)
-		V1.save_v1(level, file)
-		file.close()
+		var byte_access := V2.make_byte_access([])
+		V2.save(level, byte_access)
+		data = byte_access.data
 	
-	var file := FileAccess.open(path, FileAccess.READ)
-	var data := file.get_buffer(file.get_length())
 	var img := Image.new()
 	
 	# full color
@@ -43,12 +41,15 @@ static func get_image(level: LevelData) -> Image:
 #		new_file.seek(0)
 #		file = new_file
 #		file.get_16()
-#		lvl_data = _load_v1(file)
+#		lvl_data = _load(file)
 
 static func save_level(level: LevelData) -> void:
 	var path := level.file_path
+	var byte_access := V2.make_byte_access([])
+	V2.save(level, byte_access)
 	var file := FileAccess.open(path, FileAccess.WRITE)
-	V1.save_v1(level, file)
+	file.store_buffer(byte_access.data)
+	print("saving to " + path)
 	file.close()
 	
 	var image := get_image(level)
@@ -61,16 +62,27 @@ static func save_level(level: LevelData) -> void:
 static func load_from(path: String) -> LevelData:
 	assert(PerfManager.start("SaveLoad::load_from"))
 	var file := FileAccess.open(path, FileAccess.READ)
+	var buf = file.get_buffer(file.get_length())
+	file.seek(0)
 	var version := file.get_16()
 	var lvl_data: LevelData
 	var original_editor_version := file.get_pascal_string()
+	print(original_editor_version)
+	var file_pos := file.get_position()
 	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version is %s" % [path, version, original_editor_version])
+#	version = 1
 	if version == 1:
-		lvl_data = V1.load_v1(file)
+		lvl_data = V1.load(file)
+	elif version == 2:
+		file.seek(0)
+		var data := file.get_buffer(file.get_length())
+		var byte_access := V2.make_byte_access(data, file_pos)
+		lvl_data = V2.load(byte_access)
 	else:
 		var error_text := \
 """This level was made in editor version %s and uses the saving format N°%d.
-You're on version %s, which supports up to the saving format %d.
+You're on version %s, which supports up to the saving format N°%d.
+Consider updating the editor to a newer version.
 Loading cancelled.""" % [original_editor_version, version, Global.game_version, LATEST_FORMAT]
 		Global.safe_error(error_text, Vector2i(700, 100))
 #		assert(false, "File is version %d, which is unsupported " % version)
@@ -93,7 +105,7 @@ static func load_from_image(image: Image) -> LevelData:
 	
 	return lvl_data
 
-func image_to_b_w(img: Image, data: PackedByteArray) -> void:
+static func image_to_b_w(img: Image, data: PackedByteArray) -> void:
 	var pixel_count := data.size() * 8
 	var image_size := (ceili(sqrt(pixel_count as float)))
 	var width := (image_size / 8) * 8

@@ -3,11 +3,6 @@ class_name LevelData
 
 # has this level been loaded already? (no version check should be done)
 var has_been_loaded := false
-# DEPRECATED. Delete soon!
-@export var version: String:
-	set(val):
-		version = val
-		check_version()
 @export var num_version: int = SaveLoad.LATEST_FORMAT
 # Just in case it's needed
 @export var editor_version: String
@@ -87,11 +82,6 @@ func clear_outside_things() -> void:
 	amount_deleted += deleted_ones.size()
 	if amount_deleted != 0:
 		print("deleted %d outside things" % amount_deleted)
-
-func check_version() -> void:
-	if has_been_loaded: return
-	has_been_loaded = true
-
 
 # Checks if the level is valid, and fixes any invalidness
 func check_valid() -> void:
