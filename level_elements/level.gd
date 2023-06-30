@@ -299,7 +299,7 @@ func soft_reset() -> void:
 	
 	# update doors and keys
 	for door in doors.get_children():
-		door.door_data = door.get_meta(&"original_door_data").duplicated()
+		door.door_data = door.original_door_data.duplicated()
 	for key in keys.get_children():
 		key.key_data = key.get_meta(&"original_key_data").duplicated()
 	
@@ -364,7 +364,7 @@ func _spawn_door(door_data: DoorData) -> Door:
 	assert(PerfManager.end("Level::_spawn_door (instantiating)"))
 	var dd := door_data.duplicated()
 	door.door_data = dd
-	door.set_meta(&"original_door_data", door_data)
+	door.original_door_data = door_data
 	connect_door(door)
 	assert(PerfManager.start("Level::_spawn_door (adding child)"))
 	doors.add_child(door)
@@ -374,7 +374,7 @@ func _spawn_door(door_data: DoorData) -> Door:
 
 ## Removes a door from the level data
 func remove_door(door: Door) -> void:
-	var pos := level_data.doors.find(door.get_meta(&"original_door_data"))
+	var pos := level_data.doors.find(door.original_door_data)
 	assert(pos != -1)
 	level_data.doors.remove_at(pos)
 	doors.remove_child(door)
@@ -385,7 +385,7 @@ func remove_door(door: Door) -> void:
 
 ## Moves a given door. Returns false if the move failed
 func move_door(door: Door, new_position: Vector2i) -> bool:
-	var door_data: DoorData = door.get_meta(&"original_door_data")
+	var door_data: DoorData = door.original_door_data
 	var i := level_data.doors.find(door_data)
 	assert(i != -1)
 	assert(door_data.get_rect() == Rect2i(door_data.position, door_data.get_rect().size))

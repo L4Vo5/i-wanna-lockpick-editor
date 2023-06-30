@@ -23,6 +23,7 @@ class_name Kid
 @onready var equipped_master: Sprite2D = %EquippedMaster
 @onready var spr_i_view: Sprite2D = %IView
 @onready var spr_white_aura: Sprite2D = %SprWhiteAura
+@onready var door_detect: ShapeCast2D = %DoorDetect
 
 const GRAVITY := 0.4
 const JUMP_1 := -8.5
@@ -44,20 +45,27 @@ func _physics_process(_delta: float) -> void:
 		spr_i_view.modulate = Rendering.i_view_palette[1]
 	update_on_floor()
 	on_ceiling = test_move(global_transform, Vector2(0, -1))
-	auras()
-	run()
-	fall_jump()
-	anim()
-	master_anim()
+	
+	
 	var current_speed := 3
-	if on_floor and velocity.y == 0:
+	if on_floor: # and velocity.y == 0:
 		if Input.is_action_pressed(&"fast"):
 			current_speed = 6 if not Global.current_level.is_autorun_on else 3
 		else:
 			current_speed = 3 if not Global.current_level.is_autorun_on else 6
 	if Input.is_action_pressed(&"slow"):
 		current_speed = 1
-	detect_doors(velocity * Vector2(current_speed, 0))
+	
+	# detect vertically before the fall/jump logic
+	# so if you collide with a door from below, you don't stop and end up with velocity.y = 0
+	detect_doors(velocity * Vector2(current_speed, 1))
+	
+	auras()
+	run()
+	fall_jump()
+	anim()
+	master_anim()
+	
 	move_and_collide(velocity * Vector2(current_speed, 0))
 	move_and_collide(velocity * Vector2(0, 1))
 	# needs to stay updated for the level to know if it's save to save undo state
@@ -75,6 +83,8 @@ var d_jumps := 1
 func update_on_floor() -> void:
 	if velocity.y >= 0:
 		on_floor = test_move(global_transform, Vector2(0, GRAVITY))
+		if on_floor:
+			velocity.y = 0
 	else:
 		on_floor = false
 
@@ -128,9 +138,24 @@ func detect_doors(vel: Vector2) -> void:
 		vel * Vector2(1,0), # horizontal movement
 		vel * Vector2(0, 1) if vel.y != 0 else Vector2(0, 1) # vertical movement (check below if stopped)
 	]:
-		var info = move_and_collide(vec, true)
-		if info != null:
-			var collider = info.get_collider()
+		door_detect.target_position = vec
+		door_detect.force_shapecast_update()
+		var colliders := range(door_detect.get_collision_count()).map(
+			func(i: int) -> Object:
+				return door_detect.get_collider(i)
+		)
+		var has_wall := false
+		for collider in colliders:
+			if not collider.get_parent() is Door:
+				has_wall = true
+		if has_wall:
+			return
+		for collider in colliders:
+	#		var info = move_and_collide(vec, true)
+	#		print("checking collision with vector %s" % vec)
+	#		if info != null:
+	#			print("success")
+	#			var collider = info.get_collider()
 			if collider.get_parent() is Door:
 				interact_with_door(collider.get_parent())
 				if vel.y < 0 and vec.y < 0:

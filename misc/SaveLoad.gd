@@ -11,9 +11,8 @@ static func get_image(level: LevelData) -> Image:
 	if path == "":
 		# it's probably a built-in .res or .tres
 		path = level.resource_path
-		if path == "":
+		if path == "" or not path.get_extension() in ["res", "tres"]:
 			return null
-		
 		ResourceSaver.save(level)
 		var file := FileAccess.open(path, FileAccess.READ)
 		data = file.get_buffer(file.get_length())

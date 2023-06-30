@@ -148,6 +148,14 @@ collision_layer = 16
 collision_mask = 14
 script = ExtResource("1_ytpc6")
 
+[node name="DoorDetect" type="ShapeCast2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0.5, -10.5)
+shape = SubResource("RectangleShape2D_k1m2g")
+target_position = Vector2(0, 0)
+collision_mask = 6
+collide_with_areas = true
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0.5, -10.5)
 shape = SubResource("RectangleShape2D_k1m2g")
