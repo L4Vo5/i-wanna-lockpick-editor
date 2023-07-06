@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
 [ext_resource type="Script" path="res://editor/level_container.gd" id="2_kqd34"]
 [ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="3_4sapt"]
-[ext_resource type="Resource" uid="uid://3qbinxlty2yd" path="res://editor/levels/default.tres" id="4_80bf4"]
+[ext_resource type="Resource" uid="uid://duetyl1ll5edp" path="res://editor/levels/default.tres" id="4_80bf4"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_55fwv"]
 [ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="6_n53nq"]
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="7_8vfxp"]
@@ -16,12 +16,12 @@
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 
-[sub_resource type="Resource" id="Resource_xmh6n"]
+[sub_resource type="Resource" id="Resource_pesil"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_g20cb"]
+[sub_resource type="Resource" id="Resource_preay"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -33,11 +33,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_qtnd5"]
+[sub_resource type="Resource" id="Resource_o2yu4"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_xmh6n")
+amount = SubResource("Resource_pesil")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_g20cb")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_preay")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -48,14 +48,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_xdydq"]
+[sub_resource type="Resource" id="Resource_7ev15"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_ug1f1"]
+[sub_resource type="Resource" id="Resource_a1t5q"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_xdydq")
+amount = SubResource("Resource_7ev15")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -120,6 +120,8 @@ vertical_scroll_mode = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 5
 
 [node name="Play" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
@@ -257,12 +259,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_qtnd5")
+door_data = SubResource("Resource_o2yu4")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_ug1f1")
+key_data = SubResource("Resource_a1t5q")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false

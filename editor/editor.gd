@@ -37,6 +37,8 @@ func _input(event: InputEvent) -> void:
 func _ready() -> void:
 	DirAccess.make_dir_absolute("user://levels")
 	file_dialog.current_dir = "levels"
+	# WAITING4GODOT: workaround for https://github.com/godotengine/godot/issues/79052
+	file_dialog.dialog_close_on_escape = false
 	move_levels("user://", "user://levels")
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
@@ -58,7 +60,7 @@ func _ready() -> void:
 	side_tabs.tab_changed.connect(_update_mode.unbind(1))
 	play_button.pressed.connect(_on_play_pressed)
 	
-	save_button.pressed.connect(save_level)
+	save_button.pressed.connect(_on_save_pressed)
 	save_as_button.pressed.connect(_on_save_as_pressed)
 	load_button.pressed.connect(_on_load_pressed)
 	load_from_clipboard_button.pressed.connect(_on_load_from_clipboard_pressed)
@@ -66,6 +68,7 @@ func _ready() -> void:
 	level_path_displayer.tooltip_text = "The current level's path"
 	
 	file_dialog.add_filter("*.lvl", "Level file")
+	file_dialog.add_filter("*.png", "Level file (image)")
 	file_dialog.file_selected.connect(_on_file_selected)
 	
 	var popup_menu := more_options.get_popup()
@@ -115,7 +118,7 @@ func save_level() -> void:
 					ResourceSaver.save(data.level_data)
 				else:
 					assert(false)
-			elif ext == "lvl":
+			elif ext in ["lvl", "png"]:
 				data.level_data.resource_path = ""
 				SaveLoad.save_level(data.level_data)
 	_update_level_path_display()
@@ -123,7 +126,9 @@ func save_level() -> void:
 func load_level(path: String) -> void:
 	var ext := path.get_extension()
 	if ext in ["res", "tres"]:
-		# TODO: Deprecate loading .res and .tres files unless they're from res://
+		if not path.begins_with("res://"):
+			printerr("Loading .res and .tres levels outside res:// is not allowed")
+			return
 		var res := load(path)
 		var valid := (res != null) and (res is LevelData)
 		if valid:
@@ -132,54 +137,73 @@ func load_level(path: String) -> void:
 				res.resource_path = ""
 			data.level_data = res
 			res.file_path = path
-	elif ext == "lvl":
+	elif ext == "lvl" or ext == "png":
 		var new_level := SaveLoad.load_from(path)
 		if is_instance_valid(new_level):
 			data.level_data = new_level
 	else:
-		assert(false)
+		assert(not ext in SaveLoad.LEVEL_EXTENSIONS, "Trying to load level with invalid extension")
+		assert(false, "Not all valid extensions are covered")
 	_update_level_path_display()
 
 func _update_level_path_display() -> void:
+	level_path_displayer.show()
 	if data.level_data.resource_path != "":
 		level_path_displayer.text = data.level_data.resource_path
-	else:
+	elif data.level_data.file_path != "":
 		level_path_displayer.text = data.level_data.file_path
+	else:
+		level_path_displayer.hide()
 
 func _on_save_as_pressed() -> void:
 	file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
 	
 	file_dialog.clear_filters()
 	file_dialog.add_filter("*.lvl", "Level file")
+	file_dialog.add_filter("*.png", "Level file (image)")
+	if data.level_data.file_path == "":
+		var line_edit := file_dialog.get_line_edit()
+		var level_name := data.level_data.name
+		if level_name == "":
+			level_name = "Untitled"
+		line_edit.text = level_name + ".lvl"
+		line_edit.caret_column = line_edit.text.length()
 	
 	file_dialog.popup_centered_ratio(0.9)
+
+func _on_save_pressed() -> void:
+	if data.level_data.file_path == "":
+		_on_save_as_pressed()
+	else:
+		save_level()
 
 func _on_load_pressed() -> void:
 	file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	
 	file_dialog.clear_filters()
 	file_dialog.add_filter("*.lvl", "Level file")
-	file_dialog.add_filter("*.res", "Binary Resource")
-	file_dialog.add_filter("*.tres", "Text Resource")
+	file_dialog.add_filter("*.png", "Level file (image)")
 	
 	file_dialog.popup_centered_ratio(0.9)
 
 func _on_load_from_clipboard_pressed() -> void:
-	var img := Global.get_image_from_clipboard()
-	if img == null:
+	var image := Global.get_image_from_clipboard()
+	if image == null:
 		Global.show_notification("No image in clipboard (or other error)")
 	else:
-		
-		pass
+		var new_level := SaveLoad.load_from_image(image)
+		if is_instance_valid(new_level):
+			data.level_data = new_level
+		_update_level_path_display()
 
 func _on_file_selected(path: String) -> void:
 	match file_dialog.file_mode:
 		FileDialog.FILE_MODE_SAVE_FILE:
-			# Save
+			# Save As
 			data.level_data.file_path = path
 			save_level()
 		FileDialog.FILE_MODE_OPEN_FILE:
-			# Open
+			# Load
 			load_level(path)
 
 func _on_more_options_selected(idx: int) -> void:
@@ -192,13 +216,12 @@ func _on_more_options_selected(idx: int) -> void:
 		_:
 			assert(false)
 
-const LEVEL_EXTENSIONS := ["res", "tres", "lvl"]
 # Moves all levels (incl. .res and .tres) from one location to another
 func move_levels(from: String, to: String) -> void:
 	var dir := DirAccess.open(from)
 	for file_name in dir.get_files():
 		print("moving " + file_name)
-		if file_name.get_extension() in LEVEL_EXTENSIONS:
+		if file_name.get_extension() in SaveLoad.LEVEL_EXTENSIONS:
 			var err := dir.rename(file_name, to.path_join(file_name))
 			if err != OK:
 				print("failed to move %s. error code %d" % [file_name, err])

@@ -173,17 +173,3 @@ text = "Copy to Clipboard"
 visible = false
 layout_mode = 2
 text = "(Save level to refresh image)"
-
-[node name="LevelFormat" type="HBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 10
-alignment = 1
-
-[node name="Label" type="Label" parent="VBoxContainer/LevelFormat"]
-layout_mode = 2
-text = "Level Save Format: "
-
-[node name="LevelFormat" type="Label" parent="VBoxContainer/LevelFormat"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "0"

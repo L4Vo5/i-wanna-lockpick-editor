@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=96 format=3]
+[gd_resource type="Resource" script_class="LevelData" load_steps=96 format=3 uid="uid://duetyl1ll5edp"]
 
 [ext_resource type="Script" path="res://data/complex_number.gd" id="1_2738f"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_gvoh1"]
@@ -828,7 +828,6 @@ position = Vector2i(448, 256)
 
 [resource]
 script = ExtResource("5_ng5dl")
-num_version = 1
 editor_version = ""
 doors = Array[ExtResource("3_x1ajv")]([SubResource("Resource_khsiw"), SubResource("Resource_siku0"), SubResource("Resource_25rrc"), SubResource("Resource_bpaqx"), SubResource("Resource_cfyb3"), SubResource("Resource_37saf"), SubResource("Resource_rgjyr"), SubResource("Resource_tksnk"), SubResource("Resource_cn8br"), SubResource("Resource_lswig"), SubResource("Resource_6h7b4"), SubResource("Resource_ut3xu"), SubResource("Resource_5umuq"), SubResource("Resource_8exh6"), SubResource("Resource_umcxr"), SubResource("Resource_1ak2b"), SubResource("Resource_n4epy"), SubResource("Resource_rhngf"), SubResource("Resource_4sk3a"), SubResource("Resource_ohfdw")])
 keys = Array[ExtResource("4_hag16")]([SubResource("Resource_t0dme"), SubResource("Resource_30i26"), SubResource("Resource_y54ju"), SubResource("Resource_p32pp"), SubResource("Resource_rrvfs"), SubResource("Resource_vd2lq"), SubResource("Resource_4d5s7"), SubResource("Resource_jpriv"), SubResource("Resource_qvqwc"), SubResource("Resource_vpjqu"), SubResource("Resource_5rygq"), SubResource("Resource_0at25"), SubResource("Resource_42bbj"), SubResource("Resource_il0tl"), SubResource("Resource_8iayq")])

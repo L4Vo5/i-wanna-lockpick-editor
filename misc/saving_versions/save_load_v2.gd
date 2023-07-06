@@ -1,5 +1,5 @@
 static func save(level: LevelData, data: ByteAccess) -> void:
-	data.store_u16(level.num_version)
+	data.store_u16(SaveLoad.LATEST_FORMAT)
 	data.store_string(level.editor_version)
 	data.store_string(level.name)
 	data.store_string(level.author)
@@ -173,6 +173,12 @@ class ByteAccess:
 		data = _data
 		curr = _offset
 
+	func seek(pos: int) -> void:
+		curr = pos
+	
+	func get_position() -> int:
+		return curr
+
 	func compress() -> void:
 		data.resize(curr)
 
@@ -227,7 +233,6 @@ class ByteAccess:
 	
 	# Similar to FileAccess.store_pascal_string
 	func store_string(s: String) -> void:
-		var older_curr := curr
 		var bytes := s.to_utf8_buffer()
 		store_u32(bytes.size())
 		# TODO / WAITING4GODOT: find a better way to store buffers

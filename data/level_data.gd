@@ -3,7 +3,6 @@ class_name LevelData
 
 # has this level been loaded already? (no version check should be done)
 var has_been_loaded := false
-@export var num_version: int = SaveLoad.LATEST_FORMAT
 # Just in case it's needed
 @export var editor_version: String
 

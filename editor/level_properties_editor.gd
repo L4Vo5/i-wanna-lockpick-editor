@@ -24,7 +24,6 @@ var _level_data: LevelData:
 @onready var what_to_place: OptionButton = %WhatToPlace
 @onready var level_size: Label = %LevelSize
 @onready var level_path: Label = %LevelPath
-@onready var level_format: Label = %LevelFormat
 @onready var level_name: LineEdit = %LevelName
 @onready var level_author: LineEdit = %LevelAuthor
 
@@ -81,7 +80,6 @@ func _on_what_to_place_changed() -> void:
 
 func _on_general_changed() -> void:
 	level_size.text = str(_level_data.size)
-	level_format.text = str(_level_data.num_version)
 	level_path.text = str(_level_data.file_path)
 	if level_author.text != _level_data.author:
 		level_author.text = _level_data.author
