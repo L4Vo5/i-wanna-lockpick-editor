@@ -17,7 +17,17 @@ class_name LockpickEditor
 @export var load_button: Button
 @export var load_from_clipboard_button: Button
 @export var level_path_displayer: LineEdit
+@export var open_files_location: Button
+@export var new_level_button: Button
 @export var more_options: MenuButton
+
+@onready var hide_on_play: Array[CanvasItem] = [
+	save_button,
+	save_as_button,
+	load_button,
+	load_from_clipboard_button,
+	new_level_button
+]
 
 @export var file_dialog: FileDialog
 
@@ -43,6 +53,16 @@ func _ready() -> void:
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
 	
+	if Global.is_exported:
+		_on_new_level_button_pressed()
+	else:
+		var p := "user://levels/testing.tres"
+		if FileAccess.file_exists(p):
+			level.level_data = load(p)
+		else:
+			_on_new_level_button_pressed()
+	
+	
 	data.level_data = level.level_data
 	data.level = level
 	data.door_editor = door_editor
@@ -64,6 +84,10 @@ func _ready() -> void:
 	save_as_button.pressed.connect(_on_save_as_pressed)
 	load_button.pressed.connect(_on_load_pressed)
 	load_from_clipboard_button.pressed.connect(_on_load_from_clipboard_pressed)
+	
+	open_files_location.pressed.connect(_on_open_files_location_pressed)
+	
+	new_level_button.pressed.connect(_on_new_level_button_pressed)
 	
 	level_path_displayer.tooltip_text = "The current level's path"
 	
@@ -98,7 +122,8 @@ func _on_play_pressed() -> void:
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
 	level.reset()
-	play_button.release_focus()
+	for node in hide_on_play:
+		node.visible = not data.is_playing
 	# fix for things staying focused when playing
 	set_focus_mode(Control.FOCUS_ALL)
 	grab_focus()
@@ -112,12 +137,12 @@ func save_level() -> void:
 				path = data.level_data.resource_path
 			var ext := path.get_extension()
 			if ext in ["res", "tres"]:
-				if path.begins_with("res://"):
-					# One of the default levels, save it
+				# Allow saving res and tres anywhere when testing
+				if not Global.is_exported:
 					data.level_data.resource_path = path
 					ResourceSaver.save(data.level_data)
 				else:
-					assert(false)
+					Global.safe_error("Report this (saving resource).", Vector2(300, 100))
 			elif ext in ["lvl", "png"]:
 				data.level_data.resource_path = ""
 				SaveLoad.save_level(data.level_data)
@@ -126,8 +151,8 @@ func save_level() -> void:
 func load_level(path: String) -> void:
 	var ext := path.get_extension()
 	if ext in ["res", "tres"]:
-		if not path.begins_with("res://"):
-			printerr("Loading .res and .tres levels outside res:// is not allowed")
+		if Global.is_exported and not path.begins_with("res://"):
+			Global.safe_error("Loading resource levels outside res:// is not allowed", Vector2(300, 100))
 			return
 		var res := load(path)
 		var valid := (res != null) and (res is LevelData)
@@ -161,6 +186,9 @@ func _on_save_as_pressed() -> void:
 	file_dialog.clear_filters()
 	file_dialog.add_filter("*.lvl", "Level file")
 	file_dialog.add_filter("*.png", "Level file (image)")
+	if Global.danger_override:
+		file_dialog.add_filter("*.res", "Binary Resource")
+		file_dialog.add_filter("*.tres", "Text Resource")
 	if data.level_data.file_path == "":
 		var line_edit := file_dialog.get_line_edit()
 		var level_name := data.level_data.name
@@ -172,7 +200,10 @@ func _on_save_as_pressed() -> void:
 	file_dialog.popup_centered_ratio(0.9)
 
 func _on_save_pressed() -> void:
-	if data.level_data.file_path == "":
+	# Allow saving .res, .tres, and levels in res:// when testing
+	if Global.danger_override:
+		save_level()
+	elif data.level_data.file_path == "":
 		_on_save_as_pressed()
 	else:
 		save_level()
@@ -183,6 +214,9 @@ func _on_load_pressed() -> void:
 	file_dialog.clear_filters()
 	file_dialog.add_filter("*.lvl", "Level file")
 	file_dialog.add_filter("*.png", "Level file (image)")
+	if Global.danger_override:
+		file_dialog.add_filter("*.res", "Binary Resource")
+		file_dialog.add_filter("*.tres", "Text Resource")
 	
 	file_dialog.popup_centered_ratio(0.9)
 
@@ -205,6 +239,14 @@ func _on_file_selected(path: String) -> void:
 		FileDialog.FILE_MODE_OPEN_FILE:
 			# Load
 			load_level(path)
+
+func _on_new_level_button_pressed() -> void:
+	data.level_data = load("res://editor/levels/default.tres")
+	data.level_data.resource_path = ""
+	_update_level_path_display()
+
+func _on_open_files_location_pressed() -> void:
+	OS.shell_open(ProjectSettings.globalize_path("user://levels/"))
 
 func _on_more_options_selected(idx: int) -> void:
 	var popup_menu := more_options.get_popup()

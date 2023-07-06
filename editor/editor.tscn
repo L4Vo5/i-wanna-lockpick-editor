@@ -16,12 +16,12 @@
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 
-[sub_resource type="Resource" id="Resource_pesil"]
+[sub_resource type="Resource" id="Resource_751af"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_preay"]
+[sub_resource type="Resource" id="Resource_174ty"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -33,11 +33,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_o2yu4"]
+[sub_resource type="Resource" id="Resource_f5h6y"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_pesil")
+amount = SubResource("Resource_751af")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_preay")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_174ty")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -48,19 +48,19 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_7ev15"]
+[sub_resource type="Resource" id="Resource_fcvac"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_a1t5q"]
+[sub_resource type="Resource" id="Resource_g8c3h"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_7ev15")
+amount = SubResource("Resource_fcvac")
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("level", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "more_options", "file_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("level", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -82,6 +82,8 @@ save_as_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContai
 load_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Load")
 load_from_clipboard_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/LoadFromClipboard")
 level_path_displayer = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/LevelPath")
+open_files_location = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/OpenFilesLocation")
+new_level_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/NewLevel")
 more_options = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/MoreOptions")
 file_dialog = NodePath("FileDialogue")
 
@@ -144,7 +146,16 @@ text = "Load"
 layout_mode = 2
 text = "Load from Clipboard"
 
+[node name="NewLevel" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+text = "New Level"
+
+[node name="OpenFilesLocation" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+text = "Open Level Files Location"
+
 [node name="MoreOptions" type="MenuButton" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+visible = false
 layout_mode = 2
 text = "More..."
 
@@ -259,12 +270,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_o2yu4")
+door_data = SubResource("Resource_f5h6y")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_a1t5q")
+key_data = SubResource("Resource_g8c3h")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false

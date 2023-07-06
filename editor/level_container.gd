@@ -73,10 +73,17 @@ func _ready() -> void:
 	editor_data.side_tabs.tab_changed.connect(_retry_ghosts.unbind(1))
 	editor_data.level.changed_doors.connect(_retry_ghosts)
 	editor_data.level.changed_keys.connect(_retry_ghosts)
+	editor_data.changed_level_data.connect(_on_changed_level_data)
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_retry_ghosts, CONNECT_DEFERRED)
 	_retry_ghosts()
 	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
+
+func _on_changed_level_data() -> void:
+	# deselect everything
+	selected_obj = null
+	hovered_obj = null
+	danger_obj = null
 
 func _on_door_gui_input(event: InputEvent, door: Door) -> void:
 	if editor_data.disable_editing: return

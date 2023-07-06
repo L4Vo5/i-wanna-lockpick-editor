@@ -14,6 +14,10 @@ var game_version = ProjectSettings.get_setting("application/config/game_version"
 @onready var safe_error_dialog: AcceptDialog = %SafeError
 @onready var http_request: HTTPRequest = $HTTPRequest
 
+var danger_override: bool:
+	get:
+		return (not is_exported) and (Input.is_key_pressed(KEY_CTRL))
+
 signal changed_level
 var current_level: Level:
 	set(val):

@@ -40,6 +40,7 @@ signal delete
 		if door_size == val: return
 		door_size = val
 		_update_max_pos()
+		_update_max_size()
 
 
 
@@ -202,3 +203,8 @@ func _update_max_pos() -> void:
 	if not is_node_ready(): await ready
 	position_x.max_value = door_size.x - lock_data.size.x
 	position_y.max_value = door_size.y - lock_data.size.y
+
+func _update_max_size() -> void:
+	if not is_node_ready(): await ready
+	width.max_value = door_size.x
+	height.max_value = door_size.y
