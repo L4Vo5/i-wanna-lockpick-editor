@@ -109,9 +109,6 @@ var autorun_tween: Tween
 # useful for levels with a lot of door copies
 var door_multiplier := 1
 
-# will be true if level data hasn't changed
-var can_soft_reset := false
-
 
 func _init() -> void:
 	undo_redo = GoodUndoRedo.new()
@@ -173,7 +170,7 @@ func _physics_process(_delta: float) -> void:
 			last_player_undo = player.get_undo_action()
 
 # force_hard_reset is for benchmarking purposes
-func reset(force_hard_reset := false) -> void:
+func reset() -> void:
 	if not is_node_ready(): return
 	assert(PerfManager.start("Level::reset"))
 	
@@ -208,8 +205,6 @@ func reset(force_hard_reset := false) -> void:
 			var key := keys.get_child(i)
 			key.set_meta(&"original_key_data", level_data.keys[i])
 			key.key_data = level_data.keys[i].duplicated()
-#			key.original_key_data = level_data.keys[i]
-#			key.door_data = key.original_key_data
 		# shave off the rest
 		if current_keys > needed_keys:
 			for _i in current_keys - needed_keys:
@@ -221,20 +216,16 @@ func reset(force_hard_reset := false) -> void:
 		else:
 			for i in range(current_keys, needed_keys):
 				_spawn_key(level_data.keys[i])
-		
 		assert(PerfManager.end("Level::reset (keys)"))
+		
+		assert(PerfManager.start("Level::reset (tiles)"))
 		tile_map.clear()
 		for tile_coord in level_data.tiles:
 			_spawn_tile(tile_coord)
+		assert(PerfManager.end("Level::reset (tiles)"))
 		
 		_spawn_goal()
 		_spawn_player()
-		
-	
-#	if can_soft_reset and not force_hard_reset:
-#		soft_reset()
-#	else:
-#		hard_reset()
 	
 	glitch_color = Enums.colors.glitch
 	
@@ -247,71 +238,7 @@ func reset(force_hard_reset := false) -> void:
 	i_view = false
 	is_autorun_on = false
 	
-	can_soft_reset = true
 	assert(PerfManager.end("Level::reset"))
-#	PerfManager.print_report()
-#	PerfManager.clear()
-
-# Hard resets by erasing and respawning everything
-func hard_reset() -> void:
-	if not is_node_ready(): return
-		
-	assert(PerfManager.start("Level::hard_reset"))
-	# Clear everything
-	assert(PerfManager.start("Level::hard_reset (clearing)"))
-	# deleting the children in revere is faster than in the normal order
-	# AND faster than queue_freeing the doors/keys variables
-	remove_all_pooled()
-#	var c
-#	c = keys.get_children()
-#	c.reverse()
-#	for key in c:
-#		keys.remove_child(key)
-#		key.queue_free()
-	
-	tile_map.clear()
-	assert(PerfManager.end("Level::hard_reset (clearing)"))
-	
-	# Spawn everything
-#	var i := doors.get_index()
-#	remove_child(doors)
-	for door_data in level_data.doors:
-		_spawn_door(door_data)
-#	add_child(doors)
-#	move_child(doors, i)
-#	i = keys.get_index()
-#	remove_child(keys)
-	for key_data in level_data.keys:
-		_spawn_key(key_data)
-#	add_child(keys)
-#	move_child(keys, i)
-	for tile_coord in level_data.tiles:
-		_spawn_tile(tile_coord)
-	_spawn_goal()
-	_spawn_player()
-	assert(PerfManager.end("Level::hard_reset"))
-
-func soft_reset() -> void:
-	if not is_node_ready(): return
-	if not can_soft_reset:
-		reset()
-		return
-	assert(PerfManager.start("Level::soft_reset"))
-	
-	# update doors and keys
-	for door in doors.get_children():
-		door.door_data = door.original_door_data.duplicated()
-	for key in keys.get_children():
-		key.key_data = key.get_meta(&"original_key_data").duplicated()
-	
-	# (tilemap stays as it is)
-	
-	# technically should just reposition the player and goal
-	# this will kill and respawn them. not bad for performance tho since they're individual objects
-	_spawn_goal()
-	_spawn_player()
-	
-	assert(PerfManager.end("Level::soft_reset"))
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
@@ -323,16 +250,12 @@ func _connect_level_data() -> void:
 	_update_goal_position()
 	level_data.changed_doors.connect(emit_signal.bind(&"changed_doors"))
 	level_data.changed_keys.connect(emit_signal.bind(&"changed_keys"))
-	# not actually needed, since when it changes on editor level reflects the changes always
-#	level_data.changed.connect(set.bind(&"can_soft_reset", false))
-	can_soft_reset = false
 	reset()
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(level_data): return
 	var amount = Global.fully_disconnect(self, level_data)
 	assert(amount == 4)
-	can_soft_reset = false
 
 func _update_player_spawn_position() -> void:
 	if not is_node_ready(): return
