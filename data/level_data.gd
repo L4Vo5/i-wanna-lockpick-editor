@@ -19,17 +19,16 @@ signal changed_player_spawn_position
 		if player_spawn_position == val: return
 		player_spawn_position = val
 		changed_player_spawn_position.emit()
-		changed.emit()
 signal changed_goal_position
 @export var goal_position := Vector2i(0, 0):
 	set(val):
 		if goal_position == val: return
 		goal_position = val
 		changed_goal_position.emit()
-		changed.emit()
 @export var custom_lock_arrangements := {}
 ## Just saves all positions for the tiles... I'll come up with something better later ok
 # It's a dict so it's not absurdly inefficient to check for repeats when placing new ones
+signal changed_tiles
 @export var tiles := {}
 @export var name := "":
 	set(val):
@@ -47,6 +46,13 @@ var file_path := "":
 		if file_path == val: return
 		file_path = val
 		changed.emit()
+
+func _init() -> void:
+	changed_doors.connect(emit_changed)
+	changed_keys.connect(emit_changed)
+	changed_tiles.connect(emit_changed)
+	changed_player_spawn_position.connect(emit_changed)
+	changed_goal_position.connect(emit_changed)
 
 func clear_outside_things() -> void:
 	var amount_deleted := 0

@@ -394,6 +394,7 @@ func move_door(door: Door, new_position: Vector2i) -> bool:
 	if not is_space_occupied(rect, [], [door_data]):
 		door_data.position = new_position
 		door.door_data.position = new_position
+		level_data.changed_doors.emit()
 		return true
 	else:
 		return false
@@ -436,6 +437,7 @@ func move_key(key: Key, new_position: Vector2i) -> bool:
 	if not is_space_occupied(rect, [], [key_data]):
 		key_data.position = new_position
 		key.key_data.position = new_position
+		level_data.changed_keys.emit()
 		return true
 	else:
 		return false
@@ -453,6 +455,7 @@ func place_tile(tile_coord: Vector2i) -> void:
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
 	level_data.tiles[tile_coord] = true
 	_spawn_tile(tile_coord)
+	level_data.changed_tiles.emit()
 
 func _spawn_tile(tile_coord: Vector2i) -> void:
 	var layer := 0
@@ -466,6 +469,7 @@ func remove_tile(tile_coord: Vector2i) -> bool:
 	level_data.tiles.erase(tile_coord)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
+	level_data.changed_tiles.emit()
 	return true
 
 func _spawn_player() -> void:

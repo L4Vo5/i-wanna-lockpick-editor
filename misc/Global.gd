@@ -34,7 +34,6 @@ var _current_mode := Modes.GAMEPLAY
 var image_copier
 var image_copier_exists:
 	get:
-		return false
 		return is_instance_valid(image_copier)
 
 enum Modes {

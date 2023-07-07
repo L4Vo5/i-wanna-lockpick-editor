@@ -41,7 +41,7 @@ func _connect_level_data() -> void:
 	_on_changed_goal_position()
 	_on_general_changed()
 	if not Global.image_copier_exists:
-		copy_to_clipboard.text = "Refresh"
+		copy_to_clipboard.text = "Force Refresh"
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(_level_data): return
@@ -84,11 +84,8 @@ func _on_what_to_place_changed() -> void:
 func _on_general_changed() -> void:
 	level_size.text = str(_level_data.size)
 	level_path.text = str(_level_data.file_path)
-	if level_author.text != _level_data.author:
-		level_author.text = _level_data.author
-	if level_name.text != _level_data.name:
-		level_name.text = _level_data.name
-	print("Reloading image in on_general_changed")
+	level_author.text = _level_data.author
+	level_name.text = _level_data.name
 	_reload_image()
 
 func _on_set_name(new_name: String) -> void:
