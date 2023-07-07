@@ -30,6 +30,7 @@ class_name LockpickEditor
 ]
 
 @export var file_dialog: FileDialog
+@export var invalid_level_dialog: InvalidLevelLoad
 
 var data := EditorData.new()
 
@@ -100,6 +101,9 @@ func _ready() -> void:
 	popup_menu.add_item("More extra options coming soon? xD")
 	popup_menu.index_pressed.connect(_on_more_options_selected)
 	
+	invalid_level_dialog.load_level_fixed.connect(_on_load_fixed)
+	invalid_level_dialog.load_level_unfixed.connect(_on_load_unfixed)
+	
 	_update_level_path_display()
 
 func _update_mode() -> void:
@@ -148,7 +152,9 @@ func save_level() -> void:
 				SaveLoad.save_level(data.level_data)
 	_update_level_path_display()
 
+var new_level: LevelData = null
 func load_level(path: String) -> void:
+	new_level = null
 	var ext := path.get_extension()
 	if ext in ["res", "tres"]:
 		if Global.is_exported and not path.begins_with("res://"):
@@ -157,18 +163,43 @@ func load_level(path: String) -> void:
 		var res := load(path)
 		var valid := (res != null) and (res is LevelData)
 		if valid:
+			new_level = res
 			if not path.begins_with("res://"):
 				path = path.get_basename() + ".lvl"
-				res.resource_path = ""
-			data.level_data = res
-			res.file_path = path
+				new_level.resource_path = ""
 	elif ext == "lvl" or ext == "png":
-		var new_level := SaveLoad.load_from(path)
-		if is_instance_valid(new_level):
-			data.level_data = new_level
+		new_level = SaveLoad.load_from(path)
 	else:
 		assert(not ext in SaveLoad.LEVEL_EXTENSIONS, "Trying to load level with invalid extension")
 		assert(false, "Not all valid extensions are covered")
+	finish_loading_level()
+
+func _on_load_from_clipboard_pressed() -> void:
+	var image := Global.get_image_from_clipboard()
+	if image == null:
+		Global.show_notification("No image in clipboard (or other error)")
+	else:
+		new_level = SaveLoad.load_from_image(image)
+		finish_loading_level()
+
+func finish_loading_level() -> void:
+	if is_instance_valid(new_level):
+		new_level.check_valid(false)
+		var fixable_problems := new_level.get_fixable_invalid_reasons()
+		var unfixable_problems := new_level.get_unfixable_invalid_reasons()
+		if fixable_problems.is_empty() and unfixable_problems.is_empty():
+			data.level_data = new_level
+			_update_level_path_display()
+		else:
+			invalid_level_dialog.appear(fixable_problems, unfixable_problems)
+
+func _on_load_fixed() -> void:
+	new_level.check_valid(true)
+	data.level_data = new_level
+	_update_level_path_display()
+
+func _on_load_unfixed() -> void:
+	data.level_data = new_level
 	_update_level_path_display()
 
 func _update_level_path_display() -> void:
@@ -219,16 +250,6 @@ func _on_load_pressed() -> void:
 		file_dialog.add_filter("*.tres", "Text Resource")
 	
 	file_dialog.popup_centered_ratio(0.9)
-
-func _on_load_from_clipboard_pressed() -> void:
-	var image := Global.get_image_from_clipboard()
-	if image == null:
-		Global.show_notification("No image in clipboard (or other error)")
-	else:
-		var new_level := SaveLoad.load_from_image(image)
-		if is_instance_valid(new_level):
-			data.level_data = new_level
-		_update_level_path_display()
 
 func _on_file_selected(path: String) -> void:
 	match file_dialog.file_mode:

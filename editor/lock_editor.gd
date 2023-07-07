@@ -86,6 +86,7 @@ func _ready() -> void:
 	fit.editor_description = "Makes the lock as small as possible"
 	
 	_set_to_lock_data()
+	_update_max_size()
 
 # See _setting_to_data in DoorEditor
 var _setting_to_data := false

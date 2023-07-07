@@ -235,3 +235,39 @@ func get_used_color() -> Enums.colors:
 	elif used_color == Enums.colors.glitch:
 		used_color = glitch_color
 	return used_color
+
+func check_valid(level_data: LevelData, should_correct: bool) -> void:
+	if amount.is_zero():
+		level_data.add_invalid_reason("Door has count 0", true)
+		if should_correct:
+			amount.set_real_part(1)
+	for lock in locks:
+		lock.check_valid(level_data, should_correct)
+		# First, constrain to door size
+		if lock.size.x > size.x or lock.size.y > size.y:
+			level_data.add_invalid_reason("Lock bigger than door", true)
+			if should_correct:
+				lock.size = lock.size.clamp(Vector2i.ZERO, size)
+		# Then, reposition lock as best as possible toward the upper left corner
+		var max_pos := size - lock.size
+		var new_pos := lock.position.clamp(Vector2i.ZERO, max_pos)
+		if new_pos != lock.position:
+			level_data.add_invalid_reason("Lock in wrong position", true)
+			if should_correct:
+				lock.position = new_pos
+	# TODO: better check locks overlapping eachother 
+#	if not check_lock_overlaps():
+#		level_data.add_invalid_reason("There are overlapping locks", false)
+
+func check_lock_overlaps() -> bool:
+	var rects: Array[Rect2i] = []
+	rects.resize(locks.size())
+	for i in locks.size():
+		rects[i] = Rect2i(locks[i].position, locks[i].size)
+	for i in rects.size():
+		var r1 := rects[i]
+		for j in range(i + 1, rects.size()):
+			var r2 := rects[j]
+			if r1.intersects(r2):
+				return false
+	return false

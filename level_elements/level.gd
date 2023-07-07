@@ -119,24 +119,25 @@ func _init() -> void:
 		_ensure_key_counts()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"i-view") and not event.is_echo():
-		if Global.is_playing:
-			i_view = not i_view
-			i_view_sound_1.play()
-			i_view_sound_2.play()
-	elif event.is_action_pressed(&"restart") and not event.is_echo():
+	if not Global.is_playing: return
+	if event.is_action_pressed(&"i-view"):
+		i_view = not i_view
+		i_view_sound_1.play()
+		i_view_sound_2.play()
+	elif event.is_action_pressed(&"restart"):
 		reset()
-	elif event.is_action_pressed(&"undo"): # echos are allowed
+	elif event.is_action_pressed(&"undo", true):
 		undo.call_deferred()
 	# TODO: Make redo work properly (bugs related to standing on doors?)
 #	elif event.is_action(&"redo") and event.is_pressed():
 #		if not Global.is_playing: return
 #		undo_redo.redo()
-	elif event.is_action_pressed(&"savestate"):
-		if not Global.is_playing: return
+	elif event.is_action_pressed(&"savestate", true):
+		undo_sound.pitch_scale = 0.5
+		undo_sound.play()
 		start_undo_action()
 		end_undo_action()
-	elif event.is_action_pressed(&"autorun") and not event.is_echo():
+	elif event.is_action_pressed(&"autorun"):
 		is_autorun_on = !is_autorun_on
 		var used: Sprite2D
 		if is_autorun_on:
@@ -315,7 +316,7 @@ func soft_reset() -> void:
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
 	# Must do this in case level data has no version
-	level_data.check_valid()
+	level_data.check_valid(false)
 	level_data.changed_player_spawn_position.connect(_update_player_spawn_position)
 	_update_player_spawn_position()
 	level_data.changed_goal_position.connect(_update_goal_position)
@@ -575,6 +576,7 @@ func end_undo_action() -> void:
 # For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
 func undo() -> void:
 	if not Global.is_playing: return
+	undo_sound.pitch_scale = 0.6
 	undo_sound.play()
 	undo_redo.undo()
 	last_player_undo = player.get_undo_action()

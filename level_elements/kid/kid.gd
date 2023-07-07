@@ -73,7 +73,7 @@ func _physics_process(_delta: float) -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not is_instance_valid(Global.current_level): return
-	if event.is_action_pressed(&"master") and not event.is_echo():
+	if event.is_action_pressed(&"master"):
 		update_master_equipped(true, true)
 
 var on_floor := true

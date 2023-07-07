@@ -82,24 +82,44 @@ func clear_outside_things() -> void:
 	if amount_deleted != 0:
 		print("deleted %d outside things" % amount_deleted)
 
-# Checks if the level is valid, and fixes any invalidness
-func check_valid() -> void:
+var _invalid_reasons := {}
+func add_invalid_reason(reason: StringName, fixable: bool) -> void:
+	if _invalid_reasons.has(reason) and _invalid_reasons[reason] != fixable:
+		add_invalid_reason("Contradictory invalid reasons!!!", false)
+		assert(false)
+	_invalid_reasons[reason] = fixable
+
+func get_fixable_invalid_reasons() -> Array[String]:
+	var list: Array[String] = []
+	for reason in _invalid_reasons.keys():
+		if _invalid_reasons[reason]:
+			list.push_back(reason)
+	return list
+
+func get_unfixable_invalid_reasons() -> Array[String]:
+	var list: Array[String] = []
+	for reason in _invalid_reasons.keys():
+		if not _invalid_reasons[reason]:
+			list.push_back(reason)
+	return list
+
+# Checks if the level is valid.
+# if should_correct is true, corrects whatever invalid things it can.
+func check_valid(should_correct: bool) -> void:
+	_invalid_reasons.clear()
 	clear_outside_things()
 	# TODO: Check collisions between things
-	# TODO: Check locks not overlapping eachother + not outside door
 	# etc...
 	# Currently, weird sizes aren't allowed
 	size = Vector2i(800, 608)
 	# Clamp player spawn to the grid + inside the level
-	var original_pos := player_spawn_position
-	player_spawn_position = player_spawn_position.clamp(Vector2i(14, 32), size - Vector2i(32 - 14, 0))
-	player_spawn_position -= Vector2i(14, 0)
-	player_spawn_position = player_spawn_position.snapped(Vector2i(32, 32))
-	player_spawn_position += Vector2i(14, 0)
-	if player_spawn_position != original_pos:
-		push_warning("WARNING: Invalid player position. Corrected.")
-	# Doors shouldn't have a count of 0
+	var new_pos := player_spawn_position.clamp(Vector2i(14, 32), size - Vector2i(32 - 14, 0))
+	new_pos -= Vector2i(14, 0)
+	new_pos = player_spawn_position.snapped(Vector2i(32, 32))
+	new_pos += Vector2i(14, 0)
+	if player_spawn_position != new_pos:
+		add_invalid_reason("Invalid player position.", true)
+		if should_correct:
+			player_spawn_position = new_pos
 	for door in doors:
-		if door.amount.is_zero():
-			push_warning("WARNING: Door had count 0. Corrected.")
-			door.amount.set_real_part(1)
+		door.check_valid(self, should_correct)

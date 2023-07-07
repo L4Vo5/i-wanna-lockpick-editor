@@ -237,3 +237,11 @@ func rotor() -> LockData:
 	if value_type == Enums.value.real:
 		flip_sign()
 	return self
+
+func check_valid(level_data: LevelData, should_correct: bool) -> void:
+	if color == Enums.colors.none:
+		level_data.add_invalid_reason("Lock has none color", false)
+	if magnitude == 0 and lock_type == Enums.lock_types.normal:
+		level_data.add_invalid_reason("Lock has normal type but magnitude 0", true)
+		if should_correct:
+			magnitude = 1

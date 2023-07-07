@@ -177,3 +177,11 @@ func copy_image_to_clipboard(image: Image) -> void:
 			print("Error when copying image: " + res)
 	else:
 		print(":(")
+
+func smart_adjust_rect(rect: Rect2i, bound: Rect2i) -> Rect2i:
+	# First, constrain to bound size
+	rect.size = rect.size.clamp(Vector2.ZERO, bound.size)
+	# Then, reposition as best as possible toward the upper left corner
+	var max_pos := bound.position + bound.size - rect.size
+	rect.position = rect.position.clamp(bound.position, max_pos)
+	return rect

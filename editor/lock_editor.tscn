@@ -198,7 +198,7 @@ size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 theme = SubResource("Theme_3vag0")
 min_value = 18.0
-max_value = 640.0
+max_value = 32.0
 value = 18.0
 alignment = 1
 
@@ -215,7 +215,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 min_value = 18.0
-max_value = 640.0
+max_value = 32.0
 value = 18.0
 alignment = 1
 
