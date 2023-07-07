@@ -234,9 +234,15 @@ func reset() -> void:
 	for color in star_keys.keys():
 		star_keys[color] = false
 	
-	undo_redo.clear_history()
 	i_view = false
 	is_autorun_on = false
+	
+	undo_redo.clear_history()
+	# set up the undo in the start position
+	if not exclude_player: 
+		last_player_undo = player.get_undo_action()
+		start_undo_action()
+		end_undo_action()
 	
 	assert(PerfManager.end("Level::reset"))
 
@@ -405,10 +411,6 @@ func _spawn_player() -> void:
 	player = PLAYER.instantiate()
 	player.position = level_data.player_spawn_position
 	add_child(player)
-	
-	undo_redo.start_action()
-	undo_redo.add_undo_method(player.get_undo_action())
-	undo_redo.commit_action()
 
 func _spawn_goal() -> void:
 	if is_instance_valid(goal):
@@ -484,6 +486,7 @@ func _ensure_key_counts():
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
 func start_undo_action() -> void:
+	if exclude_player: return
 	if last_player_undo == last_saved_player_undo:
 		if undo_redo.get_action_count() > 1:
 			undo_redo.start_merge_last()
@@ -496,6 +499,7 @@ func start_undo_action() -> void:
 
 ## This is called after start_undo_action to finish the action
 func end_undo_action() -> void:
+	if exclude_player: return
 	undo_redo.commit_action(false)
 	# WAITING4GODOT: let me null callables damn it
 #	last_saved_player_undo = func(): pass
