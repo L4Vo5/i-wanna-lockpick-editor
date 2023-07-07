@@ -6,6 +6,7 @@ var in_editor := Engine.is_editor_hint()
 # in the level editor (as opposed to like, an individual level)
 var in_level_editor := false
 var is_exported := OS.has_feature("release")
+var is_web := OS.has_feature("web")
 ## Will basically be true if there's a player moving around
 var is_playing := false
 var game_version = ProjectSettings.get_setting("application/config/game_version")
@@ -33,6 +34,7 @@ var _current_mode := Modes.GAMEPLAY
 var image_copier
 var image_copier_exists:
 	get:
+		return false
 		return is_instance_valid(image_copier)
 
 enum Modes {

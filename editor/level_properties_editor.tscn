@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bq8lnotf0ys0p"]
+[gd_scene load_steps=3 format=3 uid="uid://bq8lnotf0ys0p"]
 
 [ext_resource type="Script" path="res://editor/level_properties_editor.gd" id="1_000i2"]
+[ext_resource type="Script" path="res://editor/level_image_rect.gd" id="2_blkvl"]
 
 [node name="LevelPropertiesEditor" type="MarginContainer"]
 offset_right = 193.0
@@ -156,10 +157,10 @@ visible = false
 layout_mode = 2
 text = "(no image)"
 
-[node name="LevelImageRect" type="TextureRect" parent="VBoxContainer/LevelImage"]
+[node name="LevelImageRect" type="Control" parent="VBoxContainer/LevelImage"]
 unique_name_in_owner = true
 layout_mode = 2
-stretch_mode = 3
+script = ExtResource("2_blkvl")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/LevelImage"]
 layout_mode = 2

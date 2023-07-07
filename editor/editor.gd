@@ -105,6 +105,12 @@ func _ready() -> void:
 	invalid_level_dialog.load_level_unfixed.connect(_on_load_unfixed)
 	
 	_update_level_path_display()
+	resolve_visibility()
+
+func resolve_visibility() -> void:
+	for node in hide_on_play:
+		node.visible = not data.is_playing
+	load_from_clipboard_button.visible = load_from_clipboard_button.visible and Global.image_copier_exists
 
 func _update_mode() -> void:
 	var tab_editor := side_tabs.get_current_tab_control()
@@ -126,8 +132,7 @@ func _on_play_pressed() -> void:
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
 	level.reset()
-	for node in hide_on_play:
-		node.visible = not data.is_playing
+	resolve_visibility()
 	# fix for things staying focused when playing
 	set_focus_mode(Control.FOCUS_ALL)
 	grab_focus()
