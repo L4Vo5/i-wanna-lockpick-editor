@@ -86,21 +86,23 @@ func _open_download_page() -> void:
 
 ## Disconnects every signal the emitter had connected to the receiver.
 ## Returns how many signals were disconnected (so you can assert if you know beforehand)
-# WAITING4GODOT: This will not work on anonymous functions because get_object() returns bool instead of Object, so I have to use a workaround that only works for methods. Issue #73998
+# TODO: ? check if, for anonymous functions, this actually disconnects them from ALL receivers
 func fully_disconnect(receiver: Object, emitter: Object) -> int:
 	var count := 0
+	# anonymous functions have the script itself as the owner... may not be that good tho
+	var receiver_script = receiver.get_script()
+	assert(receiver_script is Object)
 	for sig_data in emitter.get_signal_list():
 		assert(not sig_data.name is StringName) # maybe they'll update it 
 		var sig_name: String = sig_data.name
 		for connection_data in emitter.get_signal_connection_list(sig_name):
 			var sig: Signal = connection_data.signal
 			var callable: Callable = connection_data.callable
-			var met = receiver.get(callable.get_method())
-			if not met is Callable: continue
-			if sig.is_connected(met): 
-#			var obj: Object = callable.get_object()
-#			if obj == receiver:
-#				print("%s is connected to %s" % [str(sig), str(callable)])
+#			var met = receiver.get(callable.get_method())
+#			if not met is Callable: continue
+#			if sig.is_connected(met): 
+			var obj: Object = callable.get_object()
+			if obj == receiver or obj == receiver_script:
 				sig.disconnect(callable)
 				count += 1
 	return count
