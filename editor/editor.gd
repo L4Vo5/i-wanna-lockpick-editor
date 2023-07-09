@@ -28,6 +28,12 @@ class_name LockpickEditor
 	load_from_clipboard_button,
 	new_level_button
 ]
+@onready var hide_on_web: Array[CanvasItem] = [
+	open_files_location,
+]
+@onready var hide_on_no_image_copy: Array[CanvasItem] = [
+	load_from_clipboard_button
+]
 
 @export var file_dialog: FileDialog
 @export var invalid_level_dialog: InvalidLevelLoad
@@ -44,6 +50,12 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("play"):
 		_on_play_pressed()
 		accept_event()
+	if Input.is_key_pressed(KEY_CTRL) and Input.is_key_pressed(KEY_O):
+		if Global.is_web:
+			var path := "user://levels/Untitled.png"
+	#		var lvl := SaveLoad.load_from("user://levels/testing.tres")
+	#		SaveLoad.save_level(lvl)
+			OS.shell_open(ProjectSettings.globalize_path(path))
 
 func _ready() -> void:
 	DirAccess.make_dir_absolute("user://levels")
@@ -109,8 +121,20 @@ func _ready() -> void:
 
 func resolve_visibility() -> void:
 	for node in hide_on_play:
-		node.visible = not data.is_playing
-	load_from_clipboard_button.visible = load_from_clipboard_button.visible and Global.image_copier_exists
+		node.show()
+	for node in hide_on_no_image_copy:
+		node.show()
+	for node in hide_on_web:
+		node.show()
+	if data.is_playing:
+		for node in hide_on_play:
+			node.hide()
+	if not Global.image_copier_exists:
+		for node in hide_on_no_image_copy:
+			node.hide()
+	if Global.is_web:
+		for node in hide_on_web:
+			node.hide()
 
 func _update_mode() -> void:
 	var tab_editor := side_tabs.get_current_tab_control()

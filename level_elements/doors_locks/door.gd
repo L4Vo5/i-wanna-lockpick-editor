@@ -57,7 +57,6 @@ func _notification(what: int) -> void:
 
 func _connect_door_data() -> void:
 	if not is_instance_valid(door_data): return
-	# TODO: Don't be lazy lol. locks are hard to create so this might suck for editor performance
 	door_data.changed.connect(update_everything)
 	if not is_node_ready(): return
 	update_everything()
@@ -129,12 +128,7 @@ func _on_changed_i_view() -> void:
 	for lock in door_data.locks:
 		if not is_instance_valid(lock): continue
 		lock.dont_show_frame = not is_aligned
-		if level.i_view:
-			lock.rotation = 90
-		else:
-			lock.rotation = 0
-		if is_flipped:
-			lock.rotation += 180
+		lock.rotation = (90 if level.i_view else 0) + (180 if is_flipped else 0)
 
 func _on_changed_glitch_color() -> void:
 	if not is_instance_valid(door_data): return

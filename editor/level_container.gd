@@ -180,21 +180,6 @@ func _gui_input(event: InputEvent) -> void:
 					accept_event()
 		_retry_ghosts()
 
-# TODO: Improve this whole thing to make sense :)
-#func _physics_process(_delta: float) -> void:
-#	_place_ghost_door()
-#	_place_ghost_key()
-#	if is_dragging:
-#		ghost_door.hide()
-#		ghost_key.hide()
-#		hover_highlight.hide()
-
-# Stop selecting something if the mouse isn't over it
-#func consider_unselect() -> void:
-#	if selected_obj != null:
-#		if not selected_obj.get_rect().intersects(Rect2(get_mouse_coord(1), Vector2.ONE)):
-#			selected_obj = null
-
 func select_thing(obj: Node) -> void:
 	# is_dragging is set to true by _on_selected_highlight_adapted_to
 	selected_obj = obj

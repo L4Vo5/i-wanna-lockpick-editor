@@ -126,7 +126,6 @@ var rotation := 0:
 		changed_rotation.emit()
 		changed.emit()
 
-# WAITING4GODOT: Lmao a manual gdscript duplicate is faster than the default?
 func duplicated() -> LockData:
 	var lock := LockData.new()
 	lock.color = color

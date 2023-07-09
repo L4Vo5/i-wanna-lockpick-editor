@@ -501,8 +501,6 @@ func start_undo_action() -> void:
 func end_undo_action() -> void:
 	if exclude_player: return
 	undo_redo.commit_action(false)
-	# WAITING4GODOT: let me null callables damn it
-#	last_saved_player_undo = func(): pass
 
 # For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
 func undo() -> void:

@@ -49,7 +49,21 @@ func _ready() -> void:
 		key_pad.hide()
 	set_mode(_current_mode)
 	
+	
 	# Look for update...
+	if not is_web:
+		search_update()
+	
+	if is_web:
+		safe_error_dialog.get_ok_button().text = "Ok"
+		# wait for the size to be adjusted
+		await get_tree().process_frame
+		# More a notification than an error, but whatever
+		safe_error(
+	"""Downloading the desktop version of the editor is the recommended way to use it."""
+	, Vector2i(250,100))
+
+func search_update() -> void:
 	var dl_button := update_dialog.add_button("Download", true)
 	dl_button.pressed.connect(_open_download_page)
 	http_request.request_completed.connect(_http_request_completed)
