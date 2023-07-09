@@ -45,8 +45,10 @@ func _ready() -> void:
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	copies.minimum_size_changed.connect(position_copies)
 	Global.changed_level.connect(connect_level)
-	if ignore_collisions:
-		static_body.process_mode = Node.PROCESS_MODE_DISABLED
+	_resolve_collision_mode()
+	if not ignore_collisions:
+		assert(visible)
+		assert(not door_data.amount.is_zero())
 	update_everything()
 	connect_level()
 	assert(PerfManager.end("Door::_ready"))
@@ -63,7 +65,7 @@ func _connect_door_data() -> void:
 	# look.... ok?
 	
 	show()
-	static_body.process_mode = Node.PROCESS_MODE_INHERIT
+	_resolve_collision_mode()
 
 func _disconnect_door_data() -> void:
 	if not is_instance_valid(door_data): return
@@ -85,6 +87,12 @@ func _physics_process(_delta: float) -> void:
 	copies.text = text
 	if using_i_view_colors:
 		_draw_frame()
+
+func _resolve_collision_mode() -> void:
+	if ignore_collisions or door_data.amount.is_zero() or not visible:
+		static_body.process_mode = Node.PROCESS_MODE_DISABLED
+	else:
+		static_body.process_mode = Node.PROCESS_MODE_INHERIT
 
 var update_everything_count := 0
 func update_everything() -> void:
@@ -209,11 +217,13 @@ func try_open() -> void:
 		if door_data.amount.is_zero():
 			assert(level.undo_redo.is_building_action())
 			level.undo_redo.add_do_method(hide)
-			level.undo_redo.add_undo_method(show)
-			level.undo_redo.add_do_property(static_body, &"process_mode", Node.PROCESS_MODE_DISABLED)
-			level.undo_redo.add_undo_property(static_body, &"process_mode", Node.PROCESS_MODE_INHERIT)
 			hide()
-			static_body.process_mode = Node.PROCESS_MODE_DISABLED
+			level.undo_redo.add_undo_method(show)
+			level.undo_redo.add_undo_property(static_body, &"process_mode", static_body.process_mode)
+			assert(static_body.process_mode == StaticBody2D.PROCESS_MODE_INHERIT)
+			_resolve_collision_mode()
+			assert(static_body.process_mode == StaticBody2D.PROCESS_MODE_DISABLED)
+			level.undo_redo.add_do_property(static_body, &"process_mode", static_body.process_mode)
 			break
 	if not opened_at_all: return
 	if level.undo_redo.is_building_action():

@@ -332,12 +332,16 @@ func _place_ghosts() -> void:
 		var maybe_pos := get_mouse_coord(grid_size)
 		obj.position = maybe_pos
 		
+		var is_valid := true
+		
+		
 		if not Rect2i(Vector2i.ZERO, level.level_data.size).has_point(maybe_pos):
-			obj.hide()
-		elif not level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
-			obj.show()
-		else:
-			obj.hide()
+			is_valid = false
+		elif level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
+			is_valid = false
+		elif obj is Door and not obj.door_data.check_valid(level.level_data, false):
+			is_valid = false
+		obj.visible = is_valid
 		
 		if (
 		not is_instance_valid(level.hovering_over)

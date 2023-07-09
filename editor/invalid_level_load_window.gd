@@ -46,7 +46,6 @@ func _adjust() -> void:
 	last_position = position
 
 func appear(fixable_problems: Array[String], unfixable_problems: Array[String]) -> void:
-	print(get_viewport().size)
 	fixable.visible = not fixable_problems.is_empty()
 	fixable_list.visible = not fixable_problems.is_empty()
 	unfixable.visible = not unfixable_problems.is_empty()

@@ -114,6 +114,7 @@ func _update_min_size() -> void:
 	if not is_node_ready(): await ready
 	width.min_value = lock_data.minimum_size.x
 	height.min_value = lock_data.minimum_size.y
+	
 
 func _update_lock_size() -> void:
 	if _setting_to_data: return

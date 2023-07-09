@@ -88,31 +88,26 @@ func clear_outside_things() -> void:
 	if amount_deleted != 0:
 		print("deleted %d outside things" % amount_deleted)
 
-var _invalid_reasons := {}
+var _fixable_invalid_reasons := {}
+var _unfixable_invalid_reasons := {}
 func add_invalid_reason(reason: StringName, fixable: bool) -> void:
-	if _invalid_reasons.has(reason) and _invalid_reasons[reason] != fixable:
-		add_invalid_reason("Contradictory invalid reasons!!!", false)
-		assert(false)
-	_invalid_reasons[reason] = fixable
+	if fixable:
+		_fixable_invalid_reasons[reason] = fixable
+	else:
+		_unfixable_invalid_reasons[reason] = fixable
 
-func get_fixable_invalid_reasons() -> Array[String]:
-	var list: Array[String] = []
-	for reason in _invalid_reasons.keys():
-		if _invalid_reasons[reason]:
-			list.push_back(reason)
-	return list
+# WAITING4GODOT: these can't be Array[String] ...
+func get_fixable_invalid_reasons() -> Array:
+	return _fixable_invalid_reasons.keys()
 
-func get_unfixable_invalid_reasons() -> Array[String]:
-	var list: Array[String] = []
-	for reason in _invalid_reasons.keys():
-		if not _invalid_reasons[reason]:
-			list.push_back(reason)
-	return list
+func get_unfixable_invalid_reasons() -> Array:
+	return _unfixable_invalid_reasons.keys()
 
 # Checks if the level is valid.
 # if should_correct is true, corrects whatever invalid things it can.
 func check_valid(should_correct: bool) -> void:
-	_invalid_reasons.clear()
+	_fixable_invalid_reasons.clear()
+	_unfixable_invalid_reasons.clear()
 	clear_outside_things()
 	# TODO: Check collisions between things
 	# etc...

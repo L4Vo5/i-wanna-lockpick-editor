@@ -280,6 +280,7 @@ signal key_gui_input(event: InputEvent, key: Key)
 ## Adds a door to the level data. Returns null if it wasn't added
 func add_door(door_data: DoorData) -> Door:
 	if is_space_occupied(door_data.get_rect()): return null
+	if not door_data.check_valid(level_data, true): return null
 	if not door_data in level_data.doors:
 		level_data.doors.push_back(door_data)
 		level_data.changed_doors.emit()

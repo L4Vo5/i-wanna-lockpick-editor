@@ -236,28 +236,36 @@ func get_used_color() -> Enums.colors:
 		used_color = glitch_color
 	return used_color
 
-func check_valid(level_data: LevelData, should_correct: bool) -> void:
+func check_valid(level_data: LevelData, should_correct: bool) -> bool:
+	var is_valid := true
 	if amount.is_zero():
 		level_data.add_invalid_reason("Door has count 0", true)
+		is_valid = is_valid and should_correct
 		if should_correct:
 			amount.set_real_part(1)
 	for lock in locks:
-		lock.check_valid(level_data, should_correct)
+		is_valid = is_valid or lock.check_valid(level_data, should_correct)
 		# First, constrain to door size
 		if lock.size.x > size.x or lock.size.y > size.y:
 			level_data.add_invalid_reason("Lock bigger than door", true)
+			is_valid = is_valid and should_correct
 			if should_correct:
 				lock.size = lock.size.clamp(Vector2i.ZERO, size)
+		if lock.minimum_size.x > size.x or lock.minimum_size.y > size.y:
+			level_data.add_invalid_reason("Lock bigger than door (forced)", false)
+			is_valid = false
 		# Then, reposition lock as best as possible toward the upper left corner
-		var max_pos := size - lock.size
+		var max_pos := size - lock.size.clamp(Vector2i.ZERO, size)
 		var new_pos := lock.position.clamp(Vector2i.ZERO, max_pos)
 		if new_pos != lock.position:
 			level_data.add_invalid_reason("Lock in wrong position", true)
+			is_valid = is_valid and should_correct
 			if should_correct:
 				lock.position = new_pos
 	# TODO: better check locks overlapping eachother 
 #	if not check_lock_overlaps():
 #		level_data.add_invalid_reason("There are overlapping locks", false)
+	return is_valid
 
 func check_lock_overlaps() -> bool:
 	var rects: Array[Rect2i] = []

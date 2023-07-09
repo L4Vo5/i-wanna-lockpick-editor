@@ -50,12 +50,6 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("play"):
 		_on_play_pressed()
 		accept_event()
-	if Input.is_key_pressed(KEY_CTRL) and Input.is_key_pressed(KEY_O):
-		if Global.is_web:
-			var path := "user://levels/Untitled.png"
-	#		var lvl := SaveLoad.load_from("user://levels/testing.tres")
-	#		SaveLoad.save_level(lvl)
-			OS.shell_open(ProjectSettings.globalize_path(path))
 
 func _ready() -> void:
 	DirAccess.make_dir_absolute("user://levels")

@@ -32,9 +32,7 @@ func _ready() -> void:
 	collision.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	if not Global.in_editor:
 		key_data = key_data.duplicate(true)
-	if in_keypad:
-		collision.process_mode = Node.PROCESS_MODE_DISABLED
-#		input_grabber.hide()
+	_resolve_collision_mode()
 	if hide_shadow:
 		shadow.hide()
 	collision.area_entered.connect(on_collide)
@@ -67,7 +65,7 @@ func _connect_key_data() -> void:
 	# look... ok?
 	show()
 	if not is_node_ready(): return
-	collision.process_mode = Node.PROCESS_MODE_INHERIT
+	_resolve_collision_mode()
 
 func _disconnect_key_data() -> void:
 	if is_instance_valid(key_data):
@@ -79,6 +77,12 @@ func _process(_delta: float) -> void:
 		if frame == 3:
 			frame = 1
 		special.frame = (special.frame % 4) + frame * 4
+
+func _resolve_collision_mode() -> void:
+	if in_keypad or key_data.is_spent:
+		collision.process_mode = Node.PROCESS_MODE_DISABLED
+	else:
+		collision.process_mode = Node.PROCESS_MODE_INHERIT
 
 func set_special_texture(color: Enums.colors) -> void:
 	match color:
@@ -169,13 +173,17 @@ func undo() -> void:
 	await get_tree().physics_frame
 	show()
 	key_data.is_spent = false
-	collision.process_mode = Node.PROCESS_MODE_INHERIT
+	assert(collision.process_mode == collision.PROCESS_MODE_DISABLED)
+	_resolve_collision_mode()
+	assert(collision.process_mode == collision.PROCESS_MODE_INHERIT)
 	for area in collision.get_overlapping_areas():
 		on_collide(area)
 
 func redo() -> void:
 	key_data.is_spent = true
-	collision.process_mode = Node.PROCESS_MODE_DISABLED
+	assert(collision.process_mode == collision.PROCESS_MODE_INHERIT)
+	_resolve_collision_mode()
+	assert(collision.process_mode == collision.PROCESS_MODE_DISABLED)
 	hide()
 
 func on_pickup() -> void:
