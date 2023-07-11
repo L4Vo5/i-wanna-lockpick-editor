@@ -12,7 +12,11 @@ signal changed_doors
 # currently only emitted by level when a key is placed or removed
 signal changed_keys
 @export var keys: Array[KeyData] = []
-@export var size := Vector2i(800, 608)
+const SMALLEST_SIZE := Vector2i(800, 608)
+@export var size := SMALLEST_SIZE:
+	set(val):
+		if size == val: return
+		size = val
 signal changed_player_spawn_position
 @export var player_spawn_position := Vector2i(400, 304):
 	set(val):
@@ -109,15 +113,31 @@ func check_valid(should_correct: bool) -> void:
 	_fixable_invalid_reasons.clear()
 	_unfixable_invalid_reasons.clear()
 	clear_outside_things()
+	
 	# TODO: Check collisions between things
 	# etc...
-	# Currently, weird sizes aren't allowed
-	size = Vector2i(800, 608)
-	# Clamp player spawn to the grid + inside the level
-	var new_pos := player_spawn_position.clamp(Vector2i(14, 32), size - Vector2i(32 - 14, 0))
-	new_pos -= Vector2i(14, 0)
-	new_pos = player_spawn_position.snapped(Vector2i(32, 32))
-	new_pos += Vector2i(14, 0)
+	
+	if size.x < SMALLEST_SIZE.x or size.y < SMALLEST_SIZE.y:
+		add_invalid_reason(&"Level size is too small.", true)
+		if should_correct:
+			size.x = maxi(SMALLEST_SIZE.x, size.x)
+			size.y = maxi(SMALLEST_SIZE.y, size.y)
+	if size != size.snapped(Vector2i(32, 32)):
+		add_invalid_reason(&"Level size isn't a multiple of 32x32.", true)
+		if should_correct:
+			size = size.snapped(Vector2i(32, 32))
+	
+	# Make sure player spawn is aligned to the grid + inside the level
+	const PLAYER_SPAWN_OFFSET := Vector2i(14, 32)
+	var new_pos := player_spawn_position
+	# offset so it's presumably inside the grid
+	new_pos -= PLAYER_SPAWN_OFFSET
+	# clamp to grid and level size
+	new_pos = new_pos.snapped(Vector2i(16, 16))
+	new_pos = new_pos.clamp(Vector2i.ZERO, size - Vector2i(32, 32))
+	# put it back
+	new_pos += PLAYER_SPAWN_OFFSET
+	# if the position was initially correct, it shouldn't have changed
 	if player_spawn_position != new_pos:
 		add_invalid_reason("Invalid player position.", true)
 		if should_correct:

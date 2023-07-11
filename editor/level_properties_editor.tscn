@@ -79,13 +79,53 @@ context_menu_enabled = false
 [node name="LevelSize" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/LevelSize"]
+[node name="Size" type="MarginContainer" parent="VBoxContainer/LevelSize"]
 layout_mode = 2
-text = "Level size: "
 
-[node name="LevelSize" type="Label" parent="VBoxContainer/LevelSize"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/LevelSize/Size"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/LevelSize/Size/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Size:"
+vertical_alignment = 1
+
+[node name="Width" type="SpinBox" parent="VBoxContainer/LevelSize/Size/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+min_value = 800.0
+max_value = 32800.0
+step = 32.0
+value = 800.0
+alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer/LevelSize/Size/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "×"
+vertical_alignment = 1
+
+[node name="Height" type="SpinBox" parent="VBoxContainer/LevelSize/Size/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+min_value = 608.0
+max_value = 32608.0
+step = 32.0
+value = 608.0
+alignment = 1
+
+[node name="Label3" type="Label" parent="VBoxContainer/LevelSize/Size/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "pixels"
+vertical_alignment = 1
 
 [node name="LevelPath" type="HBoxContainer" parent="VBoxContainer"]
 visible = false

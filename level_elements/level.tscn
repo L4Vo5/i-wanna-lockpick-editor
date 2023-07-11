@@ -74,3 +74,9 @@ stream = ExtResource("9_mj2a5")
 [node name="HoverHighlight" parent="." instance=ExtResource("10_b7dph")]
 unique_name_in_owner = true
 color = Color(1, 1, 1, 0.74902)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+unique_name_in_owner = true
+anchor_mode = 0
+position_smoothing_enabled = true
+position_smoothing_speed = 3.0

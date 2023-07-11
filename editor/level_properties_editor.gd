@@ -22,7 +22,9 @@ var _level_data: LevelData:
 @onready var player_spawn_coord: Label = %PlayerSpawnCoord
 @onready var goal_coord: Label = %GoalCoord
 @onready var what_to_place: OptionButton = %WhatToPlace
-@onready var level_size: Label = %LevelSize
+@onready var width: SpinBox = %Width
+@onready var height: SpinBox = %Height
+
 @onready var level_path: Label = %LevelPath
 @onready var level_name: LineEdit = %LevelName
 @onready var level_author: LineEdit = %LevelAuthor
@@ -35,11 +37,10 @@ func _connect_level_data() -> void:
 	if not is_instance_valid(_level_data): return
 	_level_data.changed_player_spawn_position.connect(_on_changed_player_spawn_pos)
 	_level_data.changed_goal_position.connect(_on_changed_goal_position)
-	_level_data.changed.connect(_on_general_changed)
-	visibility_changed.connect(func(): if visible: _reload_image())
+	_level_data.changed.connect(_set_to_level_data)
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
-	_on_general_changed()
+	_set_to_level_data()
 	if not Global.image_copier_exists:
 		copy_to_clipboard.text = "Force Refresh"
 
@@ -47,7 +48,7 @@ func _disconnect_level_data() -> void:
 	if not is_instance_valid(_level_data): return
 	_level_data.changed_player_spawn_position.disconnect(_on_changed_player_spawn_pos)
 	_level_data.changed_goal_position.disconnect(_on_changed_goal_position)
-	_level_data.changed.disconnect(_on_general_changed)
+	_level_data.changed.disconnect(_set_to_level_data)
 
 func _ready() -> void:
 	_on_changed_player_spawn_pos()
@@ -55,15 +56,17 @@ func _ready() -> void:
 	what_to_place.add_item("Player Spawn")
 	what_to_place.add_item("Goal")
 	what_to_place.item_selected.connect(_on_what_to_place_changed.unbind(1))
+	visibility_changed.connect(func(): if visible: _reload_image())
 	_on_what_to_place_changed()
 	level_name.text_changed.connect(_on_set_name)
 	level_author.text_changed.connect(_on_set_author)
 	Global.changed_level.connect(_reload_image)
 	copy_to_clipboard.pressed.connect(_copy_image_to_clipboard)
+	width.value_changed.connect(_on_size_changed.unbind(1))
+	height.value_changed.connect(_on_size_changed.unbind(1))
 
 func _update_level_data() -> void:
 	_level_data = editor_data.level_data
-	_reload_image()
 
 func _on_changed_player_spawn_pos() -> void:
 	if not is_node_ready(): return
@@ -81,19 +84,33 @@ func _on_what_to_place_changed() -> void:
 	editor_data.player_spawn = what_to_place.selected == 0
 	editor_data.goal_position = what_to_place.selected == 1
 
-func _on_general_changed() -> void:
-	level_size.text = str(_level_data.size)
+# adapts the controls to the level's data
+var _setting_to_data := false
+func _set_to_level_data() -> void:
+	if _setting_to_data: return
+	_setting_to_data = true
+#	level_size.text = str(_level_data.size)
 	level_path.text = str(_level_data.file_path)
 	level_author.text = _level_data.author
 	level_name.text = _level_data.name
+	width.value = _level_data.size.x
+	height.value = _level_data.size.y
 	_reload_image()
+	_setting_to_data = false
+
+func _on_size_changed() -> void:
+	if _setting_to_data: return
+	_level_data.size.x = width.value as int
+	_level_data.size.y = height.value as int
 
 func _on_set_name(new_name: String) -> void:
+	if _setting_to_data: return
 	if _level_data.name == new_name: return
 	_level_data.name = new_name
 	_reload_image()
 
 func _on_set_author(new_author: String) -> void:
+	if _setting_to_data: return
 	if _level_data.author == new_author: return
 	_level_data.author = new_author
 	_reload_image()

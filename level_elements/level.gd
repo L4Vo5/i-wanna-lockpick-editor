@@ -84,6 +84,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var autorun_sound: AudioStreamPlayer = %Autorun
 @onready var autorun_off: Sprite2D = %AutorunOff
 @onready var autorun_on: Sprite2D = %AutorunOn
+@onready var camera_2d: Camera2D = %Camera2D
 
 @onready var hover_highlight: HoverHighlight = %HoverHighlight
 var hovering_over: Node:
@@ -165,6 +166,9 @@ func _ready() -> void:
 var last_player_undo: Callable
 var last_saved_player_undo: Callable
 func _physics_process(_delta: float) -> void:
+	if is_instance_valid(player):
+		camera_2d.position = player.position - get_viewport_rect().size / 2
+		camera_2d.position = camera_2d.position.clamp(Vector2.ZERO, Vector2(level_data.size) - get_viewport_rect().size)
 	if is_instance_valid(player):
 		if player.on_floor:
 			last_player_undo = player.get_undo_action()
