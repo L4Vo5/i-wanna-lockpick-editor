@@ -78,5 +78,9 @@ color = Color(1, 1, 1, 0.74902)
 [node name="Camera2D" type="Camera2D" parent="."]
 unique_name_in_owner = true
 anchor_mode = 0
+enabled = false
 position_smoothing_enabled = true
 position_smoothing_speed = 3.0
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+editor_draw_drag_margin = true

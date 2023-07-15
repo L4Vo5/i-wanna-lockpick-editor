@@ -84,7 +84,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var autorun_sound: AudioStreamPlayer = %Autorun
 @onready var autorun_off: Sprite2D = %AutorunOff
 @onready var autorun_on: Sprite2D = %AutorunOn
-@onready var camera_2d: Camera2D = %Camera2D
+@onready var camera: Camera2D = %Camera2D
 
 @onready var hover_highlight: HoverHighlight = %HoverHighlight
 var hovering_over: Node:
@@ -167,8 +167,8 @@ var last_player_undo: Callable
 var last_saved_player_undo: Callable
 func _physics_process(_delta: float) -> void:
 	if is_instance_valid(player):
-		camera_2d.position = player.position - get_viewport_rect().size / 2
-		camera_2d.position = camera_2d.position.clamp(Vector2.ZERO, Vector2(level_data.size) - get_viewport_rect().size)
+		camera.position = player.position - get_viewport_rect().size / 2
+		camera.position = camera.position.clamp(Vector2.ZERO, Vector2(level_data.size) - get_viewport_rect().size)
 	if is_instance_valid(player):
 		if player.on_floor:
 			last_player_undo = player.get_undo_action()
@@ -178,58 +178,62 @@ func reset() -> void:
 	if not is_node_ready(): return
 	assert(PerfManager.start("Level::reset"))
 	
-	if true:
-		assert(PerfManager.start("Level::reset (doors)"))
-		var needed_doors := level_data.doors.size()
-		var current_doors := doors.get_child_count()
-		# redo the current ones
-		for i in mini(needed_doors, current_doors):
-			var door := doors.get_child(i)
-			door.original_door_data = level_data.doors[i]
-			door.door_data = door.original_door_data.duplicated()
-		# shave off the rest
-		if current_doors > needed_doors:
-			for _i in current_doors - needed_doors:
-				var door := doors.get_child(-1)
-				doors.remove_child(door)
-				disconnect_door(door)
-				NodePool.return_node(door)
-		# or add them
-		else:
-			for i in range(current_doors, needed_doors):
-				_spawn_door(level_data.doors[i])
-		assert(PerfManager.end("Level::reset (doors)"))
-		
-		assert(PerfManager.start("Level::reset (keys)"))
-		var needed_keys := level_data.keys.size()
-		var current_keys := keys.get_child_count()
-		
-		# redo the current ones
-		for i in mini(needed_keys, current_keys):
-			var key := keys.get_child(i)
-			key.set_meta(&"original_key_data", level_data.keys[i])
-			key.key_data = level_data.keys[i].duplicated()
-		# shave off the rest
-		if current_keys > needed_keys:
-			for _i in current_keys - needed_keys:
-				var key := keys.get_child(-1)
-				keys.remove_child(key)
-				disconnect_key(key)
-				NodePool.return_node(key)
-		# or add them
-		else:
-			for i in range(current_keys, needed_keys):
-				_spawn_key(level_data.keys[i])
-		assert(PerfManager.end("Level::reset (keys)"))
-		
-		assert(PerfManager.start("Level::reset (tiles)"))
-		tile_map.clear()
-		for tile_coord in level_data.tiles:
-			_spawn_tile(tile_coord)
-		assert(PerfManager.end("Level::reset (tiles)"))
-		
-		_spawn_goal()
-		_spawn_player()
+	assert(PerfManager.start("Level::reset (doors)"))
+	var needed_doors := level_data.doors.size()
+	var current_doors := doors.get_child_count()
+	# redo the current ones
+	for i in mini(needed_doors, current_doors):
+		var door := doors.get_child(i)
+		door.original_door_data = level_data.doors[i]
+		door.door_data = door.original_door_data.duplicated()
+	# shave off the rest
+	if current_doors > needed_doors:
+		for _i in current_doors - needed_doors:
+			var door := doors.get_child(-1)
+			doors.remove_child(door)
+			disconnect_door(door)
+			NodePool.return_node(door)
+	# or add them
+	else:
+		for i in range(current_doors, needed_doors):
+			_spawn_door(level_data.doors[i])
+	assert(PerfManager.end("Level::reset (doors)"))
+	
+	assert(PerfManager.start("Level::reset (keys)"))
+	var needed_keys := level_data.keys.size()
+	var current_keys := keys.get_child_count()
+	
+	# redo the current ones
+	for i in mini(needed_keys, current_keys):
+		var key := keys.get_child(i)
+		key.set_meta(&"original_key_data", level_data.keys[i])
+		key.key_data = level_data.keys[i].duplicated()
+	# shave off the rest
+	if current_keys > needed_keys:
+		for _i in current_keys - needed_keys:
+			var key := keys.get_child(-1)
+			keys.remove_child(key)
+			disconnect_key(key)
+			NodePool.return_node(key)
+	# or add them
+	else:
+		for i in range(current_keys, needed_keys):
+			_spawn_key(level_data.keys[i])
+	assert(PerfManager.end("Level::reset (keys)"))
+	
+	assert(PerfManager.start("Level::reset (tiles)"))
+	tile_map.clear()
+	for tile_coord in level_data.tiles:
+		_spawn_tile(tile_coord)
+	assert(PerfManager.end("Level::reset (tiles)"))
+	
+	_spawn_goal()
+	_spawn_player()
+	if exclude_player:
+		camera.enabled = false
+	else:
+		camera.enabled = true
+		camera.make_current()
 	
 	glitch_color = Enums.colors.glitch
 	
