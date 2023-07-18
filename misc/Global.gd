@@ -51,7 +51,7 @@ func _ready() -> void:
 	
 	
 	# Look for update...
-	if not is_web:
+	if not is_web and not in_editor:
 		search_update()
 	
 	if is_web:
