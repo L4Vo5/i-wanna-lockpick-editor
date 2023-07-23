@@ -174,12 +174,17 @@ func open_with(key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> Compl
 		else:
 			return ComplexNumber.new()
 	
+	# only normal and blast doors left
+	if key_count.is_zero():
+		return null
 	var new_key_count := ComplexNumber.new()
-	var signed_magnitude := magnitude if sign == Enums.sign.positive else -magnitude
+	# use 1 for blast doors
+	var used_magnitude := magnitude if lock_type == Enums.lock_types.normal else 1
+	var signed_magnitude := used_magnitude if sign == Enums.sign.positive else -used_magnitude
 	var relevant_value_sn: StringName = value_type_to_ComplexNumber_var[value_type]
 	var relevant_value = key_count.get(relevant_value_sn)
 	
-	if abs(relevant_value) < magnitude or signi(relevant_value) != signi(signed_magnitude):
+	if abs(relevant_value) < used_magnitude or signi(relevant_value) != signi(signed_magnitude):
 		return null
 	
 	match lock_type:

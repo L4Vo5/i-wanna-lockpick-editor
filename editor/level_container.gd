@@ -296,7 +296,7 @@ func is_mouse_out_of_bounds() -> bool:
 	return false
 
 func get_level_pos() -> Vector2:
-	return level_viewport.get_parent().global_position + level.global_position
+	return level_viewport.get_parent().global_position + level.global_position - level.get_camera_position()
 
 #var unique_queue := {}
 #func _defer_unique(f: Callable) -> void:

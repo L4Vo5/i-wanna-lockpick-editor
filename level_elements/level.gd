@@ -85,6 +85,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var autorun_off: Sprite2D = %AutorunOff
 @onready var autorun_on: Sprite2D = %AutorunOn
 @onready var camera: Camera2D = %Camera2D
+@onready var camera_dragger: Node2D = $CameraDragger
 
 @onready var hover_highlight: HoverHighlight = %HoverHighlight
 var hovering_over: Node:
@@ -168,10 +169,12 @@ var last_saved_player_undo: Callable
 func _physics_process(_delta: float) -> void:
 	if is_instance_valid(player):
 		camera.position = player.position - get_viewport_rect().size / 2
-		camera.position = camera.position.clamp(Vector2.ZERO, Vector2(level_data.size) - get_viewport_rect().size)
+		limit_camera()
 	if is_instance_valid(player):
 		if player.on_floor:
 			last_player_undo = player.get_undo_action()
+	print(camera.position)
+	print(camera.enabled)
 
 # force_hard_reset is for benchmarking purposes
 func reset() -> void:
@@ -230,9 +233,11 @@ func reset() -> void:
 	_spawn_goal()
 	_spawn_player()
 	if exclude_player:
-		camera.enabled = false
+		camera.enabled = true
+		camera_dragger.enabled = true
 	else:
 		camera.enabled = true
+		camera_dragger.enabled = false
 		camera.make_current()
 	
 	glitch_color = Enums.colors.glitch
@@ -558,3 +563,13 @@ func remove_all_pooled() -> void:
 		keys.remove_child(key)
 		disconnect_key(key)
 		NodePool.return_node(key)
+
+func limit_camera() -> void:
+	var limit := Vector2(
+		level_data.size.x #- get_viewport_rect().size.x
+		, level_data.size.y #- get_viewport_rect().size.y
+	)
+	camera.position = clamp(camera.position, Vector2(0, 0), limit)
+
+func get_camera_position() -> Vector2:
+	return camera.position
