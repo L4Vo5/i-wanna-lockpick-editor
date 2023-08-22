@@ -164,12 +164,12 @@ func open_with(key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> Compl
 		return temp_lock.open_with(key_count, false, false)
 	
 	if lock_type == Enums.lock_types.all:
-		if key_count.real_part == 0 and key_count.imaginary_part == 0:
+		if key_count.is_zero():
 			return null
 		else:
 			return key_count.duplicated().flip()
 	if lock_type == Enums.lock_types.blank:
-		if key_count.real_part != 0 or key_count.imaginary_part != 0:
+		if not key_count.is_zero():
 			return null
 		else:
 			return ComplexNumber.new()
