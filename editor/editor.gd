@@ -54,8 +54,7 @@ func _input(event: InputEvent) -> void:
 func _ready() -> void:
 	DirAccess.make_dir_absolute("user://levels")
 	file_dialog.current_dir = "levels"
-	# WAITING4GODOT: workaround for https://github.com/godotengine/godot/issues/79052
-	file_dialog.dialog_close_on_escape = false
+	# For porting from older versions that put levels in user://
 	move_levels("user://", "user://levels")
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
@@ -63,10 +62,11 @@ func _ready() -> void:
 	if Global.is_exported:
 		_on_new_level_button_pressed()
 	else:
-		var p := "user://levels/testing.tres"
+		const p := "user://levels/testing.tres"
 		if FileAccess.file_exists(p):
 			level.level_data = load(p)
 		else:
+			print("Couldn't find %s. Starting on new level." % p)
 			_on_new_level_button_pressed()
 	
 	
@@ -131,12 +131,12 @@ func resolve_visibility() -> void:
 			node.hide()
 
 func _update_mode() -> void:
-	var tab_editor := side_tabs.get_current_tab_control()
-	data.tilemap_edit = tab_editor == tile_editor
-	data.doors = tab_editor == door_editor
-	data.keys = tab_editor == key_editor
-	data.level_properties = tab_editor == level_properties_editor
-	data.objects = tab_editor == door_editor or tab_editor == key_editor
+	var current_tab := side_tabs.get_current_tab_control()
+	data.tilemap_edit = current_tab == tile_editor
+	data.doors = current_tab == door_editor
+	data.keys = current_tab == key_editor
+	data.level_properties = current_tab == level_properties_editor
+	data.objects = current_tab == door_editor or current_tab == key_editor
 
 func _on_play_pressed() -> void:
 	save_level()

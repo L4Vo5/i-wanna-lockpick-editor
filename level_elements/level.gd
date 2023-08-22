@@ -173,8 +173,6 @@ func _physics_process(_delta: float) -> void:
 	if is_instance_valid(player):
 		if player.on_floor:
 			last_player_undo = player.get_undo_action()
-	print(camera.position)
-	print(camera.enabled)
 
 # force_hard_reset is for benchmarking purposes
 func reset() -> void:
@@ -566,10 +564,10 @@ func remove_all_pooled() -> void:
 
 func limit_camera() -> void:
 	var limit := Vector2(
-		level_data.size.x #- get_viewport_rect().size.x
-		, level_data.size.y #- get_viewport_rect().size.y
+		level_data.size.x - get_viewport_rect().size.x
+		, level_data.size.y - get_viewport_rect().size.y
 	)
-	camera.position = clamp(camera.position, Vector2(0, 0), limit)
+	camera.position = camera.position.clamp(Vector2(0, 0), limit)
 
 func get_camera_position() -> Vector2:
 	return camera.position
