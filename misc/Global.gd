@@ -10,8 +10,8 @@ var is_exported := OS.has_feature("release")
 var is_web := OS.has_feature("web")
 ## Will basically be true if there's a player moving around
 var is_playing := false
-var game_version = ProjectSettings.get_setting("application/config/game_version")
-@onready var key_pad: Control = %KeyPad
+var game_version: String = ProjectSettings.get_setting("application/config/game_version")
+@onready var key_pad: KeyPad = %KeyPad
 @onready var fatal_error_dialog: AcceptDialog = %FatalError
 @onready var safe_error_dialog: AcceptDialog = %SafeError
 @onready var http_request: HTTPRequest = $HTTPRequest
