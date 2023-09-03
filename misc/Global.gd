@@ -8,6 +8,8 @@ var in_editor := Engine.is_editor_hint()
 var in_level_editor := false
 var is_exported := OS.has_feature("release")
 var is_web := OS.has_feature("web")
+var is_windows := OS.has_feature("windows")
+var is_linux := OS.has_feature("linux")
 ## Will basically be true if there's a player moving around
 var is_playing := false
 var game_version: String = ProjectSettings.get_setting("application/config/game_version")
@@ -65,11 +67,14 @@ func _ready() -> void:
 	, Vector2i(250,100))
 
 func search_update() -> void:
+	if is_web: return
 	var dl_button := update_dialog.add_button("Download", true)
 	dl_button.pressed.connect(_open_download_page)
 	http_request.request_completed.connect(_http_request_completed)
-
-	var error = http_request.request("https://l4vo5.itch.io/i-wanna-lockpick-editor")
+	
+	var url := "https://itch.io/api/1/x/wharf/latest?game_id=2027861&channel_name=%s" % ["windows" if is_windows else "linux"]
+	
+	var error := http_request.request(url)
 	if error != OK:
 		push_error("An error occurred in the HTTP request.")
 
@@ -77,18 +82,21 @@ func search_update() -> void:
 var newer_version := ""
 func _http_request_completed(_result, _response_code, _headers, body: PackedByteArray):
 	var s := body.get_string_from_ascii()
-	var start := s.find("The current version is ")
-	start += "The current version is ".length()
-	# Gotta find 3 version dots + the final dot:
-	var end := start
-	for i in 4:
-		end = s.find(".", end+1)
-	newer_version = s.substr(start, end - start)
-	inform_newer_version()
+	var dic = JSON.parse_string(s)
+	if (not dic is Dictionary) or dic == null:
+		print("Couldn't parse string as json when searching for update: %s" % s)
+		return
+	if dic.has("errors"):
+		print("Errors found in json when searching for update: %s" % dic["errors"])
+	elif not dic.has("latest"):
+		print("Couldn't find version in json when searching for update: %s" % dic)
+	if dic.has("latest"):
+		newer_version = dic["latest"]
+		inform_newer_version()
 
 func inform_newer_version() -> void:
 	print("Newest version on the itch.io page is %s" % newer_version)
-	if newer_version.naturalnocasecmp_to(Global.game_version) <= 0: 
+	if newer_version.naturalnocasecmp_to(Global.game_version) <= 0:
 		print("Newest version is equal or older! won't popup")
 		return
 	var text := "There's an update available: " + newer_version
