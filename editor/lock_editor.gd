@@ -16,7 +16,7 @@ signal delete
 		lock.lock_data = val
 		_set_to_lock_data()
 @onready var lock: Lock = %Lock
-@onready var color_choice: OptionButton = %ColorChoice
+@onready var color_choice: ColorChoiceEditor = %ColorChoice
 @onready var type_choice: OptionButton = %TypeChoice
 @onready var requirement_parent: HBoxContainer = %Requirement
 @onready var amount: SpinBox = %Amount
@@ -56,12 +56,8 @@ func _ready() -> void:
 	amount.get_line_edit().expand_to_text_length = true
 	position_x.get_line_edit().expand_to_text_length = true
 	position_y.get_line_edit().expand_to_text_length = true
-	color_choice.clear()
 	
-	for key in Enums.COLOR_NAMES.keys():
-		if key == Enums.colors.none: continue
-		color_choice.add_item(Enums.COLOR_NAMES[key].capitalize(), key)
-	color_choice.item_selected.connect(_update_lock_color.unbind(1))
+	color_choice.changed_color.connect(_update_lock_color)
 	
 	type_choice.clear()
 	for key in Enums.LOCK_TYPE_NAMES.keys():
@@ -93,7 +89,7 @@ var _setting_to_data := false
 # Sets the different controls to the lockdata's data
 func _set_to_lock_data() -> void:
 	_setting_to_data = true
-	color_choice.selected = color_choice.get_item_index(lock_data.color)
+	color_choice.set_to_color(lock_data.color)
 	type_choice.selected = type_choice.get_item_index(lock_data.lock_type)
 	var full_amount := lock_data.get_complex_amount()
 	amount.value = full_amount.real_part + full_amount.imaginary_part
@@ -121,9 +117,9 @@ func _update_lock_size() -> void:
 	lock_data.size = Vector2i(int(width.value), int(height.value))
 	_update_max_pos()
 
-func _update_lock_color() -> void:
+func _update_lock_color(color: Enums.colors) -> void:
 	if _setting_to_data: return
-	lock_data.color = color_choice.get_item_id(color_choice.selected)
+	lock_data.color = color
 
 func _update_lock_type() -> void:
 	if _setting_to_data: return
