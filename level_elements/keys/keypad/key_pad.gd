@@ -21,20 +21,32 @@ var base_offset: Vector2
 func _ready() -> void:
 	base_offset = nine_patch_rect.position
 	generate_keys()
+	Global.changed_is_playing.connect(func():
+		if not Global.is_playing:
+			hide_keypad()
+		elif Input.is_action_pressed("keypad"):
+			show_keypad()
+		)
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not Global.is_playing:
 		return
 	if event.is_action("keypad") and not event.is_echo():
 		if event.is_pressed():
-			show()
-			sound.pitch_scale = 1.5
-			sound.play()
+			show_keypad()
 		else:
-			hide()
-			sound.pitch_scale = 1
-			sound.play()
+			hide_keypad()
 		get_tree().root.set_input_as_handled()
+
+func show_keypad() -> void:
+	show()
+	sound.pitch_scale = 1.5
+	sound.play()
+
+func hide_keypad() -> void:
+	hide()
+	sound.pitch_scale = 1
+	sound.play()
 
 func generate_keys() -> void:
 	for child in keys.get_children():

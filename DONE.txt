@@ -1,0 +1,1 @@
+- Fixed Keypad staying during Edit mode if you held A and pressed F5 while playing.
