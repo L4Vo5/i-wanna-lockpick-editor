@@ -79,8 +79,14 @@ layout_mode = 2
 [node name="Color" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
+[node name="Label" type="Label" parent="VBoxContainer/Color"]
+visible = false
+layout_mode = 2
+text = "Color:"
+
 [node name="ColorChoice" parent="VBoxContainer/Color" instance=ExtResource("5_gs2y2")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(14, 336)
 layout_mode = 2
 size_flags_horizontal = 3
 

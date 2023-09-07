@@ -10,7 +10,7 @@ class_name KeyEditor
 		key.key_data = key_data
 		_set_to_key_data()
 @onready var key: Key = %key
-@onready var color_choice: OptionButton = %ColorChoice
+@onready var color_choice: ColorChoiceEditor = %ColorChoice
 @onready var type_choice: OptionButton = %TypeChoice
 @onready var amount: MarginContainer = %Amount
 @onready var real_amount: SpinBox = %RealAmount
@@ -24,11 +24,7 @@ func _init() -> void:
 func _ready() -> void:
 	key.key_data = key_data
 	
-	color_choice.clear()
-	for color in Enums.COLOR_NAMES.keys():
-		if color == Enums.colors.none: continue
-		color_choice.add_item(Enums.COLOR_NAMES[color].capitalize(), color)
-	color_choice.item_selected.connect(_update_key_color.unbind(1))
+	color_choice.changed_color.connect(_update_key_color)
 	
 	type_choice.clear()
 	for key_type in Enums.KEY_TYPE_NAMES.keys():
@@ -42,13 +38,13 @@ func _ready() -> void:
 
 func _set_to_key_data() -> void:
 	amount.visible = key_data.type in [Enums.key_types.add, Enums.key_types.exact]
-	color_choice.selected = color_choice.get_item_index(key_data.color)
+	color_choice.set_to_color(key_data.color)
 	type_choice.selected = type_choice.get_item_index(key_data.type)
 	real_amount.value = key_data.amount.real_part
 	imaginary_amount.value = key_data.amount.imaginary_part
 
-func _update_key_color() -> void:
-	key_data.color = color_choice.get_item_id(color_choice.selected)
+func _update_key_color(color: Enums.colors) -> void:
+	key_data.color = color
 
 func _update_key_type() -> void:
 	key_data.type = type_choice.get_item_id(type_choice.selected)

@@ -21,7 +21,7 @@ class_name DoorEditor
 @onready var height: SpinBox = %Height
 @onready var real_copies: SpinBox = %RealCopies
 @onready var imaginary_copies: SpinBox = %ImaginaryCopies
-@onready var color_choice: OptionButton = %ColorChoice
+@onready var color_choice: ColorChoiceEditor = %ColorChoice
 @onready var lock_editor_parent: VBoxContainer = %LockEditors
 @onready var add_lock: Button = %AddLock
 const LOCK_EDITOR := preload("res://editor/lock_editor.tscn")
@@ -48,11 +48,6 @@ func _ready() -> void:
 	real_copies.get_line_edit().expand_to_text_length = true
 	imaginary_copies.get_line_edit().expand_to_text_length = true
 	
-	color_choice.clear()
-	for key in Enums.COLOR_NAMES.keys():
-		if key == Enums.colors.none: continue
-		color_choice.add_item(Enums.COLOR_NAMES[key].capitalize(), key)
-	
 	
 	ice_button.tooltip_text = "Ice curse, broken with 1 red key or more."
 	erosion_button.tooltip_text = "Erosion curse, broken with 5 green keys or more."
@@ -68,7 +63,7 @@ func _ready() -> void:
 	height.value_changed.connect(_update_door_size.unbind(1))
 	real_copies.value_changed.connect(_update_door_amount.unbind(1))
 	imaginary_copies.value_changed.connect(_update_door_amount.unbind(1))
-	color_choice.item_selected.connect(_update_door_color.unbind(1))
+	color_choice.changed_color.connect(_update_door_color)
 	
 	add_lock.pressed.connect(_add_new_lock)
 	_set_to_door_data()
@@ -87,7 +82,7 @@ func _set_to_door_data() -> void:
 	real_copies.value = door_data.amount.real_part
 	imaginary_copies.value = door_data.amount.imaginary_part
 	
-	color_choice.selected = color_choice.get_item_index(door_data.outer_color) 
+	color_choice.set_to_color(door_data.outer_color) 
 	
 	_regen_lock_editors()
 	_setting_to_data = false
@@ -110,9 +105,9 @@ func _update_door_amount() -> void:
 		return
 	door_data.amount.set_to(int(real_copies.value), int(imaginary_copies.value))
 
-func _update_door_color() -> void:
+func _update_door_color(color: Enums.colors) -> void:
 	if _setting_to_data: return
-	door_data.outer_color = color_choice.get_item_id(color_choice.selected)
+	door_data.outer_color = color
 
 func _regen_lock_editors() -> void:
 	for child in lock_editor_parent.get_children():

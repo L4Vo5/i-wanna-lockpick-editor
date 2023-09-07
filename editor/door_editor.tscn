@@ -1,17 +1,18 @@
-[gd_scene load_steps=9 format=3 uid="uid://dqsf6y71ncn36"]
+[gd_scene load_steps=10 format=3 uid="uid://dqsf6y71ncn36"]
 
 [ext_resource type="Script" path="res://editor/door_editor.gd" id="1_66io0"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_jx360"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="3_3plxf"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="4_1c01c"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_c2ium"]
+[ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="6_qvekf"]
 
-[sub_resource type="Resource" id="Resource_ra0ba"]
+[sub_resource type="Resource" id="Resource_nufod"]
 script = ExtResource("2_jx360")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_xpn0w"]
+[sub_resource type="Resource" id="Resource_sgym8"]
 script = ExtResource("3_3plxf")
 color = 1
 magnitude = 1
@@ -23,11 +24,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_yd437"]
+[sub_resource type="Resource" id="Resource_mn722"]
 script = ExtResource("4_1c01c")
-amount = SubResource("Resource_ra0ba")
+amount = SubResource("Resource_nufod")
 outer_color = 1
-locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_xpn0w")])
+locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_sgym8")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -42,7 +43,7 @@ position = Vector2i(0, 0)
 offset_right = 299.0
 offset_bottom = 602.0
 script = ExtResource("1_66io0")
-door_data = SubResource("Resource_yd437")
+door_data = SubResource("Resource_mn722")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -71,7 +72,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 ignore_position = true
-door_data = SubResource("Resource_yd437")
+door_data = SubResource("Resource_mn722")
 ignore_collisions = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
@@ -90,43 +91,16 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
+visible = false
 layout_mode = 2
 text = "Color:"
 
-[node name="ColorChoice" type="OptionButton" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
+[node name="ColorChoice" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color" instance=ExtResource("6_qvekf")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 60)
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 14
-selected = 0
-popup/item_0/text = "White"
-popup/item_0/id = 1
-popup/item_1/text = "Black"
-popup/item_1/id = 2
-popup/item_2/text = "Orange"
-popup/item_2/id = 3
-popup/item_3/text = "Purple"
-popup/item_3/id = 4
-popup/item_4/text = "Cyan"
-popup/item_4/id = 5
-popup/item_5/text = "Pink"
-popup/item_5/id = 6
-popup/item_6/text = "Red"
-popup/item_6/id = 7
-popup/item_7/text = "Green"
-popup/item_7/id = 8
-popup/item_8/text = "Blue"
-popup/item_8/id = 9
-popup/item_9/text = "Brown"
-popup/item_9/id = 10
-popup/item_10/text = "Master"
-popup/item_10/id = 11
-popup/item_11/text = "Glitch"
-popup/item_11/id = 13
-popup/item_12/text = "Pure"
-popup/item_12/id = 12
-popup/item_13/text = "Stone"
-popup/item_13/id = 14
+lock_size = 20
 
 [node name="Copies" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2

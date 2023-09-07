@@ -1,18 +1,19 @@
-[gd_scene load_steps=7 format=3 uid="uid://qk8x2wvdqp7i"]
+[gd_scene load_steps=8 format=3 uid="uid://qk8x2wvdqp7i"]
 
 [ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="1_2kdyu"]
 [ext_resource type="Script" path="res://editor/key_editor.gd" id="1_a031y"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_nbql1"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="3_a0u5f"]
+[ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="5_2af2f"]
 
-[sub_resource type="Resource" id="Resource_6ip7m"]
+[sub_resource type="Resource" id="Resource_p6ppg"]
 script = ExtResource("2_nbql1")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_mxcqd"]
+[sub_resource type="Resource" id="Resource_83680"]
 script = ExtResource("3_a0u5f")
-amount = SubResource("Resource_6ip7m")
+amount = SubResource("Resource_p6ppg")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -21,7 +22,7 @@ position = Vector2i(0, 0)
 offset_right = 269.0
 offset_bottom = 592.0
 script = ExtResource("1_a031y")
-key_data = SubResource("Resource_mxcqd")
+key_data = SubResource("Resource_83680")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -48,7 +49,7 @@ layout_mode = 2
 
 [node name="key" parent="VBoxContainer/TopStuff/TheKey/KeyHolder" instance=ExtResource("1_2kdyu")]
 unique_name_in_owner = true
-key_data = SubResource("Resource_mxcqd")
+key_data = SubResource("Resource_83680")
 in_keypad = true
 ignore_position = true
 metadata/_edit_vertical_guides_ = [32.0]
@@ -74,43 +75,16 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
+visible = false
 layout_mode = 2
 text = "Color:"
 
-[node name="ColorChoice" type="OptionButton" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
+[node name="ColorChoice" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color" instance=ExtResource("5_2af2f")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 14
-selected = 0
-popup/item_0/text = "White"
-popup/item_0/id = 1
-popup/item_1/text = "Black"
-popup/item_1/id = 2
-popup/item_2/text = "Orange"
-popup/item_2/id = 3
-popup/item_3/text = "Purple"
-popup/item_3/id = 4
-popup/item_4/text = "Cyan"
-popup/item_4/id = 5
-popup/item_5/text = "Pink"
-popup/item_5/id = 6
-popup/item_6/text = "Red"
-popup/item_6/id = 7
-popup/item_7/text = "Green"
-popup/item_7/id = 8
-popup/item_8/text = "Blue"
-popup/item_8/id = 9
-popup/item_9/text = "Brown"
-popup/item_9/id = 10
-popup/item_10/text = "Master"
-popup/item_10/id = 11
-popup/item_11/text = "Glitch"
-popup/item_11/id = 13
-popup/item_12/text = "Pure"
-popup/item_12/id = 12
-popup/item_13/text = "Stone"
-popup/item_13/id = 14
+lock_size = 20
 
 [node name="Type" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
 layout_mode = 2
