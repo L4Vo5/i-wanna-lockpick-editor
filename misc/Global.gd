@@ -207,7 +207,7 @@ func copy_image_to_clipboard(image: Image) -> void:
 		if res != "":
 			print("Error when copying image: " + res)
 	else:
-		print(":(")
+		print(":( no image copier")
 
 func smart_adjust_rect(rect: Rect2i, bound: Rect2i) -> Rect2i:
 	# First, constrain to bound size

@@ -9,10 +9,11 @@ var texture: Texture2D:
 		update()
 
 func update() -> void:
-	queue_redraw()
 	custom_minimum_size = texture.get_size()
+	queue_redraw()
 
 func _draw() -> void:
+	if not is_instance_valid(texture): return
 	# make sure global position isn't fractional
 	assert(global_position == Vector2(Vector2i(global_position)))
 	# center it

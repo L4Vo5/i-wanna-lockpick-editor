@@ -51,6 +51,7 @@ func _disconnect_level_data() -> void:
 	_level_data.changed.disconnect(_set_to_level_data)
 
 func _ready() -> void:
+	_level_data = LevelData.new()
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
 	what_to_place.add_item("Player Spawn")
@@ -91,8 +92,11 @@ func _set_to_level_data() -> void:
 	_setting_to_data = true
 #	level_size.text = str(_level_data.size)
 	level_path.text = str(_level_data.file_path)
-	level_author.text = _level_data.author
-	level_name.text = _level_data.name
+	# Stop the caret from going back to the start
+	if level_author.text != _level_data.author:
+		level_author.text = _level_data.author
+	if level_name.text != _level_data.name:
+		level_name.text = _level_data.name
 	width.value = _level_data.size.x
 	height.value = _level_data.size.y
 	_reload_image()
@@ -117,7 +121,7 @@ func _on_set_author(new_author: String) -> void:
 
 func _reload_image() -> void:
 	if not visible: return
-	var img := SaveLoad.get_image(Global.current_level.level_data)
+	var img := SaveLoad.get_image(_level_data)
 	if img != null:
 		level_image_rect.texture = ImageTexture.create_from_image(img)
 	else:

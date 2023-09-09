@@ -6,14 +6,14 @@
 [ext_resource type="Script" path="res://data/key_data.gd" id="3_a0u5f"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="5_2af2f"]
 
-[sub_resource type="Resource" id="Resource_p6ppg"]
+[sub_resource type="Resource" id="Resource_3twl6"]
 script = ExtResource("2_nbql1")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_83680"]
+[sub_resource type="Resource" id="Resource_hfmxa"]
 script = ExtResource("3_a0u5f")
-amount = SubResource("Resource_p6ppg")
+amount = SubResource("Resource_3twl6")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -22,7 +22,7 @@ position = Vector2i(0, 0)
 offset_right = 269.0
 offset_bottom = 592.0
 script = ExtResource("1_a031y")
-key_data = SubResource("Resource_83680")
+key_data = SubResource("Resource_hfmxa")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -49,7 +49,7 @@ layout_mode = 2
 
 [node name="key" parent="VBoxContainer/TopStuff/TheKey/KeyHolder" instance=ExtResource("1_2kdyu")]
 unique_name_in_owner = true
-key_data = SubResource("Resource_83680")
+key_data = SubResource("Resource_hfmxa")
 in_keypad = true
 ignore_position = true
 metadata/_edit_vertical_guides_ = [32.0]
@@ -81,7 +81,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color" instance=ExtResource("5_2af2f")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(18, 56)
+custom_minimum_size = Vector2(20, 60)
 layout_mode = 2
 size_flags_horizontal = 3
 lock_size = 20
