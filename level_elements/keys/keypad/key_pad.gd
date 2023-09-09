@@ -39,11 +39,13 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		get_tree().root.set_input_as_handled()
 
 func show_keypad() -> void:
+	if visible: return
 	show()
 	sound.pitch_scale = 1.5
 	sound.play()
 
 func hide_keypad() -> void:
+	if not visible: return
 	hide()
 	sound.pitch_scale = 1
 	sound.play()
