@@ -61,7 +61,7 @@ func _ready() -> void:
 	level.door_gui_input.connect(_on_door_gui_input)
 	level.key_gui_input.connect(_on_key_gui_input)
 	resized.connect(_on_resized)
-	level_viewport.size = Vector2i(800, 608)
+	level_viewport.size = Vector2i(800, 608) * 1.5
 	level_viewport.get_parent().show()
 	ghost_canvas_group.self_modulate.a = 0.5
 	

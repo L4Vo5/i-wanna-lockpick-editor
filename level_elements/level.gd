@@ -567,6 +567,12 @@ func limit_camera() -> void:
 		level_data.size.x - get_viewport_rect().size.x
 		, level_data.size.y - get_viewport_rect().size.y
 	)
+	# custom clamp in case limit goes under 0
+	# TODO
+	#camera.position.x = minf(camera.position.x, limit.x)
+	#camera.position.x = maxf(camera.position.x, 0)
+	#camera.position.y = minf(camera.position.y, limit.y)
+	#camera.position.y = maxf(camera.position.y, 0)
 	camera.position = camera.position.clamp(Vector2(0, 0), limit)
 
 func get_camera_position() -> Vector2:

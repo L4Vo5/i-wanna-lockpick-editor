@@ -17,12 +17,12 @@
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 
-[sub_resource type="Resource" id="Resource_ihfb4"]
+[sub_resource type="Resource" id="Resource_yq74t"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_0bavs"]
+[sub_resource type="Resource" id="Resource_1wfnl"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -34,11 +34,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_vpdwp"]
+[sub_resource type="Resource" id="Resource_uald6"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_ihfb4")
+amount = SubResource("Resource_yq74t")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_0bavs")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_1wfnl")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -49,14 +49,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_6ajru"]
+[sub_resource type="Resource" id="Resource_mf7qg"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_im3a8"]
+[sub_resource type="Resource" id="Resource_0ybbg"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_6ajru")
+amount = SubResource("Resource_mf7qg")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -211,7 +211,11 @@ color = Color(1, 1, 1, 0.0823529)
 [node name="LevelContainerInner" type="Control" parent="HSplitContainer/LeftSide/LevelContainer"]
 clip_contents = true
 layout_mode = 1
-anchors_preset = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="ColorRect" type="ColorRect" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner"]
@@ -225,7 +229,6 @@ mouse_filter = 2
 color = Color(0.54902, 0.54902, 0.54902, 1)
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner"]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -237,7 +240,7 @@ grow_vertical = 2
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
 positional_shadow_atlas_size = 0
-render_target_update_mode = 0
+render_target_update_mode = 4
 
 [node name="Level" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("3_4sapt")]
 level_data = ExtResource("4_80bf4")
@@ -272,12 +275,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_vpdwp")
+door_data = SubResource("Resource_uald6")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_im3a8")
+key_data = SubResource("Resource_0ybbg")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
