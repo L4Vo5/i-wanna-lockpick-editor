@@ -53,6 +53,8 @@ var danger_obj: Node:
 
 const OBJ_SIZE := Vector2(800, 608)
 func _on_resized() -> void:
+	return
+	# TODO
 	# center it
 	inner_container.position = (size - OBJ_SIZE) / 2
 	inner_container.size = OBJ_SIZE
@@ -61,7 +63,6 @@ func _ready() -> void:
 	level.door_gui_input.connect(_on_door_gui_input)
 	level.key_gui_input.connect(_on_key_gui_input)
 	resized.connect(_on_resized)
-	level_viewport.size = Vector2i(800, 608) * 1.5
 	level_viewport.get_parent().show()
 	ghost_canvas_group.self_modulate.a = 0.5
 	

@@ -22,6 +22,7 @@ var game_version: String = ProjectSettings.get_setting("application/config/game_
 @onready var fatal_error_dialog: AcceptDialog = %FatalError
 @onready var safe_error_dialog: AcceptDialog = %SafeError
 @onready var http_request: HTTPRequest = $HTTPRequest
+var _non_fullscreen_window_mode := Window.MODE_MAXIMIZED
 
 var danger_override: bool:
 	get:
@@ -70,6 +71,16 @@ func _ready() -> void:
 		safe_error(
 	"""Downloading the desktop version of the editor is the recommended way to use it."""
 	, Vector2i(250,100))
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"fullscreen"):
+		var current_window_mode := get_tree().root.mode
+		if current_window_mode == Window.MODE_WINDOWED or current_window_mode == Window.MODE_MAXIMIZED:
+			_non_fullscreen_window_mode = current_window_mode
+			get_tree().root.mode = Window.MODE_FULLSCREEN
+		elif current_window_mode == Window.MODE_FULLSCREEN:
+			get_tree().root.mode = _non_fullscreen_window_mode
+		
 
 func search_update() -> void:
 	if is_web: return
@@ -158,7 +169,9 @@ func _set_viewport_to_gameplay() -> void:
 func _set_viewport_to_editor() -> void:
 	if in_editor: return
 	get_tree().root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
-	get_tree().root.mode = Window.MODE_MAXIMIZED
+	_non_fullscreen_window_mode = Window.MODE_MAXIMIZED
+	if not get_tree().root.mode == Window.MODE_FULLSCREEN:
+		get_tree().root.mode = _non_fullscreen_window_mode
 
 func set_mode(mode: Modes) -> void:
 	if _current_mode == mode: return

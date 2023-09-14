@@ -177,6 +177,14 @@ func _physics_process(_delta: float) -> void:
 # force_hard_reset is for benchmarking purposes
 func reset() -> void:
 	if not is_node_ready(): return
+	# TEMP ?
+	if not is_instance_valid(level_data):
+		const p := "user://levels/testing.tres"
+		if FileAccess.file_exists(p):
+			level_data = load(p)
+		else:
+			print("Couldn't find %s. Starting on new level." % p)
+			level_data = LevelData.new()
 	assert(PerfManager.start("Level::reset"))
 	
 	assert(PerfManager.start("Level::reset (doors)"))
@@ -237,7 +245,6 @@ func reset() -> void:
 		camera.enabled = true
 		camera_dragger.enabled = false
 		camera.make_current()
-	
 	glitch_color = Enums.colors.glitch
 	
 	for color in key_counts.keys():
@@ -281,6 +288,7 @@ func _update_player_spawn_position() -> void:
 
 func _update_goal_position() -> void:
 	if not is_node_ready(): return
+	if not is_instance_valid(goal): return
 	goal.position = level_data.goal_position + Vector2i(16, 16)
 
 # Editor functions
