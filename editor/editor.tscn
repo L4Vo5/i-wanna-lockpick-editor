@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=23 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="7_8vfxp"]
 [ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/door_editor.tscn" id="8_5qjay"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
+[ext_resource type="Script" path="res://editor/level_outline.gd" id="9_r4glf"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="11_psli5"]
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/key_editor.tscn" id="12_cr7ft"]
@@ -275,6 +276,9 @@ width = 3
 
 [node name="DangerHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level" instance=ExtResource("7_8vfxp")]
 color = Color(1, 0, 0, 0.74902)
+
+[node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level"]
+script = ExtResource("9_r4glf")
 
 [node name="RightDock" type="MarginContainer" parent="HSplitContainer"]
 layout_mode = 2

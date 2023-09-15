@@ -8,12 +8,14 @@ var glitch_color := Enums.colors.glitch:
 		glitch_color = val
 		changed_glitch_color.emit()
 
+signal changed_level_data
 @export var level_data: LevelData = null:
 	set(val):
 		if level_data == val: return
 		_disconnect_level_data()
 		level_data = val
 		_connect_level_data()
+		changed_level_data.emit()
 
 @export var exclude_player := false:
 	set(val):
@@ -577,11 +579,11 @@ func limit_camera() -> void:
 	)
 	# custom clamp in case limit goes under 0
 	# TODO
-	#camera.position.x = minf(camera.position.x, limit.x)
-	#camera.position.x = maxf(camera.position.x, 0)
-	#camera.position.y = minf(camera.position.y, limit.y)
-	#camera.position.y = maxf(camera.position.y, 0)
-	camera.position = camera.position.clamp(Vector2(0, 0), limit)
+	camera.position.x = minf(camera.position.x, limit.x)
+	camera.position.x = maxf(camera.position.x, 0)
+	camera.position.y = minf(camera.position.y, limit.y)
+	camera.position.y = maxf(camera.position.y, 0)
+	#camera.position = camera.position.clamp(Vector2(0, 0), limit)
 
 func get_camera_position() -> Vector2:
 	return camera.position

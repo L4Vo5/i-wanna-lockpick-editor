@@ -29,4 +29,4 @@ func _input(event: InputEvent) -> void:
 			var diff := last_mouse_pos - new_mouse_pos
 			last_mouse_pos = new_mouse_pos
 			camera.position += Vector2(diff)
-			get_parent().limit_camera()
+			#get_parent().limit_camera()

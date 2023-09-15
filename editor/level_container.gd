@@ -54,7 +54,9 @@ var danger_obj: Node:
 const OBJ_SIZE := Vector2(800, 608)
 func _on_resized() -> void:
 	return
-	# TODO
+
+# UNUSED
+func _center_level() -> void:
 	# center it
 	inner_container.position = (size - OBJ_SIZE) / 2
 	inner_container.size = OBJ_SIZE

@@ -13,10 +13,12 @@ signal changed_doors
 signal changed_keys
 @export var keys: Array[KeyData] = []
 const SMALLEST_SIZE := Vector2i(800, 608)
+signal changed_size
 @export var size := SMALLEST_SIZE:
 	set(val):
 		if size == val: return
 		size = val
+		changed_size.emit()
 signal changed_player_spawn_position
 @export var player_spawn_position := Vector2i(400, 304):
 	set(val):
