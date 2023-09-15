@@ -86,8 +86,8 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var autorun_sound: AudioStreamPlayer = %Autorun
 @onready var autorun_off: Sprite2D = %AutorunOff
 @onready var autorun_on: Sprite2D = %AutorunOn
-@onready var camera: Camera2D = %Camera2D
-@onready var camera_dragger: Node2D = $CameraDragger
+@onready var camera: Camera2D = %LevelCamera
+#@onready var camera_dragger: Node2D = $CameraDragger
 
 @onready var hover_highlight: HoverHighlight = %HoverHighlight
 var hovering_over: Node:
@@ -241,11 +241,9 @@ func reset() -> void:
 	_spawn_goal()
 	_spawn_player()
 	if exclude_player:
-		camera.enabled = true
-		camera_dragger.enabled = true
+		camera.enabled = false
 	else:
 		camera.enabled = true
-		camera_dragger.enabled = false
 		camera.make_current()
 	glitch_color = Enums.colors.glitch
 	

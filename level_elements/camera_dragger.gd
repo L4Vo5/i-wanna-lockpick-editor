@@ -6,9 +6,6 @@ var enabled := false:
 	set(val):
 		enabled = val
 		set_process_input(enabled)
-#		set_process_internal(enabled)
-#		set_process_unhandled_input(enabled)
-#		set_process_unhandled_key_input(enabled)
 
 var middle_is_pressed := false
 var last_mouse_pos := Vector2i.ZERO

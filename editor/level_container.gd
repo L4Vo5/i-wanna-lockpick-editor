@@ -24,6 +24,9 @@ var hover_highlight: HoverHighlight:
 	get:
 		return editor_data.hover_highlight
 
+@export var camera_dragger: CameraDragger
+@export var editor_camera: Camera2D
+
 # Ghosts shouldn't be seen when something's being dragged
 
 var is_dragging := false:
@@ -55,11 +58,14 @@ const OBJ_SIZE := Vector2(800, 608)
 func _on_resized() -> void:
 	return
 
-# UNUSED
 func _center_level() -> void:
 	# center it
 	inner_container.position = (size - OBJ_SIZE) / 2
 	inner_container.size = OBJ_SIZE
+
+func _expand_level() -> void:
+	inner_container.position = Vector2.ZERO
+	inner_container.size = size
 
 func _ready() -> void:
 	level.door_gui_input.connect(_on_door_gui_input)
@@ -78,9 +84,20 @@ func _ready() -> void:
 	editor_data.level.changed_keys.connect(_retry_ghosts)
 	editor_data.changed_level_data.connect(_on_changed_level_data)
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
-	editor_data.changed_is_playing.connect(_retry_ghosts, CONNECT_DEFERRED)
-	_retry_ghosts()
+	editor_data.changed_is_playing.connect(_on_changed_is_playing, CONNECT_DEFERRED)
+	_on_changed_is_playing()
 	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
+	
+	editor_camera.make_current()
+
+func _on_changed_is_playing() -> void:
+	if editor_data.is_playing:
+		_center_level()
+	else:
+		editor_camera.make_current()
+		_expand_level()
+	camera_dragger.enabled = not editor_data.is_playing
+	_retry_ghosts()
 
 func _on_changed_level_data() -> void:
 	# deselect everything
@@ -290,7 +307,13 @@ func get_mouse_tile_coord(grid_size: int) -> Vector2i:
 	return Vector2i((get_global_mouse_position() - get_level_pos()) / Vector2(grid_size, grid_size))
 
 func round_coord(coord: Vector2i, grid_size: int) -> Vector2i:
-	return coord / Vector2i(grid_size, grid_size) * Vector2i(grid_size, grid_size)
+	# wasn't sure how to do a "floor divide". this is crude but it works
+	var val := coord.snapped(Vector2i(grid_size, grid_size))
+	if val.x > coord.x:
+		val.x -= grid_size
+	if val.y > coord.y:
+		val.y -= grid_size
+	return val
 
 func is_mouse_out_of_bounds() -> bool:
 	var local_pos := get_global_mouse_position() - get_level_pos()
@@ -299,7 +322,8 @@ func is_mouse_out_of_bounds() -> bool:
 	return false
 
 func get_level_pos() -> Vector2:
-	return level_viewport.get_parent().global_position + level.global_position - level.get_camera_position()
+	return level_viewport.get_parent().global_position + level.global_position - editor_camera.position
+	#return level_viewport.get_parent().global_position + level.global_position - level.get_camera_position()
 
 #var unique_queue := {}
 #func _defer_unique(f: Callable) -> void:

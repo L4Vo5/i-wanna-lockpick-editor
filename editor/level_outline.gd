@@ -24,8 +24,6 @@ func _draw() -> void:
 	var border_size := 2
 	var rect := Rect2(-position, level_data.size)
 	var col := Color.WHITE
-	var TL := rect.position - Vector2(border_size, border_size)
-	var BR := rect.position + rect.size + Vector2(border_size, border_size)
 	# Left
 	draw_rect(Rect2(rect.position - Vector2(border_size, border_size), Vector2(border_size, rect.size.y + border_size * 2)), col)
 	# Top

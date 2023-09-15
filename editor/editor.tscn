@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=24 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -12,18 +12,19 @@
 [ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
 [ext_resource type="Script" path="res://editor/level_outline.gd" id="9_r4glf"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
+[ext_resource type="Script" path="res://level_elements/camera_dragger.gd" id="10_nd33d"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="11_psli5"]
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/key_editor.tscn" id="12_cr7ft"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 
-[sub_resource type="Resource" id="Resource_whpcc"]
+[sub_resource type="Resource" id="Resource_r124k"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_0dvo0"]
+[sub_resource type="Resource" id="Resource_vdc5f"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -35,11 +36,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_8b1sh"]
+[sub_resource type="Resource" id="Resource_at7mo"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_whpcc")
+amount = SubResource("Resource_r124k")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_0dvo0")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_vdc5f")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -50,14 +51,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_ir565"]
+[sub_resource type="Resource" id="Resource_cs7f8"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_p45nr"]
+[sub_resource type="Resource" id="Resource_8m2rv"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_ir565")
+amount = SubResource("Resource_cs7f8")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -171,7 +172,7 @@ editable = false
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "level", "level_viewport", "tile_map", "door_editor", "key_editor", "ghost_door", "ghost_key", "ghost_canvas_group", "editor", "danger_highlight", "selected_highlight")]
+[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "level", "level_viewport", "tile_map", "door_editor", "key_editor", "ghost_door", "ghost_key", "ghost_canvas_group", "editor", "danger_highlight", "selected_highlight", "camera_dragger", "editor_camera")]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -189,6 +190,8 @@ ghost_canvas_group = NodePath("LevelContainerInner/SubViewportContainer/SubViewp
 editor = NodePath("../../..")
 danger_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/DangerHighlight")
 selected_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/SelectedHighlight")
+camera_dragger = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger")
+editor_camera = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/EditorCamera")
 
 [node name="Panel" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer"]
 layout_mode = 1
@@ -212,11 +215,7 @@ color = Color(1, 1, 1, 0.0823529)
 [node name="LevelContainerInner" type="Control" parent="HSplitContainer/LeftSide/LevelContainer"]
 clip_contents = true
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
 mouse_filter = 2
 
 [node name="ColorRect" type="ColorRect" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner"]
@@ -242,7 +241,7 @@ stretch = true
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
 positional_shadow_atlas_size = 0
-size = Vector2i(483, 569)
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="ColorRect" type="ColorRect" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]
@@ -280,6 +279,13 @@ color = Color(1, 0, 0, 0.74902)
 [node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level"]
 script = ExtResource("9_r4glf")
 
+[node name="CameraDragger" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("camera")]
+script = ExtResource("10_nd33d")
+camera = NodePath("../EditorCamera")
+
+[node name="EditorCamera" type="Camera2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]
+anchor_mode = 0
+
 [node name="RightDock" type="MarginContainer" parent="HSplitContainer"]
 layout_mode = 2
 
@@ -289,12 +295,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_8b1sh")
+door_data = SubResource("Resource_at7mo")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_p45nr")
+key_data = SubResource("Resource_8m2rv")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
