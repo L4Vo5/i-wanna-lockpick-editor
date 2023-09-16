@@ -56,12 +56,17 @@ var danger_obj: Node:
 
 const OBJ_SIZE := Vector2(800, 608)
 func _on_resized() -> void:
+	if editor_data.is_playing:
+		_center_level()
 	return
 
 func _center_level() -> void:
 	# center it
-	inner_container.position = (size - OBJ_SIZE) / 2
-	inner_container.size = OBJ_SIZE
+	if editor_data.is_playing:
+		inner_container.position = (size - OBJ_SIZE) / 2
+		inner_container.size = OBJ_SIZE
+	else:
+		editor_camera.position = - (size - OBJ_SIZE) / 2
 
 func _expand_level() -> void:
 	inner_container.position = Vector2.ZERO
@@ -89,6 +94,7 @@ func _ready() -> void:
 	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
 	
 	editor_camera.make_current()
+	_center_level.call_deferred()
 
 func _on_changed_is_playing() -> void:
 	if editor_data.is_playing:
@@ -147,6 +153,8 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
+				# TODO: What's the focus for??
+				set_focus_mode(Control.FOCUS_ALL)
 				grab_focus()
 				# if the event got this far, we want to deselect
 				selected_obj = null

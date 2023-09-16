@@ -169,9 +169,7 @@ func _ready() -> void:
 var last_player_undo: Callable
 var last_saved_player_undo: Callable
 func _physics_process(_delta: float) -> void:
-	if is_instance_valid(player):
-		camera.position = player.position - get_viewport_rect().size / 2
-		limit_camera()
+	adjust_camera()
 	if is_instance_valid(player):
 		if player.on_floor:
 			last_player_undo = player.get_undo_action()
@@ -431,6 +429,7 @@ func _spawn_player() -> void:
 	player = PLAYER.instantiate()
 	player.position = level_data.player_spawn_position
 	add_child(player)
+	immediately_adjust_camera.call_deferred()
 
 func _spawn_goal() -> void:
 	if is_instance_valid(goal):
@@ -582,6 +581,16 @@ func limit_camera() -> void:
 	camera.position.y = minf(camera.position.y, limit.y)
 	camera.position.y = maxf(camera.position.y, 0)
 	#camera.position = camera.position.clamp(Vector2(0, 0), limit)
+
+func adjust_camera() -> void:
+	if not is_instance_valid(player): return
+	camera.position = player.position - get_viewport_rect().size / 2
+	limit_camera()
+
+func immediately_adjust_camera() -> void:
+	if not is_instance_valid(player): return
+	adjust_camera()
+	camera.reset_smoothing()
 
 func get_camera_position() -> Vector2:
 	return camera.position
