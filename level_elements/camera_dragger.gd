@@ -15,15 +15,13 @@ func _ready() -> void:
 	enabled = enabled # call setter
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_MIDDLE:
-			middle_is_pressed = event.is_pressed()
-			last_mouse_pos = DisplayServer.mouse_get_position()
+	if event.is_action_pressed("drag_camera"):
+		last_mouse_pos = DisplayServer.mouse_get_position()
 	if event is InputEventMouseMotion:
-		if middle_is_pressed:
+		if Input.is_action_pressed("drag_camera"):
 			camera.position_smoothing_enabled = false
 			var new_mouse_pos := DisplayServer.mouse_get_position()
 			var diff := last_mouse_pos - new_mouse_pos
 			last_mouse_pos = new_mouse_pos
 			camera.position += Vector2(diff)
-			#get_parent().limit_camera()
+			get_viewport().set_input_as_handled()
