@@ -140,6 +140,8 @@ func _add_new_lock() -> void:
 	lock_editor.lock_data = new_lock
 	lock_editor.delete.connect(_delete_lock.bind(lock_editor))
 	lock_editor_parent.add_child(lock_editor)
+	
+	add_lock.text = "Add Lock %d" % (i + 1)
 
 func _delete_lock(which: LockEditor) -> void:
 	var i := which.lock_number - 1
@@ -148,3 +150,4 @@ func _delete_lock(which: LockEditor) -> void:
 	lock_editors[i].queue_free()
 	for j in range(i+1, lock_editors.size()):
 		lock_editors[j].lock_number = j
+	add_lock.text = "Add Lock %d" % (lock_editors.size())
