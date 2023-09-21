@@ -17,6 +17,7 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("drag_camera"):
 		last_mouse_pos = DisplayServer.mouse_get_position()
+		get_viewport().set_input_as_handled()
 	if event is InputEventMouseMotion:
 		if Input.is_action_pressed("drag_camera"):
 			camera.position_smoothing_enabled = false
