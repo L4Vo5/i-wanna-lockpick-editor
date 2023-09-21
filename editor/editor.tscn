@@ -19,12 +19,12 @@
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 
-[sub_resource type="Resource" id="Resource_r124k"]
+[sub_resource type="Resource" id="Resource_a0cak"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_vdc5f"]
+[sub_resource type="Resource" id="Resource_oyb66"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -36,11 +36,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_at7mo"]
+[sub_resource type="Resource" id="Resource_owoh3"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_r124k")
+amount = SubResource("Resource_a0cak")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_vdc5f")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_oyb66")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -51,14 +51,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_cs7f8"]
+[sub_resource type="Resource" id="Resource_hkkyl"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_8m2rv"]
+[sub_resource type="Resource" id="Resource_a8gtb"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_cs7f8")
+amount = SubResource("Resource_hkkyl")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -295,12 +295,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_at7mo")
+door_data = SubResource("Resource_owoh3")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_8m2rv")
+key_data = SubResource("Resource_a8gtb")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
@@ -320,7 +320,7 @@ visible = false
 layout_mode = 2
 
 [node name="FileDialog" type="FileDialog" parent="."]
-size = Vector2i(356, 150)
+size = Vector2i(356, 154)
 exclusive = false
 popup_window = true
 extend_to_title = true
