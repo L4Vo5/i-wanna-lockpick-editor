@@ -73,6 +73,7 @@ func _ready() -> void:
 	, Vector2i(250,100))
 
 func _input(event: InputEvent) -> void:
+	if in_editor: return
 	if event.is_action_pressed(&"fullscreen"):
 		var current_window_mode := get_tree().root.mode
 		if current_window_mode == Window.MODE_WINDOWED or current_window_mode == Window.MODE_MAXIMIZED:

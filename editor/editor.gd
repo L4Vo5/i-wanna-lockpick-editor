@@ -8,6 +8,7 @@ class_name LockpickEditor
 @export var key_editor: KeyEditor
 @export var tile_editor: Control
 @export var level_properties_editor: LevelPropertiesEditor
+@export var entry_editor: EntryEditor
 
 @export var level_container: LevelContainer
 
@@ -74,12 +75,11 @@ func _ready() -> void:
 	data.level = level
 	data.door_editor = door_editor
 	data.key_editor = key_editor
+	data.tile_editor = tile_editor
+	data.level_properties_editor = level_properties_editor
+	data.entry_editor = entry_editor
 	data.side_tabs = side_tabs
 	
-	data.side_tab_doors = door_editor
-	data.side_tab_keys = key_editor
-	data.side_tab_tile = tile_editor
-	data.side_tab_level = level_properties_editor
 	
 	level_container.editor_data = data
 	level_properties_editor.editor_data = data
@@ -137,6 +137,7 @@ func _update_mode() -> void:
 	data.keys = current_tab == key_editor
 	data.level_properties = current_tab == level_properties_editor
 	data.objects = current_tab == door_editor or current_tab == key_editor
+	data.entries = current_tab == entry_editor
 
 func _on_play_pressed() -> void:
 	save_level()

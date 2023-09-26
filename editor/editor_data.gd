@@ -22,11 +22,9 @@ var disable_editing := false
 var level: Level
 var door_editor: DoorEditor
 var key_editor: KeyEditor
+var tile_editor: MarginContainer
 var side_tabs: TabContainer
-var side_tab_doors: DoorEditor
-var side_tab_keys: KeyEditor
-var side_tab_tile: MarginContainer
-var side_tab_level: LevelPropertiesEditor
+var entry_editor: EntryEditor
 
 # what's currently being edited
 var tilemap_edit := false
@@ -36,6 +34,7 @@ var keys := false
 var level_properties := false
 var player_spawn := false
 var goal_position := false
+var entries := false
 
 # object selection / dragging / highlight / etc
 # note that hover_highlight is part of the level
