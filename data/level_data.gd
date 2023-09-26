@@ -146,3 +146,23 @@ func check_valid(should_correct: bool) -> void:
 			player_spawn_position = new_pos
 	for door in doors:
 		door.check_valid(self, should_correct)
+func get_screenshot() -> Image:
+	var viewport := SubViewport.new()
+	var vpc := SubViewportContainer.new()
+	# TODO: No.
+	vpc.position = Vector2(INF, INF)
+	viewport.size = size
+	vpc.size = viewport.size
+	vpc.add_child(viewport)
+	Engine.get_main_loop().root.add_child(vpc)
+	
+	var lvl: Level = preload("res://level_elements/level.tscn").instantiate()
+	lvl.exclude_player = true
+	lvl.level_data = duplicate()
+	viewport.add_child(lvl)
+	
+	await RenderingServer.frame_post_draw 
+	var img := viewport.get_texture().get_image()
+	viewport.free()
+	return img
+

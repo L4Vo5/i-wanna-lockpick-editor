@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=12 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_ynu1q"]
 [ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="2_xwsq2"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://b5mtdgi8eorra" path="res://level_elements/autorun_on.png" id="8_n158d"]
 [ext_resource type="AudioStream" uid="uid://yukdfqp7sr3g" path="res://level_elements/autorun.wav" id="9_mj2a5"]
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="10_b7dph"]
+[ext_resource type="PackedScene" path="res://level_elements/entries/entry.tscn" id="11_u3sqm"]
 
 [node name="Level" type="Node2D"]
 process_priority = -10
@@ -84,3 +85,6 @@ position_smoothing_speed = 3.0
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
 editor_draw_drag_margin = true
+
+[node name="Entry" parent="." instance=ExtResource("11_u3sqm")]
+position = Vector2(210, 291)

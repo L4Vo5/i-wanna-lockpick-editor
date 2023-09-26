@@ -73,6 +73,7 @@ func _ready() -> void:
 	, Vector2i(250,100))
 
 func _input(event: InputEvent) -> void:
+	if in_editor: return
 	if event.is_action_pressed(&"fullscreen"):
 		var current_window_mode := get_tree().root.mode
 		if current_window_mode == Window.MODE_WINDOWED or current_window_mode == Window.MODE_MAXIMIZED:
@@ -80,7 +81,13 @@ func _input(event: InputEvent) -> void:
 			get_tree().root.mode = Window.MODE_FULLSCREEN
 		elif current_window_mode == Window.MODE_FULLSCREEN:
 			get_tree().root.mode = _non_fullscreen_window_mode
-		
+	if event is InputEventKey:
+		if event.keycode == KEY_F11 and event.pressed:
+			if is_instance_valid(current_level):
+				var img: Image = await current_level.level_data.get_screenshot()
+				img.save_png("user://screenshot.png")
+				print("Saved screenshot")
+				
 
 func search_update() -> void:
 	if is_web: return
