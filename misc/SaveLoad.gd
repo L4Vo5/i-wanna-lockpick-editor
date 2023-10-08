@@ -101,9 +101,11 @@ static func load_from_buffer(
 	data: PackedByteArray,
 	version: int,
 	original_editor_version: String, path: String) -> LevelPackData:
+	if original_editor_version == "":
+		original_editor_version = "Unknown (oops)"
 	var lvl_pack_data: LevelPackData
 	
-	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version is %s" % [path, version, original_editor_version])
+	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
 	# Shouldn't be allowed to be version 1
 	if version == 1:
 		var error_text := \

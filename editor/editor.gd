@@ -171,7 +171,8 @@ func save_level() -> void:
 				# Allow saving res and tres anywhere when testing
 				if not Global.is_exported:
 					data.level_pack_data.resource_path = path
-					ResourceSaver.save(data.level_pack_data)
+					print("Saving to %s" % path)
+					ResourceSaver.save(data.level_pack_data, path)
 				else:
 					Global.safe_error("Report this (saving resource).", Vector2(300, 100))
 			elif ext in ["lvl", "png"]:
@@ -286,7 +287,7 @@ func _on_file_selected(path: String) -> void:
 	match file_dialog.file_mode:
 		FileDialog.FILE_MODE_SAVE_FILE:
 			# Save As
-			data.level_data.file_path = path
+			data.level_pack_data.file_path = path
 			save_level()
 		FileDialog.FILE_MODE_OPEN_FILE:
 			# Load

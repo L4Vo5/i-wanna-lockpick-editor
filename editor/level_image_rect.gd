@@ -5,11 +5,13 @@ var texture: Texture2D:
 		if is_instance_valid(texture):
 			texture.changed.disconnect(update)
 		texture = val
-		texture.changed.connect(update)
+		if is_instance_valid(texture):
+			texture.changed.connect(update)
 		update()
 
 func update() -> void:
-	custom_minimum_size = texture.get_size()
+	if is_instance_valid(texture):
+		custom_minimum_size = texture.get_size()
 	queue_redraw()
 
 func _draw() -> void:

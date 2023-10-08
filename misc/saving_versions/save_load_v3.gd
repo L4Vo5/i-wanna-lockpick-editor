@@ -1,11 +1,16 @@
 static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
-	pass
+	data.store_u16(SaveLoad.LATEST_FORMAT)
+	level_pack.editor_version = Global.game_version
+	data.store_string(level_pack.editor_version)
+	data.store_string(level_pack.name)
+	data.store_string(level_pack.author)
+	# Save all levels
+	data.store_u32(level_pack.levels.size())
+	for level in level_pack.levels:
+		_save_level(level, data)
 
 static func _save_level(level: LevelData, data: ByteAccess) -> void:
-	data.store_u16(SaveLoad.LATEST_FORMAT)
-	data.store_string(level.editor_version)
 	data.store_string(level.name)
-	data.store_string(level.author)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
 	data.store_var(level.custom_lock_arrangements)
@@ -79,13 +84,23 @@ static func _save_complex(data: ByteAccess, n: ComplexNumber) -> void:
 	data.store_s64(n.imaginary_part)
 
 static func load(data: ByteAccess) -> LevelPackData:
-	return null
+	var level_pack := LevelPackData.new()
+	level_pack.name = data.get_string()
+	level_pack.author = data.get_string()
+	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
+	
+	# Load all levels
+	var level_count := data.get_u32()
+	if SaveLoad.PRINT_LOAD: print("It has %d levels" % level_count)
+	for i in level_count:
+		level_pack.levels.push_back(_load_level(data))
+	return level_pack
 
 static func _load_level(data: ByteAccess) -> LevelData:
 	assert(PerfManager.start("SaveLoadV2::load"))
 	var level := LevelData.new()
 	level.name = data.get_string()
-	level.author = data.get_string()
+	if SaveLoad.PRINT_LOAD: print("Loading level %s" % level.name)
 	level.size = Vector2i(data.get_u32(), data.get_u32())
 	level.custom_lock_arrangements = data.get_var()
 	level.goal_position = Vector2i(data.get_u32(), data.get_u32())
@@ -230,11 +245,13 @@ class ByteAccess:
 		curr += 8
 
 	func store_var(v: Variant) -> void:
+		#print("Storing var %s" % v)
 		# encode_var is weird. if it doesn't work, it returns -1, otherwise the used size
 		var len := data.encode_var(curr, v)
 		while len == -1:
 			make_space(data.size())
 			len = data.encode_var(curr, v)
+		#print("Encoded as %d bytes: %s" % [len, data.slice(curr, curr + len)])
 		curr += len
 	
 	# Similar to FileAccess.store_pascal_string
@@ -275,6 +292,8 @@ class ByteAccess:
 
 	func get_var() -> Variant:
 		var len := data.decode_var_size(curr)
+		#print("Decoding variant with %d bytes" % len)
+		#print("The bytes are: %s" % data.slice(curr, curr + len))
 		curr += len
 		return data.decode_var(curr - len)
 	

@@ -16,7 +16,12 @@ var file_path := "":
 ## Useful because .lvl files used to be a single level
 static func make_from_level(level_data: LevelData) -> LevelPackData:
 	var data := LevelPackData.new()
-	data.levels = [level_data]
+	data.name = level_data.name
+	data.author = level_data.author
+	data.editor_version = level_data.editor_version
+	data.levels = [level_data.duplicate()]
+	data.levels[0].resource_path = ""
+	data.levels[0].resource_local_to_scene
 	return data
 
 # Only the keys are used. values are true for fixable and false for unfixable
