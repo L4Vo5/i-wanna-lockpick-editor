@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="LevelPackData" load_steps=2 format=3 uid="uid://j4gkl5psnyp6"]
+
+[ext_resource type="Script" path="res://data/level_pack_data.gd" id="1_eowub"]
+
+[resource]
+script = ExtResource("1_eowub")
+levels = Array[Resource("res://data/level_data.gd")]([])

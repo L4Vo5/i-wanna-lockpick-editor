@@ -9,7 +9,7 @@ size = Vector2(34, 33)
 [node name="Entry" type="Node2D"]
 script = ExtResource("1_eb5iw")
 
-[node name="SprLevelEntry0" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(0, -18)
 texture = ExtResource("1_484ak")
 

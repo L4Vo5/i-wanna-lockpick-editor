@@ -1,10 +1,6 @@
 extends Resource
 class_name LevelData
 
-# has this level been loaded already? (no version check should be done)
-var has_been_loaded := false
-# Just in case it's needed
-@export var editor_version: String
 
 # currently only emitted by level when a door is placed or removed
 signal changed_doors
@@ -12,6 +8,7 @@ signal changed_doors
 # currently only emitted by level when a key is placed or removed
 signal changed_keys
 @export var keys: Array[KeyData] = []
+@export var entries: Array[EntryData] = []
 const SMALLEST_SIZE := Vector2i(800, 608)
 signal changed_size
 @export var size := SMALLEST_SIZE:
@@ -41,17 +38,17 @@ signal changed_tiles
 		if name == val: return
 		name = val
 		changed.emit()
+
+## DEPRECATED
+## KEPT FOR COMPATIBILITY (for now?)
 @export var author := "":
 	set(val):
 		if author == val: return
 		author = val
 		changed.emit()
-# For easier saving
-var file_path := "":
-	set(val):
-		if file_path == val: return
-		file_path = val
-		changed.emit()
+## DEPRECATED
+## KEPT FOR COMPATIBILITY (for now?)
+@export var editor_version: String
 
 func _init() -> void:
 	changed_doors.connect(emit_changed)
@@ -94,6 +91,7 @@ func clear_outside_things() -> void:
 	if amount_deleted != 0:
 		print("deleted %d outside things" % amount_deleted)
 
+# Only the keys are used. values are true for fixable and false for unfixable
 var _fixable_invalid_reasons := {}
 var _unfixable_invalid_reasons := {}
 func add_invalid_reason(reason: StringName, fixable: bool) -> void:

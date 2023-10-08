@@ -38,7 +38,9 @@ var selected_lock: Lock = null:
 		if selected_lock != null:
 			changed_color.emit(selected_lock.lock_data.color)
 
+var is_ready := false
 func _ready():
+	is_ready = true
 	for color in Enums.COLOR_NAMES.keys():
 		if color == Enums.colors.none: continue
 		var l := LOCK.instantiate()

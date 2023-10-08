@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=25 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -18,13 +18,14 @@
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/invalid_level_load_window.tscn" id="16_ayc8p"]
+[ext_resource type="Script" path="res://editor/entry_editor.gd" id="18_lnxp8"]
 
-[sub_resource type="Resource" id="Resource_jm8r0"]
+[sub_resource type="Resource" id="Resource_y12ot"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_l3n7e"]
+[sub_resource type="Resource" id="Resource_se1u4"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -36,11 +37,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_qthqe"]
+[sub_resource type="Resource" id="Resource_1k58x"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_jm8r0")
+amount = SubResource("Resource_y12ot")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_l3n7e")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_se1u4")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -51,19 +52,19 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_rsl5n"]
+[sub_resource type="Resource" id="Resource_rliav"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_yvt0o"]
+[sub_resource type="Resource" id="Resource_3xj6u"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_rsl5n")
+amount = SubResource("Resource_rliav")
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("level", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("level", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -78,6 +79,7 @@ door_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Doors")
 key_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Keys")
 tile_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Tiles")
 level_properties_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Level")
+entry_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Entries")
 level_container = NodePath("HSplitContainer/LeftSide/LevelContainer")
 play_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Play")
 save_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Save")
@@ -295,12 +297,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_qthqe")
+door_data = SubResource("Resource_1k58x")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_yvt0o")
+key_data = SubResource("Resource_3xj6u")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
@@ -322,6 +324,7 @@ layout_mode = 2
 [node name="Entries" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
 layout_mode = 2
+script = ExtResource("18_lnxp8")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)
@@ -334,5 +337,5 @@ show_hidden_files = true
 
 [node name="InvalidLevelLoad" parent="." instance=ExtResource("16_ayc8p")]
 position = Vector2i(10, 35)
-size = Vector2i(477, 956)
+size = Vector2i(477, 955)
 visible = false

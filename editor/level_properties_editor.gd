@@ -5,12 +5,12 @@ var editor_data: EditorData:
 	set(val):
 		if editor_data == val: return
 		if is_instance_valid(editor_data):
-			editor_data.changed_level_data.disconnect(_update_level_data)
+			editor_data.changed_level_data.disconnect(_update_level_pack_data)
 		editor_data = val
 		if is_instance_valid(editor_data):
 			_on_what_to_place_changed()
-			editor_data.changed_level_data.connect(_update_level_data)
-			_update_level_data()
+			editor_data.changed_level_data.connect(_update_level_pack_data)
+			_update_level_pack_data()
 
 var _level_data: LevelData:
 	set(val):
@@ -18,6 +18,14 @@ var _level_data: LevelData:
 		_disconnect_level_data()
 		_level_data = val
 		_connect_level_data()
+var _level_pack_data: LevelPackData:
+	set(val):
+		if _level_pack_data == val: return
+		if is_instance_valid(_level_pack_data):
+			_level_pack_data.changed.disconnect(_set_to_level_pack_data)
+		_level_pack_data = val
+		_level_pack_data.changed.connect(_set_to_level_pack_data)
+		_set_to_level_pack_data()
 
 @onready var player_spawn_coord: Label = %PlayerSpawnCoord
 @onready var goal_coord: Label = %GoalCoord
@@ -51,7 +59,10 @@ func _disconnect_level_data() -> void:
 	_level_data.changed.disconnect(_set_to_level_data)
 
 func _ready() -> void:
+	# These are just so the scene works in isolation
 	_level_data = LevelData.new()
+	_level_pack_data = LevelPackData.new()
+	
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
 	what_to_place.add_item("Player Spawn")
@@ -66,8 +77,9 @@ func _ready() -> void:
 	width.value_changed.connect(_on_size_changed.unbind(1))
 	height.value_changed.connect(_on_size_changed.unbind(1))
 
-func _update_level_data() -> void:
+func _update_level_pack_data() -> void:
 	_level_data = editor_data.level_data
+	_level_pack_data = editor_data.level_pack_data
 
 func _on_changed_player_spawn_pos() -> void:
 	if not is_node_ready(): return
@@ -91,14 +103,19 @@ func _set_to_level_data() -> void:
 	if _setting_to_data: return
 	_setting_to_data = true
 #	level_size.text = str(_level_data.size)
-	level_path.text = str(_level_data.file_path)
 	# Stop the caret from going back to the start
-	if level_author.text != _level_data.author:
-		level_author.text = _level_data.author
-	if level_name.text != _level_data.name:
-		level_name.text = _level_data.name
 	width.value = _level_data.size.x
 	height.value = _level_data.size.y
+	_setting_to_data = false
+
+func _set_to_level_pack_data() -> void:
+	if _setting_to_data: return
+	_setting_to_data = true
+	if level_name.text != _level_pack_data.name:
+		level_name.text = _level_pack_data.name
+	if level_author.text != _level_pack_data.author:
+		level_author.text = _level_pack_data.author
+	level_path.text = str(_level_pack_data.file_path)
 	_reload_image()
 	_setting_to_data = false
 
@@ -121,7 +138,7 @@ func _on_set_author(new_author: String) -> void:
 
 func _reload_image() -> void:
 	if not visible: return
-	var img := SaveLoad.get_image(_level_data)
+	var img := SaveLoad.get_image(_level_pack_data)
 	if img != null:
 		level_image_rect.texture = ImageTexture.create_from_image(img)
 	else:

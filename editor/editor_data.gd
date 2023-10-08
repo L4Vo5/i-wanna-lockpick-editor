@@ -1,14 +1,21 @@
 extends RefCounted
 class_name EditorData
 
-signal changed_level_data
+signal changed_level_pack_data
+var level_pack_data: LevelPackData:
+	set(val):
+		if level_pack_data == val: return
+		
+		level_pack_data = val
+		
+		changed_level_pack_data.emit()
 
+signal changed_level_data
 var level_data: LevelData:
 	set(val):
 		if level_data == val: return
-		_disconnect_connect_level_data()
 		level_data = val
-		_connect_level_data()
+		Global.current_level.level_data = level_data
 		changed_level_data.emit()
 
 signal changed_is_playing
@@ -24,6 +31,7 @@ var door_editor: DoorEditor
 var key_editor: KeyEditor
 var tile_editor: MarginContainer
 var side_tabs: TabContainer
+var level_properties_editor: LevelPropertiesEditor
 var entry_editor: EntryEditor
 
 # what's currently being edited
@@ -42,13 +50,3 @@ var entries := false
 var hover_highlight: HoverHighlight
 var danger_highlight: HoverHighlight
 var selected_highlight: HoverHighlight
-
-
-###
-
-func _connect_level_data() -> void:
-	if not is_instance_valid(level_data): return
-	Global.current_level.level_data = level_data
-
-func _disconnect_connect_level_data() -> void:
-	if not is_instance_valid(level_data): return
