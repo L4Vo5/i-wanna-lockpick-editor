@@ -1,11 +1,22 @@
 static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
+	assert(level_pack.connections.size() == level_pack.levels.size())
+	
 	data.store_u16(SaveLoad.LATEST_FORMAT)
 	level_pack.editor_version = Global.game_version
 	data.store_string(level_pack.editor_version)
 	data.store_string(level_pack.name)
 	data.store_string(level_pack.author)
-	# Save all levels
+	
 	data.store_u32(level_pack.levels.size())
+	
+	# Save all connections
+	for connections in level_pack.connections:
+		data.store_u32(connections.size())
+		for connection in connections:
+			# Should be same datatype as level count, since that's the max possible connection
+			data.store_u32(connection)
+	
+	# Save all levels
 	for level in level_pack.levels:
 		_save_level(level, data)
 
@@ -89,8 +100,20 @@ static func load(data: ByteAccess) -> LevelPackData:
 	level_pack.author = data.get_string()
 	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
 	
-	# Load all levels
 	var level_count := data.get_u32()
+	# Load all connections
+	level_pack.connections = []
+	for i in level_count:
+		# Connection list for level i
+		var connection_list := []
+		var connection_count := data.get_u32()
+		for j in connection_count:
+			var obj_level := data.get_u32()
+			connection_list.push_back(obj_level)
+		level_pack.connections.push_back(connection_list)
+	
+	# Load all levels
+	
 	if SaveLoad.PRINT_LOAD: print("It has %d levels" % level_count)
 	for i in level_count:
 		level_pack.levels.push_back(_load_level(data))

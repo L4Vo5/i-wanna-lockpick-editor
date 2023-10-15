@@ -5,7 +5,9 @@ class_name LevelPackData
 @export var editor_version: String
 @export var name: String
 @export var author: String
-# For easier saving
+## Format: for each level (matching the index), a list of the levels its entries take you to
+@export var connections: Array[Array]
+# For easier saving, since resource_path probably wouldn't work with .lvl
 var file_path := "":
 	set(val):
 		if file_path == val: return
@@ -22,6 +24,7 @@ static func make_from_level(level_data: LevelData) -> LevelPackData:
 	data.levels = [level_data.duplicate()]
 	data.levels[0].resource_path = ""
 	data.levels[0].resource_local_to_scene
+	data.connections = [[]]
 	return data
 
 # Only the keys are used. values are true for fixable and false for unfixable
