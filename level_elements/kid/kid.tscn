@@ -287,3 +287,13 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MatchingArea"]
 position = Vector2(0.5, -10.5)
 shape = SubResource("RectangleShape2D_k1m2g")
+
+[node name="EntryDetect" type="Area2D" parent="."]
+unique_name_in_owner = true
+visible = false
+collision_layer = 0
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntryDetect"]
+position = Vector2(0.5, -10.5)
+shape = SubResource("RectangleShape2D_k1m2g")

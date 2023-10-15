@@ -1,14 +1,15 @@
 class_name SaveLoad
 
 const PRINT_LOAD := true
-const LATEST_FORMAT := 2
+const LATEST_FORMAT := 3
 const V1 := preload("res://misc/saving_versions/save_load_v1.gd")
 const V2 := preload("res://misc/saving_versions/save_load_v2.gd")
-const VC := V2
+const V3 := preload("res://misc/saving_versions/save_load_v3.gd")
+const VC := V3
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 
-static func get_data(level: LevelData) -> PackedByteArray:
-	var path := level.file_path
+static func get_data(level_pack: LevelPackData) -> PackedByteArray:
+	var path := level_pack.file_path
 	var data: PackedByteArray
 	# SHOULDN'T SUPPORT THIS. it makes loading images/data ambiguous!
 #	if path == "":
@@ -21,12 +22,12 @@ static func get_data(level: LevelData) -> PackedByteArray:
 #		data = file.get_buffer(file.get_length())
 #	else:
 	var byte_access := VC.make_byte_access([])
-	VC.save(level, byte_access)
+	VC.save(level_pack, byte_access)
 	data = byte_access.data
 	return data
 
-static func get_image(level: LevelData) -> Image:
-	var data := get_data(level)
+static func get_image(level_pack: LevelPackData) -> Image:
+	var data := get_data(level_pack)
 	if data.size() == 0: return null
 	var img := Image.new()
 	
@@ -39,7 +40,7 @@ static func get_image(level: LevelData) -> Image:
 	return img
 
 
-static func load_from_image(image: Image) -> LevelData:
+static func load_from_image(image: Image) -> LevelPackData:
 	image.convert(Image.FORMAT_RGB8)
 	var data := image.get_data()
 	var byte_access := VC.make_byte_access(data)
@@ -48,24 +49,24 @@ static func load_from_image(image: Image) -> LevelData:
 	data = data.slice(byte_access.get_position())
 	return load_from_buffer(data, version, editor_ver, "")
 
-static func save_level(level: LevelData) -> void:
-	var path := level.file_path
+static func save_level(level_pack: LevelPackData) -> void:
+	var path := level_pack.file_path
 	if path.get_extension() == "lvl":
 		var file := FileAccess.open(path, FileAccess.WRITE)
-		file.store_buffer(get_data(level))
+		file.store_buffer(get_data(level_pack))
 		print("saving to " + path)
 		file.close()
 	elif path.get_extension() == "png":
-		var image := get_image(level)
-		path = level.file_path.get_basename() + ".png"
+		var image := get_image(level_pack)
+		path = level_pack.file_path.get_basename() + ".png"
 		print("saving to " + path)
 		var err := image.save_png(path)
 		if err != OK:
 			print("error saving image: " + str(err))
 
 # Loads a .lvl file
-static func load_from(path: String) -> LevelData:
-	var lvl_data: LevelData = null
+static func load_from(path: String) -> LevelPackData:
+	var pack_data: LevelPackData = null
 	
 	var version: int = -1
 	var original_editor_version := ""
@@ -78,9 +79,11 @@ static func load_from(path: String) -> LevelData:
 		version = file.get_16()
 		original_editor_version = file.get_pascal_string()
 		if version == 1:
-			lvl_data = V1.load(file)
-			finishing_touches(lvl_data, path)
-			return lvl_data
+			var lvl_data: LevelData = V1.load(file)
+			var lvl_pack_data = LevelPackData.make_from_level(lvl_data)
+			finishing_touches(lvl_pack_data, path)
+			
+			return LevelPackData.make_from_level(lvl_pack_data)
 		buf = file.get_buffer(file.get_length() - file.get_position())
 	elif path.get_extension() == "png":
 		var img := Image.load_from_file(path)
@@ -97,10 +100,12 @@ static func load_from(path: String) -> LevelData:
 static func load_from_buffer(
 	data: PackedByteArray,
 	version: int,
-	original_editor_version: String, path: String) -> LevelData:
-	var lvl_data: LevelData
+	original_editor_version: String, path: String) -> LevelPackData:
+	if original_editor_version == "":
+		original_editor_version = "Unknown (oops)"
+	var lvl_pack_data: LevelPackData
 	
-	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version is %s" % [path, version, original_editor_version])
+	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
 	# Shouldn't be allowed to be version 1
 	if version == 1:
 		var error_text := \
@@ -111,7 +116,11 @@ If you're on the latest version, please report this."""
 		return null
 	elif version == 2:
 		var byte_access := V2.make_byte_access(data)
-		lvl_data = V2.load(byte_access)
+		var lvl_data: LevelData = V2.load(byte_access)
+		lvl_pack_data = LevelPackData.make_from_level(lvl_data)
+	elif version == 3:
+		var byte_access := V3.make_byte_access(data)
+		lvl_pack_data = V3.load(byte_access)
 	else:
 		var error_text := \
 """This level was made in editor version %s and uses the saving format N°%d.
@@ -122,12 +131,12 @@ Loading cancelled.""" % [original_editor_version, version, Global.game_version, 
 		return null
 	
 	# Now that it's imported, it'll save with the latest version
-	finishing_touches(lvl_data, path)
-	return lvl_data
+	finishing_touches(lvl_pack_data, path)
+	return lvl_pack_data
 
-static func finishing_touches(lvl_data: LevelData, path: String) -> void:
-	lvl_data.editor_version = Global.game_version
-	lvl_data.file_path = path
+static func finishing_touches(lvl_pack_data: LevelPackData, path: String) -> void:
+	lvl_pack_data.editor_version = Global.game_version
+	lvl_pack_data.file_path = path
 
 # fun 
 static func image_to_b_w(img: Image, data: PackedByteArray) -> void:

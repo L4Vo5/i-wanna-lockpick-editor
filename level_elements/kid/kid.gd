@@ -24,6 +24,7 @@ class_name Kid
 @onready var spr_i_view: Sprite2D = %IView
 @onready var spr_white_aura: Sprite2D = %SprWhiteAura
 @onready var door_detect: ShapeCast2D = %DoorDetect
+@onready var entry_detect: Area2D = %EntryDetect
 
 const GRAVITY := 0.4
 const JUMP_1 := -8.5
@@ -75,6 +76,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if not is_instance_valid(Global.current_level): return
 	if event.is_action_pressed(&"master"):
 		update_master_equipped(true, true)
+	if event.is_action_pressed(&"enter_level"):
+		if entry_detect.has_overlapping_areas():
+			var entry: Entry = entry_detect.get_overlapping_areas()[0].get_parent()
+			print("Should enter entry %s" % entry)
 
 var on_floor := true
 var on_ceiling := false

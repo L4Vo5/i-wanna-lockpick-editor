@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://d4bjx48o6bjgf"]
+
+[ext_resource type="Texture2D" uid="uid://h1t82rry4rig" path="res://level_elements/entries/sprLevelEntry_0.png" id="1_484ak"]
+[ext_resource type="Script" path="res://level_elements/entries/entry.gd" id="1_eb5iw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xuxla"]
+size = Vector2(34, 33)
+
+[node name="Entry" type="Node2D"]
+script = ExtResource("1_eb5iw")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -18)
+texture = ExtResource("1_484ak")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 32
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, -16.5)
+shape = SubResource("RectangleShape2D_xuxla")

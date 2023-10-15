@@ -8,6 +8,7 @@ class_name LockpickEditor
 @export var key_editor: KeyEditor
 @export var tile_editor: Control
 @export var level_properties_editor: LevelPropertiesEditor
+@export var entry_editor: EntryEditor
 
 @export var level_container: LevelContainer
 
@@ -64,22 +65,24 @@ func _ready() -> void:
 	else:
 		const p := "user://levels/testing.tres"
 		if FileAccess.file_exists(p):
-			level.level_data = load(p)
+			var res = load(p)
+			if res is LevelData:
+				data.level_pack_data = LevelPackData.make_from_level(res)
+			if res is LevelPackData:
+				data.level_pack_data = res
 		else:
 			print("Couldn't find %s. Starting on new level." % p)
 			_on_new_level_button_pressed()
 	
-	
-	data.level_data = level.level_data
 	data.level = level
+	data.level_data = data.level_pack_data.levels[0]
 	data.door_editor = door_editor
 	data.key_editor = key_editor
+	data.tile_editor = tile_editor
+	data.level_properties_editor = level_properties_editor
+	data.entry_editor = entry_editor
 	data.side_tabs = side_tabs
 	
-	data.side_tab_doors = door_editor
-	data.side_tab_keys = key_editor
-	data.side_tab_tile = tile_editor
-	data.side_tab_level = level_properties_editor
 	
 	level_container.editor_data = data
 	level_properties_editor.editor_data = data
@@ -137,6 +140,7 @@ func _update_mode() -> void:
 	data.keys = current_tab == key_editor
 	data.level_properties = current_tab == level_properties_editor
 	data.objects = current_tab == door_editor or current_tab == key_editor
+	data.entries = current_tab == entry_editor
 
 func _on_play_pressed() -> void:
 	save_level()
@@ -159,39 +163,42 @@ func _on_play_pressed() -> void:
 func save_level() -> void:
 	if not Global.in_editor:
 		if not data.is_playing:
-			var path := data.level_data.file_path
+			var path := data.level_pack_data.file_path
 			if path == "":
-				path = data.level_data.resource_path
+				path = data.level_pack_data.resource_path
 			var ext := path.get_extension()
 			if ext in ["res", "tres"]:
 				# Allow saving res and tres anywhere when testing
 				if not Global.is_exported:
-					data.level_data.resource_path = path
-					ResourceSaver.save(data.level_data)
+					data.level_pack_data.resource_path = path
+					print("Saving to %s" % path)
+					ResourceSaver.save(data.level_pack_data, path)
 				else:
 					Global.safe_error("Report this (saving resource).", Vector2(300, 100))
 			elif ext in ["lvl", "png"]:
-				data.level_data.resource_path = ""
-				SaveLoad.save_level(data.level_data)
+				data.level_pack_data.resource_path = ""
+				SaveLoad.save_level(data.level_pack_data)
 	_update_level_path_display()
 
-var new_level: LevelData = null
+var new_level_pack: LevelPackData = null
 func load_level(path: String) -> void:
-	new_level = null
+	new_level_pack = null
 	var ext := path.get_extension()
 	if ext in ["res", "tres"]:
 		if Global.is_exported and not path.begins_with("res://"):
 			Global.safe_error("Loading resource levels outside res:// is not allowed", Vector2(300, 100))
 			return
 		var res := load(path)
-		var valid := (res != null) and (res is LevelData)
-		if valid:
-			new_level = res
+		var valid := (res != null)
+		if valid and res is LevelData:
+			res = LevelPackData.make_from_level(res)
+		if valid and res is LevelPackData:
+			new_level_pack = res
 			if not path.begins_with("res://"):
 				path = path.get_basename() + ".lvl"
-				new_level.resource_path = ""
+				new_level_pack.resource_path = ""
 	elif ext == "lvl" or ext == "png":
-		new_level = SaveLoad.load_from(path)
+		new_level_pack = SaveLoad.load_from(path)
 	else:
 		assert(not ext in SaveLoad.LEVEL_EXTENSIONS, "Trying to load level with invalid extension")
 		assert(false, "Not all valid extensions are covered")
@@ -202,35 +209,37 @@ func _on_load_from_clipboard_pressed() -> void:
 	if image == null:
 		Global.show_notification("No image in clipboard (or other error)")
 	else:
-		new_level = SaveLoad.load_from_image(image)
+		new_level_pack = SaveLoad.load_from_image(image)
 		finish_loading_level()
 
 func finish_loading_level() -> void:
-	if is_instance_valid(new_level):
-		new_level.check_valid(false)
-		var fixable_problems := new_level.get_fixable_invalid_reasons()
-		var unfixable_problems := new_level.get_unfixable_invalid_reasons()
+	if is_instance_valid(new_level_pack):
+		new_level_pack.check_valid(false)
+		var fixable_problems := new_level_pack.get_fixable_invalid_reasons()
+		var unfixable_problems := new_level_pack.get_unfixable_invalid_reasons()
 		if fixable_problems.is_empty() and unfixable_problems.is_empty():
-			data.level_data = new_level
+			data.level_pack_data = new_level_pack
+			## TODO: Rethink this
+			data.level_data = new_level_pack.levels[0]
 			_update_level_path_display()
 		else:
 			invalid_level_dialog.appear(fixable_problems, unfixable_problems)
 
 func _on_load_fixed() -> void:
-	new_level.check_valid(true)
-	data.level_data = new_level
+	new_level_pack.check_valid(true)
+	data.level_pack_data = new_level_pack
 	_update_level_path_display()
 
 func _on_load_unfixed() -> void:
-	data.level_data = new_level
+	data.level_pack_data = new_level_pack
 	_update_level_path_display()
 
 func _update_level_path_display() -> void:
 	level_path_displayer.show()
-	if data.level_data.resource_path != "":
-		level_path_displayer.text = data.level_data.resource_path
-	elif data.level_data.file_path != "":
-		level_path_displayer.text = data.level_data.file_path
+	if data.level_pack_data.resource_path != "":
+		level_path_displayer.text = data.level_pack_data.resource_path
+	elif data.level_pack_data.file_path != "":
+		level_path_displayer.text = data.level_pack_data.file_path
 	else:
 		level_path_displayer.hide()
 
@@ -243,9 +252,9 @@ func _on_save_as_pressed() -> void:
 	if Global.danger_override:
 		file_dialog.add_filter("*.res", "Binary Resource")
 		file_dialog.add_filter("*.tres", "Text Resource")
-	if data.level_data.file_path == "":
+	if data.level_pack_data.file_path == "":
 		var line_edit := file_dialog.get_line_edit()
-		var level_name := data.level_data.name
+		var level_name := data.level_pack_data.name
 		if level_name == "":
 			level_name = "Untitled"
 		line_edit.text = level_name + ".lvl"
@@ -257,7 +266,7 @@ func _on_save_pressed() -> void:
 	# Allow saving .res, .tres, and levels in res:// when testing
 	if Global.danger_override:
 		save_level()
-	elif data.level_data.file_path == "":
+	elif data.level_pack_data.file_path == "":
 		_on_save_as_pressed()
 	else:
 		save_level()
@@ -278,7 +287,7 @@ func _on_file_selected(path: String) -> void:
 	match file_dialog.file_mode:
 		FileDialog.FILE_MODE_SAVE_FILE:
 			# Save As
-			data.level_data.file_path = path
+			data.level_pack_data.file_path = path
 			save_level()
 		FileDialog.FILE_MODE_OPEN_FILE:
 			# Load
