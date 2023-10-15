@@ -7,16 +7,16 @@ var level_pack_data: LevelPackData:
 		if level_pack_data == val: return
 		
 		level_pack_data = val
-		
+		level.pack_data = val
 		changed_level_pack_data.emit()
 
 signal changed_level_data
+## Read-only!
 var level_data: LevelData:
+	get:
+		return level.level_data
 	set(val):
-		if level_data == val: return
-		level_data = val
-		Global.current_level.level_data = level_data
-		changed_level_data.emit()
+		assert(false)
 
 signal changed_is_playing
 var is_playing := false:

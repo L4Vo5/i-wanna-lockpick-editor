@@ -60,6 +60,8 @@ func _ready() -> void:
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
 	
+	data.level = level
+	
 	if Global.is_exported:
 		_on_new_level_button_pressed()
 	else:
@@ -74,8 +76,6 @@ func _ready() -> void:
 			print("Couldn't find %s. Starting on new level." % p)
 			_on_new_level_button_pressed()
 	
-	data.level = level
-	data.level_data = data.level_pack_data.levels[0]
 	data.door_editor = door_editor
 	data.key_editor = key_editor
 	data.tile_editor = tile_editor
@@ -219,8 +219,6 @@ func finish_loading_level() -> void:
 		var unfixable_problems := new_level_pack.get_unfixable_invalid_reasons()
 		if fixable_problems.is_empty() and unfixable_problems.is_empty():
 			data.level_pack_data = new_level_pack
-			## TODO: Rethink this
-			data.level_data = new_level_pack.levels[0]
 			_update_level_path_display()
 		else:
 			invalid_level_dialog.appear(fixable_problems, unfixable_problems)

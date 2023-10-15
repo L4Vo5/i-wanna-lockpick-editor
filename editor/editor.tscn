@@ -1,10 +1,9 @@
-[gd_scene load_steps=25 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=24 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
 [ext_resource type="Script" path="res://editor/level_container.gd" id="2_kqd34"]
 [ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="3_4sapt"]
-[ext_resource type="Resource" uid="uid://duetyl1ll5edp" path="res://editor/levels/default.tres" id="4_80bf4"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_55fwv"]
 [ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="6_n53nq"]
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="7_8vfxp"]
@@ -255,7 +254,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Level" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("3_4sapt")]
-level_data = ExtResource("4_80bf4")
 exclude_player = true
 
 [node name="CanvasGroup" type="CanvasGroup" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level"]

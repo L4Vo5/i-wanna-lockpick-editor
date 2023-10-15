@@ -1,5 +1,8 @@
 extends Node2D
 class_name Level
+## Level scene. Handles the playing (and displaying) of a single level.
+## (Actually handles the whole progression through a LevelPack)
+## For performance reasons, it's far easier to keep a Level and change its _level_data than to instance a new Level.
 
 signal changed_glitch_color
 var glitch_color := Enums.colors.glitch:
@@ -8,14 +11,27 @@ var glitch_color := Enums.colors.glitch:
 		glitch_color = val
 		changed_glitch_color.emit()
 
-signal changed_level_data
-@export var level_data: LevelData = null:
+@export var pack_data: LevelPackData = null:
 	set(val):
-		if level_data == val: return
+		if pack_data == val: return
+		pack_data = val
+		current_level_index = 0
+		_level_data = pack_data.levels[current_level_index]
+var current_level_index := 0
+signal changed_level_data
+var _level_data: LevelData = null:
+	set(val):
+		if _level_data == val: return
 		_disconnect_level_data()
-		level_data = val
+		_level_data = val
 		_connect_level_data()
 		changed_level_data.emit()
+## Read-only!
+var level_data: LevelData:
+	get:
+		return _level_data
+	set(val):
+		assert(false)
 
 @export var exclude_player := false:
 	set(val):
@@ -31,6 +47,7 @@ signal changed_doors
 signal changed_keys
 
 # Some code might depend on these complex numbers' changed signals, so don't change them to new numbers pls
+# Function _ensure_key_counts will run every frame to make sure the objects don't change. (not in releae builds)
 var key_counts := {
 	Enums.colors.glitch: ComplexNumber.new(),
 	Enums.colors.black: ComplexNumber.new(),
@@ -47,8 +64,6 @@ var key_counts := {
 	Enums.colors.master: ComplexNumber.new(),
 	Enums.colors.stone: ComplexNumber.new(),
 }
-# This function call was made to ensure that. it'll run every frame and double check that the objects don't change
-const ENSURE_KEY_COUNTS := true
 var star_keys := {
 	Enums.colors.glitch: false,
 	Enums.colors.black: false,
@@ -116,7 +131,7 @@ var door_multiplier := 1
 
 func _init() -> void:
 	undo_redo = GoodUndoRedo.new()
-	if ENSURE_KEY_COUNTS:
+	if not Global.is_exported:
 		_ensure_key_counts()
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -174,26 +189,23 @@ func _physics_process(_delta: float) -> void:
 		if player.on_floor:
 			last_player_undo = player.get_undo_action()
 
-# force_hard_reset is for benchmarking purposes
+## Resets the current level (when pressing r)
+## Also used for starting it for the first time
 func reset() -> void:
 	if not is_node_ready(): return
-	# TEMP ?
-	if not is_instance_valid(level_data):
-		const p := "user://levels/testing.tres"
-		if FileAccess.file_exists(p):
-			level_data = load(p)
-		else:
-			print("Couldn't find %s. Starting on new level." % p)
-			level_data = LevelData.new()
+	if not is_instance_valid(pack_data):
+		pack_data = LevelPackData.make_from_level(LevelData.new())
+		current_level_index = 0
+		_level_data = pack_data.levels[0]
 	assert(PerfManager.start("Level::reset"))
 	
 	assert(PerfManager.start("Level::reset (doors)"))
-	var needed_doors := level_data.doors.size()
+	var needed_doors := _level_data.doors.size()
 	var current_doors := doors.get_child_count()
 	# redo the current ones
 	for i in mini(needed_doors, current_doors):
 		var door := doors.get_child(i)
-		door.original_door_data = level_data.doors[i]
+		door.original_door_data = _level_data.doors[i]
 		door.door_data = door.original_door_data.duplicated()
 	# shave off the rest
 	if current_doors > needed_doors:
@@ -205,18 +217,18 @@ func reset() -> void:
 	# or add them
 	else:
 		for i in range(current_doors, needed_doors):
-			_spawn_door(level_data.doors[i])
+			_spawn_door(_level_data.doors[i])
 	assert(PerfManager.end("Level::reset (doors)"))
 	
 	assert(PerfManager.start("Level::reset (keys)"))
-	var needed_keys := level_data.keys.size()
+	var needed_keys := _level_data.keys.size()
 	var current_keys := keys.get_child_count()
 	
 	# redo the current ones
 	for i in mini(needed_keys, current_keys):
 		var key := keys.get_child(i)
-		key.set_meta(&"original_key_data", level_data.keys[i])
-		key.key_data = level_data.keys[i].duplicated()
+		key.set_meta(&"original_key_data", _level_data.keys[i])
+		key.key_data = _level_data.keys[i].duplicated()
 	# shave off the rest
 	if current_keys > needed_keys:
 		for _i in current_keys - needed_keys:
@@ -227,12 +239,12 @@ func reset() -> void:
 	# or add them
 	else:
 		for i in range(current_keys, needed_keys):
-			_spawn_key(level_data.keys[i])
+			_spawn_key(_level_data.keys[i])
 	assert(PerfManager.end("Level::reset (keys)"))
 	
 	assert(PerfManager.start("Level::reset (tiles)"))
 	tile_map.clear()
-	for tile_coord in level_data.tiles:
+	for tile_coord in _level_data.tiles:
 		_spawn_tile(tile_coord)
 	assert(PerfManager.end("Level::reset (tiles)"))
 	
@@ -263,31 +275,31 @@ func reset() -> void:
 	assert(PerfManager.end("Level::reset"))
 
 func _connect_level_data() -> void:
-	if not is_instance_valid(level_data): return
+	if not is_instance_valid(_level_data): return
 	# Must do this in case level data has no version
-	level_data.check_valid(false)
-	level_data.changed_player_spawn_position.connect(_update_player_spawn_position)
+	_level_data.check_valid(false)
+	_level_data.changed_player_spawn_position.connect(_update_player_spawn_position)
 	_update_player_spawn_position()
-	level_data.changed_goal_position.connect(_update_goal_position)
+	_level_data.changed_goal_position.connect(_update_goal_position)
 	_update_goal_position()
-	level_data.changed_doors.connect(emit_signal.bind(&"changed_doors"))
-	level_data.changed_keys.connect(emit_signal.bind(&"changed_keys"))
+	_level_data.changed_doors.connect(emit_signal.bind(&"changed_doors"))
+	_level_data.changed_keys.connect(emit_signal.bind(&"changed_keys"))
 	reset()
 
 func _disconnect_level_data() -> void:
-	if not is_instance_valid(level_data): return
-	var amount = Global.fully_disconnect(self, level_data)
+	if not is_instance_valid(_level_data): return
+	var amount = Global.fully_disconnect(self, _level_data)
 	assert(amount == 4)
 
 func _update_player_spawn_position() -> void:
 	if not is_node_ready(): return
 	player_spawn_point.visible = Global.in_level_editor
-	player_spawn_point.position = level_data.player_spawn_position
+	player_spawn_point.position = _level_data.player_spawn_position
 
 func _update_goal_position() -> void:
 	if not is_node_ready(): return
 	if not is_instance_valid(goal): return
-	goal.position = level_data.goal_position + Vector2i(16, 16)
+	goal.position = _level_data.goal_position + Vector2i(16, 16)
 
 # Editor functions
 
@@ -297,10 +309,10 @@ signal key_gui_input(event: InputEvent, key: Key)
 ## Adds a door to the level data. Returns null if it wasn't added
 func add_door(door_data: DoorData) -> Door:
 	if is_space_occupied(door_data.get_rect()): return null
-	if not door_data.check_valid(level_data, true): return null
-	if not door_data in level_data.doors:
-		level_data.doors.push_back(door_data)
-		level_data.changed_doors.emit()
+	if not door_data.check_valid(_level_data, true): return null
+	if not door_data in _level_data.doors:
+		_level_data.doors.push_back(door_data)
+		_level_data.changed_doors.emit()
 	return _spawn_door(door_data)
 
 ## Makes a door physically appear (doesn't check collisions)
@@ -322,26 +334,26 @@ func _spawn_door(door_data: DoorData) -> Door:
 
 ## Removes a door from the level data
 func remove_door(door: Door) -> void:
-	var pos := level_data.doors.find(door.original_door_data)
+	var pos := _level_data.doors.find(door.original_door_data)
 	assert(pos != -1)
-	level_data.doors.remove_at(pos)
+	_level_data.doors.remove_at(pos)
 	doors.remove_child(door)
 	disconnect_door(door)
 #	door.queue_free()
 	NodePool.return_node(door)
-	level_data.changed_doors.emit()
+	_level_data.changed_doors.emit()
 
 ## Moves a given door. Returns false if the move failed
 func move_door(door: Door, new_position: Vector2i) -> bool:
 	var door_data: DoorData = door.original_door_data
-	var i := level_data.doors.find(door_data)
+	var i := _level_data.doors.find(door_data)
 	assert(i != -1)
 	assert(door_data.get_rect() == Rect2i(door_data.position, door_data.get_rect().size))
 	var rect := Rect2i(new_position, door_data.get_rect().size)
 	if not is_space_occupied(rect, [], [door_data]):
 		door_data.position = new_position
 		door.door_data.position = new_position
-		level_data.changed_doors.emit()
+		_level_data.changed_doors.emit()
 		return true
 	else:
 		return false
@@ -349,9 +361,9 @@ func move_door(door: Door, new_position: Vector2i) -> bool:
 ## Adds a key to the level data. Returns null if it wasn't added
 func add_key(key_data: KeyData) -> Key:
 	if is_space_occupied(key_data.get_rect()): return null
-	if not key_data in level_data.keys:
-		level_data.keys.push_back(key_data)
-		level_data.changed_keys.emit()
+	if not key_data in _level_data.keys:
+		_level_data.keys.push_back(key_data)
+		_level_data.changed_keys.emit()
 	return _spawn_key(key_data)
 
 ## Makes a key physically appear (doesn't check collisions)
@@ -366,43 +378,43 @@ func _spawn_key(key_data: KeyData) -> Key:
 
 ## Removes a key from the level data
 func remove_key(key: Key) -> void:
-	var i := level_data.keys.find(key.get_meta(&"original_key_data"))
+	var i := _level_data.keys.find(key.get_meta(&"original_key_data"))
 	assert(i != -1)
-	level_data.keys.remove_at(i)
+	_level_data.keys.remove_at(i)
 	keys.remove_child(key)
 	disconnect_key(key)
 	key.queue_free()
-	level_data.changed_keys.emit()
+	_level_data.changed_keys.emit()
 
 ## Moves a given key. Returns false if the move failed
 func move_key(key: Key, new_position: Vector2i) -> bool:
 	var key_data: KeyData = key.get_meta(&"original_key_data")
-	var i := level_data.keys.find(key_data)
+	var i := _level_data.keys.find(key_data)
 	assert(i != -1)
 	assert(key_data.get_rect() == Rect2i(key_data.position, key_data.get_rect().size))
 	var rect := Rect2i(new_position, key_data.get_rect().size)
 	if not is_space_occupied(rect, [], [key_data]):
 		key_data.position = new_position
 		key.key_data.position = new_position
-		level_data.changed_keys.emit()
+		_level_data.changed_keys.emit()
 		return true
 	else:
 		return false
 
 func place_player_spawn(coord: Vector2i) -> void:
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"player_spawn"]): return
-	level_data.player_spawn_position = coord + Vector2i(14, 32)
+	_level_data.player_spawn_position = coord + Vector2i(14, 32)
 
 func place_goal(coord: Vector2i) -> void:
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"goal"]): return
-	level_data.goal_position = coord
+	_level_data.goal_position = coord
 
 func place_tile(tile_coord: Vector2i) -> void:
-	if level_data.tiles.has(tile_coord): return
+	if _level_data.tiles.has(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
-	level_data.tiles[tile_coord] = true
+	_level_data.tiles[tile_coord] = true
 	_spawn_tile(tile_coord)
-	level_data.changed_tiles.emit()
+	_level_data.changed_tiles.emit()
 
 func _spawn_tile(tile_coord: Vector2i) -> void:
 	var layer := 0
@@ -412,11 +424,11 @@ func _spawn_tile(tile_coord: Vector2i) -> void:
 
 ## Removes a tile from the level data. Returns true if a tile was there.
 func remove_tile(tile_coord: Vector2i) -> bool:
-	if not level_data.tiles.has(tile_coord): return false
-	level_data.tiles.erase(tile_coord)
+	if not _level_data.tiles.has(tile_coord): return false
+	_level_data.tiles.erase(tile_coord)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
-	level_data.changed_tiles.emit()
+	_level_data.changed_tiles.emit()
 	return true
 
 func _spawn_player() -> void:
@@ -427,7 +439,7 @@ func _spawn_player() -> void:
 	Global.is_playing = not exclude_player
 	if exclude_player: return
 	player = PLAYER.instantiate()
-	player.position = level_data.player_spawn_position
+	player.position = _level_data.player_spawn_position
 	add_child(player)
 	immediately_adjust_camera.call_deferred()
 
@@ -436,7 +448,7 @@ func _spawn_goal() -> void:
 		remove_child(goal)
 		goal.queue_free()
 	goal = GOAL.instantiate()
-	goal.position = level_data.goal_position + Vector2i(16, 16)
+	goal.position = _level_data.goal_position + Vector2i(16, 16)
 	add_child(goal)
 
 ## Returns true if there's a tile, door, key, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
@@ -445,31 +457,31 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 	if not is_space_inside(rect):
 		return true
 	if not &"doors" in exclusions:
-		for door in level_data.doors:
+		for door in _level_data.doors:
 			if door in excluded_objects: continue
 			if door.get_rect().intersects(rect):
 				return true
 	if not &"keys" in exclusions:
-		for key in level_data.keys:
+		for key in _level_data.keys:
 			if key in excluded_objects: continue
 			if key.get_rect().intersects(rect):
 				return true
 	if not &"goal" in exclusions:
-		if Rect2i((level_data.goal_position), Vector2i(32, 32)).intersects(rect):
+		if Rect2i((_level_data.goal_position), Vector2i(32, 32)).intersects(rect):
 			return true
 	if not &"player_spawn" in exclusions:
-		var spawn_pos := (level_data.player_spawn_position - Vector2i(14, 32))
+		var spawn_pos := (_level_data.player_spawn_position - Vector2i(14, 32))
 		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
 			return true
 	if not &"tiles" in exclusions:
-		for tile_pos in level_data.tiles:
+		for tile_pos in _level_data.tiles:
 			if Rect2i(tile_pos * 32, Vector2i(32, 32)).intersects(rect):
 				return true
 	return false
 
 ## Returns true if the space is fully inside the level
 func is_space_inside(rect: Rect2i) -> bool:
-	return Rect2i(Vector2i.ZERO, level_data.size).encloses(rect)
+	return Rect2i(Vector2i.ZERO, _level_data.size).encloses(rect)
 
 func _on_door_gui_input(event: InputEvent, door: Door):
 	door_gui_input.emit(event, door)
@@ -571,8 +583,8 @@ func remove_all_pooled() -> void:
 
 func limit_camera() -> void:
 	var limit := Vector2(
-		level_data.size.x - get_viewport_rect().size.x
-		, level_data.size.y - get_viewport_rect().size.y
+		_level_data.size.x - get_viewport_rect().size.x
+		, _level_data.size.y - get_viewport_rect().size.y
 	)
 	# custom clamp in case limit goes under 0
 	# TODO
