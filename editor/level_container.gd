@@ -8,11 +8,19 @@ class_name LevelContainer
 @export var level_viewport: SubViewport
 
 @export var tile_map: TileMap
-@export var door_editor: DoorEditor
-@export var key_editor: KeyEditor
+var door_editor: DoorEditor:
+	get:
+		return editor_data.door_editor
+var key_editor: KeyEditor:
+	get:
+		return editor_data.key_editor
+var entry_editor: EntryEditor:
+	get:
+		return editor_data.entry_editor
 
 @export var ghost_door: Door
 @export var ghost_key: Key
+@export var ghost_entry: Entry
 @export var ghost_canvas_group: CanvasGroup
 
 @export var editor: LockpickEditor
@@ -75,9 +83,9 @@ func _expand_level() -> void:
 func _ready() -> void:
 	level.door_gui_input.connect(_on_door_gui_input)
 	level.key_gui_input.connect(_on_key_gui_input)
+	level.entry_gui_input.connect(_on_entry_gui_input)
 	resized.connect(_on_resized)
 	level_viewport.get_parent().show()
-	ghost_canvas_group.self_modulate.a = 0.5
 	
 	await get_tree().process_frame
 	editor_data.selected_highlight = selected_highlight
@@ -147,6 +155,24 @@ func _on_key_gui_input(event: InputEvent, key: Key) -> void:
 			if remove_key(key):
 				accept_event()
 
+func _on_entry_gui_input(event: InputEvent, entry: Entry) -> void:
+	if editor_data.disable_editing: return
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.pressed:
+				if remove_entry(entry):
+					accept_event()
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				editor_data.entry_editor.entry_data = entry.entry_data
+				editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.entry_editor)
+				accept_event()
+				select_thing(entry)
+	elif event is InputEventMouseMotion:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
+			if remove_entry(entry):
+				accept_event()
+
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
@@ -174,6 +200,9 @@ func _gui_input(event: InputEvent) -> void:
 					elif editor_data.goal_position:
 						place_goal_on_mouse()
 						accept_event()
+				elif editor_data.entries:
+					if place_entry_on_mouse():
+						accept_event()
 			else: # mouse button released
 				is_dragging = false
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
@@ -191,6 +220,9 @@ func _gui_input(event: InputEvent) -> void:
 						accept_event()
 				elif editor_data.keys:
 					if place_key_on_mouse():
+						accept_event()
+				elif editor_data.entries:
+					if place_entry_on_mouse():
 						accept_event()
 			elif editor_data.tilemap_edit:
 				place_tile_on_mouse()
@@ -238,18 +270,11 @@ func place_door_on_mouse() -> bool:
 	select_thing(door)
 	return true
 
-func remove_door(door: Door = null) -> bool:
+func remove_door(door: Door) -> bool:
 	if not is_instance_valid(door): return false
 	level.remove_door(door)
 	selected_obj = null
 	hovered_obj = null
-	_retry_ghosts()
-	return true
-
-func remove_key(key: Key = null) -> bool:
-	if not is_instance_valid(key): return false
-	level.remove_key(key)
-	select_thing(key)
 	_retry_ghosts()
 	return true
 
@@ -265,6 +290,21 @@ func place_key_on_mouse() -> bool:
 	hovered_obj = key
 	danger_obj = null
 	return true
+
+func remove_key(key: Key) -> bool:
+	if not is_instance_valid(key): return false
+	level.remove_key(key)
+	select_thing(key)
+	_retry_ghosts()
+	return true
+
+func place_entry_on_mouse() -> bool:
+	assert(false)
+	return false
+
+func remove_entry(entry: Entry) -> bool:
+	assert(false)
+	return false
 
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
@@ -347,6 +387,7 @@ func get_level_pos() -> Vector2:
 func _retry_ghosts() -> void:
 	ghost_key.hide()
 	ghost_door.hide()
+	ghost_entry.hide()
 	
 	if not is_dragging:
 		_place_ghosts()
@@ -355,8 +396,8 @@ func _place_ghosts() -> void:
 	assert(not is_dragging)
 	for i in 2:
 		var grid_size: int = [32, 16][i]
-		var obj: Node = [ghost_door, ghost_key][i]
-		var cond: bool = [editor_data.doors, editor_data.keys][i]
+		var obj: Node = [ghost_door, ghost_key, ghost_entry][i]
+		var cond: bool = [editor_data.doors, editor_data.keys, editor_data.entries][i]
 		
 		if not cond or editor_data.is_playing:
 			continue
@@ -364,6 +405,8 @@ func _place_ghosts() -> void:
 			obj.door_data = door_editor.door_data
 		elif obj is Key:
 			obj.key_data = key_editor.key_data
+		elif obj is Entry:
+			obj.entry_data = entry_editor.entry_data
 		var maybe_pos := get_mouse_coord(grid_size)
 		obj.position = maybe_pos
 		
@@ -392,8 +435,8 @@ func _place_ghosts() -> void:
 func _place_danger_obj() -> void:
 	for i in 2:
 		var grid_size: int = [32, 16][i]
-		var obj: Node = [ghost_door, ghost_key][i]
-		var cond: bool = [editor_data.doors, editor_data.keys][i]
+		var obj: Node = [ghost_door, ghost_key, ghost_entry][i]
+		var cond: bool = [editor_data.doors, editor_data.keys, editor_data.entries][i]
 		
 		if not cond or editor_data.is_playing:
 			continue
@@ -401,6 +444,8 @@ func _place_danger_obj() -> void:
 			obj.door_data = door_editor.door_data
 		elif obj is Key:
 			obj.key_data = key_editor.key_data
+		elif obj is Entry:
+			obj.entry_data = entry_editor.entry_data
 		
 		var maybe_pos := get_mouse_coord(grid_size)
 		if is_dragging:

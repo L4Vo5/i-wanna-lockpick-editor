@@ -79,7 +79,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"enter_level"):
 		if entry_detect.has_overlapping_areas():
 			var entry: Entry = entry_detect.get_overlapping_areas()[0].get_parent()
-			print("Should enter entry %s" % entry)
+			entry.enter()
 
 var on_floor := true
 var on_ceiling := false

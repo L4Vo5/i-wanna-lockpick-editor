@@ -1,6 +1,5 @@
 @tool
 extends Node
-var known_scenes := {}
 
 # nodes that are free to use
 var pooled_nodes := {

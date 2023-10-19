@@ -92,6 +92,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 
 @onready var doors: Node2D = %Doors
 @onready var keys: Node2D = %Keys
+@onready var entries: Node2D = %Entries
 @onready var tile_map: TileMap = %TileMap
 @onready var player_spawn_point: Sprite2D = %PlayerSpawnPoint
 @onready var debris_parent: Node2D = %DebrisParent
@@ -305,6 +306,7 @@ func _update_goal_position() -> void:
 
 signal door_gui_input(event: InputEvent, door: Door)
 signal key_gui_input(event: InputEvent, key: Key)
+signal entry_gui_input(event: InputEvent, entry: Entry)
 
 ## Adds a door to the level data. Returns null if it wasn't added
 func add_door(door_data: DoorData) -> Door:
@@ -401,6 +403,50 @@ func move_key(key: Key, new_position: Vector2i) -> bool:
 	else:
 		return false
 
+
+## Adds an entry to the level data. Returns null if it wasn't added
+func add_entry(entry_data: EntryData) -> Entry:
+	if is_space_occupied(entry_data.get_rect()): return null
+	if not entry_data in _level_data.entries:
+		_level_data.entries.push_back(entry_data)
+		_level_data.changed_entries.emit()
+	return _spawn_entry(entry_data)
+
+## Makes an entry physically appear (doesn't check collisions)
+func _spawn_entry(entry_data: EntryData) -> Entry:
+	var entry: Entry = NodePool.pool_node(KEY)
+	entry.entry_data = entry_data.duplicated()
+	entry.set_meta(&"original_key_data", entry_data)
+	connect_key(entry)
+	entry.level = self
+	entries.add_child(entry)
+	return entry
+
+## Removes an entry from the level data
+func remove_entry(entry: Entry) -> void:
+	var i := _level_data.keys.find(key.get_meta(&"original_key_data"))
+	assert(i != -1)
+	_level_data.keys.remove_at(i)
+	keys.remove_child(key)
+	disconnect_key(key)
+	key.queue_free()
+	_level_data.changed_keys.emit()
+
+## Moves a given entry. Returns false if the move failed
+func move_entry(entry: Entry, new_position: Vector2i) -> bool:
+	var entry_data: KeyData = key.get_meta(&"original_key_data")
+	var i := _level_data.keys.find(entry_data)
+	assert(i != -1)
+	assert(entry_data.get_rect() == Rect2i(entry_data.position, entry_data.get_rect().size))
+	var rect := Rect2i(new_position, entry_data.get_rect().size)
+	if not is_space_occupied(rect, [], [entry_data]):
+		entry_data.position = new_position
+		key.entry_data.position = new_position
+		_level_data.changed_keys.emit()
+		return true
+	else:
+		return false
+
 func place_player_spawn(coord: Vector2i) -> void:
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"player_spawn"]): return
 	_level_data.player_spawn_position = coord + Vector2i(14, 32)
@@ -489,6 +535,9 @@ func _on_door_gui_input(event: InputEvent, door: Door):
 func _on_key_gui_input(event: InputEvent, key: Key):
 	key_gui_input.emit(event, key)
 
+func _on_entry_gui_input(event: InputEvent, entry: Entry):
+	entry_gui_input.emit(event, entry)
+
 func _on_door_mouse_entered(door: Door) -> void:
 	hover_highlight.adapt_to(door)
 
@@ -500,6 +549,12 @@ func _on_key_mouse_entered(key: Key) -> void:
 
 func _on_key_mouse_exited(key: Key) -> void:
 	hover_highlight.stop_adapting_to(key)
+
+func _on_entry_mouse_entered(entry: Entry) -> void:
+	hover_highlight.adapt_to(entry)
+
+func _on_entry_mouse_exited(entry: Entry) -> void:
+	hover_highlight.stop_adapting_to(entry)
 
 func add_debris_child(debris: Node) -> void:
 	debris_parent.add_child(debris)
@@ -562,6 +617,16 @@ func disconnect_key(key: Key) -> void:
 	key.gui_input.disconnect(_on_key_gui_input.bind(key))
 	key.mouse_entered.disconnect(_on_key_mouse_entered.bind(key))
 	key.mouse_exited.disconnect(_on_key_mouse_exited.bind(key))
+
+func connect_entry(entry: Entry) -> void:
+	entry.gui_input.connect(_on_entry_gui_input.bind(entry))
+	entry.mouse_entered.connect(_on_entry_mouse_entered.bind(entry))
+	entry.mouse_exited.connect(_on_entry_mouse_exited.bind(entry))
+
+func disconnect_entry(entry: Entry) -> void:
+	entry.gui_input.disconnect(_on_entry_gui_input.bind(entry))
+	entry.mouse_entered.disconnect(_on_entry_mouse_entered.bind(entry))
+	entry.mouse_exited.disconnect(_on_entry_mouse_exited.bind(entry))
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:

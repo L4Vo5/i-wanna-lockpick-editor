@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://hasnbvkv25y8"]
+
+[ext_resource type="Script" path="res://editor/entry_editor.gd" id="1_xmuse"]
+[ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="2_ypxul"]
+
+[node name="Entries" type="MarginContainer"]
+offset_right = 305.0
+offset_bottom = 602.0
+script = ExtResource("1_xmuse")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Entry Editor"
+horizontal_alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Entry" parent="VBoxContainer/CenterContainer" instance=ExtResource("2_ypxul")]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Leads to: "
+
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2

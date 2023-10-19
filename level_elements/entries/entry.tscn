@@ -4,19 +4,25 @@
 [ext_resource type="Script" path="res://level_elements/entries/entry.gd" id="1_eb5iw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xuxla"]
-size = Vector2(34, 33)
+size = Vector2(32, 32)
 
-[node name="Entry" type="Node2D"]
+[node name="Entry" type="Control"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 32.0
+offset_bottom = 32.0
 script = ExtResource("1_eb5iw")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, -18)
+position = Vector2(-4, -4)
 texture = ExtResource("1_484ak")
+centered = false
 
 [node name="Area2D" type="Area2D" parent="."]
 collision_layer = 32
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, -16.5)
+position = Vector2(16, 16)
 shape = SubResource("RectangleShape2D_xuxla")
