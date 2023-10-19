@@ -87,6 +87,7 @@ func set_star_key(color: Enums.colors, val: bool) -> void:
 
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
+const ENTRY := preload("res://level_elements/entries/entry.tscn")
 const PLAYER := preload("res://level_elements/kid/kid.tscn")
 const GOAL := preload("res://level_elements/goal/goal.tscn")
 
@@ -414,35 +415,35 @@ func add_entry(entry_data: EntryData) -> Entry:
 
 ## Makes an entry physically appear (doesn't check collisions)
 func _spawn_entry(entry_data: EntryData) -> Entry:
-	var entry: Entry = NodePool.pool_node(KEY)
+	var entry: Entry = NodePool.pool_node(ENTRY)
 	entry.entry_data = entry_data.duplicated()
-	entry.set_meta(&"original_key_data", entry_data)
-	connect_key(entry)
+	entry.set_meta(&"original_entry_data", entry_data)
+	connect_entry(entry)
 	entry.level = self
 	entries.add_child(entry)
 	return entry
 
 ## Removes an entry from the level data
 func remove_entry(entry: Entry) -> void:
-	var i := _level_data.keys.find(key.get_meta(&"original_key_data"))
+	var i := _level_data.entries.find(entry.get_meta(&"original_entry_data"))
 	assert(i != -1)
-	_level_data.keys.remove_at(i)
-	keys.remove_child(key)
-	disconnect_key(key)
-	key.queue_free()
-	_level_data.changed_keys.emit()
+	_level_data.entries.remove_at(i)
+	entries.remove_child(entry)
+	disconnect_entry(entry)
+	entry.queue_free()
+	_level_data.changed_entries.emit()
 
 ## Moves a given entry. Returns false if the move failed
 func move_entry(entry: Entry, new_position: Vector2i) -> bool:
-	var entry_data: KeyData = key.get_meta(&"original_key_data")
-	var i := _level_data.keys.find(entry_data)
+	var entry_data: EntryData = entry.get_meta(&"original_entry_data")
+	var i := _level_data.entries.find(entry_data)
 	assert(i != -1)
 	assert(entry_data.get_rect() == Rect2i(entry_data.position, entry_data.get_rect().size))
 	var rect := Rect2i(new_position, entry_data.get_rect().size)
 	if not is_space_occupied(rect, [], [entry_data]):
 		entry_data.position = new_position
-		key.entry_data.position = new_position
-		_level_data.changed_keys.emit()
+		entry.entry_data.position = new_position
+		_level_data.changed_entries.emit()
 		return true
 	else:
 		return false
@@ -497,7 +498,7 @@ func _spawn_goal() -> void:
 	goal.position = _level_data.goal_position + Vector2i(16, 16)
 	add_child(goal)
 
-## Returns true if there's a tile, door, key, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
+## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
 # TODO: Optimize this obviously. mainly tiles OBVIOUSLY
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects: Array[Object] = []) -> bool:
 	if not is_space_inside(rect):
@@ -511,6 +512,11 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 		for key in _level_data.keys:
 			if key in excluded_objects: continue
 			if key.get_rect().intersects(rect):
+				return true
+	if not &"entries" in exclusions:
+		for entry in _level_data.entries:
+			if entry in excluded_objects: continue
+			if entry.get_rect().intersects(rect):
 				return true
 	if not &"goal" in exclusions:
 		if Rect2i((_level_data.goal_position), Vector2i(32, 32)).intersects(rect):

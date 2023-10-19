@@ -8,6 +8,7 @@ signal changed_doors
 # currently only emitted by level when a key is placed or removed
 signal changed_keys
 @export var keys: Array[KeyData] = []
+signal changed_entries
 @export var entries: Array[EntryData] = []
 const SMALLEST_SIZE := Vector2i(800, 608)
 signal changed_size
@@ -53,6 +54,7 @@ signal changed_tiles
 func _init() -> void:
 	changed_doors.connect(emit_changed)
 	changed_keys.connect(emit_changed)
+	changed_entries.connect(emit_changed)
 	changed_tiles.connect(emit_changed)
 	changed_player_spawn_position.connect(emit_changed)
 	changed_goal_position.connect(emit_changed)

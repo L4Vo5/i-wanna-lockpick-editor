@@ -20,12 +20,12 @@
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 
-[sub_resource type="Resource" id="Resource_doeav"]
+[sub_resource type="Resource" id="Resource_jvwpg"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_u572l"]
+[sub_resource type="Resource" id="Resource_k8xoa"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -37,11 +37,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_nd3jd"]
+[sub_resource type="Resource" id="Resource_2roct"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_doeav")
+amount = SubResource("Resource_jvwpg")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_u572l")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_k8xoa")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -52,14 +52,14 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_06oph"]
+[sub_resource type="Resource" id="Resource_stw5f"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_kygxr"]
+[sub_resource type="Resource" id="Resource_g4guy"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_06oph")
+amount = SubResource("Resource_stw5f")
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -272,6 +272,8 @@ metadata/_edit_horizontal_guides_ = [32.0]
 
 [node name="GhostEntry" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup" instance=ExtResource("7_46nwx")]
 visible = false
+mouse_filter = 2
+ignore_position = null
 
 [node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level" instance=ExtResource("7_8vfxp")]
 color = Color(1, 1, 1, 1)
@@ -300,12 +302,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_nd3jd")
+door_data = SubResource("Resource_2roct")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_kygxr")
+key_data = SubResource("Resource_g4guy")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false

@@ -14,7 +14,6 @@
 [node name="Level" type="Node2D"]
 process_priority = -10
 script = ExtResource("1_ynu1q")
-exclude_player = null
 
 [node name="TileMap" type="TileMap" parent="."]
 unique_name_in_owner = true
@@ -28,6 +27,7 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 
 [node name="Entries" type="Node2D" parent="."]
+unique_name_in_owner = true
 
 [node name="PlayerSpawnPoint" type="Sprite2D" parent="."]
 unique_name_in_owner = true

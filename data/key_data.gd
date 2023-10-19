@@ -41,6 +41,7 @@ func _init() -> void:
 	if is_instance_valid(amount):
 		amount.changed.connect(emit_changed)
 
+# TODO: Optimize if needed
 func duplicated() -> KeyData:
 	return duplicate(true)
 

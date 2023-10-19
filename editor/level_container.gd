@@ -263,7 +263,7 @@ func place_door_on_mouse() -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
 	var coord := get_mouse_coord(32)
-	var door_data := door_editor.door.door_data.duplicated()
+	var door_data := door_editor.door_data.duplicated()
 	door_data.position = coord
 	var door := level.add_door(door_data)
 	if not is_instance_valid(door): return false
@@ -282,13 +282,11 @@ func place_key_on_mouse() -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
 	var coord := get_mouse_coord(16)
-	var key_data := key_editor.key.key_data.duplicated()
+	var key_data := key_editor.key_data.duplicated()
 	key_data.position = coord
 	var key := level.add_key(key_data)
 	if not is_instance_valid(key): return false
-	selected_obj = key
-	hovered_obj = key
-	danger_obj = null
+	select_thing(key)
 	return true
 
 func remove_key(key: Key) -> bool:
@@ -299,12 +297,22 @@ func remove_key(key: Key) -> bool:
 	return true
 
 func place_entry_on_mouse() -> bool:
-	assert(false)
-	return false
+	if editor_data.disable_editing: return false
+	if is_mouse_out_of_bounds(): return false
+	var coord := get_mouse_coord(32)
+	var entry_data := entry_editor.entry_data.duplicated()
+	entry_data.position = coord
+	var entry := level.add_entry(entry_data)
+	if not is_instance_valid(entry): return false
+	select_thing(entry)
+	return true
 
 func remove_entry(entry: Entry) -> bool:
-	assert(false)
-	return false
+	if not is_instance_valid(entry): return false
+	level.remove_entry(entry)
+	select_thing(entry)
+	_retry_ghosts()
+	return true
 
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
@@ -335,6 +343,8 @@ func relocate_selected() -> void:
 		cond = level.move_door(selected_obj, used_coord)
 	elif selected_obj is Key:
 		cond = level.move_key(selected_obj, used_coord)
+	elif selected_obj is Entry:
+		cond = level.move_entry(selected_obj, used_coord)
 	else:
 		assert(false)
 	
@@ -394,8 +404,8 @@ func _retry_ghosts() -> void:
 
 func _place_ghosts() -> void:
 	assert(not is_dragging)
-	for i in 2:
-		var grid_size: int = [32, 16][i]
+	for i in 3:
+		var grid_size: int = [32, 16, 32][i]
 		var obj: Node = [ghost_door, ghost_key, ghost_entry][i]
 		var cond: bool = [editor_data.doors, editor_data.keys, editor_data.entries][i]
 		
