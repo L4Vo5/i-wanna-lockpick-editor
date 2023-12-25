@@ -4,15 +4,17 @@
 [ext_resource type="Script" path="res://data/entry_data.gd" id="2_3mitj"]
 [ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="2_ypxul"]
 
-[sub_resource type="Resource" id="Resource_ocxkr"]
+[sub_resource type="Resource" id="Resource_udphe"]
 script = ExtResource("2_3mitj")
 position = Vector2i(0, 0)
+leads_to = 0
+skin = 0
 
 [node name="Entries" type="MarginContainer"]
 offset_right = 305.0
 offset_bottom = 602.0
 script = ExtResource("1_xmuse")
-entry_data = SubResource("Resource_ocxkr")
+entry_data = SubResource("Resource_udphe")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -28,7 +30,8 @@ layout_mode = 2
 [node name="Entry" parent="VBoxContainer/CenterContainer" instance=ExtResource("2_ypxul")]
 unique_name_in_owner = true
 layout_mode = 2
-ignore_position = null
+entry_data = SubResource("Resource_udphe")
+ignore_position = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -37,5 +40,6 @@ layout_mode = 2
 layout_mode = 2
 text = "Leads to: "
 
-[node name="SpinBox" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
+[node name="LeadsTo" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2

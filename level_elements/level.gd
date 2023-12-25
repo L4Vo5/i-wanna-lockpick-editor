@@ -242,6 +242,13 @@ func reset() -> void:
 	else:
 		for i in range(current_keys, needed_keys):
 			_spawn_key(_level_data.keys[i])
+	
+	# Not gonna optimize entires rn. You shouldn't have that many anyways
+	for child in entries.get_children():
+		child.free()
+	for entry in level_data.entries:
+		_spawn_entry(entry)
+	
 	assert(PerfManager.end("Level::reset (keys)"))
 	
 	assert(PerfManager.start("Level::reset (tiles)"))

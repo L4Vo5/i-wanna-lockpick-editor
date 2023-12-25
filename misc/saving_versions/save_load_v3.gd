@@ -1,6 +1,4 @@
 static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
-	assert(level_pack.connections.size() == level_pack.levels.size())
-	
 	data.store_u16(SaveLoad.LATEST_FORMAT)
 	level_pack.editor_version = Global.game_version
 	data.store_string(level_pack.editor_version)
@@ -8,13 +6,6 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.store_string(level_pack.author)
 	
 	data.store_u32(level_pack.levels.size())
-	
-	# Save all connections
-	for connections in level_pack.connections:
-		data.store_u32(connections.size())
-		for connection in connections:
-			# Should be same datatype as level count, since that's the max possible connection
-			data.store_u32(connection)
 	
 	# Save all levels
 	for level in level_pack.levels:
@@ -43,6 +34,10 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_u32(level.doors.size())
 	for door in level.doors:
 		_save_door(data, door)
+	# Entries
+	data.store_u32(level.entries.size())
+	for entry in level.entries:
+		_save_entry(data, entry)
 	data.compress()
 
 static func _save_key(data: ByteAccess, key: KeyData) -> void:
@@ -73,7 +68,7 @@ static func _save_door(data: ByteAccess, door: DoorData) -> void:
 	for lock in door.locks:
 		_save_lock(data, lock)
 
-static func _save_lock(data: ByteAccess, lock:LockData) -> void:
+static func _save_lock(data: ByteAccess, lock: LockData) -> void:
 	data.store_u32(lock.position.x)
 	data.store_u32(lock.position.y)
 	data.store_u32(lock.size.x)
@@ -90,6 +85,12 @@ static func _save_lock(data: ByteAccess, lock:LockData) -> void:
 	bit_data += lock.lock_type << 7
 	data.store_u16(bit_data)
 
+static func _save_entry(data: ByteAccess, entry: EntryData) -> void:
+	data.store_u32(entry.position.x)
+	data.store_u32(entry.position.y)
+	data.store_u32(entry.skin)
+	data.store_u32(entry.leads_to)
+
 static func _save_complex(data: ByteAccess, n: ComplexNumber) -> void:
 	data.store_s64(n.real_part)
 	data.store_s64(n.imaginary_part)
@@ -101,19 +102,8 @@ static func load(data: ByteAccess) -> LevelPackData:
 	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
 	
 	var level_count := data.get_u32()
-	# Load all connections
-	level_pack.connections = []
-	for i in level_count:
-		# Connection list for level i
-		var connection_list := []
-		var connection_count := data.get_u32()
-		for j in connection_count:
-			var obj_level := data.get_u32()
-			connection_list.push_back(obj_level)
-		level_pack.connections.push_back(connection_list)
 	
 	# Load all levels
-	
 	if SaveLoad.PRINT_LOAD: print("It has %d levels" % level_count)
 	for i in level_count:
 		level_pack.levels.push_back(_load_level(data))
@@ -149,6 +139,12 @@ static func _load_level(data: ByteAccess) -> LevelData:
 		level.doors[i] = _load_door(data)
 	assert(PerfManager.end("SaveLoadV2::load (loading doors)"))
 	
+	var entry_amount := data.get_u32()
+	if SaveLoad.PRINT_LOAD: print("entry count is %d" % entry_amount)
+	level.entries.resize(entry_amount)
+	for i in entry_amount:
+		level.entries[i] = _load_entry(data)
+
 	assert(PerfManager.end("SaveLoadV2::load"))
 	return level
 
@@ -182,6 +178,13 @@ static func _load_door(data: ByteAccess) -> DoorData:
 		door.locks[i] = _load_lock(data)
 	
 	return door
+
+static func _load_entry(data: ByteAccess) -> EntryData:
+	var entry := EntryData.new()
+	entry.position = Vector2i(data.get_u32(), data.get_u32())
+	entry.skin = data.get_u32()
+	entry.leads_to = data.get_u32()
+	return entry
 
 static func _load_lock(data: ByteAccess) -> LockData:
 	var lock := LockData.new()

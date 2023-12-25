@@ -7,9 +7,10 @@ class_name EntryData
 		if position == val: return
 		position = val
 		changed.emit()
-# The actual saved data of where it leads to is stored in the LevelPackData resource. This is so that design-wise, levels are mostly "independent" by themselves, and the connections are handled by the pack
-# This variable is assigned when the level loads
-var leads_to: int
+# A bit of tight coupling with the specific order the levels are in in the level pack, but it makes saving and loading these much easier
+@export var leads_to: int
+# Will likely use this later so I'm adding it so I don't have to change the entry save load code just for this
+@export var skin: int
 
 func get_rect() -> Rect2i:
 	return Rect2i(position, Vector2i(32, 32))

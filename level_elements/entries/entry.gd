@@ -8,22 +8,21 @@ class_name Entry
 		_disconnect_entry_data()
 		entry_data = val
 		_connect_entry_data()
-		if not ignore_position:
-			position = entry_data.position
 var level: Level
 @export var ignore_position := false
 
 func enter() -> void:
-	print("[S] %s: Enter" % self)
+	print("[S] %s: Enter. Should go to %d" % [self, entry_data.leads_to])
 
 func update_position() -> void:
-	position = entry_data.position
+	if not ignore_position:
+		position = entry_data.position
 
 func _disconnect_entry_data() -> void:
 	if not is_instance_valid(entry_data): return
 	entry_data.changed.disconnect(update_position)
-	update_position()
 
 func _connect_entry_data() -> void:
 	if not is_instance_valid(entry_data): return
 	entry_data.changed.connect(update_position)
+	update_position()
