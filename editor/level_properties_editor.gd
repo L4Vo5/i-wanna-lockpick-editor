@@ -1,16 +1,22 @@
 extends MarginContainer
 class_name LevelPropertiesEditor
 
+static var DEBUG := true
+
+# set externally
 var editor_data: EditorData:
 	set(val):
 		if editor_data == val: return
 		if is_instance_valid(editor_data):
-			editor_data.changed_level_data.disconnect(_update_level_pack_data)
+			editor_data.changed_level_pack_data.disconnect(_update_level_pack_data)
+			editor_data.changed_level_data.disconnect(_update_level_data)
 		editor_data = val
 		if is_instance_valid(editor_data):
 			_on_what_to_place_changed()
-			editor_data.changed_level_data.connect(_update_level_pack_data)
+			editor_data.changed_level_pack_data.connect(_update_level_pack_data)
+			editor_data.changed_level_data.connect(_update_level_data)
 			_update_level_pack_data()
+			_update_level_data()
 
 var _level_data: LevelData:
 	set(val):
@@ -21,25 +27,40 @@ var _level_data: LevelData:
 var _level_pack_data: LevelPackData:
 	set(val):
 		if _level_pack_data == val: return
-		if is_instance_valid(_level_pack_data):
-			_level_pack_data.changed.disconnect(_set_to_level_pack_data)
+		_disconnect_pack_data()
 		_level_pack_data = val
-		_level_pack_data.changed.connect(_set_to_level_pack_data)
-		_set_to_level_pack_data()
+		_connect_pack_data()
+
+@onready var pack_name: LineEdit = %PackName
+@onready var pack_author: LineEdit = %PackAuthor
+@onready var pack_description: CodeEdit = %PackDescription
+
+#@onready var left: Button = %Left
+@onready var level_number: SpinBox = %LevelNumber
+#@onready var right: Button = %Right
+
+@onready var level_name: LineEdit = %LevelName
+@onready var level_author: LineEdit = %LevelAuthor
+@onready var width: SpinBox = %Width
+@onready var height: SpinBox = %Height
 
 @onready var player_spawn_coord: Label = %PlayerSpawnCoord
 @onready var goal_coord: Label = %GoalCoord
 @onready var what_to_place: OptionButton = %WhatToPlace
-@onready var width: SpinBox = %Width
-@onready var height: SpinBox = %Height
 
-@onready var level_path: Label = %LevelPath
-@onready var level_name: LineEdit = %LevelName
-@onready var level_author: LineEdit = %LevelAuthor
 
 @onready var no_image: Label = %NoImage
 @onready var level_image_rect: Control = %LevelImageRect
 @onready var copy_to_clipboard: Button = %CopyToClipboard
+
+func _connect_pack_data() -> void:
+	if not is_instance_valid(_level_pack_data): return
+	_level_pack_data.changed.connect(_set_to_level_pack_data)
+	_set_to_level_pack_data()
+
+func _disconnect_pack_data() -> void:
+	if not is_instance_valid(_level_pack_data): return
+	_level_pack_data.changed.disconnect(_set_to_level_pack_data)
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(_level_data): return
@@ -72,14 +93,21 @@ func _ready() -> void:
 	_on_what_to_place_changed()
 	level_name.text_changed.connect(_on_set_name)
 	level_author.text_changed.connect(_on_set_author)
+	pack_name.text_changed.connect(_on_set_pack_name)
+	pack_author.text_changed.connect(_on_set_pack_author)
+	pack_description.text_changed.connect(_on_set_pack_description)
 	Global.changed_level.connect(_reload_image)
 	copy_to_clipboard.pressed.connect(_copy_image_to_clipboard)
 	width.value_changed.connect(_on_size_changed.unbind(1))
 	height.value_changed.connect(_on_size_changed.unbind(1))
+	
+	level_number.value_changed.connect(_set_level_number)
 
 func _update_level_pack_data() -> void:
-	_level_data = editor_data.level_data
 	_level_pack_data = editor_data.level_pack_data
+
+func _update_level_data() -> void:
+	_level_data = editor_data.level_data
 
 func _on_changed_player_spawn_pos() -> void:
 	if not is_node_ready(): return
@@ -107,16 +135,15 @@ func _set_to_level_data() -> void:
 	width.value = _level_data.size.x
 	height.value = _level_data.size.y
 	_setting_to_data = false
+	_reload_image()
 
 func _set_to_level_pack_data() -> void:
 	if _setting_to_data: return
 	_setting_to_data = true
-	if level_name.text != _level_pack_data.name:
-		level_name.text = _level_pack_data.name
-	if level_author.text != _level_pack_data.author:
-		level_author.text = _level_pack_data.author
-	level_path.text = str(_level_pack_data.file_path)
-	_reload_image()
+	pack_name.text = _level_pack_data.name
+	pack_author.text = _level_pack_data.author
+	pack_description.text = _level_pack_data.description
+	level_number.max_value = _level_pack_data.levels.size() + 1
 	_setting_to_data = false
 
 func _on_size_changed() -> void:
@@ -128,16 +155,44 @@ func _on_set_name(new_name: String) -> void:
 	if _setting_to_data: return
 	if _level_data.name == new_name: return
 	_level_data.name = new_name
+	if DEBUG: print_debug("Level name: " + new_name)
 	_reload_image()
 
 func _on_set_author(new_author: String) -> void:
 	if _setting_to_data: return
 	if _level_data.author == new_author: return
 	_level_data.author = new_author
+	if DEBUG: print_debug("Level author: " + new_author)
 	_reload_image()
+
+func _on_set_pack_name(new_name: String) -> void:
+	if _setting_to_data: return
+	if _level_pack_data.name == new_name: return
+	_level_pack_data.name = new_name
+	if DEBUG: print_debug("Pack name: " + new_name)
+
+func _on_set_pack_author(new_author: String) -> void:
+	if _setting_to_data: return
+	if _level_pack_data.author == new_author: return
+	_level_pack_data.author = new_author
+	if DEBUG: print_debug("Pack author: " + new_author)
+
+func _on_set_pack_description(new_description: String) -> void:
+	if _setting_to_data: return
+	if _level_pack_data.description == new_description: return
+	_level_pack_data.description = new_description
+	if DEBUG: print_debug("Pack description: " + new_description)
+
+func _set_level_number(new_number: int) -> void:
+	if new_number == level_number.max_value:
+		level_number.max_value += 1
+		_level_pack_data.levels.push_back(LevelData.new())
+	editor_data.level.current_level_index = new_number - 1
+	pass
 
 func _reload_image() -> void:
 	if not visible: return
+	if not _level_pack_data: return
 	var img := SaveLoad.get_image(_level_pack_data)
 	if img != null:
 		level_image_rect.texture = ImageTexture.create_from_image(img)

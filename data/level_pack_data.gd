@@ -1,10 +1,18 @@
 extends Resource
 class_name LevelPackData
 
+## All the levels in the level pack
 @export var levels: Array[LevelData]
+## Used to display a slightly more helpful error message when loading an incompatible level pack
 @export var editor_version: String
+
+# TODO: max length for these fields?
+## Name of the level pack, important when picking what to play
 @export var name: String
+## Author or authors, important to know who made things!
 @export var author: String
+## Description of the level pack, displayed in level selection
+@export var description: String
 
 ## For easier saving, since resource_path probably wouldn't work with .lvl
 var file_path := "":

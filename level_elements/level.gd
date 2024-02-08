@@ -16,8 +16,12 @@ var glitch_color := Enums.colors.glitch:
 		if pack_data == val: return
 		pack_data = val
 		current_level_index = 0
+var current_level_index := 0:
+	set(val):
+		current_level_index = val
+		if not is_instance_valid(pack_data): return
 		_level_data = pack_data.levels[current_level_index]
-var current_level_index := 0
+
 signal changed_level_data
 var _level_data: LevelData = null:
 	set(val):
@@ -47,7 +51,7 @@ signal changed_doors
 signal changed_keys
 
 # Some code might depend on these complex numbers' changed signals, so don't change them to new numbers pls
-# Function _ensure_key_counts will run every frame to make sure the objects don't change. (not in releae builds)
+# Function _ensure_key_counts will run every frame to make sure the objects don't change. (not in release builds)
 var key_counts := {
 	Enums.colors.glitch: ComplexNumber.new(),
 	Enums.colors.black: ComplexNumber.new(),
@@ -128,6 +132,7 @@ var autorun_tween: Tween
 
 # multiplier to how many times doors should try to be opened/copied
 # useful for levels with a lot of door copies
+# TODO: actually let the player change this
 var door_multiplier := 1
 
 
@@ -198,7 +203,6 @@ func reset() -> void:
 	if not is_instance_valid(pack_data):
 		pack_data = LevelPackData.make_from_level(LevelData.new())
 		current_level_index = 0
-		_level_data = pack_data.levels[0]
 	assert(PerfManager.start("Level::reset"))
 	
 	assert(PerfManager.start("Level::reset (doors)"))

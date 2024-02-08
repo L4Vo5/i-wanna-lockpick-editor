@@ -29,11 +29,14 @@ signal changed_goal_position
 		if goal_position == val: return
 		goal_position = val
 		changed_goal_position.emit()
+## If the level uses custom lock arrangements, they'll be here
 @export var custom_lock_arrangements := {}
 ## Just saves all positions for the tiles... I'll come up with something better later ok
-# It's a dict so it's not absurdly inefficient to check for repeats when placing new ones
+# It's a dict so that it's not absurdly inefficient to check for repeats when placing new ones
 signal changed_tiles
 @export var tiles := {}
+## Name of the level, used when standing in front of an entry that leads to it
+# TODO: both the entry thing, and make it also show when entering the level ?
 @export var name := "":
 	set(val):
 		if name == val: return
@@ -59,6 +62,7 @@ func _init() -> void:
 	changed_player_spawn_position.connect(emit_changed)
 	changed_goal_position.connect(emit_changed)
 
+## Deletes stuff outside the level boundary
 func clear_outside_things() -> void:
 	var amount_deleted := 0
 	# tiles
