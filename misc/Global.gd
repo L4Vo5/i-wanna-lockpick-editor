@@ -91,6 +91,16 @@ func _input(event: InputEvent) -> void:
 
 func search_update() -> void:
 	if is_web: return
+	var current_time := floori(Time.get_unix_time_from_system())
+	if FileAccess.file_exists("user://last_update_check"):
+		var str := FileAccess.get_file_as_string("user://last_update_check")
+		var last_time := str.to_int()
+		if current_time - last_time < 60*60*1:
+			print("last update check was %d seconds ago. not searching" % (current_time - last_time))
+			return
+	var file := FileAccess.open("user://last_update_check", FileAccess.WRITE)
+	file.store_string(str(current_time))
+	print_debug("saving update check time as %d" % current_time)
 	var dl_button := update_dialog.add_button("Download", true)
 	dl_button.pressed.connect(_open_download_page)
 	http_request.request_completed.connect(_http_request_completed)

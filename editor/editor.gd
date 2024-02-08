@@ -313,8 +313,8 @@ func _on_more_options_selected(idx: int) -> void:
 func move_levels(from: String, to: String) -> void:
 	var dir := DirAccess.open(from)
 	for file_name in dir.get_files():
-		print("moving " + file_name)
 		if file_name.get_extension() in SaveLoad.LEVEL_EXTENSIONS:
+			print_debug("moving " + file_name)
 			var err := dir.rename(file_name, to.path_join(file_name))
 			if err != OK:
 				print("failed to move %s. error code %d" % [file_name, err])
