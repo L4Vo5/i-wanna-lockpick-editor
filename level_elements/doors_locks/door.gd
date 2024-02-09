@@ -23,6 +23,8 @@ var can_open := true
 # used to be meta, but found enough uses to keep it around
 var original_door_data: DoorData
 @export var ignore_collisions := false
+# when the gate is open (can pass through), 0 when closed, -1 if not a gate
+var ignore_collisions_gate := -1
 
 @onready var static_body := %StaticBody2D as StaticBody2D
 @onready var lock_holder := %LockHolder as Control
@@ -87,11 +89,22 @@ func _physics_process(_delta: float) -> void:
 	copies.text = text
 	if using_i_view_colors:
 		_draw_frame()
+	# TODO: not in physics process duh!
+	check_gate()
 
 func _resolve_collision_mode() -> void:
-	if ignore_collisions or door_data.amount.is_zero() or not visible:
+	if ignore_collisions or door_data.amount.is_zero() or not visible or ignore_collisions_gate == 1:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
 	else:
+		# No collision if player is inside (intended use is for gates)
+		# HACK
+		if is_instance_valid(Global.current_level) and is_instance_valid(Global.current_level.player):
+			var col: CollisionShape2D = Global.current_level.player.get_node("CollisionShape2D")
+			var sh1: RectangleShape2D = col.shape
+			var pos1 := col.global_position -sh1.size / 2.0
+			
+			if Rect2(pos1, sh1.size).intersects(Rect2(global_position, size)):
+				return
 		static_body.process_mode = Node.PROCESS_MODE_INHERIT
 
 var update_everything_count := 0
@@ -189,6 +202,8 @@ func update_curses() -> void:
 
 func try_open() -> void:
 	if not can_open: return
+	# gates have separate logic
+	if door_data.outer_color == Enums.colors.gate: return
 	var should_create_debris := false
 	var opened_at_all := false
 	for i in level.door_multiplier:
@@ -232,6 +247,21 @@ func try_open() -> void:
 		create_debris()
 	can_open = false
 	get_tree().create_timer(open_cooldown).timeout.connect(func(): can_open = true)
+
+func check_gate() -> void:
+	if not door_data.outer_color == Enums.colors.gate: return
+	if not ignore_collisions:
+		if is_instance_valid(Global.current_level) and is_instance_valid(Global.current_level.player):
+			var res := door_data.try_open()
+			if res.opened:
+				ignore_collisions_gate = 1
+			else:
+				ignore_collisions_gate = 0
+	_resolve_collision_mode()
+	if ignore_collisions_gate == 1:
+		modulate.a = 0.5
+	else:
+		modulate.a = 1
 
 # do the effects for the curses
 func break_curse_ice() -> void:
@@ -358,6 +388,9 @@ func _draw_base() -> void:
 			RenderingServer.canvas_item_add_texture_rect(door_base, rect, BASE_STONE.get_rid(), true)
 		Enums.colors.none:
 			pass
+		Enums.colors.gate:
+			rect = Rect2(Vector2(-1,-1),door_data.size + Vector2i(2, 2))
+			RenderingServer.canvas_item_add_nine_patch(door_base, rect, Rect2(Vector2.ZERO, GATE_TEXTURE.get_size()), GATE_TEXTURE, Vector2(1,1), Vector2(1, 1), RenderingServer.NINE_PATCH_TILE, RenderingServer.NINE_PATCH_TILE)
 		_: # normal colors
 			# Draw top part, then middle, then bottom
 			RenderingServer.canvas_item_add_nine_patch(door_base, rect, BASE_TEX_RECT, BASE_LIGHT.get_rid(), BASE_DIST, BASE_DIST, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false, Rendering.color_colors[used_color][1])
@@ -373,11 +406,13 @@ const FRAME_DARK := preload("res://level_elements/doors_locks/textures/door_fram
 const FRAME_TEXT_RECT := Rect2(0, 0, 7, 7)
 const FRAME_TL := Vector2(4, 4)
 const FRAME_BR := Vector2(4, 4)
+const GATE_TEXTURE := preload("res://level_elements/doors_locks/textures/gate_texture.png")
 func _draw_frame() -> void:
+	RenderingServer.canvas_item_clear(door_frame)
 	if not is_instance_valid(door_data): return
+	if door_data.outer_color == Enums.colors.gate: return
 	assert(PerfManager.start("Door:_draw_frame"))
 	var rect := Rect2(Vector2.ZERO,door_data.size)
-	RenderingServer.canvas_item_clear(door_frame)
 	var frame_palette: Array
 	if using_i_view_colors:
 		frame_palette = Rendering.i_view_palette

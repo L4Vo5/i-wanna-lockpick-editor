@@ -6,14 +6,15 @@
 [ext_resource type="Script" path="res://data/key_data.gd" id="3_a0u5f"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="5_2af2f"]
 
-[sub_resource type="Resource" id="Resource_x6jvy"]
+[sub_resource type="Resource" id="Resource_xq41r"]
 script = ExtResource("2_nbql1")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_3d5mh"]
+[sub_resource type="Resource" id="Resource_d8451"]
 script = ExtResource("3_a0u5f")
-amount = SubResource("Resource_x6jvy")
+amount = SubResource("Resource_xq41r")
+is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
@@ -22,7 +23,7 @@ position = Vector2i(0, 0)
 offset_right = 269.0
 offset_bottom = 592.0
 script = ExtResource("1_a031y")
-key_data = SubResource("Resource_3d5mh")
+key_data = SubResource("Resource_d8451")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -49,7 +50,7 @@ layout_mode = 2
 
 [node name="key" parent="VBoxContainer/TopStuff/TheKey/KeyHolder" instance=ExtResource("1_2kdyu")]
 unique_name_in_owner = true
-key_data = SubResource("Resource_3d5mh")
+key_data = SubResource("Resource_d8451")
 in_keypad = true
 ignore_position = true
 metadata/_edit_vertical_guides_ = [32.0]
@@ -68,32 +69,29 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BaseDoor" type="VBoxContainer" parent="VBoxContainer/ScrollContainer/Editors"]
+[node name="Color" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors"]
 layout_mode = 2
 
-[node name="Color" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color"]
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/Color"]
 visible = false
 layout_mode = 2
 text = "Color:"
 
-[node name="ColorChoice" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color" instance=ExtResource("5_2af2f")]
+[node name="ColorChoice" parent="VBoxContainer/ScrollContainer/Editors/Color" instance=ExtResource("5_2af2f")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 420)
+custom_minimum_size = Vector2(20, 60)
 layout_mode = 2
 size_flags_horizontal = 3
 lock_size = 20
 
-[node name="Type" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+[node name="Type" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Type"]
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/Type"]
 layout_mode = 2
 text = "Type:"
 
-[node name="TypeChoice" type="OptionButton" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Type"]
+[node name="TypeChoice" type="OptionButton" parent="VBoxContainer/ScrollContainer/Editors/Type"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -114,19 +112,19 @@ popup/item_5/id = 5
 popup/item_6/text = "Rotor Flip"
 popup/item_6/id = 6
 
-[node name="Amount" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor"]
+[node name="Amount" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Amount"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/Amount"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Amount/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/Amount/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Amount:"
 
-[node name="RealAmount" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Amount/HBoxContainer"]
+[node name="RealAmount" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/Amount/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -138,12 +136,12 @@ value = 1.0
 allow_greater = true
 allow_lesser = true
 
-[node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Amount/HBoxContainer"]
+[node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/Editors/Amount/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "+"
 
-[node name="ImaginaryAmount" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Amount/HBoxContainer"]
+[node name="ImaginaryAmount" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/Amount/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -154,3 +152,8 @@ max_value = 1e+06
 allow_greater = true
 allow_lesser = true
 suffix = "i"
+
+[node name="IsInfinite" type="CheckBox" parent="VBoxContainer/ScrollContainer/Editors"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Infinite"

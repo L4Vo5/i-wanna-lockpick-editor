@@ -12,6 +12,12 @@ class_name KeyData
 			amount.changed.connect(emit_changed)
 		emit_changed()
 
+@export var is_infinite := false:
+	set(val):
+		if is_infinite == val: return
+		is_infinite = val
+		emit_changed()
+
 ## if the key is spent while playing the level
 var is_spent := false:
 	set(val):

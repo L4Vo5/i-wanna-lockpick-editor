@@ -17,6 +17,7 @@ enum colors {
 	pure,
 	glitch,
 	stone,
+	gate, # exclusive to doors, but locks can render it too for convenience
 }
 
 const COLOR_NAMES := {
@@ -35,6 +36,7 @@ const COLOR_NAMES := {
 	colors.glitch: "glitch",
 	colors.pure: "pure",
 	colors.stone: "stone",
+	colors.gate: "gate",
 }
 
 # 0 shall generally be considered positive

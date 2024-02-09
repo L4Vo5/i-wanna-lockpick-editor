@@ -118,6 +118,16 @@ func draw_base() -> void:
 			RenderingServer.canvas_item_add_texture_rect(base, rect, BASE_STONE, true)
 		Enums.colors.none:
 			pass
+		Enums.colors.gate:
+			var rect2 = rect
+			rect2.size /= 2
+			RenderingServer.canvas_item_add_rect(base, rect2, Color8(32, 32, 32))
+			rect2.position.x += rect2.size.x
+			RenderingServer.canvas_item_add_rect(base, rect2, Color8(255, 255, 255))
+			rect2.position.y += rect2.size.x
+			RenderingServer.canvas_item_add_rect(base, rect2, Color8(32, 32, 32))
+			rect2.position.x -= rect2.size.x
+			RenderingServer.canvas_item_add_rect(base, rect2, Color8(255, 255, 255))
 		_: # normal colors
 			RenderingServer.canvas_item_add_rect(base, rect, Rendering.color_colors[used_color][0])
 		

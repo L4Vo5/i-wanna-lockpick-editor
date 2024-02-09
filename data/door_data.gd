@@ -13,6 +13,7 @@ class_name DoorData
 		amount = val
 		amount.changed.connect(emit_changed)
 		changed.emit()
+
 @export var outer_color := Enums.colors.none:
 	set(val):
 		if outer_color == val: return
@@ -67,6 +68,8 @@ func remove_lock_at(pos: int) -> void:
 
 func set_curse(curse: Enums.curse, val: bool, register_undo := false) -> void:
 	if _curses[curse] == val: return
+	if outer_color == Enums.colors.gate:
+		return
 	var level: Level = Global.current_level
 	if register_undo:
 		level.start_undo_action()
@@ -125,11 +128,13 @@ func try_open() -> Dictionary:
 	if _curses[Enums.curse.ice] or _curses[Enums.curse.erosion] or _curses[Enums.curse.paint]: return return_dict
 	
 	var used_outer_color := get_used_color()
+	var is_gate := outer_color == Enums.colors.gate
+	
 	var level: Level = Global.current_level
 	var player: Kid = level.player
 	
 	# try to open with master keys
-	if not player.master_equipped.is_zero():
+	if not player.master_equipped.is_zero() and not is_gate:
 		var can_master := true
 		if used_outer_color in NON_COPIABLE_COLORS:
 			can_master = false
@@ -199,20 +204,20 @@ func try_open() -> Dictionary:
 	
 	if not did_it_open: return return_dict
 	# it worked on all locks!
+	if not is_gate:
+		return_dict.undo_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
+		amount.sub(open_dim)
+		return_dict.do_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
 	
-	return_dict.undo_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
-	amount.sub(open_dim)
-	return_dict.do_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
-	
-	if not level.star_keys[used_outer_color]:
-		var count: ComplexNumber = level.key_counts[used_outer_color]
-		return_dict.undo_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
-		count.add(diff)
-		return_dict.do_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
-	if level.glitch_color != used_outer_color:
-		return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", level.glitch_color))
-		level.glitch_color = used_outer_color
-		return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", used_outer_color))
+		if not level.star_keys[used_outer_color]:
+			var count: ComplexNumber = level.key_counts[used_outer_color]
+			return_dict.undo_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
+			count.add(diff)
+			return_dict.do_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
+		if level.glitch_color != used_outer_color:
+			return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", level.glitch_color))
+			level.glitch_color = used_outer_color
+			return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", used_outer_color))
 	return_dict.opened = true
 	return return_dict
 

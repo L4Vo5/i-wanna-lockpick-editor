@@ -8,6 +8,9 @@ const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 
 ## the length in pixels of the locks' square sides
 @export var lock_size := 14
+
+@export var support_gates := false
+
 ## the separation in pixels between locks
 var lock_sep := 10
 ## the minimum amount of rows to force
@@ -37,12 +40,16 @@ var selected_lock: Lock = null:
 		selected_lock = val
 		if selected_lock != null:
 			changed_color.emit(selected_lock.lock_data.color)
+var color: Enums.colors:
+	set = set_to_color,
+	get = get_current_color
 
 var is_ready := false
 func _ready():
 	is_ready = true
 	for color in Enums.COLOR_NAMES.keys():
 		if color == Enums.colors.none: continue
+		if color == Enums.colors.gate and !support_gates: continue
 		var l := LOCK.instantiate()
 		var ld := LockData.new()
 		ld.dont_show_frame = true

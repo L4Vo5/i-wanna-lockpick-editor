@@ -44,9 +44,9 @@ static func _save_key(data: ByteAccess, key: KeyData) -> void:
 	_save_complex(data, key.amount)
 	data.store_u32(key.position.x)
 	data.store_u32(key.position.y)
-	# color is 4 bytes, type is 3. 7 bytes total
-	# bits are: 01112222, 1 = type, 2 = color
-	data.store_u8((key.type << 4) + key.color)
+	# color is 4 bytes, type is 3. is_infinite is 1. 8 bytes total
+	# bits are: 01112222, 0 = is_infinite, 1 = type, 2 = color
+	data.store_u8((key.is_infinite as int) << 7 + (key.type << 4) + key.color)
 
 static func _save_door(data: ByteAccess, door: DoorData) -> void:
 	# In the current version:
@@ -152,9 +152,10 @@ static func _load_key(data: ByteAccess) -> KeyData:
 	var key := KeyData.new()
 	key.amount = _load_complex(data)
 	key.position = Vector2i(data.get_u32(), data.get_u32())
-	var type_and_color := data.get_u8()
-	key.color = type_and_color & 0b1111
-	key.type = type_and_color >> 4
+	var inf_type_color := data.get_u8()
+	key.color = inf_type_color & 0b1111
+	key.type = inf_type_color >> 4 & 0b111
+	key.is_infinite = (inf_type_color >> 7) == 1
 	
 	return key
 

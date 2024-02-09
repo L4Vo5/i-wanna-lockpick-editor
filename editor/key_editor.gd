@@ -15,6 +15,7 @@ class_name KeyEditor
 @onready var amount: MarginContainer = %Amount
 @onready var real_amount: SpinBox = %RealAmount
 @onready var imaginary_amount: SpinBox = %ImaginaryAmount
+@onready var is_infinite: CheckBox = %IsInfinite
 
 func _init() -> void:
 	if not is_instance_valid(key_data):
@@ -24,31 +25,30 @@ func _init() -> void:
 func _ready() -> void:
 	key.key_data = key_data
 	
-	color_choice.changed_color.connect(_update_key_color)
+	color_choice.changed_color.connect(_update_key.unbind(1))
 	
 	type_choice.clear()
 	for key_type in Enums.KEY_TYPE_NAMES.keys():
 		type_choice.add_item(Enums.KEY_TYPE_NAMES[key_type].capitalize(), key_type)
-	type_choice.item_selected.connect(_update_key_type.unbind(1))
+	type_choice.item_selected.connect(_update_key.unbind(1))
 	
-	real_amount.value_changed.connect(_update_key_amount.unbind(1))
-	imaginary_amount.value_changed.connect(_update_key_amount.unbind(1))
+	real_amount.value_changed.connect(_update_key.unbind(1))
+	imaginary_amount.value_changed.connect(_update_key.unbind(1))
+	is_infinite.pressed.connect(_update_key)
 	
 	_set_to_key_data()
 
 func _set_to_key_data() -> void:
-	amount.visible = key_data.type in [Enums.key_types.add, Enums.key_types.exact]
 	color_choice.set_to_color(key_data.color)
 	type_choice.selected = type_choice.get_item_index(key_data.type)
 	real_amount.value = key_data.amount.real_part
 	imaginary_amount.value = key_data.amount.imaginary_part
-
-func _update_key_color(color: Enums.colors) -> void:
-	key_data.color = color
-
-func _update_key_type() -> void:
-	key_data.type = type_choice.get_item_id(type_choice.selected)
+	is_infinite.button_pressed = key_data.is_infinite
 	amount.visible = key_data.type in [Enums.key_types.add, Enums.key_types.exact]
 
-func _update_key_amount() -> void:
+func _update_key() -> void:
+	key_data.color = color_choice.color
+	key_data.type = type_choice.get_item_id(type_choice.selected)
+	key_data.is_infinite = is_infinite.button_pressed
 	key_data.amount.set_to(int(real_amount.value), int(imaginary_amount.value))
+	amount.visible = key_data.type in [Enums.key_types.add, Enums.key_types.exact]

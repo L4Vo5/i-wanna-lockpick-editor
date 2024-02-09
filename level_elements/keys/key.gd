@@ -23,6 +23,7 @@ class_name Key
 @onready var snd_pickup: AudioStreamPlayer = %Pickup
 @onready var number: Label = %Number
 @onready var symbol: Sprite2D = %Symbol
+@onready var symbol_inf: Sprite2D = %SymbolInf
 @onready var collision: Area2D = %Collision
 #@onready var input_grabber: Control = $GuiInputGrabber
 
@@ -106,6 +107,7 @@ func update_visual() -> void:
 	glitch.hide()
 	number.hide()
 	symbol.hide()
+	symbol_inf.hide()
 	# get the outline / shadow / fill
 	var spr_frame = {
 		Enums.key_types.exact: 1,
@@ -118,6 +120,7 @@ func update_visual() -> void:
 	outline.frame = spr_frame
 	special.frame = spr_frame
 	glitch.frame = spr_frame
+	symbol_inf.visible = key_data.is_infinite
 	if key_data.color == Enums.colors.master and key_data.type == Enums.key_types.add:
 		shadow.frame = 4
 	if key_data.color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
@@ -173,25 +176,24 @@ func undo() -> void:
 	await get_tree().physics_frame
 	show()
 	key_data.is_spent = false
-	assert(collision.process_mode == collision.PROCESS_MODE_DISABLED)
 	_resolve_collision_mode()
-	assert(collision.process_mode == collision.PROCESS_MODE_INHERIT)
 	for area in collision.get_overlapping_areas():
 		on_collide(area)
 
 func redo() -> void:
-	key_data.is_spent = true
-	assert(collision.process_mode == collision.PROCESS_MODE_INHERIT)
+	if not key_data.is_infinite:
+		key_data.is_spent = true
 	_resolve_collision_mode()
-	assert(collision.process_mode == collision.PROCESS_MODE_DISABLED)
 	hide()
 
 func on_pickup() -> void:
 	level.start_undo_action()
 	level.undo_redo.add_undo_method(undo)
 	level.undo_redo.add_do_method(redo)
-	key_data.is_spent = true
-	collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
+	if not key_data.is_infinite:
+		key_data.is_spent = true
+		collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
+		hide()
 	var used_color := key_data.get_used_color()
 	var current_count: ComplexNumber = level.key_counts[used_color]
 	var orig_count: ComplexNumber = current_count.duplicated()
@@ -223,7 +225,6 @@ func on_pickup() -> void:
 		level.undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
 	level.end_undo_action()
 	
-	hide()
 	snd_pickup.pitch_scale = 1
 	if key_data.color == Enums.colors.master:
 		snd_pickup.stream = preload("res://level_elements/keys/master_pickup.wav")
