@@ -12,7 +12,7 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 		_save_level(level, data)
 
 static func _save_level(level: LevelData, data: ByteAccess) -> void:
-	data.store_string(level.name)
+	data.store_string(level.title + "\n" + level.name)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
 	data.store_var(level.custom_lock_arrangements)
@@ -112,7 +112,10 @@ static func load(data: ByteAccess) -> LevelPackData:
 static func _load_level(data: ByteAccess) -> LevelData:
 	assert(PerfManager.start("SaveLoadV2::load"))
 	var level := LevelData.new()
-	level.name = data.get_string()
+	var title_name := data.get_string().split("\n")
+	assert(title_name.size() == 2)
+	level.title = title_name[0]
+	level.name = title_name[1]
 	if SaveLoad.PRINT_LOAD: print("Loading level %s" % level.name)
 	level.size = Vector2i(data.get_u32(), data.get_u32())
 	level.custom_lock_arrangements = data.get_var()

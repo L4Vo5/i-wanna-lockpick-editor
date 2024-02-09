@@ -1,7 +1,37 @@
-[gd_scene load_steps=4 format=3 uid="uid://d4bjx48o6bjgf"]
+[gd_scene load_steps=9 format=3 uid="uid://d4bjx48o6bjgf"]
 
 [ext_resource type="Texture2D" uid="uid://h1t82rry4rig" path="res://level_elements/entries/sprLevelEntry_0.png" id="1_484ak"]
 [ext_resource type="Script" path="res://level_elements/entries/entry.gd" id="1_eb5iw"]
+[ext_resource type="Texture2D" uid="uid://fl1344qlbm2" path="res://level_elements/entries/sprUpArrowDoor/sprUpArrowDoor_0.png" id="3_hm1df"]
+[ext_resource type="Texture2D" uid="uid://cr66yiiqovk0u" path="res://level_elements/entries/sprUpArrowDoor/sprUpArrowDoor_1.png" id="4_8krdv"]
+[ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="5_t633j"]
+[ext_resource type="Script" path="res://rendering/outline_text.gd" id="6_divql"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lfe4k"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_hm1df")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_hm1df")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_hm1df")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_8krdv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_8krdv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_8krdv")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xuxla"]
 size = Vector2(32, 32)
@@ -14,10 +44,18 @@ offset_right = 32.0
 offset_bottom = 32.0
 script = ExtResource("1_eb5iw")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite" type="Sprite2D" parent="."]
 position = Vector2(-4, -4)
 texture = ExtResource("1_484ak")
 centered = false
+
+[node name="Arrow" type="AnimatedSprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(16, -1)
+sprite_frames = SubResource("SpriteFrames_lfe4k")
+autoplay = "default"
+frame_progress = 0.0115035
 
 [node name="Area2D" type="Area2D" parent="."]
 collision_layer = 32
@@ -26,3 +64,13 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 position = Vector2(16, 16)
 shape = SubResource("RectangleShape2D_xuxla")
+
+[node name="Name" type="Node2D" parent="."]
+unique_name_in_owner = true
+visible = false
+position = Vector2(18, -32)
+script = ExtResource("6_divql")
+text = "Level 1-1
+CKeys and Doors"
+font = ExtResource("5_t633j")
+line_sep = 23

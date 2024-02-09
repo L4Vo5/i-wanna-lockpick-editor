@@ -42,6 +42,12 @@ signal changed_tiles
 		if name == val: return
 		name = val
 		changed.emit()
+## Title of the level, for example "Level 4-1" or "Page 3"
+@export var title := "":
+	set(val):
+		if title == val: return
+		title = val
+		changed.emit()
 
 ## DEPRECATED
 ## KEPT FOR COMPATIBILITY (for now?)

@@ -39,6 +39,8 @@ func _ready() -> void:
 	aura_area.body_entered.connect(_on_aura_touch_door)
 	Global.changed_level.connect(connect_level)
 	connect_level()
+	entry_detect.area_entered.connect(_on_entry_detect_area_entered)
+	entry_detect.area_exited.connect(_on_entry_detect_area_exited)
 
 func _physics_process(_delta: float) -> void:
 	if Global.in_editor: return
@@ -279,6 +281,11 @@ func master_anim() -> void:
 	var alpha := 0.8 + 0.2 * (sin(deg_to_rad(Global.physics_step * 4 % 360)))
 	equipped_master.modulate.a = alpha * 0.6
 	player_shine.scale = Vector2(alpha, alpha)
+
+func _on_entry_detect_area_entered(area: Area2D) -> void:
+	area.get_parent().player_touching()
+func _on_entry_detect_area_exited(area: Area2D) -> void:
+	area.get_parent().player_stopped_touching()
 
 # Returns a Callable that must be called to bring the kid back to whatever state it was in when this function was called
 func get_undo_action() -> Callable:

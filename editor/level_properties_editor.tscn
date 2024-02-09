@@ -129,6 +129,21 @@ placeholder_text = "(unnamed)"
 expand_to_text_length = true
 context_menu_enabled = false
 
+[node name="Title" type="HBoxContainer" parent="VBoxContainer/Level"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Level/Title"]
+layout_mode = 2
+text = "Title: "
+
+[node name="LevelTitle" type="LineEdit" parent="VBoxContainer/Level/Title"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "(no title)"
+expand_to_text_length = true
+context_menu_enabled = false
+
 [node name="Author" type="HBoxContainer" parent="VBoxContainer/Level"]
 layout_mode = 2
 

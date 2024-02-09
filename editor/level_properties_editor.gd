@@ -1,7 +1,7 @@
 extends MarginContainer
 class_name LevelPropertiesEditor
 
-static var DEBUG := true
+static var DEBUG := false
 
 # set externally
 var editor_data: EditorData:
@@ -42,6 +42,7 @@ var _level_pack_data: LevelPackData:
 #@onready var right: Button = %Right
 
 @onready var level_name: LineEdit = %LevelName
+@onready var level_title: LineEdit = %LevelTitle
 @onready var level_author: LineEdit = %LevelAuthor
 @onready var width: SpinBox = %Width
 @onready var height: SpinBox = %Height
@@ -94,6 +95,7 @@ func _ready() -> void:
 	visibility_changed.connect(func(): if visible: _reload_image())
 	_on_what_to_place_changed()
 	level_name.text_changed.connect(_on_set_name)
+	level_title.text_changed.connect(_on_set_title)
 	level_author.text_changed.connect(_on_set_author)
 	pack_name.text_changed.connect(_on_set_pack_name)
 	pack_author.text_changed.connect(_on_set_pack_author)
@@ -140,6 +142,8 @@ func _set_to_level_data() -> void:
 	height.value = _level_data.size.y
 	if level_name.text != _level_data.name:
 		level_name.text = _level_data.name
+	if level_title.text != _level_data.title:
+		level_title.text = _level_data.title
 	if level_author.text != _level_data.author:
 		level_author.text = _level_data.author
 	_setting_to_data = false
@@ -165,6 +169,12 @@ func _on_set_name(new_name: String) -> void:
 	if _level_data.name == new_name: return
 	_level_data.name = new_name
 	if DEBUG: print_debug("Level name: " + new_name)
+	_reload_image()
+
+func _on_set_title(new_title: String) -> void:
+	if _setting_to_data: return
+	if _level_data.title == new_title: return
+	_level_data.title = new_title
 	_reload_image()
 
 func _on_set_author(new_author: String) -> void:
