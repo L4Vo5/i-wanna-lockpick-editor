@@ -34,9 +34,11 @@ var _level_pack_data: LevelPackData:
 @onready var pack_name: LineEdit = %PackName
 @onready var pack_author: LineEdit = %PackAuthor
 @onready var pack_description: CodeEdit = %PackDescription
+@onready var level_count_label: Label = %LevelCountLabel
 
 #@onready var left: Button = %Left
 @onready var level_number: SpinBox = %LevelNumber
+@onready var delete_level: Button = %DeleteLevel
 #@onready var right: Button = %Right
 
 @onready var level_name: LineEdit = %LevelName
@@ -102,6 +104,7 @@ func _ready() -> void:
 	height.value_changed.connect(_on_size_changed.unbind(1))
 	
 	level_number.value_changed.connect(_set_level_number)
+	delete_level.pressed.connect(_delete_current_level)
 
 func _update_level_pack_data() -> void:
 	_level_pack_data = editor_data.level_pack_data
@@ -129,11 +132,16 @@ func _on_what_to_place_changed() -> void:
 var _setting_to_data := false
 func _set_to_level_data() -> void:
 	if _setting_to_data: return
+	if DEBUG: print_debug("Setting to level data")
 	_setting_to_data = true
 #	level_size.text = str(_level_data.size)
 	# Stop the caret from going back to the start
 	width.value = _level_data.size.x
 	height.value = _level_data.size.y
+	if level_name.text != _level_data.name:
+		level_name.text = _level_data.name
+	if level_author.text != _level_data.author:
+		level_author.text = _level_data.author
 	_setting_to_data = false
 	_reload_image()
 
@@ -144,6 +152,7 @@ func _set_to_level_pack_data() -> void:
 	pack_author.text = _level_pack_data.author
 	pack_description.text = _level_pack_data.description
 	level_number.max_value = _level_pack_data.levels.size() + 1
+	level_count_label.text = str(_level_pack_data.levels.size())
 	_setting_to_data = false
 
 func _on_size_changed() -> void:
@@ -184,11 +193,21 @@ func _on_set_pack_description(new_description: String) -> void:
 	if DEBUG: print_debug("Pack description: " + new_description)
 
 func _set_level_number(new_number: int) -> void:
-	if new_number == level_number.max_value:
-		level_number.max_value += 1
+	assert(new_number == level_number.value)
+	if level_number.value == level_number.max_value:
 		_level_pack_data.levels.push_back(LevelData.new())
-	editor_data.level.current_level_index = new_number - 1
+		level_number.max_value = _level_pack_data.levels.size() + 1
+		level_count_label.text = str(_level_pack_data.levels.size())
+	editor_data.level.current_level_index = level_number.value - 1
 	pass
+
+func _delete_current_level() -> void:
+	_level_pack_data.delete_level(level_number.value - 1)
+	if _level_pack_data.levels.size() == 0:
+		_level_pack_data.levels.push_back(LevelData.new())
+	level_number.max_value = _level_pack_data.levels.size() + 1
+	level_count_label.text = str(_level_pack_data.levels.size())
+	editor_data.level.current_level_index = level_number.value - 1
 
 func _reload_image() -> void:
 	if not visible: return

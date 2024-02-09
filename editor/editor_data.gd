@@ -11,12 +11,15 @@ var level_pack_data: LevelPackData:
 		changed_level_pack_data.emit()
 
 signal changed_level_data
+func emit_changed_level_data():
+	changed_level_data.emit()
 ## Read-only!
 var level_data: LevelData:
 	get:
 		return level.level_data
 	set(val):
 		assert(false)
+
 
 signal changed_is_playing
 var is_playing := false:
@@ -26,7 +29,13 @@ var is_playing := false:
 		changed_is_playing.emit()
 var disable_editing := false
 
-var level: Level
+var level: Level:
+	set(val):
+		if level:
+			level.changed_level_data.disconnect(emit_changed_level_data)
+		level = val
+		if level:
+			level.changed_level_data.connect(emit_changed_level_data)
 var door_editor: DoorEditor
 var key_editor: KeyEditor
 var tile_editor: MarginContainer

@@ -52,3 +52,12 @@ func check_valid(should_correct: bool) -> void:
 			_fixable_invalid_reasons[reason] = true
 		for reason in level.get_unfixable_invalid_reasons():
 			_unfixable_invalid_reasons[reason] = false
+
+func delete_level(id: int) -> void:
+	levels.remove_at(id)
+	for level in levels:
+		for entry in level.entries:
+			if entry.leads_to > id:
+				entry.leads_to -= 1
+			elif entry.leads_to == id:
+				entry.leads_to = -1

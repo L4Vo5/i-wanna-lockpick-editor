@@ -1,0 +1,1 @@
+taken from https://github.com/godotengine/godot/tree/master/editor/icons

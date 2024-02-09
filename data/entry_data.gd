@@ -8,7 +8,8 @@ class_name EntryData
 		position = val
 		changed.emit()
 # A bit of tight coupling with the specific order the levels are in in the level pack, but it makes saving and loading these much easier
-@export var leads_to: int
+## What level it leads to. -1 means it doesn't lead anywhere
+@export var leads_to: int = -1
 # Will likely use this later so I'm adding it so I don't have to change the entry save load code just for this
 @export var skin: int
 
