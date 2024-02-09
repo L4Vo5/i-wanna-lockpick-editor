@@ -70,17 +70,22 @@ func set_curse(curse: Enums.curse, val: bool, register_undo := false) -> void:
 	if _curses[curse] == val: return
 	if outer_color == Enums.colors.gate:
 		return
+	if curse == Enums.curse.brown:
+		if has_color(Enums.colors.pure):
+			return
+		# Can't curse completely brown doors (doesn't matter either way)
+		if outer_color == Enums.colors.brown\
+				and locks.all(func(l: LockData) -> bool:
+					return l.color == Enums.colors.brown):
+			return
+		for lock in locks:
+			lock.is_cursed = val
 	var level: Level = Global.current_level
 	if register_undo:
 		level.start_undo_action()
 		level.undo_redo.add_do_method(set_curse.bind(curse, val))
 		level.undo_redo.add_undo_method(set_curse.bind(curse, _curses[curse]))
 		level.end_undo_action()
-	if curse == Enums.curse.brown:
-		if has_color(Enums.colors.pure):
-			return
-		for lock in locks:
-			lock.is_cursed = val
 	_curses[curse] = val
 	changed.emit()
 
