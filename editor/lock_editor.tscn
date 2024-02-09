@@ -68,6 +68,7 @@ layout_mode = 2
 
 [node name="Lock" parent="VBoxContainer/CenterContainer" instance=ExtResource("1_iyvjm")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
 lock_data = SubResource("Resource_sgiyv")
 ignore_position = true
@@ -86,6 +87,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="VBoxContainer/Color" instance=ExtResource("5_gs2y2")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(14, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -130,8 +132,6 @@ size_flags_stretch_ratio = 0.0
 min_value = -1e+06
 max_value = 1e+06
 value = 1.0
-allow_greater = true
-allow_lesser = true
 alignment = 1
 
 [node name="IsNegative" type="CheckBox" parent="VBoxContainer/Requirement"]

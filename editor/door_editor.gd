@@ -103,7 +103,18 @@ func _update_door_amount() -> void:
 		if imaginary_copies.value != door_data.amount.imaginary_part:
 			imaginary_copies.value = -door_data.amount.imaginary_part
 		return
-	door_data.amount.set_to(int(real_copies.value), int(imaginary_copies.value))
+	# Support for infinity
+	var real := int(real_copies.value)
+	var img := int(imaginary_copies.value)
+	if real == real_copies.max_value:
+		real = Enums.INT_MAX
+	if real == real_copies.min_value:
+		real = Enums.INT_MIN
+	if img == imaginary_copies.max_value:
+		img = Enums.INT_MAX
+	if img == imaginary_copies.min_value:
+		img = Enums.INT_MIN
+	door_data.amount.set_to(real, img)
 
 func _update_door_color(color: Enums.colors) -> void:
 	if _setting_to_data: return

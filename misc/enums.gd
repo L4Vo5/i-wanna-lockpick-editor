@@ -1,6 +1,10 @@
 @tool
 class_name Enums
 
+# INT_MIN could be 1 less, but this way you can multiply both by -1 and it'll work out
+const INT_MAX := 9223372036854775807
+const INT_MIN := -9223372036854775807
+
 enum colors {
 	none,
 	white,

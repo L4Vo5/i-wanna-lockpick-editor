@@ -7,12 +7,12 @@
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_c2ium"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="6_qvekf"]
 
-[sub_resource type="Resource" id="Resource_47esf"]
+[sub_resource type="Resource" id="Resource_x77et"]
 script = ExtResource("2_jx360")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_qv8ao"]
+[sub_resource type="Resource" id="Resource_fjbbl"]
 script = ExtResource("3_3plxf")
 color = 1
 magnitude = 1
@@ -24,12 +24,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_y6p22"]
+[sub_resource type="Resource" id="Resource_3kufg"]
 script = ExtResource("4_1c01c")
-amount = SubResource("Resource_47esf")
-is_infinite = false
+amount = SubResource("Resource_x77et")
 outer_color = 1
-locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_qv8ao")])
+locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_fjbbl")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -44,7 +43,7 @@ position = Vector2i(0, 0)
 offset_right = 299.0
 offset_bottom = 602.0
 script = ExtResource("1_66io0")
-door_data = SubResource("Resource_y6p22")
+door_data = SubResource("Resource_3kufg")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -73,7 +72,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 ignore_position = true
-door_data = SubResource("Resource_y6p22")
+door_data = SubResource("Resource_3kufg")
 ignore_collisions = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
@@ -124,8 +123,6 @@ size_flags_stretch_ratio = 0.0
 min_value = -1e+06
 max_value = 1e+06
 value = 1.0
-allow_greater = true
-allow_lesser = true
 alignment = 1
 
 [node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Copies/HBoxContainer"]
@@ -141,8 +138,6 @@ size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 min_value = -1e+06
 max_value = 1e+06
-allow_greater = true
-allow_lesser = true
 alignment = 1
 suffix = "i"
 

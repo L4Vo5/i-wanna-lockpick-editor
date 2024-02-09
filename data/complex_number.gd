@@ -17,6 +17,8 @@ class_name ComplexNumber
 		changed.emit()
 	get:
 		return _imaginary_part
+# Enums.INT_MAX and INT_MIN represent positive and negative infinity for amounts
+# TODO: 1_000_000_000_000_000_000 (1 trillion/quintillion) shall be the typical limit for most intents and purposes
 var _real_part := 0
 var _imaginary_part := 0
 
@@ -64,14 +66,18 @@ func rotor() -> ComplexNumber:
 	return self
 
 func add(other: ComplexNumber) -> ComplexNumber:
-	_real_part += other._real_part
-	_imaginary_part += other._imaginary_part
+	if _real_part != Enums.INT_MAX:
+		_real_part += other._real_part
+	if _imaginary_part != Enums.INT_MIN:
+		_imaginary_part += other._imaginary_part
 	changed.emit()
 	return self
 
 func sub(other: ComplexNumber) -> ComplexNumber:
-	_real_part -= other._real_part
-	_imaginary_part -= other._imaginary_part
+	if _real_part != Enums.INT_MAX:
+		_real_part -= other._real_part
+	if _imaginary_part != Enums.INT_MIN:
+		_imaginary_part -= other._imaginary_part
 	changed.emit()
 	return self
 
@@ -113,17 +119,29 @@ func value_type_1d() -> Enums.value:
 
 func _to_string() -> String:
 	var s := ""
+	
+	var s_real := str(_real_part)
+	var s_img := str(_imaginary_part)
+	if _real_part == Enums.INT_MAX:
+		s_real = "∞"
+	if _real_part == Enums.INT_MIN:
+		s_real = "-∞"
+	if _imaginary_part == Enums.INT_MAX:
+		s_img = "∞"
+	if _imaginary_part == Enums.INT_MIN:
+		s_img = "-∞"
+	
 	# simple case if no imaginary part
 	if _imaginary_part == 0:
-		s += str(_real_part)
+		s += s_real
 	# there's imaginary part
 	else:
 		# don't include real part if 0
 		if _real_part != 0:
-			s += str(_real_part)
+			s += s_real
 			# draw a + if imaginary is positive (only if there's reals)
 			if _imaginary_part > 0:
 				s += "+"
-		s += str(_imaginary_part)
+		s += s_img
 		s += "i"
 	return s
