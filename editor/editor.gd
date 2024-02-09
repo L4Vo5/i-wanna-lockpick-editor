@@ -55,8 +55,6 @@ func _input(event: InputEvent) -> void:
 func _ready() -> void:
 	DirAccess.make_dir_absolute("user://levels")
 	file_dialog.current_dir = "levels"
-	# For porting from older versions that put levels in user://
-	move_levels("user://", "user://levels")
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
 	
@@ -309,13 +307,3 @@ func _on_more_options_selected(idx: int) -> void:
 			pass
 		_:
 			assert(false)
-
-# Moves all levels (incl. .res and .tres) from one location to another
-func move_levels(from: String, to: String) -> void:
-	var dir := DirAccess.open(from)
-	for file_name in dir.get_files():
-		if file_name.get_extension() in SaveLoad.LEVEL_EXTENSIONS:
-			print_debug("moving " + file_name)
-			var err := dir.rename(file_name, to.path_join(file_name))
-			if err != OK:
-				print("failed to move %s. error code %d" % [file_name, err])
