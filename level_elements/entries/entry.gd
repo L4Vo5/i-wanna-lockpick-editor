@@ -12,7 +12,8 @@ var level: Level
 @export var ignore_position := false
 
 func enter() -> void:
-	print("[S] %s: Enter. Should go to %d" % [self, entry_data.leads_to])
+	if entry_data.leads_to == -1: return
+	level.transition_to_level.call_deferred(entry_data.leads_to)
 
 func update_position() -> void:
 	if not ignore_position:

@@ -20,7 +20,8 @@ var current_level_index := 0:
 	set(val):
 		current_level_index = val
 		if not is_instance_valid(pack_data): return
-		_level_data = pack_data.levels[current_level_index]
+		if current_level_index >= 0:
+			_level_data = pack_data.levels[current_level_index]
 
 signal changed_level_data
 var _level_data: LevelData = null:
@@ -286,6 +287,13 @@ func reset() -> void:
 		end_undo_action()
 	
 	assert(PerfManager.end("Level::reset"))
+
+## Transitions to a different level in the pack
+func transition_to_level(id: int) -> void:
+	if id == current_level_index:
+		reset()
+	else:
+		current_level_index = id
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(_level_data): return
