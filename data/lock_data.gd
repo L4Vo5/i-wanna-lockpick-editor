@@ -108,13 +108,18 @@ var is_cursed := false:
 		changed_is_cursed.emit()
 		changed.emit()
 
-signal changed_dont_show_frame
-## used if the door's count doesn't align with the i-view status, also hides locks (couldn't think of a good name that includes that)
+## used if the door's count doesn't align with the i-view status
 var dont_show_frame := false:
 	set(val):
 		if dont_show_frame == val: return
 		dont_show_frame = val
-		changed_dont_show_frame.emit()
+		changed.emit()
+
+## separate thing to hide locks
+var dont_show_locks := false:
+	set(val):
+		if dont_show_locks == val: return
+		dont_show_locks = val
 		changed.emit()
 
 signal changed_rotation

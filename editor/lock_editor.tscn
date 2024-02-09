@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://ci0xep67xsyqq"]
+[gd_scene load_steps=10 format=3 uid="uid://ci0xep67xsyqq"]
 
 [ext_resource type="Script" path="res://editor/lock_editor.gd" id="1_46nys"]
 [ext_resource type="PackedScene" uid="uid://ds64ntew1oani" path="res://level_elements/doors_locks/lock.tscn" id="1_iyvjm"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://cinkniexduuij" path="res://editor/arrangement_chooser.tscn" id="4_cei5h"]
 [ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/door_lock_separator.tscn" id="5_c8x87"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="5_gs2y2"]
+[ext_resource type="Script" path="res://editor/lock_type_choice.gd" id="6_sq8pb"]
 
 [sub_resource type="Resource" id="Resource_sgiyv"]
 script = ExtResource("3_i0t7t")
@@ -94,23 +95,13 @@ size_flags_horizontal = 3
 [node name="Type" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/Type"]
-layout_mode = 2
-text = "Type: "
-
-[node name="TypeChoice" type="OptionButton" parent="VBoxContainer/Type"]
+[node name="LockTypeChoice" parent="VBoxContainer/Type" instance=ExtResource("5_gs2y2")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 28)
 layout_mode = 2
-item_count = 4
-selected = 0
-popup/item_0/text = "Normal"
-popup/item_0/id = 0
-popup/item_1/text = "Blast"
-popup/item_1/id = 1
-popup/item_2/text = "Blank"
-popup/item_2/id = 2
-popup/item_3/text = "All"
-popup/item_3/id = 3
+size_flags_horizontal = 3
+script = ExtResource("6_sq8pb")
+lock_size = 18
 
 [node name="Requirement" type="HBoxContainer" parent="VBoxContainer"]
 unique_name_in_owner = true

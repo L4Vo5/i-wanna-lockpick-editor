@@ -17,7 +17,7 @@ signal delete
 		_set_to_lock_data()
 @onready var lock: Lock = %Lock
 @onready var color_choice: ColorChoiceEditor = %ColorChoice
-@onready var type_choice: OptionButton = %TypeChoice
+@onready var lock_type_choice: LockTypeEditor = %LockTypeChoice
 @onready var requirement_parent: HBoxContainer = %Requirement
 @onready var amount: SpinBox = %Amount
 @onready var is_imaginary: CheckBox = %IsImaginary
@@ -58,11 +58,7 @@ func _ready() -> void:
 	position_y.get_line_edit().expand_to_text_length = true
 	
 	color_choice.changed_color.connect(_update_lock_color)
-	
-	type_choice.clear()
-	for key in Enums.LOCK_TYPE_NAMES.keys():
-		type_choice.add_item(Enums.LOCK_TYPE_NAMES[key].capitalize(), key)
-	type_choice.item_selected.connect(_update_lock_type.unbind(1))
+	lock_type_choice.changed_type.connect(_update_lock_type)
 	
 	amount.value_changed.connect(_update_lock_amount.unbind(1))
 	is_imaginary.pressed.connect(_update_is_imaginary)
@@ -90,7 +86,8 @@ var _setting_to_data := false
 func _set_to_lock_data() -> void:
 	_setting_to_data = true
 	color_choice.set_to_color(lock_data.color)
-	type_choice.selected = type_choice.get_item_index(lock_data.lock_type)
+	lock_type_choice.color = lock_data.color
+	lock_type_choice.type = lock_data.lock_type
 	var full_amount := lock_data.get_complex_amount()
 	amount.value = full_amount.real_part + full_amount.imaginary_part
 	is_negative.button_pressed = amount.value < 0
@@ -119,11 +116,12 @@ func _update_lock_size() -> void:
 
 func _update_lock_color(color: Enums.colors) -> void:
 	if _setting_to_data: return
-	lock_data.color = color
+	lock_data.color = color_choice.color
+	lock_type_choice.color = lock_data.color
 
 func _update_lock_type() -> void:
 	if _setting_to_data: return
-	lock_data.lock_type = type_choice.get_item_id(type_choice.selected)
+	lock_data.lock_type = lock_type_choice.type
 	if lock_data.lock_type == Enums.lock_types.normal:
 		arrangement_chooser.show()
 		requirement_parent.show()

@@ -14,7 +14,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_oxd7p")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="SelectedOutline" type="ColorRect" parent="."]
 visible = false
 layout_mode = 0
 offset_right = 18.0

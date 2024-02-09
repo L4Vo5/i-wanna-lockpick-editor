@@ -1,15 +1,14 @@
 @tool
 extends Control
-class_name ColorChoiceEditor
+class_name LockTypeEditor
+# I feel bad for copy-pasting all the code from the base class. I'll have to modify this if I change how that one works...
 
-signal changed_color(color: Enums.colors)
+signal changed_type()
 
 const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 
 ## the length in pixels of the locks' square sides
 @export var lock_size := 14
-
-@export var support_gates := false
 
 ## the separation in pixels between locks
 var lock_sep := 10
@@ -39,22 +38,24 @@ var selected_lock: Lock = null:
 		if selected_lock == val: return
 		selected_lock = val
 		if selected_lock != null:
-			changed_color.emit(selected_lock.lock_data.color)
-var color: Enums.colors:
-	set = set_to_color,
-	get = get_current_color
+			changed_type.emit()
+var color: Enums.colors = Enums.colors.none:
+	set(val):
+		color = val
+		for lock in locks:
+			lock.lock_data.color = color
+var type: Enums.lock_types:
+	set = set_to_type,
+	get = get_current_type
 
 var is_ready := false
 func _ready():
 	is_ready = true
-	for color in Enums.COLOR_NAMES.keys():
-		if color == Enums.colors.none: continue
-		if color == Enums.colors.gate and !support_gates: continue
+	for type in Enums.LOCK_TYPE_NAMES.keys():
 		var l := LOCK.instantiate()
 		var ld := LockData.new()
-		ld.dont_show_frame = true
-		ld.dont_show_locks = true
 		ld.color = color
+		ld.lock_type = type
 		# Lock will draw it 4px smaller to account for frame
 		ld.size = Vector2i.ONE * (lock_size + 4)
 		l.ignore_position = true
@@ -121,19 +122,19 @@ func _is_point_inside(point: Vector2) -> bool:
 	return Rect2(Vector2.ZERO, size).has_point(point)
 
 func _reposition_color_rect() -> void:
-	color_rect.size = Vector2.ONE * (lock_size + 4)
+	color_rect.size = Vector2.ONE * (lock_size + 4 + 4)
 	if not is_instance_valid(selected_lock):
 		color_rect.hide()
 	else:
 		color_rect.show()
-		color_rect.position = selected_lock.position
+		color_rect.position = selected_lock.position - Vector2.ONE * 2
 
 # TODO: find it faster lol?
-func set_to_color(color: Enums.colors) -> void:
+func set_to_type(type: Enums.lock_types) -> void:
 	for l in locks:
-		if l.lock_data.color == color:
+		if l.lock_data.lock_type == type:
 			selected_lock = l
 			return
 
-func get_current_color() -> Enums.colors:
-	return selected_lock.lock_data.color
+func get_current_type() -> Enums.lock_types:
+	return selected_lock.lock_data.lock_type

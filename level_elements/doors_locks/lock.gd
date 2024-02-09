@@ -137,7 +137,7 @@ func draw_locks() -> void:
 	assert(LOCKS_TEXTURE.get_size() == (LOCKS_SIZE * Vector2(16, 2)))
 	assert(PerfManager.start(&"Lock::draw_locks"))
 	RenderingServer.canvas_item_clear(locks)
-	if lock_data.dont_show_frame:
+	if lock_data.dont_show_locks:
 		assert(PerfManager.end(&"Lock::draw_locks"))
 		return
 	var sign := lock_data.get_sign_rot()

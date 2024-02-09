@@ -149,6 +149,7 @@ func _on_changed_i_view() -> void:
 	for lock in door_data.locks:
 		if not is_instance_valid(lock): continue
 		lock.dont_show_frame = not is_aligned
+		lock.dont_show_locks = not is_aligned
 		lock.rotation = (90 if level.i_view else 0) + (180 if is_flipped else 0)
 
 func _on_changed_glitch_color() -> void:
