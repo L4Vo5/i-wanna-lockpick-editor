@@ -18,7 +18,7 @@ signal changed_size
 		size = val
 		changed_size.emit()
 signal changed_player_spawn_position
-@export var player_spawn_position := Vector2i(400, 304):
+@export var player_spawn_position := Vector2i(398, 304):
 	set(val):
 		if player_spawn_position == val: return
 		player_spawn_position = val
@@ -135,6 +135,7 @@ func check_valid(should_correct: bool) -> void:
 	
 	# Make sure player spawn is aligned to the grid + inside the level
 	const PLAYER_SPAWN_OFFSET := Vector2i(14, 32)
+	print("player_spawn_position: " + str(player_spawn_position))
 	var new_pos := player_spawn_position
 	# offset so it's presumably inside the grid
 	new_pos -= PLAYER_SPAWN_OFFSET
@@ -145,6 +146,7 @@ func check_valid(should_correct: bool) -> void:
 	new_pos += PLAYER_SPAWN_OFFSET
 	# if the position was initially correct, it shouldn't have changed
 	if player_spawn_position != new_pos:
+		print("Oh noo invalid!")
 		add_invalid_reason("Invalid player position.", true)
 		if should_correct:
 			player_spawn_position = new_pos

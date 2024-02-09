@@ -46,7 +46,7 @@ static func _save_key(data: ByteAccess, key: KeyData) -> void:
 	data.store_u32(key.position.y)
 	# color is 4 bytes, type is 3. is_infinite is 1. 8 bytes total
 	# bits are: 01112222, 0 = is_infinite, 1 = type, 2 = color
-	data.store_u8((key.is_infinite as int) << 7 + (key.type << 4) + key.color)
+	data.store_u8(((key.is_infinite as int) << 7) + (key.type << 4) + key.color)
 
 static func _save_door(data: ByteAccess, door: DoorData) -> void:
 	# In the current version:
