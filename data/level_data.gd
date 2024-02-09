@@ -152,6 +152,7 @@ func check_valid(should_correct: bool) -> void:
 		door.check_valid(self, should_correct)
 func get_screenshot() -> Image:
 	var viewport := SubViewport.new()
+	viewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	var vpc := SubViewportContainer.new()
 	# TODO: No.
 	vpc.position = Vector2(INF, INF)
@@ -162,11 +163,11 @@ func get_screenshot() -> Image:
 	
 	var lvl: Level = preload("res://level_elements/level.tscn").instantiate()
 	lvl.exclude_player = true
-	lvl.level_data = duplicate()
+	lvl.pack_data = LevelPackData.make_from_level(duplicate())
 	viewport.add_child(lvl)
 	
 	await RenderingServer.frame_post_draw 
 	var img := viewport.get_texture().get_image()
-	viewport.free()
+	vpc.free()
 	return img
 
