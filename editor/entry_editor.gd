@@ -18,9 +18,11 @@ var editor_data: EditorData:
 		_set_to_entry_data()
 @onready var entry: Entry = %Entry
 @onready var leads_to: SpinBox = %LeadsTo
+@onready var level_name: Label = %LevelName
 
 func _set_to_entry_data() -> void:
 	leads_to.value = entry_data.leads_to + 1
+	_update_level_name()
 	print_debug("adjusting leads_to to %d" % leads_to.value)
 
 func _ready() -> void:
@@ -31,7 +33,14 @@ func _general_update() -> void:
 	if !visible: return
 	if !editor_data: return
 	leads_to.max_value = editor_data.level_pack_data.levels.size()
+	_update_level_name()
 
 func _update_leads_to() -> void:
 	entry_data.leads_to = leads_to.value - 1
+	_update_level_name()
 	print_debug("setting entry_data.leads_to to %d" % entry_data.leads_to)
+
+func _update_level_name() -> void:
+	if !editor_data: return
+	var level := editor_data.level_pack_data.levels[entry_data.leads_to]
+	level_name.text = level.title + "\n" + level.name

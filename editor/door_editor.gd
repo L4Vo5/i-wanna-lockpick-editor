@@ -142,11 +142,11 @@ func _update_lock_editors_door_size() -> void:
 func _add_new_lock() -> void:
 	var new_lock := LockData.new()
 	new_lock.color = door_data.outer_color
-	if door_data.outer_color == Enums.colors.gate:
-		if lock_editor_parent.get_child_count() != 0:
-			new_lock.color = lock_editor_parent.get_child(-1).lock.lock_data.color
-		else:
-			new_lock.color = Enums.colors.white
+	#if door_data.outer_color == Enums.colors.gate:
+		#if lock_editor_parent.get_child_count() != 0:
+			#new_lock.color = lock_editor_parent.get_child(-1).lock.lock_data.color
+		#else:
+			#new_lock.color = Enums.colors.white
 	door_data.add_lock(new_lock)
 	
 	var lock_editor: LockEditor = LOCK_EDITOR.instantiate()

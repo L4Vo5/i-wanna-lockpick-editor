@@ -1,20 +1,24 @@
-[gd_scene load_steps=5 format=3 uid="uid://hasnbvkv25y8"]
+[gd_scene load_steps=7 format=3 uid="uid://hasnbvkv25y8"]
 
 [ext_resource type="Script" path="res://editor/entry_editor.gd" id="1_xmuse"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="2_3mitj"]
 [ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="2_ypxul"]
+[ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="4_7lve0"]
 
-[sub_resource type="Resource" id="Resource_g2wly"]
+[sub_resource type="Resource" id="Resource_ivic0"]
 script = ExtResource("2_3mitj")
 position = Vector2i(0, 0)
 leads_to = 1
 skin = 0
 
+[sub_resource type="LabelSettings" id="LabelSettings_gyhd0"]
+font = ExtResource("4_7lve0")
+
 [node name="Entries" type="MarginContainer"]
 offset_right = 305.0
 offset_bottom = 602.0
 script = ExtResource("1_xmuse")
-entry_data = SubResource("Resource_g2wly")
+entry_data = SubResource("Resource_ivic0")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -24,13 +28,23 @@ layout_mode = 2
 text = "Entry Editor"
 horizontal_alignment = 1
 
+[node name="Control" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="LevelName" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_gyhd0")
+horizontal_alignment = 1
+
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="Entry" parent="VBoxContainer/CenterContainer" instance=ExtResource("2_ypxul")]
 unique_name_in_owner = true
 layout_mode = 2
-entry_data = SubResource("Resource_g2wly")
+entry_data = SubResource("Resource_ivic0")
 ignore_position = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
