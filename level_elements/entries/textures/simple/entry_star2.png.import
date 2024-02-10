@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ng3mck8btv4b"
-path="res://.godot/imported/sprLevelEntry_5.png-71854da5b2c4d2ff2460275019e56cc5.ctex"
+path="res://.godot/imported/entry_star2.png-65135e8ef2ad7204dea263fada2c4cc8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/entries/sprLevelEntry_5.png"
-dest_files=["res://.godot/imported/sprLevelEntry_5.png-71854da5b2c4d2ff2460275019e56cc5.ctex"]
+source_file="res://level_elements/entries/textures/simple/entry_star2.png"
+dest_files=["res://.godot/imported/entry_star2.png-65135e8ef2ad7204dea263fada2c4cc8.ctex"]
 
 [params]
 

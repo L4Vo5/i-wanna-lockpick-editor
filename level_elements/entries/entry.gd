@@ -11,8 +11,16 @@ class_name Entry
 var level: Level
 @export var ignore_position := false
 
+@onready var sprite: Sprite2D = %Sprite
 @onready var arrow: AnimatedSprite2D = %Arrow
 @onready var level_name: Node2D = %Name
+
+const ENTRY_CLOSED = preload("res://level_elements/entries/textures/simple/entry_closed.png")
+const ENTRY_COMPLETED = preload("res://level_elements/entries/textures/simple/entry_completed.png")
+const ENTRY_ERR = preload("res://level_elements/entries/textures/simple/entry_err.png")
+const ENTRY_OPEN = preload("res://level_elements/entries/textures/simple/entry_open.png")
+const ENTRY_STAR_2 = preload("res://level_elements/entries/textures/simple/entry_star2.png")
+const ENTRY_STAR = preload("res://level_elements/entries/textures/simple/entry_star.png")
 
 var name_tween: Tween
 @onready var name_start_y := level_name.position.y
@@ -25,6 +33,7 @@ func _ready() -> void:
 	level_name.position.y += tween_y_offset
 	level_name.modulate.a = 0
 	update_name()
+	update_status()
 
 # called by kid.gd
 func player_touching() -> void:
@@ -67,6 +76,14 @@ func update_name() -> void:
 		var level_data := level.pack_data.levels[entry_data.leads_to]
 		level_name.text = level_data.title + "\n" + level_data.name
 
+func update_status() -> void:
+	if not entry_data: return
+	if not level: return
+	if not is_node_ready(): return
+	sprite.texture = ENTRY_OPEN
+	if entry_data.leads_to < 0 or entry_data.leads_to >= level.pack_data.levels.size():
+		sprite.texture = ENTRY_ERR
+
 func _disconnect_entry_data() -> void:
 	if not is_instance_valid(entry_data): return
 	entry_data.changed.disconnect(update_position)
@@ -76,3 +93,4 @@ func _connect_entry_data() -> void:
 	entry_data.changed.connect(update_position)
 	update_name()
 	update_position()
+	update_status()
