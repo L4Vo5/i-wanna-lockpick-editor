@@ -23,7 +23,7 @@ var can_open := true
 # used to be meta, but found enough uses to keep it around
 var original_door_data: DoorData
 @export var ignore_collisions := false
-# when the gate is open (can pass through), 0 when closed, -1 if not a gate
+# when the gate is open (can pass through), 0 when closed, -1 if not a gate, 2 if it should be closed but the player is still inside
 var ignore_collisions_gate := -1
 
 @onready var static_body := %StaticBody2D as StaticBody2D
@@ -104,6 +104,7 @@ func _resolve_collision_mode() -> void:
 			var pos1 := col.global_position -sh1.size / 2.0
 			
 			if Rect2(pos1, sh1.size).intersects(Rect2(global_position, size)):
+				ignore_collisions_gate = 2
 				return
 		static_body.process_mode = Node.PROCESS_MODE_INHERIT
 
@@ -259,7 +260,7 @@ func check_gate() -> void:
 			else:
 				ignore_collisions_gate = 0
 	_resolve_collision_mode()
-	if ignore_collisions_gate == 1:
+	if ignore_collisions_gate >= 1:
 		modulate.a = 0.5
 	else:
 		modulate.a = 1
