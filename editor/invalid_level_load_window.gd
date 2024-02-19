@@ -22,8 +22,11 @@ func _ready() -> void:
 	load_fixed.pressed.connect(func(): load_level_fixed.emit())
 	load_unfixed.pressed.connect(hide)
 	load_unfixed.pressed.connect(func(): load_level_unfixed.emit())
-	size_changed.connect(_adjust)
+	# HACK: idk why this caused "too much recursion" when the _adjust function wasn't even running twice ? also, is this connection needed for non-web? not worth the trouble to check probably...
+	if not Global.is_web:
+		size_changed.connect(_adjust)
 	container.minimum_size_changed.connect(_adjust)
+	_adjust()
 
 var last_position := position
 func _process(_delta: float) -> void:

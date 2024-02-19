@@ -6,14 +6,14 @@
 [ext_resource type="Script" path="res://data/key_data.gd" id="3_a0u5f"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="5_2af2f"]
 
-[sub_resource type="Resource" id="Resource_yxc8h"]
+[sub_resource type="Resource" id="Resource_nxhcv"]
 script = ExtResource("2_nbql1")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_wx3pt"]
+[sub_resource type="Resource" id="Resource_3i7hh"]
 script = ExtResource("3_a0u5f")
-amount = SubResource("Resource_yxc8h")
+amount = SubResource("Resource_nxhcv")
 is_infinite = false
 type = 0
 color = 1
@@ -23,7 +23,7 @@ position = Vector2i(0, 0)
 offset_right = 269.0
 offset_bottom = 592.0
 script = ExtResource("1_a031y")
-key_data = SubResource("Resource_wx3pt")
+key_data = SubResource("Resource_3i7hh")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -50,7 +50,7 @@ layout_mode = 2
 
 [node name="key" parent="VBoxContainer/TopStuff/TheKey/KeyHolder" instance=ExtResource("1_2kdyu")]
 unique_name_in_owner = true
-key_data = SubResource("Resource_wx3pt")
+key_data = SubResource("Resource_3i7hh")
 in_keypad = true
 ignore_position = true
 metadata/_edit_vertical_guides_ = [32.0]
