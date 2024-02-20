@@ -1,0 +1,8 @@
+Copyright (c) 2024 L4Vo5
+
+Redistribution and use of this software, with or without modification, are permitted provided that the following conditions are met:
+
+    1. The origin of this software must not be misrepresented; you must not falsely claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+    2. Redistributions of this software's source must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
