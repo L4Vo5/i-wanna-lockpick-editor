@@ -5,8 +5,7 @@ const BASE_EXPORT_DIR := "../../Compiled/Lockpick Editor/"
 
 func _enter_tree() -> void:
 	add_tool_menu_item("Quick Export", quick_export)
-	var p := ProjectSettings.globalize_path("res://")
-	BUTLER = FileAccess.get_file_as_string(p.path_join("meta/butler_path.txt")).split("\n")[0]
+	BUTLER = FileAccess.get_file_as_string("res://meta/butler_path.txt").split("\n")[0]
 
 const TARGETS: Array[String] = ["Windows", "Linux", "Web"]
 var last_versions := {

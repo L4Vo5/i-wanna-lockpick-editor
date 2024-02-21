@@ -2,7 +2,7 @@
 extends Node
 
 @export var font_name := "fn_UT"
-const gamemaker_fonts_path := "[PATH HERE]"
+var gamemaker_fonts_path := ""
 const GMS_font_extension := ".font.gmx"
 const GMS_bitmap_extension := ".png"
 const bitmap_extension := ".png"
@@ -16,7 +16,7 @@ const fonts_path := "res://fonts/"
 		_convert()
 
 func _ready() -> void:
-	_convert()
+	gamemaker_fonts_path = FileAccess.get_file_as_string(("res://meta/fonts_path.txt")).split("\n")[0]
 
 func _convert():
 	# Copy the .png file
@@ -39,17 +39,19 @@ func _convert():
 	# Parse the content
 	var new_content = font_gmx_to_fnt(content, size)
 	
-	# Write the .fnt file
-#	file.open(fonts_path.path_join(font_name + font_extension), FileAccess.WRITE)
-#	file.close()
-#	file.open("Res://fonts/test.txt", FileAccess.WRITE)
 	print(new_content)
-	# Doesn't work xD copy to clipboard instead
-#	file.store_string(new_content)
+	# Write the .fnt file
+	if not FileAccess.file_exists(fonts_path.path_join(font_name + font_extension)):
+		print("Writing to " + font_name + font_extension)
+		file = file.open(fonts_path.path_join(font_name + font_extension), FileAccess.WRITE)
+		file.store_string(new_content)
+		file.close()
+		print("Content of " + font_name + " copied to clipboard!")
+	else:
+		# Just in case. I've had issues of .fnt files being emptied for some reason.
+		print(font_name + font_extension + " already exists, copying to clipboard instead of updating")
 	DisplayServer.clipboard_set(new_content)
-#	file.close()
-#	print("Done importing " + font_name + "!")
-	print("New content of " + font_name + " copied to clipboard!")
+	print("Done importing " + font_name + "!")
 
 func string_from_to(string, start_substr: String, end_substr: String) -> String:
 	var start = string.find(start_substr) + len(start_substr)
