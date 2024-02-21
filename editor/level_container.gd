@@ -71,7 +71,7 @@ func _on_resized() -> void:
 func _center_level() -> void:
 	# center it
 	if editor_data.is_playing:
-		inner_container.position = (size - OBJ_SIZE) / 2
+		inner_container.position = ((size - OBJ_SIZE) / 2).floor()
 		inner_container.size = OBJ_SIZE
 	else:
 		editor_camera.position = - (size - OBJ_SIZE) / 2
