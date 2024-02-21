@@ -2,6 +2,7 @@ extends Node2D
 class_name HoverHighlight
 
 signal adapted_to(obj: Node)
+signal stopped_adapting
 
 var current_obj: Node:
 	set(val):
@@ -36,6 +37,7 @@ func stop_adapting_to(obj: Object) -> void:
 func stop_adapting() -> void:
 	_hide_all()
 	current_obj = null
+	stopped_adapting.emit()
 
 func _hide_all() -> void:
 	line.hide()

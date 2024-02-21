@@ -289,3 +289,36 @@ func check_lock_overlaps() -> bool:
 			if r1.intersects(r2):
 				return false
 	return false
+
+func get_mouseover_text() -> String:
+	var s := ""
+	if outer_color == Enums.colors.gate:
+		s = "Gate"
+	else:
+		s = Enums.COLOR_NAMES[outer_color].capitalize() + " Door"
+	s += "\n"
+	for lock in locks:
+		if lock.lock_type != Enums.lock_types.normal:
+			s += Enums.LOCK_TYPE_NAMES[lock.lock_type].capitalize() + " "
+		s += Enums.COLOR_NAMES[lock.color].capitalize()
+		s += " Lock"
+		if lock.lock_type == Enums.lock_types.normal:
+			s += ", Cost: "
+			s += str(lock.get_complex_amount())
+		elif lock.lock_type == Enums.lock_types.blast:
+			var part := ""
+			if lock.sign == Enums.sign.positive:
+				part = "+"
+			else:
+				part = "-"
+			if lock.value_type == Enums.value.imaginary:
+				part += "i"
+			s += ", Cost: [All %s]" % part
+		s += "\n"
+	if outer_color == Enums.colors.glitch or locks.any(func(lock): return lock.color == Enums.colors.glitch):
+		s += "Mimic: " + Enums.COLOR_NAMES[glitch_color].capitalize()
+		s += "\n"
+	if not amount.is_equal_to(ComplexNumber.new_with(1, 0)):
+		s += "Copies: " + str(amount)
+		s += "\n"
+	return s

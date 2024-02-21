@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=12 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_ynu1q"]
 [ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="2_xwsq2"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://b5mtdgi8eorra" path="res://level_elements/autorun_on.png" id="8_n158d"]
 [ext_resource type="AudioStream" uid="uid://yukdfqp7sr3g" path="res://level_elements/autorun.wav" id="9_mj2a5"]
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="10_b7dph"]
+[ext_resource type="PackedScene" uid="uid://db8xfne3exmq5" path="res://rendering/mouseover_text.tscn" id="11_j0wdo"]
 
 [node name="Level" type="Node2D"]
 process_priority = -10
@@ -77,6 +78,11 @@ stream = ExtResource("9_mj2a5")
 [node name="HoverHighlight" parent="." instance=ExtResource("10_b7dph")]
 unique_name_in_owner = true
 color = Color(1, 1, 1, 0.74902)
+
+[node name="Mouseover" parent="." instance=ExtResource("11_j0wdo")]
+unique_name_in_owner = true
+visible = false
+position = Vector2(7.02328, -4.30417)
 
 [node name="LevelCamera" type="Camera2D" parent="."]
 unique_name_in_owner = true

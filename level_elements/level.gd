@@ -115,6 +115,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 var hovering_over: Node:
 	get:
 		return hover_highlight.current_obj
+@onready var mouseover: Node2D = %Mouseover
 
 # undo/redo actions should be handled somewhere in here, too
 var undo_redo: GoodUndoRedo
@@ -188,6 +189,8 @@ func _ready() -> void:
 		Global.current_level = self
 	reset()
 	_update_player_spawn_position()
+	hover_highlight.adapted_to.connect(_on_hover_adapted_to)
+	hover_highlight.stopped_adapting.connect(_on_hover_adapted_to.bind(null))
 
 var last_player_undo: Callable
 var last_saved_player_undo: Callable
@@ -580,6 +583,15 @@ func _on_entry_mouse_entered(entry: Entry) -> void:
 
 func _on_entry_mouse_exited(entry: Entry) -> void:
 	hover_highlight.stop_adapting_to(entry)
+
+func _on_hover_adapted_to(what: Node) -> void:
+	mouseover.hide()
+	if what:
+		if what.has_method("get_mouseover_text"):
+			mouseover.text = what.get_mouseover_text()
+			mouseover.show()
+		else:
+			printerr("object %s doesn't have get_mouseover_text method" % what)
 
 func add_debris_child(debris: Node) -> void:
 	debris_parent.add_child(debris)

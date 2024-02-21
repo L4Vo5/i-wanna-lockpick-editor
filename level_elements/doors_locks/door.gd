@@ -265,6 +265,9 @@ func check_gate() -> void:
 	else:
 		modulate.a = 1
 
+func get_mouseover_text() -> String:
+	return door_data.get_mouseover_text()
+
 # do the effects for the curses
 func break_curse_ice() -> void:
 	door_data.set_curse(Enums.curse.ice, false, true)
