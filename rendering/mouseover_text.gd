@@ -14,7 +14,7 @@ const COLOR_SHADOW := Color8(192, 192, 192)
 @export var chase_mouse := true
 
 func _process(delta: float) -> void:
-	if chase_mouse:
+	if chase_mouse and not Global.in_editor:
 		global_position = get_global_mouse_position()
 
 const HALF := Vector2(0.5, 0.5)

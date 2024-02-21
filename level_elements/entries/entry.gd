@@ -94,3 +94,15 @@ func _connect_entry_data() -> void:
 	update_name()
 	update_position()
 	update_status()
+
+func get_mouseover_text() -> String:
+	update_name()
+	var s := ""
+	if sprite.texture == ENTRY_ERR:
+		s += "Invalid Entry"
+		return s
+	if sprite.texture == ENTRY_OPEN:
+		s += "Open "
+	s += "Entry\n"
+	s += "Leads to:\n" + level_name.text
+	return s
