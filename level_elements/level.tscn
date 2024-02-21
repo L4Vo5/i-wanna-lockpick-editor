@@ -82,7 +82,7 @@ color = Color(1, 1, 1, 0.74902)
 [node name="Mouseover" parent="." instance=ExtResource("11_j0wdo")]
 unique_name_in_owner = true
 visible = false
-position = Vector2(7.02328, -4.30417)
+position = Vector2(67.7585, -7.47441)
 
 [node name="LevelCamera" type="Camera2D" parent="."]
 unique_name_in_owner = true

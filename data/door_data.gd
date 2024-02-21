@@ -226,6 +226,7 @@ func try_open() -> Dictionary:
 	return_dict.opened = true
 	return return_dict
 
+# Called by the actual in-level Door
 func update_glitch_color(color: Enums.colors) -> void:
 	if not get_curse(Enums.curse.brown):
 		glitch_color = color

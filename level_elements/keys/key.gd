@@ -27,7 +27,12 @@ class_name Key
 @onready var collision: Area2D = %Collision
 #@onready var input_grabber: Control = $GuiInputGrabber
 
-var level: Level = null
+var level: Level = null:
+	set(val):
+		if level == val: return
+		disconnect_level()
+		level = val
+		connect_level()
 
 func _ready() -> void:
 	collision.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
@@ -38,8 +43,6 @@ func _ready() -> void:
 		shadow.hide()
 	collision.area_entered.connect(on_collide)
 	update_visual()
-	_connect_global_level()
-	Global.changed_level.connect(_connect_global_level)
 	
 #	input_grabber.gui_input.connect(_gui_input)
 #	input_grabber.mouse_entered.connect(_on_mouse_entered)
@@ -50,14 +53,19 @@ func _on_mouse_entered() -> void:
 func _on_mouse_exited() -> void:
 	mouse_exited.emit()
 
-func _connect_global_level() -> void:
-	if in_keypad: return
-	if is_instance_valid(level):
-		# needed to access the level glitch color (only necessary if it starts out not being glitch, which shouldn't happen in-game, but I want things to work while I test)
-		if key_data.color == Enums.colors.glitch:
-			update_visual()
-		if not level.changed_glitch_color.is_connected(update_visual):
-			level.changed_glitch_color.connect(update_visual)
+func disconnect_level() -> void:
+	if not is_instance_valid(level): return
+	level.changed_glitch_color.disconnect(_on_changed_glitch_color)
+
+func connect_level() -> void:
+	if not is_instance_valid(level): return
+	level.changed_glitch_color.connect(_on_changed_glitch_color)
+	_on_changed_glitch_color()
+
+func _on_changed_glitch_color() -> void:
+	if not is_instance_valid(key_data): return
+	key_data.update_glitch_color(level.glitch_color)
+	update_visual()
 
 func _connect_key_data() -> void:
 	if not is_instance_valid(key_data): return
@@ -170,6 +178,9 @@ func on_collide(_who: Node2D) -> void:
 		print("is spent so nvm")
 		return
 	on_pickup()
+
+func get_mouseover_text() -> String:
+	return key_data.get_mouseover_text()
 
 func undo() -> void:
 	# HACK: fix for undoing at the same time that key is picked up making the key be picked up again after undoing

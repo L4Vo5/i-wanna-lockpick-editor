@@ -40,7 +40,7 @@ var is_spent := false:
 		if position == val: return
 		position = val
 		emit_changed()
-
+var glitch_color := Enums.colors.glitch
 
 
 func _init() -> void:
@@ -56,6 +56,25 @@ func get_rect() -> Rect2i:
 
 func get_used_color() -> Enums.colors:
 	if color == Enums.colors.glitch:
-		return Global.current_level.glitch_color
+		return glitch_color
 	else:
 		return color
+
+# Called by the actual in-level Key
+func update_glitch_color(color: Enums.colors) -> void:
+	glitch_color = color
+
+func get_mouseover_text() -> String:
+	var s := ""
+	if is_infinite:
+		s += "Infinite "
+	s += Enums.COLOR_NAMES[color].capitalize() + " "
+	if type != Enums.key_types.add:
+		s += Enums.KEY_TYPE_NAMES[type].capitalize() + " "
+	s += "Key"
+	if type == Enums.key_types.add or type == Enums.key_types.exact:
+		s += "\n"
+		s += "Amount: " + str(amount)
+	if color == Enums.colors.glitch:
+		s += "\nMimic: " + Enums.COLOR_NAMES[glitch_color].capitalize()
+	return s

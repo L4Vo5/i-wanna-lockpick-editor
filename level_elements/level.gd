@@ -351,6 +351,7 @@ func _spawn_door(door_data: DoorData) -> Door:
 	door.door_data = dd
 	door.original_door_data = door_data
 	connect_door(door)
+	door.level = self
 	assert(PerfManager.start("Level::_spawn_door (adding child)"))
 	doors.add_child(door)
 	assert(PerfManager.end("Level::_spawn_door (adding child)"))

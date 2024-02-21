@@ -38,7 +38,12 @@ var ignore_collisions_gate := -1
 @onready var copies: Label = %Copies
 
 var using_i_view_colors := false
-var level: Level = null
+var level: Level = null:
+	set(val):
+		if level == val: return
+		disconnect_level()
+		level = val
+		connect_level()
 
 func _ready() -> void:
 	assert(PerfManager.start("Door::_ready"))
@@ -46,13 +51,11 @@ func _ready() -> void:
 	
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	copies.minimum_size_changed.connect(position_copies)
-	Global.changed_level.connect(connect_level)
 	_resolve_collision_mode()
 	if not ignore_collisions:
 		assert(visible)
 		assert(not door_data.amount.is_zero())
 	update_everything()
-	connect_level()
 	assert(PerfManager.end("Door::_ready"))
 
 func _notification(what: int) -> void:
@@ -74,12 +77,16 @@ func _disconnect_door_data() -> void:
 	door_data.changed.disconnect(update_everything)
 
 func connect_level() -> void:
-	level = Global.current_level
-	if is_instance_valid(level):
-		level.changed_i_view.connect(_on_changed_i_view)
-		level.changed_glitch_color.connect(_on_changed_glitch_color)
-		_on_changed_i_view()
-		_on_changed_glitch_color()
+	if not is_instance_valid(level): return
+	level.changed_i_view.connect(_on_changed_i_view)
+	level.changed_glitch_color.connect(_on_changed_glitch_color)
+	_on_changed_i_view()
+	_on_changed_glitch_color()
+
+func disconnect_level() -> void:
+	if not is_instance_valid(level): return
+	level.changed_i_view.disconnect(_on_changed_i_view)
+	level.changed_glitch_color.disconnect(_on_changed_glitch_color)
 
 func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(door_data): return
@@ -98,8 +105,8 @@ func _resolve_collision_mode() -> void:
 	else:
 		# No collision if player is inside (intended use is for gates)
 		# HACK
-		if is_instance_valid(Global.current_level) and is_instance_valid(Global.current_level.player):
-			var col: CollisionShape2D = Global.current_level.player.get_node("CollisionShape2D")
+		if is_instance_valid(level) and is_instance_valid(level.player):
+			var col: CollisionShape2D = level.player.get_node("CollisionShape2D")
 			var sh1: RectangleShape2D = col.shape
 			var pos1 := col.global_position -sh1.size / 2.0
 			
@@ -158,6 +165,7 @@ func _on_changed_glitch_color() -> void:
 	door_data.update_glitch_color(level.glitch_color)
 
 func update_textures() -> void:
+	if not is_node_ready(): return
 	if not is_instance_valid(door_data): return
 	custom_minimum_size = door_data.size
 	size = door_data.size
@@ -253,7 +261,7 @@ func try_open() -> void:
 func check_gate() -> void:
 	if not door_data.outer_color == Enums.colors.gate: return
 	if not ignore_collisions:
-		if is_instance_valid(Global.current_level) and is_instance_valid(Global.current_level.player):
+		if is_instance_valid(level) and is_instance_valid(level.player):
 			var res := door_data.try_open()
 			if res.opened:
 				ignore_collisions_gate = 1
