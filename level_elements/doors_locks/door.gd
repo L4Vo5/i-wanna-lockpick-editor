@@ -3,7 +3,8 @@ extends MarginContainer
 class_name Door
 
 signal lock_clicked(event: InputEventMouseButton, lock: Lock)
-#signal lock_clicked(which: int)
+## Emitted when the door is opened at all (even if it increased the door's count)
+signal opened
 
 const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tscn")
@@ -80,6 +81,8 @@ func connect_level() -> void:
 	if not is_instance_valid(level): return
 	level.changed_i_view.connect(_on_changed_i_view)
 	level.changed_glitch_color.connect(_on_changed_glitch_color)
+	level.should_update_gates.connect(update_gate)
+	update_gate()
 	_on_changed_i_view()
 	_on_changed_glitch_color()
 
@@ -87,6 +90,7 @@ func disconnect_level() -> void:
 	if not is_instance_valid(level): return
 	level.changed_i_view.disconnect(_on_changed_i_view)
 	level.changed_glitch_color.disconnect(_on_changed_glitch_color)
+	level.should_update_gates.disconnect(update_gate)
 
 func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(door_data): return
@@ -96,8 +100,6 @@ func _physics_process(_delta: float) -> void:
 	copies.text = text
 	if using_i_view_colors:
 		_draw_frame()
-	# TODO: not in physics process duh!
-	check_gate()
 
 func _resolve_collision_mode() -> void:
 	if ignore_collisions or door_data.amount.is_zero() or not visible or ignore_collisions_gate == 1:
@@ -115,7 +117,6 @@ func _resolve_collision_mode() -> void:
 				return
 		static_body.process_mode = Node.PROCESS_MODE_INHERIT
 
-var update_everything_count := 0
 func update_everything() -> void:
 	if not is_instance_valid(door_data): return
 	assert(PerfManager.start(&"Door::update_everything"))
@@ -123,12 +124,12 @@ func update_everything() -> void:
 	_draw_base()
 	_draw_frame()
 	
-	update_everything_count += 1
-	
 	_on_changed_i_view()
 	update_textures()
 	update_locks()
 	update_curses()
+	update_gate()
+	
 	if not ignore_position:
 		position = door_data.position
 	assert(PerfManager.end(&"Door::update_everything"))
@@ -257,24 +258,30 @@ func try_open() -> void:
 		create_debris()
 	can_open = false
 	get_tree().create_timer(open_cooldown).timeout.connect(func(): can_open = true)
+	opened.emit()
 
-func check_gate() -> void:
-	if not door_data.outer_color == Enums.colors.gate:
+# this runs:
+# - every time the door data updates (it could have started or stopped being a gate)
+# - every time a new Level is assigned to the door
+# - every time the level tells it to
+func update_gate() -> void:
+	if not is_node_ready(): return
+	if door_data.outer_color != Enums.colors.gate:
 		ignore_collisions_gate = -1
 		_resolve_collision_mode()
 		modulate.a = 1
-		return
-	if not ignore_collisions:
-		ignore_collisions_gate = 0
-		if is_instance_valid(level) and is_instance_valid(level.player):
-			var res := door_data.try_open()
-			if res.opened:
-				ignore_collisions_gate = 1
-	_resolve_collision_mode()
-	if ignore_collisions_gate >= 1:
-		modulate.a = 0.5
 	else:
-		modulate.a = 1
+		if not ignore_collisions:
+			ignore_collisions_gate = 0
+			if is_instance_valid(level) and is_instance_valid(level.player):
+				var res := door_data.try_open()
+				if res.opened:
+					ignore_collisions_gate = 1
+		_resolve_collision_mode()
+		if ignore_collisions_gate >= 1:
+			modulate.a = 0.5
+		else:
+			modulate.a = 1
 
 func get_mouseover_text() -> String:
 	return door_data.get_mouseover_text()

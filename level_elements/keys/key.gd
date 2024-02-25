@@ -3,6 +3,8 @@ extends Control
 class_name Key
 ## Key lol
 
+signal picked_up
+
 @export var key_data: KeyData:
 	set(val):
 		if key_data == val: return
@@ -235,6 +237,8 @@ func on_pickup() -> void:
 		level.undo_redo.add_do_method(current_count.set_to.bind(current_count.real_part, current_count.imaginary_part))
 		level.undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
 	level.end_undo_action()
+	
+	picked_up.emit()
 	
 	snd_pickup.pitch_scale = 1
 	if key_data.color == Enums.colors.master:

@@ -51,6 +51,9 @@ var dont_make_current := false
 signal changed_doors
 signal changed_keys
 
+# this runs when a door is opened, a key is picked up, or the level is reset
+signal should_update_gates
+
 # Some code might depend on these complex numbers' changed signals, so don't change them to new numbers pls
 # Function _ensure_key_counts will run every frame to make sure the objects don't change. (not in release builds)
 var key_counts := {
@@ -209,6 +212,8 @@ func reset() -> void:
 		current_level_index = 0
 	assert(PerfManager.start("Level::reset"))
 	
+	# This initial stuff looks ugly for optimization's sake
+	# (yes, it makes a measurable impact, specially on big levels)
 	assert(PerfManager.start("Level::reset (doors)"))
 	var needed_doors := _level_data.doors.size()
 	var current_doors := doors.get_child_count()
@@ -278,6 +283,7 @@ func reset() -> void:
 		key_counts[color].set_to(0, 0)
 	for color in star_keys.keys():
 		star_keys[color] = false
+	should_update_gates.emit()
 	
 	i_view = false
 	is_autorun_on = false
@@ -558,13 +564,19 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 func is_space_inside(rect: Rect2i) -> bool:
 	return Rect2i(Vector2i.ZERO, _level_data.size).encloses(rect)
 
-func _on_door_gui_input(event: InputEvent, door: Door):
+func _on_door_opened(door: Door) -> void:
+	should_update_gates.emit()
+
+func _on_key_picked_up(key: Key) -> void:
+	should_update_gates.emit()
+
+func _on_door_gui_input(event: InputEvent, door: Door) -> void:
 	door_gui_input.emit(event, door)
 
-func _on_key_gui_input(event: InputEvent, key: Key):
+func _on_key_gui_input(event: InputEvent, key: Key) -> void:
 	key_gui_input.emit(event, key)
 
-func _on_entry_gui_input(event: InputEvent, entry: Entry):
+func _on_entry_gui_input(event: InputEvent, entry: Entry) -> void:
 	entry_gui_input.emit(event, entry)
 
 func _on_door_mouse_entered(door: Door) -> void:
@@ -640,21 +652,25 @@ func connect_door(door: Door) -> void:
 	door.gui_input.connect(_on_door_gui_input.bind(door))
 	door.mouse_entered.connect(_on_door_mouse_entered.bind(door))
 	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
+	door.opened.connect(_on_door_opened.bind(door))
 
 func disconnect_door(door: Door) -> void:
 	door.gui_input.disconnect(_on_door_gui_input.bind(door))
 	door.mouse_entered.disconnect(_on_door_mouse_entered.bind(door))
 	door.mouse_exited.disconnect(_on_door_mouse_exited.bind(door))
+	door.opened.disconnect(_on_door_opened.bind(door))
 
 func connect_key(key: Key) -> void:
 	key.gui_input.connect(_on_key_gui_input.bind(key))
 	key.mouse_entered.connect(_on_key_mouse_entered.bind(key))
 	key.mouse_exited.connect(_on_key_mouse_exited.bind(key))
+	key.picked_up.connect(_on_key_picked_up.bind(key))
 
 func disconnect_key(key: Key) -> void:
 	key.gui_input.disconnect(_on_key_gui_input.bind(key))
 	key.mouse_entered.disconnect(_on_key_mouse_entered.bind(key))
 	key.mouse_exited.disconnect(_on_key_mouse_exited.bind(key))
+	key.picked_up.disconnect(_on_key_picked_up.bind(key))
 
 func connect_entry(entry: Entry) -> void:
 	entry.gui_input.connect(_on_entry_gui_input.bind(entry))
