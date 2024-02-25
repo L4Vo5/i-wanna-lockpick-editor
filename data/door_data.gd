@@ -139,7 +139,7 @@ func try_open() -> Dictionary:
 	var player: Kid = level.player
 	
 	# try to open with master keys
-	if not player.master_equipped.is_zero() and not is_gate:
+	if not is_gate and not player.master_equipped.is_zero():
 		var can_master := true
 		if used_outer_color in NON_COPIABLE_COLORS:
 			can_master = false

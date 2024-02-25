@@ -265,12 +265,11 @@ func check_gate() -> void:
 		modulate.a = 1
 		return
 	if not ignore_collisions:
+		ignore_collisions_gate = 0
 		if is_instance_valid(level) and is_instance_valid(level.player):
 			var res := door_data.try_open()
 			if res.opened:
 				ignore_collisions_gate = 1
-			else:
-				ignore_collisions_gate = 0
 	_resolve_collision_mode()
 	if ignore_collisions_gate >= 1:
 		modulate.a = 0.5
