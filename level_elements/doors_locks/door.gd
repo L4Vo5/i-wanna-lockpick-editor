@@ -259,7 +259,11 @@ func try_open() -> void:
 	get_tree().create_timer(open_cooldown).timeout.connect(func(): can_open = true)
 
 func check_gate() -> void:
-	if not door_data.outer_color == Enums.colors.gate: return
+	if not door_data.outer_color == Enums.colors.gate:
+		ignore_collisions_gate = -1
+		_resolve_collision_mode()
+		modulate.a = 1
+		return
 	if not ignore_collisions:
 		if is_instance_valid(level) and is_instance_valid(level.player):
 			var res := door_data.try_open()
