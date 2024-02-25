@@ -26,6 +26,8 @@ var original_door_data: DoorData
 @export var ignore_collisions := false
 # when the gate is open (can pass through), 0 when closed, -1 if not a gate, 2 if it should be closed but the player is still inside
 var ignore_collisions_gate := -1
+const GATE_TWEEN_TIME := 0.25
+var gate_tween: Tween
 
 @onready var static_body := %StaticBody2D as StaticBody2D
 @onready var lock_holder := %LockHolder as Control
@@ -100,6 +102,9 @@ func _physics_process(_delta: float) -> void:
 	copies.text = text
 	if using_i_view_colors:
 		_draw_frame()
+	# I guess this *could* only be done when the player leaves, but meh
+	if ignore_collisions_gate == 2:
+		update_gate()
 
 func _resolve_collision_mode() -> void:
 	if ignore_collisions or door_data.amount.is_zero() or not visible or ignore_collisions_gate == 1:
@@ -266,10 +271,10 @@ func try_open() -> void:
 # - every time the level tells it to
 func update_gate() -> void:
 	if not is_node_ready(): return
+	var obj_alpha := 1.0
 	if door_data.outer_color != Enums.colors.gate:
 		ignore_collisions_gate = -1
 		_resolve_collision_mode()
-		modulate.a = 1
 	else:
 		if not ignore_collisions:
 			ignore_collisions_gate = 0
@@ -279,9 +284,16 @@ func update_gate() -> void:
 					ignore_collisions_gate = 1
 		_resolve_collision_mode()
 		if ignore_collisions_gate >= 1:
-			modulate.a = 0.5
-		else:
-			modulate.a = 1
+			obj_alpha = 0.5
+	
+	if modulate.a != obj_alpha:
+		if gate_tween: gate_tween.kill()
+		gate_tween = create_tween()
+		# this happens to be 1 or 0.5 when obj is 0.5 or 1 respectively
+		# these calculations are used to make the animation seamless if the gate has to open and close in quick succession
+		var alpha_start := 1.5 - obj_alpha
+		var tween_progress := inverse_lerp(alpha_start, obj_alpha, modulate.a)
+		gate_tween.tween_property(self, "modulate:a", obj_alpha, GATE_TWEEN_TIME * (1.0 - tween_progress))
 
 func get_mouseover_text() -> String:
 	return door_data.get_mouseover_text()
