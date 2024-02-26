@@ -102,6 +102,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var doors: Node2D = %Doors
 @onready var keys: Node2D = %Keys
 @onready var entries: Node2D = %Entries
+@onready var player_parent: Node2D = %PlayerParent
 @onready var tile_map: TileMap = %TileMap
 @onready var player_spawn_point: Sprite2D = %PlayerSpawnPoint
 @onready var debris_parent: Node2D = %DebrisParent
@@ -509,14 +510,14 @@ func remove_tile(tile_coord: Vector2i) -> bool:
 
 func _spawn_player() -> void:
 	if is_instance_valid(player):
-		remove_child(player)
+		player_parent.remove_child(player)
 		player.queue_free()
 		player = null
 	Global.is_playing = not exclude_player
 	if exclude_player: return
 	player = PLAYER.instantiate()
 	player.position = _level_data.player_spawn_position
-	add_child(player)
+	player_parent.add_child(player)
 	immediately_adjust_camera.call_deferred()
 
 func _spawn_goal() -> void:
