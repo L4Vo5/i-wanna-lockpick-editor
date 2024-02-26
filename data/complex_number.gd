@@ -90,7 +90,7 @@ func is_bigger_than(other: ComplexNumber) -> bool:
 func as_vec2() -> Vector2i:
 	return Vector2i(real_part, imaginary_part)
 
-func is_value(r: int, i: int) -> bool:
+func has_value(r: int, i: int) -> bool:
 	return _real_part == r and _imaginary_part == i
 
 func is_zero() -> bool:

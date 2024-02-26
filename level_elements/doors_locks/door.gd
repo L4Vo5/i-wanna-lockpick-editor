@@ -97,7 +97,7 @@ func disconnect_level() -> void:
 func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(door_data): return
 	var text := ""
-	if not door_data.amount.is_value(1,0):
+	if not door_data.amount.has_value(1,0):
 		text = "×" + str(door_data.amount)
 	copies.text = text
 	if using_i_view_colors:

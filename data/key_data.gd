@@ -73,8 +73,9 @@ func get_mouseover_text() -> String:
 		s += Enums.KEY_TYPE_NAMES[type].capitalize() + " "
 	s += "Key"
 	if type == Enums.key_types.add or type == Enums.key_types.exact:
-		s += "\n"
-		s += "Amount: " + str(amount)
+		if not amount.has_value(1, 0):
+			s += "\n"
+			s += "Amount: " + str(amount)
 	if color == Enums.colors.glitch:
 		s += "\nMimic: " + Enums.COLOR_NAMES[glitch_color].capitalize()
 	return s
