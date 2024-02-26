@@ -8,7 +8,7 @@ var current_obj: Node:
 	set(val):
 		current_obj = val if is_instance_valid(val) else null
 	get:
-		if not is_instance_valid(current_obj):
+		if not is_instance_valid(current_obj) and current_obj != null:
 			stop_adapting()
 		return current_obj
 
@@ -43,7 +43,7 @@ func _hide_all() -> void:
 	line.hide()
 
 func is_adapting() -> bool:
-	return is_instance_valid(current_obj)
+	return current_obj == null
 
 func adapt_to(obj: Node) -> void:
 	if not is_instance_valid(obj):

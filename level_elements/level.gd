@@ -285,6 +285,7 @@ func reset() -> void:
 	for color in star_keys.keys():
 		star_keys[color] = false
 	should_update_gates.emit()
+	update_mouseover()
 	
 	i_view = false
 	is_autorun_on = false
@@ -567,9 +568,11 @@ func is_space_inside(rect: Rect2i) -> bool:
 
 func _on_door_opened(door: Door) -> void:
 	should_update_gates.emit()
+	update_mouseover()
 
 func _on_key_picked_up(key: Key) -> void:
 	should_update_gates.emit()
+	update_mouseover()
 
 func _on_door_gui_input(event: InputEvent, door: Door) -> void:
 	door_gui_input.emit(event, door)
@@ -599,13 +602,17 @@ func _on_entry_mouse_exited(entry: Entry) -> void:
 	hover_highlight.stop_adapting_to(entry)
 
 func _on_hover_adapted_to(what: Node) -> void:
+	update_mouseover()
+
+func update_mouseover() -> void:
 	mouseover.hide()
-	if what:
-		if what.has_method("get_mouseover_text"):
-			mouseover.text = what.get_mouseover_text()
+	var obj := hover_highlight.current_obj
+	if obj:
+		if obj.has_method("get_mouseover_text"):
+			mouseover.text = obj.get_mouseover_text()
 			mouseover.show()
 		else:
-			printerr("object %s doesn't have get_mouseover_text method" % what)
+			printerr("object %s doesn't have get_mouseover_text method" % obj)
 
 func add_debris_child(debris: Node) -> void:
 	debris_parent.add_child(debris)
@@ -648,6 +655,7 @@ func undo() -> void:
 	last_player_undo = player.get_undo_action()
 	if undo_redo.get_last_action() == -1:
 		undo_redo._last_action = 0
+	update_mouseover()
 
 func connect_door(door: Door) -> void:
 	door.gui_input.connect(_on_door_gui_input.bind(door))
