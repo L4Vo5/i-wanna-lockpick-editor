@@ -273,8 +273,9 @@ func update_gate() -> void:
 	if not is_node_ready(): return
 	var obj_alpha := 1.0
 	if door_data.outer_color != Enums.colors.gate:
-		ignore_collisions_gate = -1
-		_resolve_collision_mode()
+		if ignore_collisions_gate != -1:
+			ignore_collisions_gate = -1
+			_resolve_collision_mode()
 	else:
 		if not ignore_collisions:
 			ignore_collisions_gate = 0
