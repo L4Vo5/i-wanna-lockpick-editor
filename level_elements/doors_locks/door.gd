@@ -5,6 +5,8 @@ class_name Door
 signal lock_clicked(event: InputEventMouseButton, lock: Lock)
 ## Emitted when the door is opened at all (even if it increased the door's count)
 signal opened
+## Emitted when the state of some curse has been changed
+signal changed_curse
 
 const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tscn")
@@ -301,19 +303,29 @@ func get_mouseover_text() -> String:
 
 # do the effects for the curses
 func break_curse_ice() -> void:
-	door_data.set_curse(Enums.curse.ice, false, true)
+	if door_data.get_curse(Enums.curse.ice):
+		door_data.set_curse(Enums.curse.ice, false, true)
+		changed_curse.emit()
 
 func break_curse_erosion() -> void:
-	door_data.set_curse(Enums.curse.erosion, false, true)
+	if door_data.get_curse(Enums.curse.erosion):
+		door_data.set_curse(Enums.curse.erosion, false, true)
+		changed_curse.emit()
 
 func break_curse_paint() -> void:
-	door_data.set_curse(Enums.curse.paint, false, true)
+	if door_data.get_curse(Enums.curse.paint):
+		door_data.set_curse(Enums.curse.paint, false, true)
+		changed_curse.emit()
 
 func curse_brown() -> void:
-	door_data.set_curse(Enums.curse.brown, true, true)
+	if not door_data.get_curse(Enums.curse.brown):
+		door_data.set_curse(Enums.curse.brown, true, true)
+		changed_curse.emit()
 
 func break_curse_brown() -> void:
-	door_data.set_curse(Enums.curse.brown, false, true)
+	if door_data.get_curse(Enums.curse.brown):
+		door_data.set_curse(Enums.curse.brown, false, true)
+		changed_curse.emit()
 
 func create_debris() -> void:
 	for x in floori(size.x / 16):

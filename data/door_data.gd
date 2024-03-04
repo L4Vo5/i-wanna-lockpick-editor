@@ -310,6 +310,7 @@ func get_mouseover_text() -> String:
 	s += "\n"
 	
 	for lock in locks:
+		s += "- "
 		if lock.lock_type != Enums.lock_types.normal:
 			s += Enums.LOCK_TYPE_NAMES[lock.lock_type].capitalize() + " "
 		
@@ -347,6 +348,6 @@ func get_mouseover_text() -> String:
 		effects_s += "Painted! (3x Blue)\n"
 	
 	if effects_s != "":
-		s += "- Effects -\n"
+		s += "~ Effects ~\n"
 		s += effects_s
 	return s

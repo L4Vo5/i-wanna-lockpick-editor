@@ -568,11 +568,15 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 func is_space_inside(rect: Rect2i) -> bool:
 	return Rect2i(Vector2i.ZERO, _level_data.size).encloses(rect)
 
-func _on_door_opened(door: Door) -> void:
+func _on_door_opened(_door: Door) -> void:
 	should_update_gates.emit()
 	update_mouseover()
 
-func _on_key_picked_up(key: Key) -> void:
+func _on_door_changed_curse(_door: Door) -> void:
+	should_update_gates.emit()
+	update_mouseover()
+
+func _on_key_picked_up(_key: Key) -> void:
 	should_update_gates.emit()
 	update_mouseover()
 
@@ -603,7 +607,7 @@ func _on_entry_mouse_entered(entry: Entry) -> void:
 func _on_entry_mouse_exited(entry: Entry) -> void:
 	hover_highlight.stop_adapting_to(entry)
 
-func _on_hover_adapted_to(what: Node) -> void:
+func _on_hover_adapted_to(_what: Node) -> void:
 	update_mouseover()
 
 func update_mouseover() -> void:
@@ -665,12 +669,14 @@ func connect_door(door: Door) -> void:
 	door.mouse_entered.connect(_on_door_mouse_entered.bind(door))
 	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
 	door.opened.connect(_on_door_opened.bind(door))
+	door.changed_curse.connect(_on_door_changed_curse.bind(door))
 
 func disconnect_door(door: Door) -> void:
 	door.gui_input.disconnect(_on_door_gui_input.bind(door))
 	door.mouse_entered.disconnect(_on_door_mouse_entered.bind(door))
 	door.mouse_exited.disconnect(_on_door_mouse_exited.bind(door))
 	door.opened.disconnect(_on_door_opened.bind(door))
+	door.changed_curse.disconnect(_on_door_changed_curse.bind(door))
 
 func connect_key(key: Key) -> void:
 	key.gui_input.connect(_on_key_gui_input.bind(key))
