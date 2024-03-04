@@ -35,6 +35,15 @@ const JUMP_REDUCTION := 0.45
 var master_equipped := ComplexNumber.new()
 signal changed_autorun
 
+var level: Level:
+	set(val):
+		# TODO: rename should_update_gates?
+		if level:
+			level.should_update_gates.disconnect(update_auras)
+		level = val
+		if level:
+			level.should_update_gates.connect(update_auras)
+
 func _ready() -> void:
 	aura_area.body_entered.connect(_on_aura_touch_door)
 	Global.changed_level.connect(connect_level)
@@ -63,7 +72,6 @@ func _physics_process(_delta: float) -> void:
 	# so if you collide with a door from below, you don't stop and end up with velocity.y = 0
 	detect_doors(velocity * Vector2(current_speed, 1))
 	
-	update_auras()
 	_animate_auras()
 	run()
 	fall_jump()
@@ -336,4 +344,3 @@ func _set_state(vars: Array) -> void:
 	var was_on_floor = vars[7]
 	if not was_on_floor:
 		is_pressing_jump = vars[6]
-	update_auras()

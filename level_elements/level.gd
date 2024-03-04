@@ -519,6 +519,7 @@ func _spawn_player() -> void:
 	player = PLAYER.instantiate()
 	player.position = _level_data.player_spawn_position
 	player_parent.add_child(player)
+	player.level = self
 	immediately_adjust_camera.call_deferred()
 
 func _spawn_goal() -> void:
@@ -652,6 +653,7 @@ func undo() -> void:
 	undo_sound.pitch_scale = 0.6
 	undo_sound.play()
 	undo_redo.undo()
+	should_update_gates.emit()
 	last_player_undo = player.get_undo_action()
 	if undo_redo.get_last_action() == -1:
 		undo_redo._last_action = 0
