@@ -63,7 +63,8 @@ func _physics_process(_delta: float) -> void:
 	# so if you collide with a door from below, you don't stop and end up with velocity.y = 0
 	detect_doors(velocity * Vector2(current_speed, 1))
 	
-	auras()
+	update_auras()
+	_animate_auras()
 	run()
 	fall_jump()
 	anim()
@@ -183,15 +184,34 @@ func anim() -> void:
 	shadow.animation = sprite.animation
 	shadow.frame = sprite.frame
 
-func auras() -> void:
+## logically updates area status
+# (sprites' visibility is used to determine active auras)
+func update_auras() -> void:
 	if not is_instance_valid(Global.current_level): return
-	spr_red_aura.visible = Global.current_level.key_counts[Enums.colors.red].real_part >= 1
-	spr_green_aura.visible = Global.current_level.key_counts[Enums.colors.green].real_part >= 5
-	spr_blue_aura.visible = Global.current_level.key_counts[Enums.colors.blue].real_part >= 3
-	
-	spr_brown_aura.rotation_degrees = fmod(spr_brown_aura.rotation_degrees + 2.5, 360)
+	var red_amount: int = Global.current_level.key_counts[Enums.colors.red].real_part
+	var green_amount: int = Global.current_level.key_counts[Enums.colors.green].real_part
+	var blue_amount: int = Global.current_level.key_counts[Enums.colors.blue].real_part
 	var brown_amount: int = Global.current_level.key_counts[Enums.colors.brown].real_part
+	
+	# Pack the visibility status into a binary number. I swear this makes the code simpler.
+	var visible_status_before := int(spr_red_aura.visible) + \
+								(int(spr_blue_aura.visible) << 1) + \
+								(int(spr_green_aura.visible) << 2) + \
+								(int(spr_brown_aura.visible) << 3)
+	spr_red_aura.visible = red_amount >= 1
+	spr_green_aura.visible = green_amount >= 5
+	spr_blue_aura.visible = blue_amount >= 3
 	spr_brown_aura.visible = brown_amount != 0
+	var visible_status_after := int(spr_red_aura.visible) + \
+								(int(spr_blue_aura.visible) << 1) + \
+								(int(spr_green_aura.visible) << 2) + \
+								(int(spr_brown_aura.visible) << 3)
+	# This will be true if and only if any of them are now visible (thus active)
+	# Process all doors the area is touching to take into account the newly updated aura
+	if (visible_status_before | visible_status_after) - visible_status_before != 0:
+		for body in aura_area.get_overlapping_bodies():
+			_on_aura_touch_door(body)
+	
 	var mat : CanvasItemMaterial = spr_brown_aura.material
 	if brown_amount > 0:
 		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_SUB
@@ -199,6 +219,11 @@ func auras() -> void:
 	elif brown_amount < 0:
 		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		spr_brown_aura.frame = 1
+
+## animates the auras
+func _animate_auras() -> void:
+	if spr_brown_aura.visible:
+		spr_brown_aura.rotation_degrees = fmod(spr_brown_aura.rotation_degrees + 2.5, 360)
 	else:
 		spr_brown_aura.rotation_degrees = 0
 	# brown area 2 is added just in case there's a pure black or white background,
@@ -208,7 +233,7 @@ func auras() -> void:
 	spr_brown_aura_2.rotation_degrees = spr_brown_aura.rotation_degrees
 
 func _on_aura_touch_door(body: Node2D) -> void:
-	auras() # recalculate the auras this frame just in case lol
+	update_auras() # recalculate the auras this frame just in case lol
 	var door: Door = body.get_parent()
 	assert(door != null)
 	if spr_red_aura.visible:
@@ -311,4 +336,4 @@ func _set_state(vars: Array) -> void:
 	var was_on_floor = vars[7]
 	if not was_on_floor:
 		is_pressing_jump = vars[6]
-	auras()
+	update_auras()
