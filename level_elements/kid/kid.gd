@@ -37,17 +37,12 @@ signal changed_autorun
 
 var level: Level:
 	set(val):
-		# TODO: rename should_update_gates?
-		if level:
-			level.should_update_gates.disconnect(update_auras)
+		_disconnect_level()
 		level = val
-		if level:
-			level.should_update_gates.connect(update_auras)
+		_connect_level()
 
 func _ready() -> void:
 	aura_area.body_entered.connect(_on_aura_touch_door)
-	Global.changed_level.connect(connect_level)
-	connect_level()
 	entry_detect.area_entered.connect(_on_entry_detect_area_entered)
 	entry_detect.area_exited.connect(_on_entry_detect_area_exited)
 
@@ -62,9 +57,9 @@ func _physics_process(_delta: float) -> void:
 	var current_speed := 3
 	if on_floor: # and velocity.y == 0:
 		if Input.is_action_pressed(&"fast"):
-			current_speed = 6 if not Global.current_level.is_autorun_on else 3
+			current_speed = 6 if not level.is_autorun_on else 3
 		else:
-			current_speed = 3 if not Global.current_level.is_autorun_on else 6
+			current_speed = 3 if not level.is_autorun_on else 6
 	if Input.is_action_pressed(&"slow"):
 		current_speed = 1
 	
@@ -84,7 +79,7 @@ func _physics_process(_delta: float) -> void:
 	update_on_floor()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not is_instance_valid(Global.current_level): return
+	if !level: return
 	if event.is_action_pressed(&"master"):
 		update_master_equipped(true, true)
 	if event.is_action_pressed(&"enter_level"):
@@ -195,11 +190,11 @@ func anim() -> void:
 ## logically updates area status
 # (sprites' visibility is used to determine active auras)
 func update_auras() -> void:
-	if not is_instance_valid(Global.current_level): return
-	var red_amount: int = Global.current_level.key_counts[Enums.colors.red].real_part
-	var green_amount: int = Global.current_level.key_counts[Enums.colors.green].real_part
-	var blue_amount: int = Global.current_level.key_counts[Enums.colors.blue].real_part
-	var brown_amount: int = Global.current_level.key_counts[Enums.colors.brown].real_part
+	if !level: return
+	var red_amount: int = level.key_counts[Enums.colors.red].real_part
+	var green_amount: int = level.key_counts[Enums.colors.green].real_part
+	var blue_amount: int = level.key_counts[Enums.colors.blue].real_part
+	var brown_amount: int = level.key_counts[Enums.colors.brown].real_part
 	
 	# Pack the visibility status into a binary number. I swear this makes the code simpler.
 	var visible_status_before := int(spr_red_aura.visible) + \
@@ -251,20 +246,32 @@ func _on_aura_touch_door(body: Node2D) -> void:
 	if spr_blue_aura.visible:
 		door.break_curse_paint()
 	if spr_brown_aura.visible:
-		var brown_amount: int = Global.current_level.key_counts[Enums.colors.brown].real_part
+		var brown_amount: int = level.key_counts[Enums.colors.brown].real_part
 		if brown_amount < 0:
 			door.break_curse_brown()
 		elif brown_amount > 0:
 			door.curse_brown()
 
-func connect_level() -> void:
-	if is_instance_valid(Global.current_level):
-		Global.current_level.changed_i_view.connect(_on_changed_i_view)
-		_on_changed_i_view(false)
-		Global.current_level.key_counts[Enums.colors.master].changed.connect(update_master_equipped.bind(false, false, true))
+func _connect_level() -> void:
+	if !level: return
+	level.changed_i_view.connect(_on_changed_i_view)
+	_on_changed_i_view(false)
+	level.key_counts[Enums.colors.master].changed.connect(
+		update_master_equipped.bind(false, false, true))
+	update_master_equipped(false, false, true)
+	# TODO: rename should_update_gates?
+	level.should_update_gates.connect(update_auras)
+	update_auras()
+
+func _disconnect_level() -> void:
+	if !level: return
+	level.changed_i_view.disconnect(_on_changed_i_view)
+	level.key_counts[Enums.colors.master].changed.disconnect(
+		update_master_equipped.bind(false, false, true))
+	level.should_update_gates.disconnect(update_auras)
 
 func _on_changed_i_view(show_anim := true) -> void:
-	spr_i_view.visible = Global.current_level.i_view
+	spr_i_view.visible = level.i_view
 	if show_anim:
 		spr_white_aura.animate()
 	update_master_equipped()
@@ -276,12 +283,12 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 		master_equipped.set_to(0, 0)
 	else:
 		var original_count := master_equipped.duplicated()
-		var i_view: bool = Global.current_level.i_view
+		var i_view: bool = level.i_view
 		master_equipped.set_to(0,0)
 		if not i_view:
-			master_equipped.real_part = signi(Global.current_level.key_counts[Enums.colors.master].real_part)
+			master_equipped.real_part = signi(level.key_counts[Enums.colors.master].real_part)
 		else:
-			master_equipped.imaginary_part = signi(Global.current_level.key_counts[Enums.colors.master].imaginary_part)
+			master_equipped.imaginary_part = signi(level.key_counts[Enums.colors.master].imaginary_part)
 		if unequip_if_different and not original_count.is_equal_to(master_equipped):
 			master_equipped.set_to(0, 0)
 	if play_sounds:
