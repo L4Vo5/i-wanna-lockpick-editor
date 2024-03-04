@@ -103,6 +103,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var keys: Node2D = %Keys
 @onready var entries: Node2D = %Entries
 @onready var player_parent: Node2D = %PlayerParent
+@onready var goal_parent: Node2D = %GoalParent
 @onready var tile_map: TileMap = %TileMap
 @onready var player_spawn_point: Sprite2D = %PlayerSpawnPoint
 @onready var debris_parent: Node2D = %DebrisParent
@@ -524,11 +525,11 @@ func _spawn_player() -> void:
 
 func _spawn_goal() -> void:
 	if is_instance_valid(goal):
-		remove_child(goal)
+		goal_parent.remove_child(goal)
 		goal.queue_free()
 	goal = GOAL.instantiate()
 	goal.position = _level_data.goal_position + Vector2i(16, 16)
-	add_child(goal)
+	goal_parent.add_child(goal)
 
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
 # TODO: Optimize this obviously. mainly tiles OBVIOUSLY

@@ -82,6 +82,9 @@ color = Color(1, 1, 1, 0.74902)
 [node name="PlayerParent" type="Node2D" parent="."]
 unique_name_in_owner = true
 
+[node name="GoalParent" type="Node2D" parent="."]
+unique_name_in_owner = true
+
 [node name="Mouseover" parent="." instance=ExtResource("11_j0wdo")]
 unique_name_in_owner = true
 visible = false
