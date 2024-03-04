@@ -336,4 +336,17 @@ func get_mouseover_text() -> String:
 		s += "Mimic: " + Enums.COLOR_NAMES[glitch_color].capitalize()
 		s += "\n"
 	
+	var effects_s := ""
+	if get_curse(Enums.curse.brown):
+		effects_s += "Cursed!\n"
+	if get_curse(Enums.curse.ice):
+		effects_s += "Frozen! (1x Red)\n"
+	if get_curse(Enums.curse.erosion):
+		effects_s += "Eroded! (5x Green)\n"
+	if get_curse(Enums.curse.paint):
+		effects_s += "Painted! (3x Blue)\n"
+	
+	if effects_s != "":
+		s += "- Effects -\n"
+		s += effects_s
 	return s
