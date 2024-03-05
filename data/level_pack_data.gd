@@ -28,7 +28,7 @@ static func make_from_level(level_data: LevelData) -> LevelPackData:
 	data.name = level_data.name
 	data.author = level_data.author
 	data.editor_version = level_data.editor_version
-	data.levels = [level_data.duplicate()]
+	data.levels = [level_data.duplicated()]
 	data.levels[0].resource_path = ""
 	return data
 

@@ -14,4 +14,4 @@ dest_files=["res://.godot/imported/ms_ui_gothic.fnt-e567de6ac4c4424ef61b0e06ccf5
 
 fallbacks=[]
 compress=true
-scaling_mode=2
+scaling_mode=0

@@ -68,6 +68,23 @@ func _init() -> void:
 	changed_player_spawn_position.connect(emit_changed)
 	changed_goal_position.connect(emit_changed)
 
+func duplicated() -> LevelData:
+	var dupe := LevelData.new()
+	dupe.size = size
+	dupe.player_spawn_position = player_spawn_position
+	dupe.goal_position = goal_position
+	dupe.custom_lock_arrangements = custom_lock_arrangements.duplicate(true)
+	dupe.tiles = tiles.duplicate(true)
+	dupe.name = name
+	dupe.title = title
+	for door in doors:
+		dupe.doors.push_back(door.duplicated())
+	for key in keys:
+		dupe.keys.push_back(key.duplicated())
+	for entry in entries:
+		dupe.entries.push_back(entry.duplicated())
+	return dupe
+
 ## Deletes stuff outside the level boundary
 func clear_outside_things() -> void:
 	var amount_deleted := 0
