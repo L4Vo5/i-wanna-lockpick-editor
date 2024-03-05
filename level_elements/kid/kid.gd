@@ -197,24 +197,16 @@ func update_auras() -> void:
 	var brown_amount: int = level.key_counts[Enums.colors.brown].real_part
 	
 	# Pack the visibility status into a binary number. I swear this makes the code simpler.
-	var visible_status_before := int(spr_red_aura.visible) + \
-								(int(spr_blue_aura.visible) << 1) + \
-								(int(spr_green_aura.visible) << 2) + \
-								(int(spr_brown_aura.visible) << 3)
+	assert(spr_brown_aura.frame in [0, 1])
+	var visible_status_before := spr_brown_aura.frame + \
+								(int(spr_red_aura.visible) << 1) + \
+								(int(spr_blue_aura.visible) << 2) + \
+								(int(spr_green_aura.visible) << 3) + \
+								(int(spr_brown_aura.visible) << 4)
 	spr_red_aura.visible = red_amount >= 1
 	spr_green_aura.visible = green_amount >= 5
 	spr_blue_aura.visible = blue_amount >= 3
 	spr_brown_aura.visible = brown_amount != 0
-	var visible_status_after := int(spr_red_aura.visible) + \
-								(int(spr_blue_aura.visible) << 1) + \
-								(int(spr_green_aura.visible) << 2) + \
-								(int(spr_brown_aura.visible) << 3)
-	# This will be true if and only if any of them are now visible (thus active)
-	# Process all doors the area is touching to take into account the newly updated aura
-	if (visible_status_before | visible_status_after) - visible_status_before != 0:
-		for body in aura_area.get_overlapping_bodies():
-			_on_aura_touch_door(body)
-	
 	var mat : CanvasItemMaterial = spr_brown_aura.material
 	if brown_amount > 0:
 		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_SUB
@@ -222,6 +214,18 @@ func update_auras() -> void:
 	elif brown_amount < 0:
 		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		spr_brown_aura.frame = 1
+		
+	var visible_status_after := spr_brown_aura.frame + \
+								(int(spr_red_aura.visible) << 1) + \
+								(int(spr_blue_aura.visible) << 2) + \
+								(int(spr_green_aura.visible) << 3) + \
+								(int(spr_brown_aura.visible) << 4)
+	# This will be true if and only if any of them are now visible (thus active)
+	# Process all doors the area is touching to take into account the newly updated aura
+	if (visible_status_before | visible_status_after) - visible_status_before != 0:
+		for body in aura_area.get_overlapping_bodies():
+			_on_aura_touch_door(body)
+	
 
 ## animates the auras
 func _animate_auras() -> void:
