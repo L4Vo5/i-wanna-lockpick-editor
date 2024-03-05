@@ -219,6 +219,21 @@ func try_open() -> Dictionary:
 			return_dict.undo_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
 			count.add(diff)
 			return_dict.do_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
+		
+		# HACK: This fucking sucks. Come up with something better.
+		# (it's hard tho...)
+		# cleanest solution almost seems to be removing the level's
+		# changed_glitch_color signal altogether, and updating everything manually,
+		# either here or on the level... but that's troublesome and bad OOP (does that matter?)
+		# also, maybe the level keeps a list of all doors and keys with glitch, 
+		# so that it doesn't have to go through all? 
+		for door: Door in level.doors.get_children():
+			var door_data := door.door_data
+			if not door_data.get_curse(Enums.curse.brown):
+				if door_data.glitch_color != level.glitch_color:
+					return_dict.undo_methods.push_back(door_data.set.bind(&"glitch_color", door_data.glitch_color))
+					door_data.glitch_color = used_outer_color
+		
 		if level.glitch_color != used_outer_color:
 			return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", level.glitch_color))
 			level.glitch_color = used_outer_color

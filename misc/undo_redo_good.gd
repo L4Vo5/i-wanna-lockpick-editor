@@ -13,6 +13,9 @@ func start_action() -> void:
 	assert(not is_instance_valid(_built_action))
 	_built_action = GURAction.new()
 
+func is_registering_action() -> bool:
+	return _built_action != null
+
 # Starts merging extra data into the last action
 func start_merge_last() -> void:
 	assert(not is_instance_valid(_built_action))

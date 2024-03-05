@@ -360,7 +360,6 @@ func _spawn_door(door_data: DoorData) -> Door:
 	door.door_data = dd
 	door.original_door_data = door_data
 	connect_door(door)
-	door.level = self
 	assert(PerfManager.start("Level::_spawn_door (adding child)"))
 	doors.add_child(door)
 	assert(PerfManager.end("Level::_spawn_door (adding child)"))
@@ -670,6 +669,7 @@ func connect_door(door: Door) -> void:
 	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
 	door.opened.connect(_on_door_opened.bind(door))
 	door.changed_curse.connect(_on_door_changed_curse.bind(door))
+	door.level = self
 
 func disconnect_door(door: Door) -> void:
 	door.gui_input.disconnect(_on_door_gui_input.bind(door))
@@ -677,6 +677,7 @@ func disconnect_door(door: Door) -> void:
 	door.mouse_exited.disconnect(_on_door_mouse_exited.bind(door))
 	door.opened.disconnect(_on_door_opened.bind(door))
 	door.changed_curse.disconnect(_on_door_changed_curse.bind(door))
+	door.level = null
 
 func connect_key(key: Key) -> void:
 	key.gui_input.connect(_on_key_gui_input.bind(key))
