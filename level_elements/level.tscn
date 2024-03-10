@@ -57,14 +57,16 @@ volume_db = -4.437
 pitch_scale = 0.6
 bus = &"Sfx"
 
-[node name="AutorunOff" type="Sprite2D" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="AutorunOff" type="Sprite2D" parent="CanvasLayer"]
 unique_name_in_owner = true
 visible = false
 position = Vector2(4, 3)
 texture = ExtResource("7_2dj2b")
 centered = false
 
-[node name="AutorunOn" type="Sprite2D" parent="."]
+[node name="AutorunOn" type="Sprite2D" parent="CanvasLayer"]
 unique_name_in_owner = true
 visible = false
 position = Vector2(4, 3)
