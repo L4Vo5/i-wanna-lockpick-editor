@@ -38,7 +38,7 @@ static func get_default_level_pack() -> LevelPackData:
 	var level := LevelData.get_default_level()
 	var pack := LevelPackData.new()
 	pack.levels.push_back(level)
-	pass
+	return pack
 
 # Only the keys are used. values are true for fixable and false for unfixable
 var _fixable_invalid_reasons := {}
