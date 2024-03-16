@@ -205,7 +205,7 @@ func _on_set_pack_description(new_description: String) -> void:
 func _set_level_number(new_number: int) -> void:
 	assert(new_number == level_number.value)
 	if level_number.value == level_number.max_value:
-		_level_pack_data.levels.push_back(preload("res://editor/levels/default.tres").duplicated())
+		_level_pack_data.levels.push_back(LevelData.get_default_level())
 		level_number.max_value = _level_pack_data.levels.size() + 1
 		level_count_label.text = str(_level_pack_data.levels.size())
 	editor_data.level.current_level_index = level_number.value - 1
@@ -215,7 +215,7 @@ func _delete_current_level() -> void:
 	_level_pack_data.delete_level(level_number.value - 1)
 	level_number.value -= 1
 	if _level_pack_data.levels.size() == 0:
-		_level_pack_data.levels.push_back(preload("res://editor/levels/default.tres").duplicated())
+		_level_pack_data.levels.push_back(LevelData.get_default_level())
 	level_number.max_value = _level_pack_data.levels.size() + 1
 	level_count_label.text = str(_level_pack_data.levels.size())
 	editor_data.level.current_level_index = level_number.value - 1

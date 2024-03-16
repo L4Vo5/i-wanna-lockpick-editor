@@ -291,9 +291,7 @@ func _on_file_selected(path: String) -> void:
 			load_level(path)
 
 func _on_new_level_button_pressed() -> void:
-	# TODO: just store a .tres with the default pack?
-	data.level_pack_data = LevelPackData.make_from_level(load("res://editor/levels/default.tres"))
-	data.level_pack_data.resource_path = ""
+	data.level_pack_data = LevelPackData.get_default_level_pack()
 	_update_level_path_display()
 
 func _on_open_files_location_pressed() -> void:

@@ -13,6 +13,8 @@ class_name LevelPackData
 @export var author: String
 ## Description of the level pack, displayed in level selection
 @export var description: String
+## Pack id, this SHOULD be unique.
+@export var pack_id: int = randi()
 
 ## For easier saving, since resource_path probably wouldn't work with .lvl
 var file_path := "":
@@ -31,6 +33,12 @@ static func make_from_level(level_data: LevelData) -> LevelPackData:
 	data.levels = [level_data.duplicated()]
 	data.levels[0].resource_path = ""
 	return data
+
+static func get_default_level_pack() -> LevelPackData:
+	var level := LevelData.get_default_level()
+	var pack := LevelPackData.new()
+	pack.levels.push_back(level)
+	pass
 
 # Only the keys are used. values are true for fixable and false for unfixable
 var _fixable_invalid_reasons := {}

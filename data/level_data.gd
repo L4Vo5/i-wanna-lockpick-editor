@@ -85,6 +85,11 @@ func duplicated() -> LevelData:
 		dupe.entries.push_back(entry.duplicated())
 	return dupe
 
+static func get_default_level() -> LevelData:
+	var level := preload("res://editor/levels/default_level.tres").duplicated()
+	level.resource_path = ""
+	return level
+
 ## Deletes stuff outside the level boundary
 func clear_outside_things() -> void:
 	var amount_deleted := 0
