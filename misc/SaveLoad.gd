@@ -1,11 +1,13 @@
 class_name SaveLoad
 
 const PRINT_LOAD := true
-const LATEST_FORMAT := 3
+const LATEST_FORMAT := 4
 const V1 := preload("res://misc/saving_versions/save_load_v1.gd")
 const V2 := preload("res://misc/saving_versions/save_load_v2.gd")
 const V3 := preload("res://misc/saving_versions/save_load_v3.gd")
-const VC := V3
+const V4 := preload("res://misc/saving_versions/save_load_v3.gd")
+## A reference to the current save/load version
+const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
@@ -121,6 +123,9 @@ If you're on the latest version, please report this."""
 	elif version == 3:
 		var byte_access := V3.make_byte_access(data)
 		lvl_pack_data = V3.load(byte_access)
+	elif version == 4:
+		var byte_access := V4.make_byte_access(data)
+		lvl_pack_data = V4.load(byte_access)
 	else:
 		var error_text := \
 """This level was made in editor version %s and uses the saving format N°%d.
