@@ -6,7 +6,8 @@ func _ready() -> void:
 	_connect_level.call_deferred()
 
 func _connect_level():
-	var level: Level = get_parent()
+	# TODO: no
+	var level: Level = get_parent().level
 	level.changed_level_data.connect(_on_changed_level_data)
 	_on_changed_level_data()
 

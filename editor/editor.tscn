@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
 [ext_resource type="Script" path="res://editor/level_container.gd" id="2_kqd34"]
-[ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="3_4sapt"]
+[ext_resource type="PackedScene" uid="uid://doxgx8n20sjl0" path="res://level_elements/gameplay.tscn" id="4_a2tib"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_55fwv"]
 [ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="6_n53nq"]
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="7_8vfxp"]
@@ -21,12 +21,12 @@
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="19_qs4m8"]
 
-[sub_resource type="Resource" id="Resource_a4ffo"]
+[sub_resource type="Resource" id="Resource_pq5in"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_8o083"]
+[sub_resource type="Resource" id="Resource_5o4ii"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -38,11 +38,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_4a578"]
+[sub_resource type="Resource" id="Resource_0wq30"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_a4ffo")
+amount = SubResource("Resource_pq5in")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_8o083")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_5o4ii")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -53,20 +53,20 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_8610c"]
+[sub_resource type="Resource" id="Resource_c3tm5"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_8a1ug"]
+[sub_resource type="Resource" id="Resource_m04on"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_8610c")
+amount = SubResource("Resource_c3tm5")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_gw18e"]
+[sub_resource type="Resource" id="Resource_hqxco"]
 script = ExtResource("19_qs4m8")
 position = Vector2i(0, 0)
 leads_to = 0
@@ -80,7 +80,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_n4qnf")
-level = NodePath("HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level")
+level = NodePath("")
 right_dock = NodePath("HSplitContainer/RightDock")
 side_tabs = NodePath("HSplitContainer/RightDock/SideEditorTabs")
 door_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Doors")
@@ -189,16 +189,16 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_kqd34")
 inner_container = NodePath("LevelContainerInner")
-level = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level")
+level = NodePath("")
 level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport")
-tile_map = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/TileMap")
-ghost_door = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup/GhostDoor")
-ghost_key = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup/GhostKey")
-ghost_entry = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup/GhostEntry")
-ghost_canvas_group = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup")
+tile_map = NodePath("")
+ghost_door = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostDoor")
+ghost_key = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostKey")
+ghost_entry = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostEntry")
+ghost_canvas_group = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup")
 editor = NodePath("../../..")
-danger_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/DangerHighlight")
-selected_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Level/SelectedHighlight")
+danger_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/DangerHighlight")
+selected_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/SelectedHighlight")
 camera_dragger = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger")
 editor_camera = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/EditorCamera")
 
@@ -261,35 +261,34 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Level" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("3_4sapt")]
-exclude_player = true
+[node name="Gameplay" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("4_a2tib")]
 
-[node name="CanvasGroup" type="CanvasGroup" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level"]
+[node name="CanvasGroup" type="CanvasGroup" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
 self_modulate = Color(1, 1, 1, 0.498039)
 
-[node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup" instance=ExtResource("5_55fwv")]
+[node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("5_55fwv")]
 visible = false
 mouse_filter = 2
 ignore_collisions = true
 
-[node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup" instance=ExtResource("6_n53nq")]
+[node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("6_n53nq")]
 visible = false
 in_keypad = true
 metadata/_edit_vertical_guides_ = [32.0]
 metadata/_edit_horizontal_guides_ = [32.0]
 
-[node name="GhostEntry" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level/CanvasGroup" instance=ExtResource("7_46nwx")]
+[node name="GhostEntry" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("7_46nwx")]
 visible = false
 mouse_filter = 2
 
-[node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level" instance=ExtResource("7_8vfxp")]
+[node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("7_8vfxp")]
 color = Color(1, 1, 1, 1)
 width = 3
 
-[node name="DangerHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level" instance=ExtResource("7_8vfxp")]
+[node name="DangerHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("7_8vfxp")]
 color = Color(1, 0, 0, 0.74902)
 
-[node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Level"]
+[node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
 script = ExtResource("9_r4glf")
 
 [node name="CameraDragger" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("camera")]
@@ -309,12 +308,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_4a578")
+door_data = SubResource("Resource_0wq30")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_8a1ug")
+key_data = SubResource("Resource_m04on")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
@@ -336,7 +335,7 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-entry_data = SubResource("Resource_gw18e")
+entry_data = SubResource("Resource_hqxco")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)

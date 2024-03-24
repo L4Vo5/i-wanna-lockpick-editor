@@ -5,11 +5,20 @@ class_name LevelData
 # currently only emitted by level when a door is placed or removed
 signal changed_doors
 @export var doors: Array[DoorData] = []
+
 # currently only emitted by level when a key is placed or removed
 signal changed_keys
 @export var keys: Array[KeyData] = []
+
 signal changed_entries
 @export var entries: Array[EntryData] = []
+
+## This array refers to other levels in the level pack, that are required for this level to be unlocked.
+@export var required_levels := PackedInt32Array()
+
+## How many levels from required_levels need to be completed for this level to be unlocked.
+@export var min_required_level_count := 0
+
 const SMALLEST_SIZE := Vector2i(800, 608)
 signal changed_size
 @export var size := SMALLEST_SIZE:
@@ -17,36 +26,57 @@ signal changed_size
 		if size == val: return
 		size = val
 		changed_size.emit()
+
 signal changed_player_spawn_position
 @export var player_spawn_position := Vector2i(398, 304):
 	set(val):
 		if player_spawn_position == val: return
 		player_spawn_position = val
 		changed_player_spawn_position.emit()
+
 signal changed_goal_position
 @export var goal_position := Vector2i(0, 0):
 	set(val):
 		if goal_position == val: return
 		goal_position = val
 		changed_goal_position.emit()
+ 
+@export var input_points: Array[salvage_point_data] = []
+@export var output_points: Array[salvage_point_data] = []
+class salvage_point_data:
+	extends Resource
+	@export var is_input := true
+	@export var position := Vector2i.ZERO
+	@export var SID := -1
+
 ## If the level uses custom lock arrangements, they'll be here
 @export var custom_lock_arrangements := {}
+
 ## Just saves all positions for the tiles... I'll come up with something better later ok
 # It's a dict so that it's not absurdly inefficient to check for repeats when placing new ones
 signal changed_tiles
 @export var tiles := {}
+
 ## Name of the level, used when standing in front of an entry that leads to it
-# TODO: both the entry thing, and make it also show when entering the level ?
 @export var name := "":
 	set(val):
 		if name == val: return
 		name = val
 		changed.emit()
+
 ## Title of the level, for example "Level 4-1" or "Page 3"
 @export var title := "":
 	set(val):
 		if title == val: return
 		title = val
+		changed.emit()
+
+## Short label for the level, used for the warp rod. [br]
+## If it's empty, it won't be included in the warp rod
+@export var label := "":
+	set(val):
+		if label == val: return
+		label = val
 		changed.emit()
 
 ## DEPRECATED

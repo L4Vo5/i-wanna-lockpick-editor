@@ -26,7 +26,7 @@ var can_open := true
 # used to be meta, but found enough uses to keep it around
 var original_door_data: DoorData
 @export var ignore_collisions := false
-# when the gate is open (can pass through), 0 when closed, -1 if not a gate, 2 if it should be closed but the player is still inside
+# 1 when the gate is open (can pass through), 0 when closed, -1 if not a gate, 2 if it should be closed but the player is still inside
 var ignore_collisions_gate := -1
 const GATE_TWEEN_TIME := 0.25
 var gate_tween: Tween

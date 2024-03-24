@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=13 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_ynu1q"]
+[ext_resource type="Script" path="res://level_elements/level_logic.gd" id="2_ufm7h"]
 [ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="2_xwsq2"]
 [ext_resource type="Texture2D" uid="uid://btuot74j1fbp4" path="res://editor/player_spawnpoint.png" id="3_rk3yr"]
 [ext_resource type="AudioStream" uid="uid://boradxidfn753" path="res://level_elements/keys/signflip_pickup.wav" id="4_un4ju"]
@@ -15,6 +16,10 @@
 [node name="Level" type="Node2D"]
 process_priority = -10
 script = ExtResource("1_ynu1q")
+
+[node name="LevelLogic" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_ufm7h")
 
 [node name="TileMap" type="TileMap" parent="."]
 unique_name_in_owner = true
