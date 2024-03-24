@@ -173,7 +173,7 @@ func detect_doors(vel: Vector2) -> void:
 					vel.y = 0
 
 func interact_with_door(door: Door) -> void:
-	door.try_open()
+	level.try_open_door(door)
 
 func anim() -> void:
 	if velocity.y < 0:
@@ -263,8 +263,6 @@ func _connect_level() -> void:
 	level.key_counts[Enums.colors.master].changed.connect(
 		update_master_equipped.bind(false, false, true))
 	update_master_equipped(false, false, true)
-	# TODO: rename should_update_gates?
-	level.should_update_gates.connect(update_auras)
 	update_auras()
 
 func _disconnect_level() -> void:
@@ -272,7 +270,6 @@ func _disconnect_level() -> void:
 	level.changed_i_view.disconnect(_on_changed_i_view)
 	level.key_counts[Enums.colors.master].changed.disconnect(
 		update_master_equipped.bind(false, false, true))
-	level.should_update_gates.disconnect(update_auras)
 
 func _on_changed_i_view(show_anim := true) -> void:
 	spr_i_view.visible = level.i_view

@@ -57,6 +57,9 @@ func flip() -> ComplexNumber:
 	changed.emit()
 	return self
 
+func flipped() -> ComplexNumber:
+	return new_with(_real_part * -1, _imaginary_part * -1)
+
 func rotor() -> ComplexNumber:
 	var new_imaginary := _real_part
 	var new_real := -_imaginary_part

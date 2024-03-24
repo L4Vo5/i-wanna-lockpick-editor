@@ -199,22 +199,23 @@ func redo() -> void:
 	_resolve_collision_mode()
 	hide()
 
+# TODO: move to logic
 func on_pickup() -> void:
-	level.start_undo_action()
-	level.undo_redo.add_undo_method(undo)
-	level.undo_redo.add_do_method(redo)
+	level.logic.start_undo_action()
+	level.logic.undo_redo.add_undo_method(undo)
+	level.logic.undo_redo.add_do_method(redo)
 	if not key_data.is_infinite:
 		key_data.is_spent = true
 		collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
 		hide()
 	var used_color := key_data.get_used_color()
-	var current_count: ComplexNumber = level.key_counts[used_color]
+	var current_count: ComplexNumber = level.logic.key_counts[used_color]
 	var orig_count: ComplexNumber = current_count.duplicated()
-	var orig_star: bool = level.star_keys[used_color]
+	var orig_star: bool = level.logic.star_keys[used_color]
 	
-	if level.star_keys[used_color]:
+	if level.logic.star_keys[used_color]:
 		if key_data.type == Enums.key_types.unstar:
-			level.star_keys[used_color] = false
+			level.logic.star_keys[used_color] = false
 	else:
 		match key_data.type:
 			Enums.key_types.add:
@@ -228,15 +229,15 @@ func on_pickup() -> void:
 			Enums.key_types.rotor_flip:
 				current_count.rotor().flip()
 			Enums.key_types.star:
-				level.star_keys[used_color] = true
+				level.logic.star_keys[used_color] = true
 	
-	if level.star_keys[used_color] != orig_star:
-		level.undo_redo.add_do_method(level.set_star_key.bind(used_color, level.star_keys[used_color]))
-		level.undo_redo.add_undo_method(level.set_star_key.bind(used_color, orig_star))
+	if level.logic.star_keys[used_color] != orig_star:
+		level.logic.undo_redo.add_do_method(level.logic.set_star_key.bind(used_color, level.logic.star_keys[used_color]))
+		level.logic.undo_redo.add_undo_method(level.logic.set_star_key.bind(used_color, orig_star))
 	if not current_count.is_equal_to(orig_count):
-		level.undo_redo.add_do_method(current_count.set_to.bind(current_count.real_part, current_count.imaginary_part))
-		level.undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
-	level.end_undo_action()
+		level.logic.undo_redo.add_do_method(current_count.set_to.bind(current_count.real_part, current_count.imaginary_part))
+		level.logic.undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
+	level.logic.end_undo_action()
 	
 	picked_up.emit()
 	

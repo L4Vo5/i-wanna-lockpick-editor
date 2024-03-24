@@ -157,6 +157,7 @@ const value_type_to_ComplexNumber_var: Dictionary = {
 	Enums.value.real: &"real_part",
 	Enums.value.imaginary: &"imaginary_part",
 }
+# TODO: move this method to the logic object
 # returns the key count difference after opening, or null if it can't be opened
 func open_with(key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> ComplexNumber:
 	# listen... it works lmao

@@ -117,130 +117,6 @@ func has_point(point: Vector2i) -> bool:
 func get_rect() -> Rect2i:
 	return Rect2i(position, size)
 
-const NON_COPIABLE_COLORS := [Enums.colors.master, Enums.colors.pure]
-## try to open the door with the current level's keys.
-## returns true if the door opened.
-## (also tries changing the door's count)
-func try_open() -> Dictionary:
-	var return_dict := {
-		&"opened": false,
-		&"master_key": false,
-		&"added_copy": false, # can only happen with master keys
-		&"do_methods": [],
-		&"undo_methods": [],
-	}
-	if amount.is_zero(): return return_dict
-	if _curses[Enums.curse.ice] or _curses[Enums.curse.erosion] or _curses[Enums.curse.paint]: return return_dict
-	
-	var used_outer_color := get_used_color()
-	var is_gate := outer_color == Enums.colors.gate
-	
-	var level: Level = Global.current_level
-	var player: Kid = level.player
-	
-	# try to open with master keys
-	if not is_gate and not player.master_equipped.is_zero():
-		var can_master := true
-		if used_outer_color in NON_COPIABLE_COLORS:
-			can_master = false
-		else:
-			for lock in locks:
-				if lock.get_used_color() in NON_COPIABLE_COLORS:
-					can_master = false
-					break
-		if can_master:
-			return_dict.master_key = true
-			return_dict.undo_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
-			var old_amount := amount.duplicated()
-			amount.sub(player.master_equipped)
-			return_dict.do_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
-			if amount.is_bigger_than(old_amount):
-				return_dict.added_copy = true
-			if not level.star_keys[Enums.colors.master]:
-				var count: ComplexNumber = level.key_counts[Enums.colors.master]
-				return_dict.undo_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
-				count.sub(player.master_equipped)
-				return_dict.do_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
-			if not Input.is_action_pressed(&"master"):
-				if not player.master_equipped.is_zero():
-					player.update_master_equipped(true, false)
-			return_dict.opened = true
-			return return_dict
-	
-	# open normally
-	var i_view: bool = level.i_view
-	var open_dim := ComplexNumber.new_with(1, 0)
-	
-	# when there's both real and imaginary copies, it should try opening the door twice, first for the currently-focused one (real if no i-view, imaginary if i-view)
-	# but also, even the currently-focused one should be skipped if there are 0 copies 
-	# so this variable dictates, for real and then imaginary copies: [should it even try?, should it rotor the locks?, should it flip them?]
-	var dims_try_rotor_flip := [
-		[amount.real_part != 0, false, amount.real_part < 0],
-		[amount.imaginary_part != 0, true, amount.imaginary_part < 0]]
-	
-	if i_view: # if i-view, try imaginary copies first
-		dims_try_rotor_flip.reverse()
-	
-	var diff: ComplexNumber
-	var did_it_open: bool
-	for try_rotor_flip in dims_try_rotor_flip:
-		var try: bool = try_rotor_flip[0]
-		var rotor: bool = try_rotor_flip[1]
-		var flip: bool = try_rotor_flip[2]
-		if not try: continue
-		diff = ComplexNumber.new_with(0, 0)
-		did_it_open = true
-		for lock_data in locks:
-			var used_lock_color := lock_data.get_used_color()
-			
-			var key_amount: ComplexNumber = level.key_counts[used_lock_color]
-			var diff_after_open := lock_data.open_with(key_amount, flip, rotor)
-			# open_with returns null if it couldn't be opened
-			if diff_after_open == null:
-				did_it_open = false
-				break
-			diff.add(diff_after_open)
-		if did_it_open: # it worked for the first dimension, don't try again
-			if rotor:
-				open_dim.rotor()
-			if flip:
-				open_dim.flip()
-			break
-	
-	if not did_it_open: return return_dict
-	# it worked on all locks!
-	if not is_gate:
-		return_dict.undo_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
-		amount.sub(open_dim)
-		return_dict.do_methods.push_back(amount.set_to.bind(amount.real_part, amount.imaginary_part))
-	
-		if not level.star_keys[used_outer_color]:
-			var count: ComplexNumber = level.key_counts[used_outer_color]
-			return_dict.undo_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
-			count.add(diff)
-			return_dict.do_methods.push_back(count.set_to.bind(count.real_part, count.imaginary_part))
-		
-		# HACK: This fucking sucks. Come up with something better.
-		# (it's hard tho...)
-		# cleanest solution almost seems to be removing the level's
-		# changed_glitch_color signal altogether, and updating everything manually,
-		# either here or on the level... but that's troublesome and bad OOP (does that matter?)
-		# also, maybe the level keeps a list of all doors and keys with glitch, 
-		# so that it doesn't have to go through all? 
-		for door: Door in level.doors.get_children():
-			var door_data := door.door_data
-			if not door_data.get_curse(Enums.curse.brown):
-				if door_data.glitch_color != level.glitch_color:
-					return_dict.undo_methods.push_back(door_data.set.bind(&"glitch_color", door_data.glitch_color))
-					door_data.glitch_color = used_outer_color
-		
-		if level.glitch_color != used_outer_color:
-			return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", level.glitch_color))
-			level.glitch_color = used_outer_color
-			return_dict.undo_methods.push_back(level.set.bind(&"glitch_color", used_outer_color))
-	return_dict.opened = true
-	return return_dict
-
 # Called by the actual in-level Door
 func update_glitch_color(color: Enums.colors) -> void:
 	if not get_curse(Enums.curse.brown):
@@ -254,6 +130,7 @@ func has_color(color: Enums.colors) -> bool:
 			return true
 	return false
 
+## gets the actually used outer color of the door
 func get_used_color() -> Enums.colors:
 	var used_color := outer_color
 	if get_curse(Enums.curse.brown):

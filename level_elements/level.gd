@@ -31,9 +31,6 @@ var dont_make_current := false
 signal changed_doors
 signal changed_keys
 
-# this runs when a door is opened, a key is picked up, or the level is reset
-signal should_update_gates
-
 
 
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
@@ -71,13 +68,6 @@ var goal: LevelGoal
 
 var is_autorun_on := false
 var autorun_tween: Tween
-
-# multiplier to how many times doors should try to be opened/copied
-# useful for levels with a lot of door copies
-# TODO: actually let the player change this
-var door_multiplier := 1
-
-
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not Global.is_playing: return
@@ -130,6 +120,15 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	adjust_camera()
+
+
+# For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
+func undo() -> void:
+	if not Global.is_playing: return
+	undo_sound.pitch_scale = 0.6
+	undo_sound.play()
+	logic.undo()
+	update_mouseover()
 
 ## Resets the current level (when pressing r)
 ## Also used for starting it for the first time
@@ -203,7 +202,6 @@ func reset() -> void:
 		camera.enabled = true
 		camera.make_current()
 	
-	should_update_gates.emit()
 	update_mouseover()
 	
 	is_autorun_on = false
@@ -239,6 +237,10 @@ func _update_goal_position() -> void:
 	if not is_node_ready(): return
 	if not is_instance_valid(goal): return
 	goal.position = level_data.goal_position + Vector2i(16, 16)
+
+func try_open_door(door: Door) -> void:
+	logic.try_open_door(door)
+
 
 # Editor functions
 
@@ -473,8 +475,7 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 func is_space_inside(rect: Rect2i) -> bool:
 	return Rect2i(Vector2i.ZERO, level_data.size).encloses(rect)
 
-func _on_door_opened(_door: Door) -> void:
-	should_update_gates.emit()
+func on_door_opened(_door: Door) -> void:
 	update_mouseover()
 
 func _on_door_changed_curse(_door: Door) -> void:
@@ -534,7 +535,6 @@ func connect_door(door: Door) -> void:
 	door.gui_input.connect(_on_door_gui_input.bind(door))
 	door.mouse_entered.connect(_on_door_mouse_entered.bind(door))
 	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
-	door.opened.connect(_on_door_opened.bind(door))
 	door.changed_curse.connect(_on_door_changed_curse.bind(door))
 	door.level = self
 
@@ -542,7 +542,6 @@ func disconnect_door(door: Door) -> void:
 	door.gui_input.disconnect(_on_door_gui_input.bind(door))
 	door.mouse_entered.disconnect(_on_door_mouse_entered.bind(door))
 	door.mouse_exited.disconnect(_on_door_mouse_exited.bind(door))
-	door.opened.disconnect(_on_door_opened.bind(door))
 	door.changed_curse.disconnect(_on_door_changed_curse.bind(door))
 	door.level = null
 

@@ -21,12 +21,12 @@
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="19_qs4m8"]
 
-[sub_resource type="Resource" id="Resource_pq5in"]
+[sub_resource type="Resource" id="Resource_5vkme"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_5o4ii"]
+[sub_resource type="Resource" id="Resource_cpopv"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -38,11 +38,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_0wq30"]
+[sub_resource type="Resource" id="Resource_v0wbx"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_pq5in")
+amount = SubResource("Resource_5vkme")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_5o4ii")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_cpopv")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -53,26 +53,26 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_c3tm5"]
+[sub_resource type="Resource" id="Resource_3875v"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_m04on"]
+[sub_resource type="Resource" id="Resource_il0u8"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_c3tm5")
+amount = SubResource("Resource_3875v")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_hqxco"]
+[sub_resource type="Resource" id="Resource_i6k67"]
 script = ExtResource("19_qs4m8")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("level", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -80,7 +80,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_n4qnf")
-level = NodePath("")
 right_dock = NodePath("HSplitContainer/RightDock")
 side_tabs = NodePath("HSplitContainer/RightDock/SideEditorTabs")
 door_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Doors")
@@ -182,16 +181,14 @@ editable = false
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "level", "level_viewport", "tile_map", "ghost_door", "ghost_key", "ghost_entry", "ghost_canvas_group", "editor", "danger_highlight", "selected_highlight", "camera_dragger", "editor_camera")]
+[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "level_viewport", "ghost_door", "ghost_key", "ghost_entry", "ghost_canvas_group", "editor", "danger_highlight", "selected_highlight", "camera_dragger", "editor_camera")]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_kqd34")
 inner_container = NodePath("LevelContainerInner")
-level = NodePath("")
 level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport")
-tile_map = NodePath("")
 ghost_door = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostDoor")
 ghost_key = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostKey")
 ghost_entry = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostEntry")
@@ -308,12 +305,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_0wq30")
+door_data = SubResource("Resource_v0wbx")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_m04on")
+key_data = SubResource("Resource_il0u8")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
@@ -335,7 +332,7 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-entry_data = SubResource("Resource_hqxco")
+entry_data = SubResource("Resource_i6k67")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)

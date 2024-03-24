@@ -3,8 +3,6 @@ extends MarginContainer
 class_name Door
 
 signal lock_clicked(event: InputEventMouseButton, lock: Lock)
-## Emitted when the door is opened at all (even if it increased the door's count)
-signal opened
 ## Emitted when the state of some curse has been changed
 signal changed_curse
 
@@ -13,8 +11,8 @@ const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tsc
 const FRAME_POS := preload("res://level_elements/doors_locks/textures/door_frame_texture_pos.png")
 const FRAME_NEG := preload("res://level_elements/doors_locks/textures/door_frame_texture_neg.png")
 
-var open_cooldown := 0.5
-var can_open := true
+# If <= 0, the door can be opened
+var open_cooldown := 0.0
 
 @export var ignore_position := false
 @export var door_data: DoorData:
@@ -56,7 +54,7 @@ func _ready() -> void:
 	
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	copies.minimum_size_changed.connect(position_copies)
-	_resolve_collision_mode()
+	resolve_collision_mode()
 	if not ignore_collisions:
 		assert(visible)
 		assert(not door_data.amount.is_zero())
@@ -75,7 +73,7 @@ func _connect_door_data() -> void:
 	# look.... ok?
 	
 	show()
-	_resolve_collision_mode()
+	resolve_collision_mode()
 
 func _disconnect_door_data() -> void:
 	if not is_instance_valid(door_data): return
@@ -85,8 +83,6 @@ func connect_level() -> void:
 	if not is_instance_valid(level): return
 	level.changed_i_view.connect(_on_changed_i_view)
 	level.changed_glitch_color.connect(_on_changed_glitch_color)
-	level.should_update_gates.connect(update_gate)
-	update_gate()
 	_on_changed_i_view()
 	_on_changed_glitch_color()
 
@@ -94,9 +90,10 @@ func disconnect_level() -> void:
 	if not is_instance_valid(level): return
 	level.changed_i_view.disconnect(_on_changed_i_view)
 	level.changed_glitch_color.disconnect(_on_changed_glitch_color)
-	level.should_update_gates.disconnect(update_gate)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	if open_cooldown > 0:
+		open_cooldown -= delta
 	if not is_instance_valid(door_data): return
 	var text := ""
 	if not door_data.amount.has_value(1,0):
@@ -106,9 +103,10 @@ func _physics_process(_delta: float) -> void:
 		_draw_frame()
 	# I guess this *could* only be done when the player leaves, but meh
 	if ignore_collisions_gate == 2:
-		update_gate()
+		level.logic.update_gate(self)
 
-func _resolve_collision_mode() -> void:
+
+func resolve_collision_mode() -> void:
 	if ignore_collisions or door_data.amount.is_zero() or not visible or ignore_collisions_gate == 1:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
 	else:
@@ -135,7 +133,7 @@ func update_everything() -> void:
 	update_textures()
 	update_locks()
 	update_curses()
-	update_gate()
+	update_gate_anim()
 	
 	if not ignore_position:
 		position = door_data.position
@@ -218,77 +216,30 @@ func update_curses() -> void:
 	paint.visible = door_data.get_curse(Enums.curse.paint)
 	brown_curse.visible = door_data.get_curse(Enums.curse.brown)
 
-func try_open() -> void:
-	if not can_open: return
-	# gates have separate logic
-	if door_data.outer_color == Enums.colors.gate: return
-	var should_create_debris := false
-	var opened_at_all := false
-	for i in level.door_multiplier:
-		# "opened", "master_key", "added_copy", "do_methods", "undo_methods"
-		var result := door_data.try_open()
-		if result.opened:
-			opened_at_all = true
-			level.start_undo_action()
-			for do_method in result.do_methods:
-				level.undo_redo.add_do_method(do_method)
-			for undo_method in result.undo_methods:
-				level.undo_redo.add_undo_method(undo_method)
-			
-			if result.added_copy:
-				snd_open.stream = preload("res://level_elements/doors_locks/copy.wav")
-			elif result.master_key:
-				snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
-			elif door_data.locks.size() > 1:
-				snd_open.stream = preload("res://level_elements/doors_locks/open_combo.wav")
-			elif door_data.outer_color == Enums.colors.master:
-				snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
-			else:
-				snd_open.stream = preload("res://level_elements/doors_locks/open.wav")
-			snd_open.play()
-			should_create_debris = true
-		if door_data.amount.is_zero():
-			assert(level.undo_redo.is_building_action())
-			level.undo_redo.add_do_method(hide)
-			hide()
-			level.undo_redo.add_undo_method(show)
-			level.undo_redo.add_undo_property(static_body, &"process_mode", static_body.process_mode)
-			assert(static_body.process_mode == StaticBody2D.PROCESS_MODE_INHERIT)
-			_resolve_collision_mode()
-			assert(static_body.process_mode == StaticBody2D.PROCESS_MODE_DISABLED)
-			level.undo_redo.add_do_property(static_body, &"process_mode", static_body.process_mode)
-			break
-	if not opened_at_all: return
-	if level.undo_redo.is_building_action():
-		level.end_undo_action()
-	if should_create_debris:
+## Perform animations, plays sounds, etc. after the door was opened with some result
+func open(result: Dictionary) -> void:
+	if result.opened:
+		if result.added_copy:
+			snd_open.stream = preload("res://level_elements/doors_locks/copy.wav")
+		elif result.master_key:
+			snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
+		elif door_data.locks.size() > 1:
+			snd_open.stream = preload("res://level_elements/doors_locks/open_combo.wav")
+		elif door_data.outer_color == Enums.colors.master:
+			snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
+		else:
+			snd_open.stream = preload("res://level_elements/doors_locks/open.wav")
+		snd_open.play()
 		create_debris()
-	can_open = false
-	get_tree().create_timer(open_cooldown).timeout.connect(func(): can_open = true)
-	opened.emit()
 
 # this runs:
 # - every time the door data updates (it could have started or stopped being a gate)
 # - every time a new Level is assigned to the door
 # - every time the level tells it to
-func update_gate() -> void:
-	if not is_node_ready(): return
+func update_gate_anim() -> void:
 	var obj_alpha := 1.0
-	if door_data.outer_color != Enums.colors.gate:
-		if ignore_collisions_gate != -1:
-			ignore_collisions_gate = -1
-			_resolve_collision_mode()
-	else:
-		if not ignore_collisions:
-			ignore_collisions_gate = 0
-			if is_instance_valid(level) and is_instance_valid(level.player):
-				var res := door_data.try_open()
-				if res.opened:
-					ignore_collisions_gate = 1
-		_resolve_collision_mode()
-		if ignore_collisions_gate >= 1:
-			obj_alpha = 0.5
-	
+	if ignore_collisions_gate >= 1:
+		obj_alpha = 0.5
 	if modulate.a != obj_alpha:
 		if gate_tween: gate_tween.kill()
 		gate_tween = create_tween()
