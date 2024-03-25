@@ -2,15 +2,18 @@ extends Node2D
 class_name GameplayManager
 ## Manages a Level, and handles the progression and transition between levels in a LevelPack
 
-var level_pack: LevelPackData
+var pack_data: LevelPackData
 var pack_state: LevelPackStateData
 
 @onready var level: Level = %Level
 
-func loadlevel_pack_from_state(state: LevelPackStateData) -> void:
-	level_pack = state.pack_data
+func _ready() -> void:
+	level.gameplay_manager = self
+
+func load_level_pack_from_state(state: LevelPackStateData) -> void:
+	pack_data = state.pack_data
 	pack_state = state
-	var level_data: LevelData = level_pack.levels[state.current_level]
+	var level_data: LevelData = pack_data.levels[state.current_level]
 	level.level_data = level_data
 
 ## Transitions to a different level in the pack

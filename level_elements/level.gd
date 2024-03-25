@@ -134,6 +134,7 @@ func undo() -> void:
 ## Also used for starting it for the first time
 func reset() -> void:
 	if not is_node_ready(): return
+	if not level_data: return
 	assert(PerfManager.start("Level::reset"))
 	
 	# This initial stuff looks ugly for optimization's sake
@@ -230,6 +231,7 @@ func _disconnect_level_data() -> void:
 
 func _update_player_spawn_position() -> void:
 	if not is_node_ready(): return
+	if not level_data: return
 	player_spawn_point.visible = Global.in_level_editor
 	player_spawn_point.position = level_data.player_spawn_position
 
@@ -479,11 +481,9 @@ func on_door_opened(_door: Door) -> void:
 	update_mouseover()
 
 func _on_door_changed_curse(_door: Door) -> void:
-	should_update_gates.emit()
 	update_mouseover()
 
 func _on_key_picked_up(_key: Key) -> void:
-	should_update_gates.emit()
 	update_mouseover()
 
 func _on_door_gui_input(event: InputEvent, door: Door) -> void:

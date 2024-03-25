@@ -191,10 +191,10 @@ func anim() -> void:
 # (sprites' visibility is used to determine active auras)
 func update_auras() -> void:
 	if !level: return
-	var red_amount: int = level.key_counts[Enums.colors.red].real_part
-	var green_amount: int = level.key_counts[Enums.colors.green].real_part
-	var blue_amount: int = level.key_counts[Enums.colors.blue].real_part
-	var brown_amount: int = level.key_counts[Enums.colors.brown].real_part
+	var red_amount: int = level.logic.key_counts[Enums.colors.red].real_part
+	var green_amount: int = level.logic.key_counts[Enums.colors.green].real_part
+	var blue_amount: int = level.logic.key_counts[Enums.colors.blue].real_part
+	var brown_amount: int = level.logic.key_counts[Enums.colors.brown].real_part
 	
 	# Pack the visibility status into a binary number. I swear this makes the code simpler.
 	assert(spr_brown_aura.frame in [0, 1])
@@ -240,39 +240,26 @@ func _animate_auras() -> void:
 	spr_brown_aura_2.rotation_degrees = spr_brown_aura.rotation_degrees
 
 func _on_aura_touch_door(body: Node2D) -> void:
-	update_auras() # recalculate the auras this frame just in case lol
 	var door: Door = body.get_parent()
 	assert(door != null)
-	if spr_red_aura.visible:
-		door.break_curse_ice()
-	if spr_green_aura.visible:
-		door.break_curse_erosion()
-	if spr_blue_aura.visible:
-		door.break_curse_paint()
-	if spr_brown_aura.visible:
-		var brown_amount: int = level.key_counts[Enums.colors.brown].real_part
-		if brown_amount < 0:
-			door.break_curse_brown()
-		elif brown_amount > 0:
-			door.curse_brown()
+	level.logic.apply_auras_on_door(door)
 
 func _connect_level() -> void:
 	if !level: return
-	level.changed_i_view.connect(_on_changed_i_view)
 	_on_changed_i_view(false)
-	level.key_counts[Enums.colors.master].changed.connect(
+	# TODO: NO
+	level.logic.key_counts[Enums.colors.master].changed.connect(
 		update_master_equipped.bind(false, false, true))
 	update_master_equipped(false, false, true)
 	update_auras()
 
 func _disconnect_level() -> void:
 	if !level: return
-	level.changed_i_view.disconnect(_on_changed_i_view)
-	level.key_counts[Enums.colors.master].changed.disconnect(
+	level.logic.key_counts[Enums.colors.master].changed.disconnect(
 		update_master_equipped.bind(false, false, true))
 
 func _on_changed_i_view(show_anim := true) -> void:
-	spr_i_view.visible = level.i_view
+	spr_i_view.visible = level.logic.i_view
 	if show_anim:
 		spr_white_aura.animate()
 	update_master_equipped()

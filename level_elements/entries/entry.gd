@@ -73,7 +73,7 @@ func update_name() -> void:
 	if not is_node_ready(): return
 	level_name.text = "\n[Invalid entry]"
 	if entry_data.leads_to >= 0 and entry_data.leads_to < level.pack_data.levels.size():
-		var level_data := level.pack_data.levels[entry_data.leads_to]
+		var level_data := level.gameplay_manager.pack_data.levels[entry_data.leads_to]
 		level_name.text = level_data.title + "\n" + level_data.name
 
 func update_status() -> void:

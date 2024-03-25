@@ -199,45 +199,9 @@ func redo() -> void:
 	_resolve_collision_mode()
 	hide()
 
-# TODO: move to logic
 func on_pickup() -> void:
-	level.logic.start_undo_action()
-	level.logic.undo_redo.add_undo_method(undo)
-	level.logic.undo_redo.add_do_method(redo)
-	if not key_data.is_infinite:
-		key_data.is_spent = true
-		collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
-		hide()
-	var used_color := key_data.get_used_color()
-	var current_count: ComplexNumber = level.logic.key_counts[used_color]
-	var orig_count: ComplexNumber = current_count.duplicated()
-	var orig_star: bool = level.logic.star_keys[used_color]
+	level.logic.pick_up_key(self)
 	
-	if level.logic.star_keys[used_color]:
-		if key_data.type == Enums.key_types.unstar:
-			level.logic.star_keys[used_color] = false
-	else:
-		match key_data.type:
-			Enums.key_types.add:
-				current_count.add(key_data.amount)
-			Enums.key_types.exact:
-				current_count.set_to_this(key_data.amount)
-			Enums.key_types.rotor:
-				current_count.rotor()
-			Enums.key_types.flip:
-				current_count.flip()
-			Enums.key_types.rotor_flip:
-				current_count.rotor().flip()
-			Enums.key_types.star:
-				level.logic.star_keys[used_color] = true
-	
-	if level.logic.star_keys[used_color] != orig_star:
-		level.logic.undo_redo.add_do_method(level.logic.set_star_key.bind(used_color, level.logic.star_keys[used_color]))
-		level.logic.undo_redo.add_undo_method(level.logic.set_star_key.bind(used_color, orig_star))
-	if not current_count.is_equal_to(orig_count):
-		level.logic.undo_redo.add_do_method(current_count.set_to.bind(current_count.real_part, current_count.imaginary_part))
-		level.logic.undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
-	level.logic.end_undo_action()
 	
 	picked_up.emit()
 	

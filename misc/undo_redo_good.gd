@@ -13,8 +13,8 @@ func start_action() -> void:
 	assert(not is_instance_valid(_built_action))
 	_built_action = GURAction.new()
 
-func is_registering_action() -> bool:
-	return _built_action != null
+func is_building_action() -> bool:
+	return is_instance_valid(_built_action)
 
 # Starts merging extra data into the last action
 func start_merge_last() -> void:
@@ -46,9 +46,6 @@ func add_do_property(object: Object, property: StringName, value: Variant) -> vo
 
 func add_undo_property(object: Object, property: StringName, value: Variant) -> void:
 	add_undo_method(object.set.bind(property, value))
-
-func is_building_action() -> bool:
-	return is_instance_valid(_built_action)
 
 func get_last_action() -> int:
 	return _last_action

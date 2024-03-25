@@ -10,7 +10,7 @@ var level_data: LevelData
 var level: Level
 var player: Kid:
 	get:
-		return level.player
+		return level.player if level else null
 
 var key_counts := {
 	Enums.colors.glitch: ComplexNumber.new(),
@@ -63,6 +63,7 @@ var i_view := false:
 	set(val):
 		if i_view == val: return
 		i_view = val
+		player._on_changed_i_view()
 		changed_i_view.emit()
 
 const OPEN_COOLDOWN_TIME := 0.5
@@ -95,6 +96,50 @@ func reset() -> void:
 		end_undo_action()
 	
 	update_gates()
+
+# TODO: the way undos would work here would make each individual affected door take up an action! oh no! either merge them or apply them all at once.
+func apply_auras_on_door(door: Door) -> void:
+	var door_data := door.door_data
+	if key_counts[Enums.colors.red].real_part >= 1:
+		if apply_curse_door(door, Enums.curse.ice, false):
+			door.break_curse_ice()
+	if key_counts[Enums.colors.green].real_part >= 5:
+		if apply_curse_door(door, Enums.curse.erosion, false):
+			door.break_curse_erosion()
+	if key_counts[Enums.colors.blue].real_part >= 3:
+		apply_curse_door(door, Enums.curse.paint, false)
+		door.break_curse_paint()
+	if key_counts[Enums.colors.brown].real_part >= 1:
+		if apply_curse_door(door, Enums.curse.brown, true):
+			door.curse_brown()
+	elif key_counts[Enums.colors.brown].real_part <= 1:
+		if apply_curse_door(door, Enums.curse.brown, false):
+			door.break_curse_brown()
+	if undo_redo.is_building_action():
+		end_undo_action()
+		# TODO: you don't actually care about gates, but currently it stands for "generally update stuff"
+		update_gates()
+
+## Returns true if the curse/uncurse was successful (and the animation should play), false if it wasn't.
+func apply_curse_door(door: Door, curse: Enums.curse, val: bool) -> bool:
+	var door_data := door.door_data
+	if door_data.outer_color == Enums.colors.gate: return false
+	if door_data.get_curse(curse) == val: return false
+	
+	if curse == Enums.curse.brown:
+		if door_data.has_color(Enums.colors.pure): return false
+		# Can't curse completely brown doors (doesn't matter either way, but it's a visual change)
+		if door_data.outer_color == Enums.colors.brown and door_data.locks.all(func(l: LockData) -> bool: return l.color == Enums.colors.brown):
+			return false
+	
+	door_data.set_curse(curse, val)
+	
+	if !undo_redo.is_building_action():
+		start_undo_action()
+	undo_redo.add_undo_method(door_data.set_curse.bind(curse, !val))
+	undo_redo.add_do_method(door_data.set_curse.bind(curse, val))
+	
+	return true
 
 ## Tries to open a door, and communicates the result to the door so it can handle sounds and animation.
 func try_open_door(door: Door) -> void:
@@ -279,6 +324,7 @@ func try_open_door_data(door_data: DoorData, master_equipped: ComplexNumber) -> 
 
 ## Re-evaluates all gates.
 func update_gates() -> void:
+	if not level: return
 	for door: Door in level.doors.get_children():
 		update_gate(door)
 	# TODO: none of this
@@ -300,6 +346,47 @@ func update_gate(gate: Door) -> void:
 					gate.ignore_collisions_gate = 1
 		gate.resolve_collision_mode()
 	gate.update_gate_anim()
+
+func pick_up_key(key: Key) -> void:
+	var key_data := key.key_data
+	start_undo_action()
+	undo_redo.add_undo_method(key.undo)
+	undo_redo.add_do_method(key.redo)
+	if not key_data.is_infinite:
+		key_data.is_spent = true
+		key.collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
+		hide()
+	var used_color := key_data.get_used_color()
+	var current_count: ComplexNumber = key_counts[used_color]
+	var orig_count: ComplexNumber = current_count.duplicated()
+	var orig_star: bool = star_keys[used_color]
+	
+	if star_keys[used_color]:
+		if key_data.type == Enums.key_types.unstar:
+			star_keys[used_color] = false
+	else:
+		match key_data.type:
+			Enums.key_types.add:
+				current_count.add(key_data.amount)
+			Enums.key_types.exact:
+				current_count.set_to_this(key_data.amount)
+			Enums.key_types.rotor:
+				current_count.rotor()
+			Enums.key_types.flip:
+				current_count.flip()
+			Enums.key_types.rotor_flip:
+				current_count.rotor().flip()
+			Enums.key_types.star:
+				star_keys[used_color] = true
+	
+	if star_keys[used_color] != orig_star:
+		undo_redo.add_do_method(set_star_key.bind(used_color, star_keys[used_color]))
+		undo_redo.add_undo_method(set_star_key.bind(used_color, orig_star))
+	if not current_count.is_equal_to(orig_count):
+		undo_redo.add_do_method(current_count.set_to.bind(current_count.real_part, current_count.imaginary_part))
+		undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
+	end_undo_action()
+	update_gates()
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
 func start_undo_action() -> void:

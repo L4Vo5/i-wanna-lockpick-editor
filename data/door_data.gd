@@ -66,26 +66,13 @@ func remove_lock_at(pos: int) -> void:
 	locks.remove_at(pos)
 	changed.emit()
 
-func set_curse(curse: Enums.curse, val: bool, register_undo := false) -> void:
+func set_curse(curse: Enums.curse, val: bool) -> void:
 	if _curses[curse] == val: return
 	if outer_color == Enums.colors.gate:
 		return
 	if curse == Enums.curse.brown:
-		if has_color(Enums.colors.pure):
-			return
-		# Can't curse completely brown doors (doesn't matter either way)
-		if outer_color == Enums.colors.brown\
-				and locks.all(func(l: LockData) -> bool:
-					return l.color == Enums.colors.brown):
-			return
 		for lock in locks:
-			lock.is_cursed = val
-	var level: Level = Global.current_level
-	if register_undo:
-		level.start_undo_action()
-		level.undo_redo.add_do_method(set_curse.bind(curse, val))
-		level.undo_redo.add_undo_method(set_curse.bind(curse, _curses[curse]))
-		level.end_undo_action()
+			lock.is_cursed = true
 	_curses[curse] = val
 	changed.emit()
 
@@ -117,11 +104,7 @@ func has_point(point: Vector2i) -> bool:
 func get_rect() -> Rect2i:
 	return Rect2i(position, size)
 
-# Called by the actual in-level Door
-func update_glitch_color(color: Enums.colors) -> void:
-	if not get_curse(Enums.curse.brown):
-		glitch_color = color
-
+## Returns true if the door has a given color (taking glitch and curses into account)
 func has_color(color: Enums.colors) -> bool:
 	if get_used_color() == color:
 		return true

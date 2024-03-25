@@ -116,7 +116,7 @@ func duplicated() -> LevelData:
 	return dupe
 
 static func get_default_level() -> LevelData:
-	var level := preload("res://editor/levels/default_level.tres").duplicated()
+	var level: LevelData = load("res://editor/levels/default_level.tres").duplicated()
 	level.resource_path = ""
 	return level
 

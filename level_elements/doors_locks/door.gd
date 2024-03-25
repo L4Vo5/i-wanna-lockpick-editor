@@ -82,14 +82,11 @@ func _disconnect_door_data() -> void:
 func connect_level() -> void:
 	if not is_instance_valid(level): return
 	level.changed_i_view.connect(_on_changed_i_view)
-	level.changed_glitch_color.connect(_on_changed_glitch_color)
 	_on_changed_i_view()
-	_on_changed_glitch_color()
 
 func disconnect_level() -> void:
 	if not is_instance_valid(level): return
 	level.changed_i_view.disconnect(_on_changed_i_view)
-	level.changed_glitch_color.disconnect(_on_changed_glitch_color)
 
 func _physics_process(delta: float) -> void:
 	if open_cooldown > 0:
@@ -165,10 +162,6 @@ func _on_changed_i_view() -> void:
 		lock.dont_show_frame = not is_aligned
 		lock.dont_show_locks = not is_aligned
 		lock.rotation = (90 if level.i_view else 0) + (180 if is_flipped else 0)
-
-func _on_changed_glitch_color() -> void:
-	if not is_instance_valid(door_data): return
-	door_data.update_glitch_color(level.glitch_color)
 
 func update_textures() -> void:
 	if not is_node_ready(): return
@@ -252,31 +245,21 @@ func update_gate_anim() -> void:
 func get_mouseover_text() -> String:
 	return door_data.get_mouseover_text()
 
-# do the effects for the curses
+# do the vfx/sfx for the curses
 func break_curse_ice() -> void:
-	if door_data.get_curse(Enums.curse.ice):
-		door_data.set_curse(Enums.curse.ice, false, true)
-		changed_curse.emit()
+	pass
 
 func break_curse_erosion() -> void:
-	if door_data.get_curse(Enums.curse.erosion):
-		door_data.set_curse(Enums.curse.erosion, false, true)
-		changed_curse.emit()
+	pass
 
 func break_curse_paint() -> void:
-	if door_data.get_curse(Enums.curse.paint):
-		door_data.set_curse(Enums.curse.paint, false, true)
-		changed_curse.emit()
+	pass
 
 func curse_brown() -> void:
-	if not door_data.get_curse(Enums.curse.brown):
-		door_data.set_curse(Enums.curse.brown, true, true)
-		changed_curse.emit()
+	pass
 
 func break_curse_brown() -> void:
-	if door_data.get_curse(Enums.curse.brown):
-		door_data.set_curse(Enums.curse.brown, false, true)
-		changed_curse.emit()
+	pass
 
 func create_debris() -> void:
 	for x in floori(size.x / 16):
