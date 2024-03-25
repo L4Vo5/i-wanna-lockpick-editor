@@ -117,10 +117,10 @@ func _ready() -> void:
 	_update_player_spawn_position()
 	hover_highlight.adapted_to.connect(_on_hover_adapted_to)
 	hover_highlight.stopped_adapting.connect(_on_hover_adapted_to.bind(null))
+	logic.level = self
 
 func _physics_process(_delta: float) -> void:
 	adjust_camera()
-
 
 # For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
 func undo() -> void:
@@ -438,6 +438,7 @@ func _spawn_goal() -> void:
 		goal.queue_free()
 	goal = GOAL.instantiate()
 	goal.position = level_data.goal_position + Vector2i(16, 16)
+	goal.level = self
 	goal_parent.add_child(goal)
 
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries

@@ -8,6 +8,7 @@ var child_inside := false
 var time := 0
 var win_time := 0
 var child_inside_time := 0
+var level: Level
 const PART := preload("res://level_elements/goal/goal_particle.tscn")
 @onready var particles_parent: Node2D = $Particles
 @onready var sprite: Sprite2D = $Sprite
@@ -41,10 +42,7 @@ func _physics_process(_delta: float) -> void:
 
 func win() -> void:
 	if has_won: return
-	Global.current_level.start_undo_action()
-	Global.current_level.undo_redo.add_do_method(win)
-	Global.current_level.undo_redo.add_undo_method(undo_win)
-	Global.current_level.end_undo_action()
+	level.logic.win()
 	
 	snd_win.play()
 	has_won = true

@@ -293,8 +293,8 @@ func try_open_door_data(door_data: DoorData, master_equipped: ComplexNumber) -> 
 			var used_lock_color := lock_data.get_used_color()
 			
 			var key_amount: ComplexNumber = key_counts[used_lock_color]
-			var diff_after_open := lock_data.open_with(key_amount, flip, rotor)
-			# open_with returns null if it couldn't be opened
+			var diff_after_open := open_lock_data_with(lock_data, key_amount, flip, rotor)
+			# open_lock_data_with returns null if it couldn't be opened
 			if diff_after_open == null:
 				did_it_open = false
 				break
@@ -347,6 +347,55 @@ func update_gate(gate: Door) -> void:
 		gate.resolve_collision_mode()
 	gate.update_gate_anim()
 
+# I can't believe I made this lmao??? fine tho
+const value_type_to_ComplexNumber_var: Dictionary = {
+	Enums.value.real: &"real_part",
+	Enums.value.imaginary: &"imaginary_part",
+}
+# returns the key count difference after opening, or null if it can't be opened
+func open_lock_data_with(lock_data: LockData, key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> ComplexNumber:
+	# listen... it works lmao
+	if flipped or is_rotor:
+		var temp_lock: LockData = lock_data.duplicated()
+		if flipped:
+			temp_lock.flip_sign()
+		if is_rotor:
+			temp_lock.rotor()
+		return open_lock_data_with(temp_lock, key_count, false, false)
+	
+	if lock_data.lock_type == Enums.lock_types.all:
+		if key_count.is_zero():
+			return null
+		else:
+			return key_count.duplicated().flip()
+	elif lock_data.lock_type == Enums.lock_types.blank:
+		if not key_count.is_zero():
+			return null
+		else:
+			return ComplexNumber.new()
+	
+	# only normal and blast doors left
+	if key_count.is_zero():
+		return null
+	var new_key_count := ComplexNumber.new()
+	# use 1 for blast doors
+	var used_magnitude := lock_data.magnitude if lock_data.lock_type == Enums.lock_types.normal else 1
+	var signed_magnitude := used_magnitude if lock_data.sign == Enums.sign.positive else -used_magnitude
+	var relevant_value_sn: StringName = value_type_to_ComplexNumber_var[lock_data.value_type]
+	var relevant_value = key_count.get(relevant_value_sn)
+	
+	if abs(relevant_value) < used_magnitude or signi(relevant_value) != signi(signed_magnitude):
+		return null
+	
+	match lock_data.lock_type:
+		Enums.lock_types.normal:
+			new_key_count.set(relevant_value_sn, -signed_magnitude)
+		Enums.lock_types.blast:
+			new_key_count.set(relevant_value_sn, -relevant_value)
+	
+	return new_key_count
+
+
 func pick_up_key(key: Key) -> void:
 	var key_data := key.key_data
 	start_undo_action()
@@ -387,6 +436,12 @@ func pick_up_key(key: Key) -> void:
 		undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
 	end_undo_action()
 	update_gates()
+
+func win() -> void:
+	start_undo_action()
+	undo_redo.add_do_method(level.goal.win)
+	undo_redo.add_undo_method(level.goal.undo_win)
+	end_undo_action()
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
 func start_undo_action() -> void:

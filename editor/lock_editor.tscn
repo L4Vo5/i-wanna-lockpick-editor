@@ -88,6 +88,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="VBoxContainer/Color" instance=ExtResource("5_gs2y2")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(14, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -96,7 +97,7 @@ layout_mode = 2
 
 [node name="LockTypeChoice" parent="VBoxContainer/Type" instance=ExtResource("5_gs2y2")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(18, 112)
+custom_minimum_size = Vector2(18, 28)
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("6_sq8pb")

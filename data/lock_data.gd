@@ -152,55 +152,6 @@ func get_used_color() -> Enums.colors:
 		used_color = glitch_color
 	return used_color
 
-# I can't believe I made this lmao??? fine tho
-const value_type_to_ComplexNumber_var: Dictionary = {
-	Enums.value.real: &"real_part",
-	Enums.value.imaginary: &"imaginary_part",
-}
-# TODO: move this method to the logic object
-# returns the key count difference after opening, or null if it can't be opened
-func open_with(key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> ComplexNumber:
-	# listen... it works lmao
-	if flipped or is_rotor:
-		var temp_lock: LockData = duplicated()
-		if flipped:
-			temp_lock.flip_sign()
-		if is_rotor:
-			temp_lock.rotor()
-		return temp_lock.open_with(key_count, false, false)
-	
-	if lock_type == Enums.lock_types.all:
-		if key_count.is_zero():
-			return null
-		else:
-			return key_count.duplicated().flip()
-	if lock_type == Enums.lock_types.blank:
-		if not key_count.is_zero():
-			return null
-		else:
-			return ComplexNumber.new()
-	
-	# only normal and blast doors left
-	if key_count.is_zero():
-		return null
-	var new_key_count := ComplexNumber.new()
-	# use 1 for blast doors
-	var used_magnitude := magnitude if lock_type == Enums.lock_types.normal else 1
-	var signed_magnitude := used_magnitude if sign == Enums.sign.positive else -used_magnitude
-	var relevant_value_sn: StringName = value_type_to_ComplexNumber_var[value_type]
-	var relevant_value = key_count.get(relevant_value_sn)
-	
-	if abs(relevant_value) < used_magnitude or signi(relevant_value) != signi(signed_magnitude):
-		return null
-	
-	match lock_type:
-		Enums.lock_types.normal:
-			new_key_count.set(relevant_value_sn, -signed_magnitude)
-		Enums.lock_types.blast:
-			new_key_count.set(relevant_value_sn, -relevant_value)
-	
-	return new_key_count
-
 ## no-nonsense returns the lockdata's amount as a complex number
 func get_complex_amount() -> ComplexNumber:
 	assert(PerfManager.start("LockData::get_complex_amount()"))
