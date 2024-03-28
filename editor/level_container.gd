@@ -81,16 +81,16 @@ func _expand_level() -> void:
 	inner_container.size = size
 
 func _ready() -> void:
-	level.door_gui_input.connect(_on_door_gui_input)
-	level.key_gui_input.connect(_on_key_gui_input)
-	level.entry_gui_input.connect(_on_entry_gui_input)
+	gameplay.level.door_gui_input.connect(_on_door_gui_input)
+	gameplay.level.key_gui_input.connect(_on_key_gui_input)
+	gameplay.level.entry_gui_input.connect(_on_entry_gui_input)
 	resized.connect(_on_resized)
 	level_viewport.get_parent().show()
 	
 	await get_tree().process_frame
 	editor_data.selected_highlight = selected_highlight
 	editor_data.danger_highlight = danger_highlight
-	editor_data.hover_highlight = level.hover_highlight
+	editor_data.hover_highlight = gameplay.level.hover_highlight
 	
 	editor_data.side_tabs.tab_changed.connect(_retry_ghosts.unbind(1))
 	editor_data.level.changed_doors.connect(_retry_ghosts)
@@ -251,13 +251,13 @@ func place_tile_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
 	var coord := get_mouse_tile_coord(32)
-	level.place_tile(coord)
+	gameplay.level.place_tile(coord)
 
 func remove_tile_on_mouse() -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
 	var coord := get_mouse_tile_coord(32)
-	return level.remove_tile(coord)
+	return gameplay.level.remove_tile(coord)
 
 func place_door_on_mouse() -> bool:
 	if editor_data.disable_editing: return false
@@ -265,14 +265,14 @@ func place_door_on_mouse() -> bool:
 	var coord := get_mouse_coord(32)
 	var door_data := door_editor.door_data.duplicated()
 	door_data.position = coord
-	var door := level.add_door(door_data)
+	var door := gameplay.level.add_door(door_data)
 	if not is_instance_valid(door): return false
 	select_thing(door)
 	return true
 
 func remove_door(door: Door) -> bool:
 	if not is_instance_valid(door): return false
-	level.remove_door(door)
+	gameplay.level.remove_door(door)
 	selected_obj = null
 	hovered_obj = null
 	_retry_ghosts()
@@ -284,14 +284,14 @@ func place_key_on_mouse() -> bool:
 	var coord := get_mouse_coord(16)
 	var key_data := key_editor.key_data.duplicated()
 	key_data.position = coord
-	var key := level.add_key(key_data)
+	var key := gameplay.level.add_key(key_data)
 	if not is_instance_valid(key): return false
 	select_thing(key)
 	return true
 
 func remove_key(key: Key) -> bool:
 	if not is_instance_valid(key): return false
-	level.remove_key(key)
+	gameplay.level.remove_key(key)
 	select_thing(key)
 	_retry_ghosts()
 	return true
@@ -302,14 +302,14 @@ func place_entry_on_mouse() -> bool:
 	var coord := get_mouse_coord(32)
 	var entry_data := entry_editor.entry_data.duplicated()
 	entry_data.position = coord
-	var entry := level.add_entry(entry_data)
+	var entry := gameplay.level.add_entry(entry_data)
 	if not is_instance_valid(entry): return false
 	select_thing(entry)
 	return true
 
 func remove_entry(entry: Entry) -> bool:
 	if not is_instance_valid(entry): return false
-	level.remove_entry(entry)
+	gameplay.level.remove_entry(entry)
 	select_thing(entry)
 	_retry_ghosts()
 	return true
@@ -318,13 +318,13 @@ func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
 	var coord := get_mouse_coord(16)
-	level.place_player_spawn(coord)
+	gameplay.level.place_player_spawn(coord)
 
 func place_goal_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
 	var coord := get_mouse_coord(16)
-	level.place_goal(coord)
+	gameplay.level.place_goal(coord)
 
 func relocate_selected() -> void:
 	if editor_data.disable_editing: return
@@ -340,11 +340,11 @@ func relocate_selected() -> void:
 	var cond: bool
 	var obj_pos: Vector2i = selected_obj.position
 	if selected_obj is Door:
-		cond = level.move_door(selected_obj, used_coord)
+		cond = gameplay.level.move_door(selected_obj, used_coord)
 	elif selected_obj is Key:
-		cond = level.move_key(selected_obj, used_coord)
+		cond = gameplay.level.move_key(selected_obj, used_coord)
 	elif selected_obj is Entry:
-		cond = level.move_entry(selected_obj, used_coord)
+		cond = gameplay.level.move_entry(selected_obj, used_coord)
 	else:
 		assert(false)
 	
@@ -375,12 +375,12 @@ func round_coord(coord: Vector2i, grid_size: int) -> Vector2i:
 
 func is_mouse_out_of_bounds() -> bool:
 	var local_pos := get_global_mouse_position() - get_level_pos()
-	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= level.level_data.size.x or local_pos.y >= level.level_data.size.y:
+	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= gameplay.level.level_data.size.x or local_pos.y >= gameplay.level.level_data.size.y:
 		return true
 	return false
 
 func get_level_pos() -> Vector2:
-	return level_viewport.get_parent().global_position + level.global_position - editor_camera.position
+	return level_viewport.get_parent().global_position + gameplay.global_position - editor_camera.position
 	#return level_viewport.get_parent().global_position + level.global_position - level.get_camera_position()
 
 #var unique_queue := {}
@@ -423,16 +423,16 @@ func _place_ghosts() -> void:
 		var is_valid := true
 		
 		
-		if not Rect2i(Vector2i.ZERO, level.level_data.size).has_point(maybe_pos):
+		if not Rect2i(Vector2i.ZERO, gameplay.level.level_data.size).has_point(maybe_pos):
 			is_valid = false
-		elif level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
+		elif gameplay.level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
 			is_valid = false
-		elif obj is Door and not obj.door_data.check_valid(level.level_data, false):
+		elif obj is Door and not obj.door_data.check_valid(gameplay.level.level_data, false):
 			is_valid = false
 		obj.visible = is_valid
 		
 		if (
-		not is_instance_valid(level.hovering_over)
+		not is_instance_valid(gameplay.level.hovering_over)
 		and not obj.visible
 		# TODO: This is just a double-check, but looks weird since tiles can't be hovered on yet
 	#	and not level.is_space_occupied(Rect2i(get_mouse_coord(1), Vector2.ONE))

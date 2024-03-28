@@ -12,7 +12,8 @@ func _connect_level():
 	_on_changed_level_data()
 
 func _on_changed_level_data() -> void:
-	var level: Level = get_parent()
+	# TODO: no
+	var level: Level = get_parent().level
 	if is_instance_valid(level_data) and level_data.changed_size.is_connected(queue_redraw):
 		level_data.changed_size.disconnect(queue_redraw)
 	level_data = level.level_data

@@ -86,12 +86,11 @@ static func generate_colors(from: Dictionary) -> Dictionary:
 			dict[key] = Color(from[key])
 	return dict
 
-func get_lock_arrangement(lock_count: int, option: int):
+func get_lock_arrangement(level_data: LevelData, lock_count: int, option: int):
 	# this function needs to be fast because it's just weird for this to take too long lmao. so no merging arrays anymore
 	# ASSUMPTION: there's only one default arrangement per count
 	if option <= -1: return null
 	assert(PerfManager.start("Rendering::get_lock_arrangement"))
-	var level := Global.current_level
 	var use_level := false
 	if LOCK_ARRANGEMENTS.has(lock_count):
 		if option > 0:
@@ -99,7 +98,7 @@ func get_lock_arrangement(lock_count: int, option: int):
 			option -= 1
 	else:
 		use_level = true
-	var options = level.level_data.custom_lock_arrangements.get(lock_count) if use_level and is_instance_valid(level) else LOCK_ARRANGEMENTS.get(lock_count)
+	var options = level_data.custom_lock_arrangements.get(lock_count) if use_level and is_instance_valid(level_data) else LOCK_ARRANGEMENTS.get(lock_count)
 	assert(PerfManager.end("Rendering::get_lock_arrangement"))
 	if options == null or option >= options.size(): return null # remember option starts at 0 but size at 1
 	return options[option]

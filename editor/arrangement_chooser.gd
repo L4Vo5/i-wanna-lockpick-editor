@@ -11,6 +11,8 @@ signal changed_arrangement
 
 @onready var option_button: OptionButton = %OptionButton
 
+var editor_data: EditorData
+
 func _ready() -> void:
 	option_button.item_selected.connect(_on_item_selected)
 
@@ -40,7 +42,8 @@ func _update_options() -> void:
 	if not is_instance_valid(lock_data): return
 	var current := 0
 	while true:
-		var arr = Rendering.get_lock_arrangement(lock_data.magnitude, current)
+		var arr = Rendering.get_lock_arrangement(
+		editor_data.level_data if editor_data else null, lock_data.magnitude, current)
 		if arr == null:
 			break
 		else:

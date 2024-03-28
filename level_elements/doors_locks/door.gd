@@ -81,12 +81,10 @@ func _disconnect_door_data() -> void:
 
 func connect_level() -> void:
 	if not is_instance_valid(level): return
-	level.changed_i_view.connect(_on_changed_i_view)
 	_on_changed_i_view()
 
 func disconnect_level() -> void:
 	if not is_instance_valid(level): return
-	level.changed_i_view.disconnect(_on_changed_i_view)
 
 func _physics_process(delta: float) -> void:
 	if open_cooldown > 0:
@@ -144,13 +142,14 @@ func position_copies() -> void:
 func _on_changed_i_view() -> void:
 	if not is_instance_valid(level): return
 	if not is_instance_valid(door_data): return
+	var i_view := level.logic.i_view
 	var is_aligned := false
 	var is_flipped := false
-	if not level.i_view and door_data.amount.real_part != 0:
+	if not i_view and door_data.amount.real_part != 0:
 		is_aligned = true
 		if door_data.amount.real_part < 0:
 			is_flipped = true
-	if level.i_view and door_data.amount.imaginary_part != 0:
+	if i_view and door_data.amount.imaginary_part != 0:
 		is_aligned = true
 		if door_data.amount.imaginary_part < 0:
 			is_flipped = true
@@ -161,7 +160,7 @@ func _on_changed_i_view() -> void:
 		if not is_instance_valid(lock): continue
 		lock.dont_show_frame = not is_aligned
 		lock.dont_show_locks = not is_aligned
-		lock.rotation = (90 if level.i_view else 0) + (180 if is_flipped else 0)
+		lock.rotation = (90 if i_view else 0) + (180 if is_flipped else 0)
 
 func update_textures() -> void:
 	if not is_node_ready(): return
@@ -196,6 +195,9 @@ func update_locks() -> void:
 			new_lock.clicked.connect(_on_lock_clicked.bind(new_lock))
 			new_lock.lock_data = door_data.locks[i]
 			lock_holder.add_child(new_lock)
+	
+	for lock: Lock in lock_holder.get_children():
+		lock.level = level
 	
 	assert(PerfManager.end(&"Door::update_locks"))
 

@@ -7,7 +7,7 @@ var level_pack_data: LevelPackData:
 		if level_pack_data == val: return
 		
 		level_pack_data = val
-		level.pack_data = val
+		gameplay.pack_data = val
 		changed_level_pack_data.emit()
 
 signal changed_level_data
@@ -29,6 +29,7 @@ var is_playing := false:
 		changed_is_playing.emit()
 var disable_editing := false
 
+var gameplay: GameplayManager
 var level: Level:
 	set(val):
 		if level:

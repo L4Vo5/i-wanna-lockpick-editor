@@ -1,7 +1,8 @@
 extends Control
 class_name LockpickEditor
 
-@export var level: Level 
+@export var gameplay: GameplayManager
+@onready var level: Level = gameplay.level 
 @export var right_dock: MarginContainer
 @export var side_tabs: TabContainer
 @export var door_editor: DoorEditor
@@ -58,6 +59,7 @@ func _ready() -> void:
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
 	
+	data.gameplay = gameplay
 	data.level = level
 	
 	if Global.is_exported:
@@ -75,6 +77,7 @@ func _ready() -> void:
 			_on_new_level_button_pressed()
 	
 	data.door_editor = door_editor
+	door_editor.editor_data = data
 	data.key_editor = key_editor
 	data.tile_editor = tile_editor
 	data.level_properties_editor = level_properties_editor

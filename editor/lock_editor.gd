@@ -42,7 +42,7 @@ signal delete
 		_update_max_pos()
 		_update_max_size()
 
-
+var editor_data: EditorData
 
 func _ready() -> void:
 	delete_button.pressed.connect(func(): delete.emit())
@@ -67,6 +67,7 @@ func _ready() -> void:
 	width.value_changed.connect(_update_lock_size.unbind(1))
 	height.value_changed.connect(_update_lock_size.unbind(1))
 	
+	arrangement_chooser.editor_data = editor_data
 	arrangement_chooser.changed_arrangement.connect(_update_arrangement)
 	fit.pressed.connect(_update_arrangement)
 	

@@ -28,6 +28,7 @@ const LOCK_EDITOR := preload("res://editor/lock_editor.tscn")
 ## the idea is that non-standard-levels should be able to exist, maybe, but they must be labeled as such (for example doors with non-32-multiple sizes, or a door starting out browned or with a different glitch color. things that are valid but.. not standard)
 ## unimplemented for now tho lol
 var non_standard_mode := false
+var editor_data: EditorData
 
 func _init() -> void:
 	if not is_instance_valid(door_data):
@@ -66,7 +67,6 @@ func _ready() -> void:
 	color_choice.changed_color.connect(_update_door_color)
 	
 	add_lock.pressed.connect(_add_new_lock)
-	_set_to_door_data()
 
 # This avoids signals changing the door data while it's being set here
 # Fixes, for example, doors with sizes of 64x64 changing the width to 64, which calls _update_door_size, which sets the height to the default of 32
@@ -150,6 +150,7 @@ func _add_new_lock() -> void:
 	door_data.add_lock(new_lock)
 	
 	var lock_editor: LockEditor = LOCK_EDITOR.instantiate()
+	lock_editor.editor_data = editor_data
 	var i := lock_editor_parent.get_child_count() + 1
 	lock_editor.lock_number = i
 	lock_editor.door_size = door_data.size

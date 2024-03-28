@@ -13,6 +13,7 @@ signal changed_lock_data
 		connect_lock_data()
 
 @export var ignore_position := false
+var level: Level
 
 func connect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
@@ -166,7 +167,7 @@ func draw_locks() -> void:
 		Enums.lock_types.blank:
 			lock_data.minimum_size = Vector2i(1, 1)
 		Enums.lock_types.normal:
-			var arrangement = Rendering.get_lock_arrangement(magnitude, lock_data.lock_arrangement)
+			var arrangement = Rendering.get_lock_arrangement(level.level_data if level else null, magnitude, lock_data.lock_arrangement)
 			if arrangement != null:
 				RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
 				lock_data.minimum_size = arrangement[0]

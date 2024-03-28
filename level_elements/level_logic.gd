@@ -56,6 +56,9 @@ var glitch_color := Enums.colors.glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
+		# TODO: nooooo
+		for key: Key in level.keys.get_children():
+			key._on_changed_glitch_color()
 		changed_glitch_color.emit()
 
 signal changed_i_view
@@ -64,6 +67,8 @@ var i_view := false:
 		if i_view == val: return
 		i_view = val
 		player._on_changed_i_view()
+		for door: Door in level.doors.get_children():
+			door._on_changed_i_view()
 		changed_i_view.emit()
 
 const OPEN_COOLDOWN_TIME := 0.5

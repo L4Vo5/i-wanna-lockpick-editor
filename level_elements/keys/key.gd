@@ -57,16 +57,14 @@ func _on_mouse_exited() -> void:
 
 func disconnect_level() -> void:
 	if not is_instance_valid(level): return
-	level.changed_glitch_color.disconnect(_on_changed_glitch_color)
 
 func connect_level() -> void:
 	if not is_instance_valid(level): return
-	level.changed_glitch_color.connect(_on_changed_glitch_color)
 	_on_changed_glitch_color()
 
 func _on_changed_glitch_color() -> void:
 	if not is_instance_valid(key_data): return
-	key_data.update_glitch_color(level.glitch_color)
+	key_data.update_glitch_color(level.logic.glitch_color)
 	update_visual()
 
 func _connect_key_data() -> void:

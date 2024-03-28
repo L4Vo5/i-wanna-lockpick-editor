@@ -9,6 +9,7 @@ class_name Entry
 		entry_data = val
 		_connect_entry_data()
 var level: Level
+var pack_data: LevelPackData
 @export var ignore_position := false
 
 @onready var sprite: Sprite2D = %Sprite
@@ -37,7 +38,7 @@ func _ready() -> void:
 
 # called by kid.gd
 func player_touching() -> void:
-	if entry_data.leads_to >= 0 and entry_data.leads_to < level.pack_data.levels.size():
+	if entry_data.leads_to >= 0 and entry_data.leads_to < pack_data.levels.size():
 		arrow.show()
 	level_name.show()
 	if name_tween: name_tween.kill()
@@ -72,7 +73,7 @@ func update_name() -> void:
 	if not level: return
 	if not is_node_ready(): return
 	level_name.text = "\n[Invalid entry]"
-	if entry_data.leads_to >= 0 and entry_data.leads_to < level.pack_data.levels.size():
+	if entry_data.leads_to >= 0 and entry_data.leads_to < pack_data.levels.size():
 		var level_data := level.gameplay_manager.pack_data.levels[entry_data.leads_to]
 		level_name.text = level_data.title + "\n" + level_data.name
 
@@ -81,7 +82,7 @@ func update_status() -> void:
 	if not level: return
 	if not is_node_ready(): return
 	sprite.texture = ENTRY_OPEN
-	if entry_data.leads_to < 0 or entry_data.leads_to >= level.pack_data.levels.size():
+	if entry_data.leads_to < 0 or entry_data.leads_to >= pack_data.levels.size():
 		sprite.texture = ENTRY_ERR
 
 func _disconnect_entry_data() -> void:
