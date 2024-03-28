@@ -62,7 +62,7 @@ func player_stopped_touching() -> void:
 # called by kid.gd
 func enter() -> void:
 	if entry_data.leads_to == -1: return
-	level.transition_to_level.call_deferred(entry_data.leads_to)
+	level.gameplay_manager.transition_to_level.call_deferred(entry_data.leads_to)
 
 func update_position() -> void:
 	if not ignore_position:

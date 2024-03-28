@@ -78,7 +78,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"restart"):
 		reset()
 	elif event.is_action_pressed(&"undo", true):
-		logic.undo.call_deferred()
+		undo.call_deferred()
 	# TODO: Make redo work properly (bugs related to standing on doors?)
 #	elif event.is_action(&"redo") and event.is_pressed():
 #		if not Global.is_playing: return

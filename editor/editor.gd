@@ -61,6 +61,7 @@ func _ready() -> void:
 	
 	data.gameplay = gameplay
 	data.level = level
+	gameplay.level.exclude_player = true
 	
 	if Global.is_exported:
 		_on_new_level_button_pressed()

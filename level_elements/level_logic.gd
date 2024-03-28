@@ -56,9 +56,6 @@ var glitch_color := Enums.colors.glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
-		# TODO: nooooo
-		for key: Key in level.keys.get_children():
-			key._on_changed_glitch_color()
 		changed_glitch_color.emit()
 
 signal changed_i_view
@@ -146,6 +143,38 @@ func apply_curse_door(door: Door, curse: Enums.curse, val: bool) -> bool:
 	
 	return true
 
+func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
+	var old_glitch_color := glitch_color
+	glitch_color = new_glitch_color
+	
+	if not is_undo and old_glitch_color != new_glitch_color:
+		undo_redo.add_undo_method(set_glitch_color.bind(old_glitch_color, true))
+		undo_redo.add_do_method(set_glitch_color.bind(new_glitch_color, true))
+	
+	# HACK: Come up with something better.
+	# (it's hard tho...)
+	# cleanest solution almost seems to be removing the level's
+	# changed_glitch_color signal altogether, and updating everything manually,
+	# either here or on the level... but that's troublesome and bad OOP (does that matter?)
+	# PERF: maybe the level keeps a list of all doors and keys with glitch, 
+	# so that it doesn't have to go through ALL all? 
+	
+	for key: Key in level.keys.get_children():
+		# TODO/PERF: no!
+		key._on_changed_glitch_color()
+	
+	for door: Door in level.doors.get_children():
+		var _door_data := door.door_data
+		if not _door_data.get_curse(Enums.curse.brown):
+			# If the door was previously cursed, its glitch color might not match up, so we need to keep track of that in the undo.
+			# (unless this is an undo)
+			if not is_undo and _door_data.glitch_color != old_glitch_color:
+				undo_redo.add_undo_property(_door_data, &"glitch_color", _door_data.glitch_color)
+			
+			_door_data.glitch_color = new_glitch_color
+		# TODO/PERF: super no!!!
+		door.update_everything()
+
 ## Tries to open a door, and communicates the result to the door so it can handle sounds and animation.
 func try_open_door(door: Door) -> void:
 	var door_data := door.door_data
@@ -180,25 +209,8 @@ func try_open_door(door: Door) -> void:
 		color_count.add(color_delta)
 	
 	if new_glitch_color != Enums.colors.none:
-		# HACK: Come up with something better.
-		# (it's hard tho...)
-		# cleanest solution almost seems to be removing the level's
-		# changed_glitch_color signal altogether, and updating everything manually,
-		# either here or on the level... but that's troublesome and bad OOP (does that matter?)
-		# PERF: maybe the level keeps a list of all doors and keys with glitch, 
-		# so that it doesn't have to go through ALL all? 
-		for _door: Door in level.doors.get_children():
-			var _door_data := _door.door_data
-			if not _door_data.get_curse(Enums.curse.brown):
-				# If the door was previously cursed, its glitch color won't match up, so we need to keep track of that in the undo.
-				if _door_data.glitch_color != level.glitch_color:
-					undo_redo.add_undo_property(_door_data, &"glitch_color", _door_data.glitch_color)
-					_door_data.glitch_color = new_glitch_color
+		set_glitch_color(new_glitch_color)
 		
-		if glitch_color != new_glitch_color:
-			undo_redo.add_undo_property(self, &"glitch_color", glitch_color)
-			undo_redo.add_do_property(self, &"glitch_color", new_glitch_color)
-			glitch_color = new_glitch_color
 	
 	
 	# handles animations, sounds, etc.
