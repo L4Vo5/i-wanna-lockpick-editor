@@ -4,10 +4,10 @@ class_name LevelContainer
 ## Also is just the level editor for general input reasons (this should've been LevelContainerInner maybe but it's not that strong of a reason to clutter the responsibilities further)
 
 @export var inner_container: Control
-@export var level: Level
+@export var gameplay: GameplayManager
+#@onready var level: Level = gameplay.level
 @export var level_viewport: SubViewport
 
-@export var tile_map: TileMap
 var door_editor: DoorEditor:
 	get:
 		return editor_data.door_editor

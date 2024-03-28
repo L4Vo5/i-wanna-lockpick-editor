@@ -21,12 +21,12 @@
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="19_qs4m8"]
 
-[sub_resource type="Resource" id="Resource_c1pck"]
+[sub_resource type="Resource" id="Resource_vdmxw"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_sp3u6"]
+[sub_resource type="Resource" id="Resource_jmhmm"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -38,11 +38,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_5wuph"]
+[sub_resource type="Resource" id="Resource_hbmw4"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_c1pck")
+amount = SubResource("Resource_vdmxw")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_sp3u6")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_jmhmm")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -53,20 +53,20 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_mb7gj"]
+[sub_resource type="Resource" id="Resource_xkqwv"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_dkrsw"]
+[sub_resource type="Resource" id="Resource_cllgj"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_mb7gj")
+amount = SubResource("Resource_xkqwv")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_i7c2e"]
+[sub_resource type="Resource" id="Resource_t36rr"]
 script = ExtResource("19_qs4m8")
 position = Vector2i(0, 0)
 leads_to = 0
@@ -181,13 +181,14 @@ editable = false
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "level_viewport", "ghost_door", "ghost_key", "ghost_entry", "ghost_canvas_group", "editor", "danger_highlight", "selected_highlight", "camera_dragger", "editor_camera")]
+[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "gameplay", "level_viewport", "ghost_door", "ghost_key", "ghost_entry", "ghost_canvas_group", "editor", "danger_highlight", "selected_highlight", "camera_dragger", "editor_camera")]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_kqd34")
 inner_container = NodePath("LevelContainerInner")
+gameplay = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay")
 level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport")
 ghost_door = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostDoor")
 ghost_key = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostKey")
@@ -305,12 +306,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_5wuph")
+door_data = SubResource("Resource_hbmw4")
 
 [node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_dkrsw")
+key_data = SubResource("Resource_cllgj")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
 visible = false
@@ -332,7 +333,7 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-entry_data = SubResource("Resource_i7c2e")
+entry_data = SubResource("Resource_t36rr")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)
@@ -345,5 +346,5 @@ show_hidden_files = true
 
 [node name="InvalidLevelLoad" parent="." instance=ExtResource("16_ayc8p")]
 position = Vector2i(10, 35)
-size = Vector2i(477, 955)
+size = Vector2i(477, 956)
 visible = false
