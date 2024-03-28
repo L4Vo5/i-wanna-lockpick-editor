@@ -219,6 +219,8 @@ func get_screenshot() -> Image:
 	viewport.size = size
 	vpc.size = viewport.size
 	vpc.add_child(viewport)
+	if not Engine.get_main_loop().root.is_node_ready():
+		await Engine.get_main_loop().root.ready
 	Engine.get_main_loop().root.add_child(vpc)
 	
 	var lvl: Level = preload("res://level_elements/level.tscn").instantiate()
