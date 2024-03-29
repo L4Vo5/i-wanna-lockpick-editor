@@ -215,6 +215,8 @@ func try_open_door(door: Door) -> void:
 		set_glitch_color(new_glitch_color)
 	
 	door_data.amount.add(amount_delta)
+	undo_redo.add_do_method(door_data.amount.add.bind(amount_delta))
+	undo_redo.add_undo_method(door_data.amount.sub.bind(amount_delta))
 	
 	# handles animations, sounds, etc.
 	door.open(result)
