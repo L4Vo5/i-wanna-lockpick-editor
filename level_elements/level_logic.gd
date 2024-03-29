@@ -88,6 +88,9 @@ func reset() -> void:
 	for color in star_keys.keys():
 		star_keys[color] = false
 	glitch_color = Enums.colors.glitch
+	for key: Key in level.keys.get_children():
+		# TODO: definitely no! ... ?
+		key._on_changed_glitch_color()
 	i_view = false
 	undo_redo.clear_history()
 	
@@ -421,7 +424,7 @@ func pick_up_key(key: Key) -> void:
 	if not key_data.is_infinite:
 		key_data.is_spent = true
 		key.collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
-		hide()
+		key.hide()
 	var used_color := key_data.get_used_color()
 	var current_count: ComplexNumber = key_counts[used_color]
 	var orig_count: ComplexNumber = current_count.duplicated()
