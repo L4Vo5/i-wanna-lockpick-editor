@@ -69,20 +69,15 @@ func rotor() -> ComplexNumber:
 	return self
 
 func add(other: ComplexNumber) -> ComplexNumber:
-	if _real_part != Enums.INT_MAX:
+	if _real_part != Enums.INT_MAX and _real_part != Enums.INT_MIN:
 		_real_part += other._real_part
-	if _imaginary_part != Enums.INT_MIN:
+	if _imaginary_part != Enums.INT_MAX and _imaginary_part != Enums.INT_MIN:
 		_imaginary_part += other._imaginary_part
 	changed.emit()
 	return self
 
 func sub(other: ComplexNumber) -> ComplexNumber:
-	if _real_part != Enums.INT_MAX:
-		_real_part -= other._real_part
-	if _imaginary_part != Enums.INT_MIN:
-		_imaginary_part -= other._imaginary_part
-	changed.emit()
-	return self
+	return add(other.flipped())
 
 func is_equal_to(other: ComplexNumber) -> bool:
 	return _real_part == other._real_part and _imaginary_part == other._imaginary_part
