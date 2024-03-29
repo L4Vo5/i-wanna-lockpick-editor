@@ -30,7 +30,7 @@ func _draw() -> void:
 			var color: Enums.colors = KeyPad.KEY_COLORS[y * 2 + x]
 			var key_count := ComplexNumber.new()
 			if is_instance_valid(Global.current_level):
-				key_count = Global.current_level.key_counts[color]
+				key_count = Global.current_level.logic.key_counts[color]
 			str = "x" + str(key_count)
 			
 			draw_str(KeyPad.KEY_START + KeyPad.KEY_DIFF * Vector2i(x, y) + Vector2i(36, 13), str)
