@@ -136,15 +136,15 @@ func update_visual() -> void:
 		set_special_texture(key_data.color)
 	elif key_data.color == Enums.colors.glitch:
 		glitch.show()
-		if not in_keypad and is_instance_valid(level) and level.glitch_color != Enums.colors.glitch:
-			if level.glitch_color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
+		if not in_keypad and is_instance_valid(level) and level.logic.glitch_color != Enums.colors.glitch:
+			if level.logic.glitch_color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
 				special.show()
-				set_special_texture(level.glitch_color)
+				set_special_texture(level.logic.glitch_color)
 				special.frame = special.frame % 4 + 4 * (special.vframes - 1)
 			else:
 				fill.show()
 				fill.frame = fill.frame % 4 + 4
-				fill.modulate = Rendering.key_colors[level.glitch_color]
+				fill.modulate = Rendering.key_colors[level.logic.glitch_color]
 	else:
 		fill.show()
 		outline.show()
