@@ -30,6 +30,9 @@ func transition_to_level(id: int) -> void:
 		reset()
 	else:
 		pack_state.current_level = id
+		var level_data: LevelData = _pack_data.levels[pack_state.current_level]
+		level.level_data = level_data
+		reset()
 
 func reset() -> void:
 	level.reset()
