@@ -210,25 +210,25 @@ func try_open_door(door: Door) -> void:
 	
 	if new_glitch_color != Enums.colors.none:
 		set_glitch_color(new_glitch_color)
-		
 	
+	door_data.amount.add(amount_delta)
 	
 	# handles animations, sounds, etc.
 	door.open(result)
+	
 	level.on_door_opened(door)
 	# TODO: refactor this too
 	if door_data.amount.is_zero():
-		assert(level.undo_redo.is_building_action())
-		level.undo_redo.add_do_method(door.hide)
+		assert(undo_redo.is_building_action())
+		undo_redo.add_do_method(door.hide)
 		door.hide()
-		level.undo_redo.add_undo_method(door.show)
-		level.undo_redo.add_undo_property(door.static_body, &"process_mode", door.static_body.process_mode)
+		undo_redo.add_undo_method(door.show)
+		undo_redo.add_undo_property(door.static_body, &"process_mode", door.static_body.process_mode)
 		assert(door.static_body.process_mode == StaticBody2D.PROCESS_MODE_INHERIT)
 		door.resolve_collision_mode()
 		assert(door.static_body.process_mode == StaticBody2D.PROCESS_MODE_DISABLED)
-		level.undo_redo.add_do_property(door.static_body, &"process_mode", door.static_body.process_mode)
-	if undo_redo.is_building_action():
-		end_undo_action()
+		undo_redo.add_do_property(door.static_body, &"process_mode", door.static_body.process_mode)
+	end_undo_action()
 	door.open_cooldown = OPEN_COOLDOWN_TIME
 	update_gates()
 
