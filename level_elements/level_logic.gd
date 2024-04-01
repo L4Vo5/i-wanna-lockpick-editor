@@ -117,7 +117,7 @@ func apply_auras_on_door(door: Door) -> void:
 	if key_counts[Enums.colors.brown].real_part >= 1:
 		if apply_curse_door(door, Enums.curse.brown, true):
 			door.curse_brown()
-	elif key_counts[Enums.colors.brown].real_part <= 1:
+	elif key_counts[Enums.colors.brown].real_part <= -1:
 		if apply_curse_door(door, Enums.curse.brown, false):
 			door.break_curse_brown()
 	if undo_redo.is_building_action():
