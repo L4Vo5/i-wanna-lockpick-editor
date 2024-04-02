@@ -69,6 +69,9 @@ var i_view := false:
 			door._on_changed_i_view()
 		changed_i_view.emit()
 
+var master_equipped := ComplexNumber.new()
+var _last_master_equipped := ComplexNumber.new()
+
 const OPEN_COOLDOWN_TIME := 0.5
 
 func _init() -> void:
@@ -187,7 +190,7 @@ func try_open_door(door: Door) -> void:
 	# Gates have separate logic, this function doesn't concern them
 	if door_data.outer_color == Enums.colors.gate: return
 		
-	var result := try_open_door_data(door_data, player.master_equipped)
+	var result := try_open_door_data(door_data, false)
 	
 	var opened: bool = result.opened
 	var used_master_key: bool = result.master_key
@@ -203,7 +206,7 @@ func try_open_door(door: Door) -> void:
 	if used_master_key:
 		# stop equipping master key, unless X is still pressed, for convenience
 		if not Input.is_action_pressed(&"master"):
-			if not player.master_equipped.is_zero():
+			if not master_equipped.is_zero():
 				update_master_equipped(true, false)
 	
 	if changed_key_color != Enums.colors.none:
@@ -248,7 +251,7 @@ func try_open_door(door: Door) -> void:
 ## changed_color: what key color to change the amount of (or none)
 ## color_delta: how much to change that color by
 # PERF: for performance, don't use a dictionary? is that even close to a bottleneck? should be easy to use a struct/array, or even keep a dict but access it with numbers instead of strings.
-func try_open_door_data(door_data: DoorData, master_equipped: ComplexNumber) -> Dictionary:
+func try_open_door_data(door_data: DoorData, ignore_master: bool) -> Dictionary:
 	var return_dict := {
 		"opened": false,
 		"master_key": false,
@@ -283,7 +286,7 @@ func try_open_door_data(door_data: DoorData, master_equipped: ComplexNumber) -> 
 			
 			if not star_keys[Enums.colors.master]:
 				return_dict.changed_color = Enums.colors.master
-				return_dict.color_delta = player.master_equipped.flipped()
+				return_dict.color_delta = master_equipped.flipped()
 			return return_dict
 	
 	# open normally
@@ -364,7 +367,7 @@ func update_gate(gate: Door) -> void:
 		if not gate.ignore_collisions:
 			gate.ignore_collisions_gate = 0
 			if is_instance_valid(level) and is_instance_valid(level.player):
-				var result := try_open_door_data(door_data, ComplexNumber.new())
+				var result := try_open_door_data(door_data, true)
 				if result.opened:
 					gate.ignore_collisions_gate = 1
 		gate.resolve_collision_mode()
@@ -421,8 +424,8 @@ func open_lock_data_with(lock_data: LockData, key_count: ComplexNumber, flipped:
 # updates the equipped master keys for the player
 # if switch_state is true, that's probably because X was just pressed
 func update_master_equipped(switch_state := false, play_sounds := true, unequip_if_different := false) -> void:
+	var last_master_equipped := master_equipped.duplicated()
 	if !player: return
-	var master_equipped := player.master_equipped
 	# if the objective is for it to be "on" or not
 	var obj_on := (master_equipped.is_zero() and switch_state) or (not master_equipped.is_zero() and not switch_state)
 	if not obj_on:
@@ -438,10 +441,7 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 		if unequip_if_different and not original_count.is_equal_to(master_equipped):
 			master_equipped.set_to(0, 0)
 	if play_sounds:
-		player._master_equipped_sounds()
-	else:
-		player._last_master_equipped.set_to_this(master_equipped)
-	player.master_equipped = master_equipped
+		player.master_equipped_sounds(last_master_equipped)
 
 func pick_up_key(key: Key) -> void:
 	var key_data := key.key_data

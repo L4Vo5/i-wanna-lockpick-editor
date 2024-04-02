@@ -32,7 +32,6 @@ const JUMP_2 := -7.0
 const MAX_VSPEED := 9.0
 const JUMP_REDUCTION := 0.45
 
-var master_equipped := ComplexNumber.new()
 signal changed_autorun
 
 var level: Level:
@@ -264,28 +263,26 @@ func _on_changed_i_view(show_anim := true) -> void:
 		spr_white_aura.animate()
 	level.logic.update_master_equipped()
 
-var _last_master_equipped := ComplexNumber.new()
-func _master_equipped_sounds() -> void:
-	if _last_master_equipped.is_zero():
-		if not master_equipped.is_zero():
-			if master_equipped.is_negative():
+func master_equipped_sounds(last_master_equipped: ComplexNumber) -> void:
+	if last_master_equipped.is_zero():
+		if not level.logic.master_equipped.is_zero():
+			if level.logic.master_equipped.is_negative():
 				snd_master_anti_equip.play()
 			else:
 				snd_master_equip.play()
 	else:
-		if master_equipped.is_zero():
+		if level.logic.master_equipped.is_zero():
 			snd_master_unequip.play()
-	_last_master_equipped.set_to_this(master_equipped)
 
 func master_anim() -> void:
-	if master_equipped.is_zero():
+	if level.logic.master_equipped.is_zero():
 		player_shine.hide()
 		equipped_master.hide()
 		return
 	player_shine.show()
 	equipped_master.show()
-	equipped_master.frame = 0 if not master_equipped.is_negative() else 1
-	player_shine.modulate = Color8(180, 180, 50) if not master_equipped.is_negative() else Color8(50, 50, 180)
+	equipped_master.frame = 0 if not level.logic.master_equipped.is_negative() else 1
+	player_shine.modulate = Color8(180, 180, 50) if not level.logic.master_equipped.is_negative() else Color8(50, 50, 180)
 	var alpha := 0.8 + 0.2 * (sin(deg_to_rad(Global.physics_step * 4 % 360)))
 	equipped_master.modulate.a = alpha * 0.6
 	player_shine.scale = Vector2(alpha, alpha)
@@ -302,8 +299,8 @@ func get_undo_action() -> Callable:
 		velocity,
 		d_jumps,
 		sprite.flip_h,
-		master_equipped.duplicated(),
-		_last_master_equipped.duplicated(),
+		level.logic.master_equipped.duplicated(),
+		level.logic._last_master_equipped.duplicated(),
 		is_pressing_jump,
 		on_floor
 	])
@@ -314,8 +311,8 @@ func _set_state(vars: Array) -> void:
 	d_jumps = vars[2]
 	sprite.flip_h = vars[3]
 	shadow.flip_h = sprite.flip_h
-	master_equipped.set_to_this(vars[4])
-	_last_master_equipped.set_to_this(vars[5])
+	level.logic.master_equipped.set_to_this(vars[4])
+	level.logic._last_master_equipped.set_to_this(vars[5])
 	var was_on_floor = vars[7]
 	if not was_on_floor:
 		is_pressing_jump = vars[6]
