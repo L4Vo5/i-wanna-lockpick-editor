@@ -63,7 +63,8 @@ var i_view := false:
 	set(val):
 		if i_view == val: return
 		i_view = val
-		player._on_changed_i_view()
+		if player:
+			player._on_changed_i_view()
 		for door: Door in level.doors.get_children():
 			door._on_changed_i_view()
 		changed_i_view.emit()
@@ -203,7 +204,7 @@ func try_open_door(door: Door) -> void:
 		# stop equipping master key, unless X is still pressed, for convenience
 		if not Input.is_action_pressed(&"master"):
 			if not player.master_equipped.is_zero():
-				player.update_master_equipped(true, false)
+				update_master_equipped(true, false)
 	
 	if changed_key_color != Enums.colors.none:
 		var color_count: ComplexNumber = key_counts[changed_key_color]
@@ -417,6 +418,30 @@ func open_lock_data_with(lock_data: LockData, key_count: ComplexNumber, flipped:
 	
 	return new_key_count
 
+# updates the equipped master keys for the player
+# if switch_state is true, that's probably because X was just pressed
+func update_master_equipped(switch_state := false, play_sounds := true, unequip_if_different := false) -> void:
+	if !player: return
+	var master_equipped := player.master_equipped
+	# if the objective is for it to be "on" or not
+	var obj_on := (master_equipped.is_zero() and switch_state) or (not master_equipped.is_zero() and not switch_state)
+	if not obj_on:
+		master_equipped.set_to(0, 0)
+	else:
+		var original_count := master_equipped.duplicated()
+		var i_view: bool = i_view
+		master_equipped.set_to(0,0)
+		if not i_view:
+			master_equipped.real_part = signi(key_counts[Enums.colors.master].real_part)
+		else:
+			master_equipped.imaginary_part = signi(key_counts[Enums.colors.master].imaginary_part)
+		if unequip_if_different and not original_count.is_equal_to(master_equipped):
+			master_equipped.set_to(0, 0)
+	if play_sounds:
+		player._master_equipped_sounds()
+	else:
+		player._last_master_equipped.set_to_this(master_equipped)
+	player.master_equipped = master_equipped
 
 func pick_up_key(key: Key) -> void:
 	var key_data := key.key_data

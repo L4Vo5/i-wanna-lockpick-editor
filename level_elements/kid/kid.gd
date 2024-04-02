@@ -81,7 +81,7 @@ func _physics_process(_delta: float) -> void:
 func _unhandled_key_input(event: InputEvent) -> void:
 	if !level: return
 	if event.is_action_pressed(&"master"):
-		update_master_equipped(true, true)
+		level.logic.update_master_equipped(true, true)
 	if event.is_action_pressed(&"enter_level"):
 		if entry_detect.has_overlapping_areas():
 			var entry: Entry = entry_detect.get_overlapping_areas()[0].get_parent()
@@ -249,40 +249,20 @@ func _connect_level() -> void:
 	_on_changed_i_view(false)
 	# TODO: NO
 	level.logic.key_counts[Enums.colors.master].changed.connect(
-		update_master_equipped.bind(false, false, true))
-	update_master_equipped(false, false, true)
+		level.logic.update_master_equipped.bind(false, false, true))
+	level.logic.update_master_equipped(false, false, true)
 	update_auras()
 
 func _disconnect_level() -> void:
 	if !level: return
 	level.logic.key_counts[Enums.colors.master].changed.disconnect(
-		update_master_equipped.bind(false, false, true))
+		level.logic.update_master_equipped.bind(false, false, true))
 
 func _on_changed_i_view(show_anim := true) -> void:
 	spr_i_view.visible = level.logic.i_view
 	if show_anim:
 		spr_white_aura.animate()
-	update_master_equipped()
-
-func update_master_equipped(switch_state := false, play_sounds := true, unequip_if_different := false) -> void:
-	# if the objective is for it to be "on" or not
-	var obj_on := (master_equipped.is_zero() and switch_state) or (not master_equipped.is_zero() and not switch_state)
-	if not obj_on:
-		master_equipped.set_to(0, 0)
-	else:
-		var original_count := master_equipped.duplicated()
-		var i_view: bool = level.i_view
-		master_equipped.set_to(0,0)
-		if not i_view:
-			master_equipped.real_part = signi(level.key_counts[Enums.colors.master].real_part)
-		else:
-			master_equipped.imaginary_part = signi(level.key_counts[Enums.colors.master].imaginary_part)
-		if unequip_if_different and not original_count.is_equal_to(master_equipped):
-			master_equipped.set_to(0, 0)
-	if play_sounds:
-		_master_equipped_sounds()
-	else:
-		_last_master_equipped.set_to_this(master_equipped)
+	level.logic.update_master_equipped()
 
 var _last_master_equipped := ComplexNumber.new()
 func _master_equipped_sounds() -> void:

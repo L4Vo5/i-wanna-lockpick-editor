@@ -5,7 +5,7 @@ const LATEST_FORMAT := 4
 const V1 := preload("res://misc/saving_versions/save_load_v1.gd")
 const V2 := preload("res://misc/saving_versions/save_load_v2.gd")
 const V3 := preload("res://misc/saving_versions/save_load_v3.gd")
-const V4 := preload("res://misc/saving_versions/save_load_v3.gd")
+const V4 := preload("res://misc/saving_versions/save_load_v4.gd")
 ## A reference to the current save/load version
 const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
