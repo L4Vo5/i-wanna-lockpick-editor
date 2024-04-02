@@ -22,44 +22,46 @@ class_name ComplexNumber
 var _real_part := 0
 var _imaginary_part := 0
 
+## Makes a new complex number with the given real and imaginary components
 static func new_with(r: int, i: int) -> ComplexNumber:
 	var c := ComplexNumber.new()
 	c._real_part = r
 	c._imaginary_part = i
 	return c
 
+## Duplicates the complex number (faster than the default .duplicate())
 func duplicated() -> ComplexNumber:
 	var c := ComplexNumber.new()
 	c._real_part = real_part
 	c._imaginary_part = imaginary_part
 	return c
 
-func set_real_part(val: int) -> void:
-	if _real_part == val: return
-	_real_part = val
-	changed.emit()
-
+## Changes the real and imaginary components to the given value. Also returns itself for chaining purposes.
 func set_to(r: int, i: int) -> ComplexNumber:
 	_real_part = r
 	_imaginary_part = i
 	changed.emit()
 	return self
 
+## Changes the real and imaginary components to match another complex number. Also returns itself for chaining purposes.
 func set_to_this(other: ComplexNumber) -> ComplexNumber:
 	_real_part = other.real_part
 	_imaginary_part = other.imaginary_part
 	changed.emit()
 	return self 
 
+## Flips the complex number. Also returns itself for chaining purposes.
 func flip() -> ComplexNumber:
 	_real_part *= -1
 	_imaginary_part *= -1
 	changed.emit()
 	return self
 
+## Returns a new complex number that is equivalent to this one but flipped. The current ComplexNumber is unchanged.
 func flipped() -> ComplexNumber:
 	return new_with(_real_part * -1, _imaginary_part * -1)
 
+## Rotates the complex number 90° ccw (multiplies by i). Also returns itself for chaining purposes.
 func rotor() -> ComplexNumber:
 	var new_imaginary := _real_part
 	var new_real := -_imaginary_part
@@ -68,6 +70,7 @@ func rotor() -> ComplexNumber:
 	changed.emit()
 	return self
 
+## Adds the value of another complex number. Also returns itself for chaining purposes.
 func add(other: ComplexNumber) -> ComplexNumber:
 	if _real_part != Enums.INT_MAX and _real_part != Enums.INT_MIN:
 		_real_part += other._real_part
@@ -76,29 +79,27 @@ func add(other: ComplexNumber) -> ComplexNumber:
 	changed.emit()
 	return self
 
+## Subtracts the value of another complex number. Also returns itself for chaining purposes.
 func sub(other: ComplexNumber) -> ComplexNumber:
 	return add(other.flipped())
 
+## Returns true if both complex numbers have the same value
 func is_equal_to(other: ComplexNumber) -> bool:
 	return _real_part == other._real_part and _imaginary_part == other._imaginary_part
 
-func is_bigger_than(other: ComplexNumber) -> bool:
-	return as_vec2().length() > other.as_vec2().length()
-
-func as_vec2() -> Vector2i:
-	return Vector2i(real_part, imaginary_part)
-
+## Returns true if the value of the complex number is exactly (r, i)
 func has_value(r: int, i: int) -> bool:
 	return _real_part == r and _imaginary_part == i
 
+## Returns true if the value of the complex number is exactly 0
 func is_zero() -> bool:
 	return _real_part == 0 and _imaginary_part == 0
 
-## will return true if it's in the fully negative quadrant, not including zero, but including -1+0i and 0-1i
+## Returns true if the number is in the fully negative quadrant, not including zero, but including -1+0i, 0-1i, etc.
 func is_negative() -> bool:
 	return (_real_part <= 0 and _imaginary_part <= 0) and (_real_part < 0 or _imaginary_part < 0)
 
-# returns the sign in Enums.sign terms, assuming it's a 1d vector in either direction
+## Returns the sign in Enums.sign terms, assuming it's a 1d vector in either direction
 func sign_1d() -> Enums.sign:
 	assert(_real_part == 0 or _imaginary_part == 0)
 	var val := _real_part + _imaginary_part
@@ -107,7 +108,7 @@ func sign_1d() -> Enums.sign:
 	else:
 		return Enums.sign.negative
 
-# returns the value type in Enums.value terms, assuming it's a 1d vector in either direction
+## Returns the value type in Enums.value terms, assuming it's a 1d vector in either direction
 func value_type_1d() -> Enums.value:
 	assert(_real_part == 0 or _imaginary_part == 0)
 	if _imaginary_part != 0:

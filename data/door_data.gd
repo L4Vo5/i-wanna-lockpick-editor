@@ -128,7 +128,7 @@ func check_valid(level_data: LevelData, should_correct: bool) -> bool:
 		level_data.add_invalid_reason("Door has count 0", true)
 		is_valid = is_valid and should_correct
 		if should_correct:
-			amount.set_real_part(1)
+			amount.set_to(1, 0)
 	for lock in locks:
 		is_valid = is_valid or lock.check_valid(level_data, should_correct)
 		# First, constrain to door size
