@@ -241,7 +241,7 @@ func try_open_door(door: Door) -> void:
 ## try to open the door with the current keys.
 ## doesn't actually open it! (no side effects). returns a dict with information:
 ## opened: true if it'd be opened. if not true, you can safely ignore all other fields
-## master_keY: true if the opening happens with a master key
+## master_key: true if the opening happens with a master key
 ## added_copy: if the master key also added a copy (used for animations)
 ## amount_delta: how much to change the door's amount by
 ## new_glitch_color: the new glitch color (or none)
