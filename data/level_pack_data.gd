@@ -1,6 +1,8 @@
 extends Resource
 class_name LevelPackData
 
+signal added_level
+signal deleted_level(level_id: int)
 ## All the levels in the level pack
 @export var levels: Array[LevelData]
 ## Used to display a slightly more helpful error message when loading an incompatible level pack
@@ -61,6 +63,10 @@ func check_valid(should_correct: bool) -> void:
 		for reason in level.get_unfixable_invalid_reasons():
 			_unfixable_invalid_reasons[reason] = false
 
+func add_level(level: LevelData) -> void:
+	levels.push_back(level)
+	added_level.emit()
+
 func delete_level(id: int) -> void:
 	levels.remove_at(id)
 	for level in levels:
@@ -69,3 +75,4 @@ func delete_level(id: int) -> void:
 				entry.leads_to -= 1
 			elif entry.leads_to == id:
 				entry.leads_to = -1
+	deleted_level.emit(id)

@@ -205,20 +205,19 @@ func _on_set_pack_description(new_description: String) -> void:
 func _set_level_number(new_number: int) -> void:
 	assert(new_number == level_number.value)
 	if level_number.value == level_number.max_value:
-		_level_pack_data.levels.push_back(LevelData.get_default_level())
+		_level_pack_data.add_level(LevelData.get_default_level())
 		level_number.max_value = _level_pack_data.levels.size() + 1
 		level_count_label.text = str(_level_pack_data.levels.size())
 	editor_data.gameplay.transition_to_level(level_number.value - 1)
-	pass
 
 func _delete_current_level() -> void:
 	_level_pack_data.delete_level(level_number.value - 1)
 	level_number.value -= 1
 	if _level_pack_data.levels.size() == 0:
-		_level_pack_data.levels.push_back(LevelData.get_default_level())
+		_level_pack_data.add_level(LevelData.get_default_level())
 	level_number.max_value = _level_pack_data.levels.size() + 1
 	level_count_label.text = str(_level_pack_data.levels.size())
-	editor_data.gameplay.editor_data.gameplay.transition_to_level(level_number.value - 1)
+	editor_data.gameplay.transition_to_level(level_number.value - 1)
 
 func _reload_image() -> void:
 	if not visible: return
