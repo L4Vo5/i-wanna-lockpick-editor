@@ -484,12 +484,6 @@ func pick_up_key(key: Key) -> void:
 	end_undo_action()
 	update_gates()
 
-func win() -> void:
-	start_undo_action()
-	undo_redo.add_do_method(level.goal.win)
-	undo_redo.add_undo_method(level.goal.undo_win)
-	end_undo_action()
-
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
 func start_undo_action() -> void:
 	if last_player_undo == last_saved_player_undo:

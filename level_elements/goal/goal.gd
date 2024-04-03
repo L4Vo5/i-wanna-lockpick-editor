@@ -2,7 +2,6 @@
 extends Area2D
 class_name LevelGoal
 
-signal won
 var has_won := false
 var child_inside := false
 var time := 0
@@ -17,6 +16,8 @@ const PART := preload("res://level_elements/goal/goal_particle.tscn")
 func _ready() -> void:
 	area_entered.connect(_on_body_entered)
 	area_exited.connect(_on_body_exited)
+	if level.gameplay_manager.has_won_current_level():
+		win(true)
 	preprocess(58)
 
 func _physics_process(_delta: float) -> void:
@@ -40,15 +41,14 @@ func _physics_process(_delta: float) -> void:
 	sprite.position.y = (3 * sin(deg_to_rad(fmod(time + 2.5, 360))))
 	time += 1
 
-func win() -> void:
-	if has_won: return
-	level.logic.win()
-	
-	snd_win.play()
+func win(visual_only: bool) -> void:
+	if not visual_only:
+		if not has_won:
+			level.gameplay_manager.win()
+		snd_win.play()
 	has_won = true
 	win_time = time
 	sprite.frame = 2
-	won.emit()
 
 func undo_win() -> void:
 	has_won = false
@@ -72,7 +72,7 @@ func spawn_particle(put_first := true) -> Node2D:
 	return part
 
 func _on_body_entered(_body: Node2D) -> void:
-	win()
+	win(false)
 	child_inside = true
 	child_inside_time = time + 60
 	

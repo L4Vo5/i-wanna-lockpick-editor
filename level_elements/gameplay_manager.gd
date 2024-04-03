@@ -44,6 +44,7 @@ func load_level_pack_from_state(state: LevelPackStateData) -> void:
 	pack_state = state
 	var level_data: LevelData = _pack_data.levels[state.current_level]
 	level.level_data = level_data
+	reset()
 
 ## Transitions to a different level in the pack
 func transition_to_level(id: int) -> void:
@@ -56,5 +57,14 @@ func transition_to_level(id: int) -> void:
 		level.level_data = level_data
 		reset()
 
+func has_won_current_level() -> bool:
+	return pack_state.completed_levels[pack_state.current_level] == 1
+
 func reset() -> void:
 	level.reset()
+
+func win() -> void:
+	if pack_state.completed_levels[pack_state.current_level] != 1:
+		pack_state.completed_levels[pack_state.current_level] = 1
+		pack_state.save()
+		# TODO: transition or something

@@ -76,7 +76,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		i_view_sound_1.play()
 		i_view_sound_2.play()
 	elif event.is_action_pressed(&"restart"):
-		reset()
+		gameplay_manager.reset()
 	elif event.is_action_pressed(&"undo", true):
 		undo.call_deferred()
 	# TODO: Make redo work properly (bugs related to standing on doors?)
