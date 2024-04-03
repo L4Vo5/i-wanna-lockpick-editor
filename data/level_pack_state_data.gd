@@ -26,5 +26,11 @@ static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	state.completed_levels.resize(pack.levels.size())
 	return state
 
-
+func save() -> void:
+	if resource_path != "":
+		var res := ResourceSaver.save(self)
+		if res != OK:
+			print("Couldn't save! Error:" + error_string(res))
+	else:
+		print("Couldn't save! no resource_path!")
 

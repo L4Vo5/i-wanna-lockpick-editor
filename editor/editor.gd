@@ -55,6 +55,7 @@ func _input(event: InputEvent) -> void:
 
 func _ready() -> void:
 	DirAccess.make_dir_absolute("user://levels")
+	DirAccess.make_dir_absolute("user://level_saves")
 	file_dialog.current_dir = "levels"
 	Global.set_mode(Global.Modes.EDITOR)
 	_update_mode()
