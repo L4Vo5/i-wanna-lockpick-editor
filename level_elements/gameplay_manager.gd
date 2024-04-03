@@ -26,7 +26,7 @@ func load_level_pack(pack: LevelPackData) -> void:
 				state.pack_data = pack
 	if not state:
 		state = LevelPackStateData.make_from_pack_data(pack)
-		var i := randi()
+		var i := pack.pack_id
 		while FileAccess.file_exists("user://level_saves/" + str(i) + ".tres"):
 			i = randi()
 		state.resource_path = "user://level_saves/" + str(i) + ".tres"
