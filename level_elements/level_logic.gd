@@ -105,6 +105,7 @@ func reset() -> void:
 		end_undo_action()
 	
 	update_gates()
+	update_master_equipped(false, false, true)
 
 # TODO: the way undos would work here would make each individual affected door take up an action! oh no! either merge them or apply them all at once.
 func apply_auras_on_door(door: Door) -> void:
@@ -240,6 +241,8 @@ func try_open_door(door: Door) -> void:
 	end_undo_action()
 	door.open_cooldown = OPEN_COOLDOWN_TIME
 	update_gates()
+	if changed_key_color == Enums.colors.master:
+		update_master_equipped(false, false, true)
 
 ## try to open the door with the current keys.
 ## doesn't actually open it! (no side effects). returns a dict with information:
@@ -423,6 +426,7 @@ func open_lock_data_with(lock_data: LockData, key_count: ComplexNumber, flipped:
 
 # updates the equipped master keys for the player
 # if switch_state is true, that's probably because X was just pressed
+# if it's false, it's because the master key count changed, and we wanna make sure the current master equipped state is still valid
 func update_master_equipped(switch_state := false, play_sounds := true, unequip_if_different := false) -> void:
 	var last_master_equipped := master_equipped.duplicated()
 	if !player: return
@@ -483,6 +487,8 @@ func pick_up_key(key: Key) -> void:
 		undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
 	end_undo_action()
 	update_gates()
+	if used_color == Enums.colors.master:
+		update_master_equipped(false, false, true)
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
 func start_undo_action() -> void:

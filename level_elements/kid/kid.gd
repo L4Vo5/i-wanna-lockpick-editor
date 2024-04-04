@@ -246,16 +246,10 @@ func _on_aura_touch_door(body: Node2D) -> void:
 func _connect_level() -> void:
 	if !level: return
 	_on_changed_i_view(false)
-	# TODO: NO
-	level.logic.key_counts[Enums.colors.master].changed.connect(
-		level.logic.update_master_equipped.bind(false, false, true))
-	level.logic.update_master_equipped(false, false, true)
 	update_auras()
 
 func _disconnect_level() -> void:
 	if !level: return
-	level.logic.key_counts[Enums.colors.master].changed.disconnect(
-		level.logic.update_master_equipped.bind(false, false, true))
 
 func _on_changed_i_view(show_anim := true) -> void:
 	spr_i_view.visible = level.logic.i_view
