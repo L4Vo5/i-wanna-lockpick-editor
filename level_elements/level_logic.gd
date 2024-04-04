@@ -108,7 +108,6 @@ func reset() -> void:
 
 # TODO: the way undos would work here would make each individual affected door take up an action! oh no! either merge them or apply them all at once.
 func apply_auras_on_door(door: Door) -> void:
-	var door_data := door.door_data
 	if key_counts[Enums.colors.red].real_part >= 1:
 		if apply_curse_door(door, Enums.curse.ice, false):
 			door.break_curse_ice()
@@ -268,9 +267,10 @@ func try_open_door_data(door_data: DoorData, ignore_master: bool) -> Dictionary:
 	
 	var used_outer_color := door_data.get_used_color()
 	var is_gate := door_data.outer_color == Enums.colors.gate
+	if is_gate: assert(ignore_master)
 	
 	# first, try to open with master keys
-	if not is_gate and not master_equipped.is_zero():
+	if not ignore_master and not master_equipped.is_zero():
 		var can_master := true
 		const NON_COPIABLE_COLORS := [Enums.colors.master, Enums.colors.pure]
 		if used_outer_color in NON_COPIABLE_COLORS:
@@ -435,7 +435,6 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 		master_equipped.set_to(0, 0)
 	else:
 		var original_count := master_equipped.duplicated()
-		var i_view: bool = i_view
 		master_equipped.set_to(0,0)
 		if not i_view:
 			master_equipped.real_part = signi(key_counts[Enums.colors.master].real_part)

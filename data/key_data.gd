@@ -61,8 +61,8 @@ func get_used_color() -> Enums.colors:
 		return color
 
 # Called by the actual in-level Key
-func update_glitch_color(color: Enums.colors) -> void:
-	glitch_color = color
+func update_glitch_color(new_glitch_color: Enums.colors) -> void:
+	glitch_color = new_glitch_color
 
 func get_mouseover_text() -> String:
 	var s := ""

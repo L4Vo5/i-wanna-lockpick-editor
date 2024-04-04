@@ -47,14 +47,14 @@ var color: Enums.colors:
 var is_ready := false
 func _ready():
 	is_ready = true
-	for color in Enums.COLOR_NAMES.keys():
-		if color == Enums.colors.none: continue
-		if color == Enums.colors.gate and !support_gates: continue
+	for a_color in Enums.COLOR_NAMES.keys():
+		if a_color == Enums.colors.none: continue
+		if a_color == Enums.colors.gate and !support_gates: continue
 		var l := LOCK.instantiate()
 		var ld := LockData.new()
 		ld.dont_show_frame = true
 		ld.dont_show_locks = true
-		ld.color = color
+		ld.color = a_color
 		# Lock will draw it 4px smaller to account for frame
 		ld.size = Vector2i.ONE * (lock_size + 4)
 		l.ignore_position = true
@@ -129,9 +129,9 @@ func _reposition_color_rect() -> void:
 		color_rect.position = selected_lock.position
 
 # TODO: find it faster lol?
-func set_to_color(color: Enums.colors) -> void:
+func set_to_color(new_color: Enums.colors) -> void:
 	for l in locks:
-		if l.lock_data.color == color:
+		if l.lock_data.color == new_color:
 			selected_lock = l
 			return
 

@@ -51,11 +51,11 @@ var type: Enums.lock_types:
 var is_ready := false
 func _ready():
 	is_ready = true
-	for type in Enums.LOCK_TYPE_NAMES.keys():
+	for lock_type in Enums.LOCK_TYPE_NAMES.keys():
 		var l := LOCK.instantiate()
 		var ld := LockData.new()
 		ld.color = color
-		ld.lock_type = type
+		ld.lock_type = lock_type
 		# Lock will draw it 4px smaller to account for frame
 		ld.size = Vector2i.ONE * (lock_size + 4)
 		l.ignore_position = true
@@ -130,9 +130,9 @@ func _reposition_color_rect() -> void:
 		color_rect.position = selected_lock.position - Vector2.ONE * 2
 
 # TODO: find it faster lol?
-func set_to_type(type: Enums.lock_types) -> void:
+func set_to_type(new_type: Enums.lock_types) -> void:
 	for l in locks:
-		if l.lock_data.lock_type == type:
+		if l.lock_data.lock_type == new_type:
 			selected_lock = l
 			return
 

@@ -11,18 +11,7 @@ const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
-	var path := level_pack.file_path
 	var data: PackedByteArray
-	# SHOULDN'T SUPPORT THIS. it makes loading images/data ambiguous!
-#	if path == "":
-#		# it's probably a built-in .res or .tres
-#		path = level.resource_path
-#		if path == "" or not path.get_extension() in ["res", "tres"]:
-#			return []
-#		ResourceSaver.save(level)
-#		var file := FileAccess.open(path, FileAccess.READ)
-#		data = file.get_buffer(file.get_length())
-#	else:
 	var byte_access := VC.make_byte_access([])
 	VC.save(level_pack, byte_access)
 	data = byte_access.data
@@ -68,8 +57,6 @@ static func save_level(level_pack: LevelPackData) -> void:
 
 # Loads a .lvl file
 static func load_from(path: String) -> LevelPackData:
-	var pack_data: LevelPackData = null
-	
 	var version: int = -1
 	var original_editor_version := ""
 	var buf: PackedByteArray

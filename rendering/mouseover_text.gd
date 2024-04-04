@@ -16,7 +16,7 @@ const COLOR_SHADOW := Color8(192, 192, 192)
 @export var chase_mouse := true
 var size := Vector2.ZERO
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if chase_mouse and not Global.in_editor:
 		global_position = get_global_mouse_position()
 		clamp_to_viewport_boundaries()
