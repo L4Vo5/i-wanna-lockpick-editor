@@ -70,7 +70,6 @@ var i_view := false:
 		changed_i_view.emit()
 
 var master_equipped := ComplexNumber.new()
-var _last_master_equipped := ComplexNumber.new()
 
 const OPEN_COOLDOWN_TIME := 0.5
 

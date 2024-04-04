@@ -294,9 +294,8 @@ func get_undo_action() -> Callable:
 		d_jumps,
 		sprite.flip_h,
 		level.logic.master_equipped.duplicated(),
-		level.logic._last_master_equipped.duplicated(),
+		on_floor,
 		is_pressing_jump,
-		on_floor
 	])
 
 func _set_state(vars: Array) -> void:
@@ -305,8 +304,8 @@ func _set_state(vars: Array) -> void:
 	d_jumps = vars[2]
 	sprite.flip_h = vars[3]
 	shadow.flip_h = sprite.flip_h
+	# TODO: handle this elsewhere? too lazy now to figure it out
 	level.logic.master_equipped.set_to_this(vars[4])
-	level.logic._last_master_equipped.set_to_this(vars[5])
-	var was_on_floor = vars[7]
+	var was_on_floor: bool = vars[5]
 	if not was_on_floor:
 		is_pressing_jump = vars[6]
