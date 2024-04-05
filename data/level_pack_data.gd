@@ -18,6 +18,12 @@ signal deleted_level(level_id: int)
 ## Pack id, this SHOULD be unique.
 @export var pack_id: int = randi()
 
+## For simplicity, let's just say each pack data has one state associated with it. If this brings trouble I'll have to rethink some things
+var state_data: LevelPackStateData:
+	set(val):
+		state_data = val
+		changed.emit()
+
 ## For easier saving, since resource_path probably wouldn't work with .lvl
 var file_path := "":
 	set(val):

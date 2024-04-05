@@ -33,6 +33,7 @@ static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 
 func connect_pack_data() -> void:
 	if !pack_data: return
+	pack_data.state_data = self
 	pack_data.added_level.connect(_on_added_level)
 	pack_data.deleted_level.connect(_on_deleted_level)
 	assert(pack_data.levels.size() == completed_levels.size())

@@ -37,6 +37,7 @@ var _level_pack_data: LevelPackData:
 @onready var level_count_label: Label = %LevelCountLabel
 
 #@onready var left: Button = %Left
+## Always remember this value is 1-indexed, unlike how levels are stored in the background
 @onready var level_number: SpinBox = %LevelNumber
 @onready var delete_level: Button = %DeleteLevel
 #@onready var right: Button = %Right
@@ -156,6 +157,8 @@ func _set_to_level_pack_data() -> void:
 	pack_author.text = _level_pack_data.author
 	pack_description.text = _level_pack_data.description
 	level_number.max_value = _level_pack_data.levels.size() + 1
+	if _level_pack_data.state_data:
+		level_number.value = _level_pack_data.state_data.current_level + 1
 	level_count_label.text = str(_level_pack_data.levels.size())
 	_setting_to_data = false
 
