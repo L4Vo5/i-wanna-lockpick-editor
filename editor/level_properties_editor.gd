@@ -137,7 +137,6 @@ func _set_to_level_data() -> void:
 	if _setting_to_data: return
 	if DEBUG: print_debug("Setting to level data")
 	_setting_to_data = true
-#	level_size.text = str(_level_data.size)
 	# Stop the caret from going back to the start
 	width.value = _level_data.size.x
 	height.value = _level_data.size.y
