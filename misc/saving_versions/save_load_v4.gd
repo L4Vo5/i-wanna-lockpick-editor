@@ -4,6 +4,7 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.store_string(level_pack.editor_version)
 	data.store_string(level_pack.name)
 	data.store_string(level_pack.author)
+	data.store_s64(level_pack.pack_id)
 	
 	data.store_u32(level_pack.levels.size())
 	
@@ -99,6 +100,7 @@ static func load(data: ByteAccess) -> LevelPackData:
 	var level_pack := LevelPackData.new()
 	level_pack.name = data.get_string()
 	level_pack.author = data.get_string()
+	level_pack.pack_id = data.get_s64()
 	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
 	
 	var level_count := data.get_u32()
