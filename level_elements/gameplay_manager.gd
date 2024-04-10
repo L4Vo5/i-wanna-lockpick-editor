@@ -15,12 +15,14 @@ func _ready() -> void:
 	level.gameplay_manager = self
 
 func load_level_pack(pack: LevelPackData) -> void:
+	assert(PerfManager.start("GameplayManager::load_level_pack"))
 	_pack_data = pack
 	var state := LevelPackStateData.find_state_file_for_pack_or_create_new(_pack_data)
 	_pack_data.state_data = state
 	var level_data: LevelData = _pack_data.levels[state.current_level]
 	level.level_data = level_data
 	reset()
+	assert(PerfManager.end("GameplayManager::load_level_pack"))
 
 func get_level_pack() -> LevelPackData:
 	return _pack_data

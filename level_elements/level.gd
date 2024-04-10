@@ -361,6 +361,7 @@ func _spawn_entry(entry_data: EntryData) -> Entry:
 	entry.set_meta(&"original_entry_data", entry_data)
 	connect_entry(entry)
 	entry.level = self
+	assert(gameplay_manager.pack_data)
 	entry.pack_data = gameplay_manager.pack_data
 	entries.add_child(entry)
 	return entry
