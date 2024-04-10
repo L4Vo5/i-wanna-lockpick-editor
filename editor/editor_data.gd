@@ -5,10 +5,13 @@ signal changed_level_pack_data
 var level_pack_data: LevelPackData:
 	set(val):
 		if level_pack_data == val: return
-		
 		level_pack_data = val
 		gameplay.pack_data = val
 		changed_level_pack_data.emit()
+
+var pack_state_data: LevelPackStateData:
+	get:
+		return gameplay.pack_state if gameplay else null
 
 signal changed_level_data
 func emit_changed_level_data():
