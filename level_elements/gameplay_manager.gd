@@ -13,27 +13,7 @@ func _ready() -> void:
 	level.gameplay_manager = self
 
 func load_level_pack(pack: LevelPackData) -> void:
-	# Try to load save data for the level, otherwise make new save data
-	# TODO: Obviously don't do it this way, specially if I revamp the .lvl select
-	var pack_id := pack.pack_id
-	var state: LevelPackStateData = null
-	for file_name in DirAccess.get_files_at("user://level_saves"):
-		var file_path := "user://level_saves".path_join(file_name)
-		var possible_state = load(file_path)
-		if possible_state is LevelPackStateData:
-			if possible_state.pack_id == pack_id:
-				state = possible_state
-				state.pack_data = pack
-	if not state:
-		state = LevelPackStateData.make_from_pack_data(pack)
-		var i := pack.pack_id
-		while FileAccess.file_exists("user://level_saves/" + str(i) + ".tres"):
-			i = randi()
-		state.resource_path = "user://level_saves/" + str(i) + ".tres"
-		state.save()
-		print("Couldn't find save data, making a new one at %s" % state.resource_path)
-	else:
-		print("Successfully loaded save data from %s!" % state.resource_path)
+	var state := LevelPackStateData.find_state_file_for_pack_or_create_new(pack)
 	load_level_pack_from_state(state)
 
 func get_level_pack() -> LevelPackData:
