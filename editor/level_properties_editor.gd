@@ -36,11 +36,9 @@ var _level_pack_data: LevelPackData:
 @onready var pack_description: CodeEdit = %PackDescription
 @onready var level_count_label: Label = %LevelCountLabel
 
-#@onready var left: Button = %Left
 ## Always remember this value is 1-indexed, unlike how levels are stored in the background
 @onready var level_number: SpinBox = %LevelNumber
 @onready var delete_level: Button = %DeleteLevel
-#@onready var right: Button = %Right
 
 @onready var level_name: LineEdit = %LevelName
 @onready var level_title: LineEdit = %LevelTitle
@@ -74,8 +72,6 @@ func _connect_level_data() -> void:
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
 	_set_to_level_data()
-	if not Global.image_copier_exists:
-		copy_to_clipboard.text = "Force Refresh"
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(_level_data): return
@@ -87,6 +83,9 @@ func _ready() -> void:
 	# These are just so the scene works in isolation
 	_level_data = LevelData.new()
 	_level_pack_data = LevelPackData.new()
+	
+	if not Global.image_copier_exists:
+		copy_to_clipboard.text = "Force Refresh"
 	
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
