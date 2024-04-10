@@ -192,7 +192,7 @@ func reset() -> void:
 	assert(PerfManager.start("Level::reset (tiles)"))
 	tile_map.clear()
 	for tile_coord in level_data.tiles:
-		_spawn_tile(tile_coord)
+		_spawn_tile(tile_coord, false)
 	assert(PerfManager.end("Level::reset (tiles)"))
 	
 	_spawn_goal()
@@ -403,14 +403,18 @@ func place_tile(tile_coord: Vector2i) -> void:
 	if level_data.tiles.has(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
 	level_data.tiles[tile_coord] = true
-	_spawn_tile(tile_coord)
+	_spawn_tile(tile_coord, true)
 	level_data.changed_tiles.emit()
 
-func _spawn_tile(tile_coord: Vector2i) -> void:
+func _spawn_tile(tile_coord: Vector2i, also_update_neighbors: bool) -> void:
 	var layer := 0
 	var id := 1
 	var what_tile := Vector2i(1,1)
 	tile_map.set_cell(layer, tile_coord, id, what_tile)
+	if also_update_neighbors:
+		update_tile_and_neighbors(tile_coord)
+	else:
+		update_tile(tile_coord)
 
 ## Removes a tile from the level data. Returns true if a tile was there.
 func remove_tile(tile_coord: Vector2i) -> bool:
@@ -419,7 +423,44 @@ func remove_tile(tile_coord: Vector2i) -> bool:
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
 	level_data.changed_tiles.emit()
+	update_tile_and_neighbors(tile_coord)
 	return true
+
+func update_tile_and_neighbors(center_tile_coord: Vector2i) -> void:
+	for x in [-1, 0, 1]:
+		for y in [-1, 0, 1]:
+			update_tile(center_tile_coord + Vector2i(x, y))
+
+const NEIGHBORS_ALL := [
+	Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1),
+	Vector2i(-1,  0),                  Vector2i(1,  0),
+	Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
+]
+const NEIGHBORS_V := [Vector2i(0, -1), Vector2i(0, 1)]
+const NEIGHBORS_H := [Vector2i(-1, 0), Vector2i(1, 0)]
+
+## Autotiling!
+func update_tile(tile_coord: Vector2i) -> void:
+	if not level_data.tiles.get(tile_coord) == true: return
+	var layer := 0
+	var id := 1
+	var what_tile := Vector2i(1,1)
+	var neighbor_count := 0
+	var all_count := count_tiles(NEIGHBORS_ALL, tile_coord)
+	var h_count := count_tiles(NEIGHBORS_H, tile_coord)
+	var v_count := count_tiles(NEIGHBORS_V, tile_coord)
+	if all_count == 8:
+		what_tile = Vector2i(0, 0)
+	elif h_count == 2 and v_count != 2:
+		what_tile = Vector2i(0, 1)
+	elif v_count == 2 and h_count != 2:
+		what_tile = Vector2i(1, 0)
+	tile_map.set_cell(layer, tile_coord, id, what_tile)
+
+func count_tiles(tiles: Array, offset: Vector2i) -> int:
+	return tiles.reduce(func(acc:int, tile_coord: Vector2i) -> int:
+		return acc + 1 if level_data.tiles.get(tile_coord+offset) == true else 0
+		, 0)
 
 func _spawn_player() -> void:
 	if is_instance_valid(player):
