@@ -1,5 +1,9 @@
-[gd_resource type="Theme" format=3 uid="uid://dylovcwhtprp6"]
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://dylovcwhtprp6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yssmd"]
 
 [resource]
+BookmarkButton/base_type = &"Button"
+BookmarkButton/styles/focus = SubResource("StyleBoxEmpty_yssmd")
 HBoxContainer/constants/separation = 0
 VBoxContainer/constants/separation = 0

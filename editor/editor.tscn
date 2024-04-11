@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=28 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -20,13 +20,14 @@
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="19_qs4m8"]
+[ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
 
-[sub_resource type="Resource" id="Resource_n20vp"]
+[sub_resource type="Resource" id="Resource_p5ljr"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_b2v83"]
+[sub_resource type="Resource" id="Resource_cjlln"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -38,11 +39,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_nvo6q"]
+[sub_resource type="Resource" id="Resource_ynrj2"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_n20vp")
+amount = SubResource("Resource_p5ljr")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_b2v83")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_cjlln")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -53,20 +54,20 @@ _curses = {
 glitch_color = 13
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_pw63n"]
+[sub_resource type="Resource" id="Resource_quc4g"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_jqbkl"]
+[sub_resource type="Resource" id="Resource_7koaw"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_pw63n")
+amount = SubResource("Resource_quc4g")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_ei70u"]
+[sub_resource type="Resource" id="Resource_12fmm"]
 script = ExtResource("19_qs4m8")
 position = Vector2i(0, 0)
 leads_to = 0
@@ -82,12 +83,12 @@ grow_vertical = 2
 script = ExtResource("1_n4qnf")
 gameplay = NodePath("HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay")
 right_dock = NodePath("HSplitContainer/RightDock")
-side_tabs = NodePath("HSplitContainer/RightDock/SideEditorTabs")
-door_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Doors")
-key_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Keys")
-tile_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Tiles")
-level_properties_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Level")
-entry_editor = NodePath("HSplitContainer/RightDock/SideEditorTabs/Entries")
+side_tabs = NodePath("HSplitContainer/RightDock/BookmarkTabContainer")
+door_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Doors")
+key_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Keys")
+tile_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Tiles")
+level_properties_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Level")
+entry_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Entries")
 level_container = NodePath("HSplitContainer/LeftSide/LevelContainer")
 play_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Play")
 save_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Save")
@@ -301,40 +302,39 @@ anchor_mode = 0
 custom_minimum_size = Vector2(322, 0)
 layout_mode = 2
 
-[node name="SideEditorTabs" type="TabContainer" parent="HSplitContainer/RightDock"]
-custom_minimum_size = Vector2(305, 0)
+[node name="BookmarkTabContainer" parent="HSplitContainer/RightDock" instance=ExtResource("20_4gm0f")]
 layout_mode = 2
 
-[node name="Doors" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("8_5qjay")]
+[node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_nvo6q")
+door_data = SubResource("Resource_ynrj2")
 
-[node name="Keys" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("12_cr7ft")]
+[node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_jqbkl")
+key_data = SubResource("Resource_7koaw")
 
-[node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/SideEditorTabs"]
+[node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/RightDock/SideEditorTabs/Tiles"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer/Tiles"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="HSplitContainer/RightDock/SideEditorTabs/Tiles/VBoxContainer"]
+[node name="Label" type="Label" parent="HSplitContainer/RightDock/BookmarkTabContainer/Tiles/VBoxContainer"]
 layout_mode = 2
 text = "Nothing here (yet?), but you still need to select this tab to edit tiles."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Level" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("14_dug7w")]
+[node name="Level" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("14_dug7w")]
 visible = false
 layout_mode = 2
 
-[node name="Entries" parent="HSplitContainer/RightDock/SideEditorTabs" instance=ExtResource("17_ncfu0")]
+[node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-entry_data = SubResource("Resource_ei70u")
+entry_data = SubResource("Resource_12fmm")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)

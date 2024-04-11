@@ -43,7 +43,7 @@ var level: Level:
 var door_editor: DoorEditor
 var key_editor: KeyEditor
 var tile_editor: MarginContainer
-var side_tabs: TabContainer
+var side_tabs: BookmarkTabContainer
 var level_properties_editor: LevelPropertiesEditor
 var entry_editor: EntryEditor
 

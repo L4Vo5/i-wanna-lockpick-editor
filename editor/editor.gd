@@ -4,7 +4,7 @@ class_name LockpickEditor
 @export var gameplay: GameplayManager
 @onready var level: Level = gameplay.level 
 @export var right_dock: MarginContainer
-@export var side_tabs: TabContainer
+@export var side_tabs: BookmarkTabContainer
 @export var door_editor: DoorEditor
 @export var key_editor: KeyEditor
 @export var tile_editor: Control
