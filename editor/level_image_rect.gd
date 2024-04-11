@@ -16,8 +16,6 @@ func update() -> void:
 
 func _draw() -> void:
 	if not is_instance_valid(texture): return
-	# make sure global position isn't fractional
-	assert(global_position == Vector2(Vector2i(global_position)))
 	# center it
 	var desired_pos := (size - texture.get_size()) / 2
 	# integer
