@@ -438,6 +438,14 @@ const NEIGHBORS_ALL := [
 ]
 const NEIGHBORS_V := [Vector2i(0, -1), Vector2i(0, 1)]
 const NEIGHBORS_H := [Vector2i(-1, 0), Vector2i(1, 0)]
+const NEIGHBORS_U := [Vector2i(-1, -1), Vector2i( 0, -1), Vector2i( 1, -1)]
+const NEIGHBORS_D := [Vector2i(-1,  1), Vector2i( 0,  1), Vector2i( 1,  1)]
+const NEIGHBORS_L := [Vector2i(-1, -1), Vector2i(-1,  0), Vector2i(-1,  1)]
+const NEIGHBORS_R := [Vector2i( 1, -1), Vector2i( 1,  0), Vector2i( 1,  1)]
+const NEIGHBOR_U := [Vector2i( 0, -1)]
+const NEIGHBOR_D := [Vector2i( 0,  1)]
+const NEIGHBOR_L := [Vector2i(-1,  0)]
+const NEIGHBOR_R := [Vector2i( 1,  0)]
 
 ## Autotiling!
 func update_tile(tile_coord: Vector2i) -> void:
@@ -453,13 +461,25 @@ func update_tile(tile_coord: Vector2i) -> void:
 		what_tile = Vector2i(0, 0)
 	elif h_count == 2 and v_count != 2:
 		what_tile = Vector2i(0, 1)
+		if count_tiles(NEIGHBOR_U, tile_coord) == 1:
+			if count_tiles(NEIGHBORS_U, tile_coord) != 3:
+				what_tile = Vector2i(1, 1)
+		if count_tiles(NEIGHBOR_D, tile_coord) == 1:
+			if count_tiles(NEIGHBORS_D, tile_coord) != 3:
+				what_tile = Vector2i(1, 1)
 	elif v_count == 2 and h_count != 2:
 		what_tile = Vector2i(1, 0)
+		if count_tiles(NEIGHBOR_L, tile_coord) == 1:
+			if count_tiles(NEIGHBORS_L, tile_coord) != 3:
+				what_tile = Vector2i(1, 1)
+		if count_tiles(NEIGHBOR_R, tile_coord) == 1:
+			if count_tiles(NEIGHBORS_R, tile_coord) != 3:
+				what_tile = Vector2i(1, 1)
 	tile_map.set_cell(layer, tile_coord, id, what_tile)
 
 func count_tiles(tiles: Array, offset: Vector2i) -> int:
 	return tiles.reduce(func(acc:int, tile_coord: Vector2i) -> int:
-		return acc + 1 if level_data.tiles.get(tile_coord+offset) == true else 0
+		return acc + (1 if level_data.tiles.get(tile_coord+offset) == true else 0)
 		, 0)
 
 func _spawn_player() -> void:
