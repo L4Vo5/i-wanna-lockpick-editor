@@ -94,6 +94,7 @@ unique_name_in_owner = true
 
 [node name="Mouseover" parent="." instance=ExtResource("11_j0wdo")]
 unique_name_in_owner = true
+process_priority = 1
 visible = false
 
 [node name="LevelCamera" type="Camera2D" parent="."]

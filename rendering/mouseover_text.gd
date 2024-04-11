@@ -23,6 +23,7 @@ func _process(_delta: float) -> void:
 
 func clamp_to_viewport_boundaries() -> void:
 	var r := get_viewport_rect()
+	r.position = get_viewport().get_camera_2d().get_screen_center_position() - r.size / 2
 	if position.x + size.x > r.position.x + r.size.x:
 		position.x = r.position.x + r.size.x - size.x
 	if position.y + size.y > r.position.y + r.size.y:
