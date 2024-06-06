@@ -92,7 +92,7 @@ func _ready() -> void:
 	editor_data.danger_highlight = danger_highlight
 	editor_data.hover_highlight = gameplay.level.hover_highlight
 	
-	editor_data.side_tabs.tab_changed.connect(_retry_ghosts.unbind(1))
+	editor_data.side_tabs.tab_changed.connect(_retry_ghosts)
 	editor_data.level.changed_doors.connect(_retry_ghosts)
 	editor_data.level.changed_keys.connect(_retry_ghosts)
 	editor_data.changed_level_data.connect(_on_changed_level_data)

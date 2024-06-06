@@ -91,7 +91,7 @@ func _ready() -> void:
 	level_properties_editor.editor_data = data
 	entry_editor.editor_data = data
 	
-	side_tabs.tab_changed.connect(_update_mode.unbind(1))
+	side_tabs.tab_changed.connect(_update_mode)
 	play_button.pressed.connect(_on_play_pressed)
 	
 	save_button.pressed.connect(_on_save_pressed)
