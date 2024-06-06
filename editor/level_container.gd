@@ -24,7 +24,7 @@ var entry_editor: EntryEditor:
 @export var ghost_canvas_group: CanvasGroup
 
 @export var editor: LockpickEditor
-var editor_data: EditorData
+var editor_data: EditorData: set = set_editor_data
 
 @export var danger_highlight: HoverHighlight
 @export var selected_highlight: HoverHighlight
@@ -63,31 +63,25 @@ var danger_obj: Node:
 #var level_offset :=  Vector2(0, 0)
 
 const OBJ_SIZE := Vector2(800, 608)
-func _on_resized() -> void:
-	if editor_data.is_playing:
-		_center_level()
-	return
 
-func _center_level() -> void:
-	# center it
+func _adjust_inner_container_dimensions() -> void:
 	if editor_data.is_playing:
 		inner_container.position = ((size - OBJ_SIZE) / 2).floor()
 		inner_container.size = OBJ_SIZE
 	else:
-		editor_camera.position = - (size - OBJ_SIZE) / 2
-
-func _expand_level() -> void:
-	inner_container.position = Vector2.ZERO
-	inner_container.size = size
+		inner_container.position = Vector2.ZERO
+		inner_container.size = size
 
 func _ready() -> void:
 	gameplay.level.door_gui_input.connect(_on_door_gui_input)
 	gameplay.level.key_gui_input.connect(_on_key_gui_input)
 	gameplay.level.entry_gui_input.connect(_on_entry_gui_input)
-	resized.connect(_on_resized)
+	resized.connect(_adjust_inner_container_dimensions)
 	level_viewport.get_parent().show()
-	
-	await get_tree().process_frame
+
+func set_editor_data(data: EditorData) -> void:
+	assert(editor_data == null, "This should only really run once.")
+	editor_data = data
 	editor_data.selected_highlight = selected_highlight
 	editor_data.danger_highlight = danger_highlight
 	editor_data.hover_highlight = gameplay.level.hover_highlight
@@ -98,20 +92,22 @@ func _ready() -> void:
 	editor_data.changed_level_data.connect(_on_changed_level_data)
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_on_changed_is_playing, CONNECT_DEFERRED)
-	_on_changed_is_playing()
 	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
 	
 	editor_camera.make_current()
+	_on_changed_is_playing()
 	_center_level.call_deferred()
 
 func _on_changed_is_playing() -> void:
-	if editor_data.is_playing:
-		_center_level()
-	else:
+	_adjust_inner_container_dimensions()
+	if !editor_data.is_playing:
 		editor_camera.make_current()
-		_expand_level()
 	camera_dragger.enabled = not editor_data.is_playing
 	_retry_ghosts()
+
+# could be more sophisticated now that bigger level sizes are supported.
+func _center_level() -> void:
+	editor_camera.position = - (size - OBJ_SIZE) / 2
 
 func _on_changed_level_data() -> void:
 	# deselect everything

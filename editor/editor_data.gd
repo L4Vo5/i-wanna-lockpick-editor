@@ -48,6 +48,8 @@ var level_properties_editor: LevelPropertiesEditor
 var entry_editor: EntryEditor
 
 # what's currently being edited
+# (not an enum because it's easier to check "if editor_data.doors" than like, "if editor_data.currently_editing == EditorData.Editing.DOORS"... or whatever using enums would look like)
+# I guess I could always use an enum internally and expose functions like is_editing_doors(), but, eh.
 var tilemap_edit := false
 var objects := false
 var doors := false
