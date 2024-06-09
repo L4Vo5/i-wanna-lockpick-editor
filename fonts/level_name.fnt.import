@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://dsdva0hlmiaan"
+path="res://.godot/imported/level_name.fnt-57ea1c49d2ea0fe69b343b6b9edb0061.fontdata"
+
+[deps]
+
+source_file="res://fonts/level_name.fnt"
+dest_files=["res://.godot/imported/level_name.fnt-57ea1c49d2ea0fe69b343b6b9edb0061.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

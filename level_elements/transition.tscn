@@ -1,0 +1,53 @@
+[gd_scene load_steps=5 format=3 uid="uid://dfdbfek8pb1n6"]
+
+[ext_resource type="Script" path="res://level_elements/transition.gd" id="1_lxgbb"]
+[ext_resource type="FontFile" uid="uid://8odieidrpvm8" path="res://fonts/level_id.fnt" id="2_vw8ei"]
+[ext_resource type="FontFile" uid="uid://dsdva0hlmiaan" path="res://fonts/level_name.fnt" id="3_vgy7d"]
+[ext_resource type="Script" path="res://rendering/outline_text.gd" id="4_6mbev"]
+
+[node name="Transition" type="Node2D"]
+visible = false
+script = ExtResource("1_lxgbb")
+
+[node name="Background" type="ColorRect" parent="."]
+unique_name_in_owner = true
+modulate = Color(0.627451, 0.862745, 0.745098, 0)
+offset_right = 800.0
+offset_bottom = 608.0
+color = Color(0.607843, 0.462745, 0, 1)
+
+[node name="Title" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(398.989, 237.175)
+script = ExtResource("4_6mbev")
+text = "Wahs"
+font = ExtResource("2_vw8ei")
+outline_corners = true
+outline_distance = 2
+font_size = 24
+line_sep = 40
+center_vertically = true
+
+[node name="Name" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(403.028, 298.82)
+script = ExtResource("4_6mbev")
+text = "Hello, world"
+font = ExtResource("3_vgy7d")
+outline_corners = true
+outline_distance = 2
+font_size = 36
+line_sep = 46
+center_vertically = true
+
+[node name="Contributor" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(398.989, 397.175)
+script = ExtResource("4_6mbev")
+text = "Peta"
+font = ExtResource("3_vgy7d")
+outline_corners = true
+outline_distance = 2
+font_size = 36
+line_sep = 46
+center_vertically = true

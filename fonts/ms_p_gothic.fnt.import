@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://b7vhvuoc174gh"
+path="res://.godot/imported/ms_p_gothic.fnt-5a55c2f294aec121137c977ca2670e01.fontdata"
+
+[deps]
+
+source_file="res://fonts/ms_p_gothic.fnt"
+dest_files=["res://.godot/imported/ms_p_gothic.fnt-5a55c2f294aec121137c977ca2670e01.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

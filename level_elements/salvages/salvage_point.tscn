@@ -1,0 +1,79 @@
+[gd_scene load_steps=9 format=3 uid="uid://ctxog6bj0oha7"]
+
+[ext_resource type="Script" path="res://level_elements/salvages/salvage_point.gd" id="1_1r7ot"]
+[ext_resource type="Texture2D" uid="uid://bpgcgtns783wd" path="res://level_elements/salvages/spr_salvage_point.png" id="1_vdtqo"]
+[ext_resource type="FontFile" uid="uid://b7vhvuoc174gh" path="res://fonts/ms_p_gothic.fnt" id="2_gqm85"]
+[ext_resource type="Script" path="res://data/salvage_point_data.gd" id="2_y6vdf"]
+[ext_resource type="AudioStream" uid="uid://cwtjahoobj74b" path="res://level_elements/salvages/snd_salvage_prep.wav" id="3_4b6cq"]
+
+[sub_resource type="Resource" id="Resource_wg2a6"]
+script = ExtResource("2_y6vdf")
+sid = 0
+is_output = false
+position = Vector2i(0, 0)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xgdw3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u5uie"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+
+[node name="SalvagePoint" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 32.0
+offset_bottom = 32.0
+mouse_filter = 1
+script = ExtResource("1_1r7ot")
+salvage_point_data = SubResource("Resource_wg2a6")
+door_error = null
+door_error_size = null
+
+[node name="Collision" type="Area2D" parent="."]
+unique_name_in_owner = true
+visible = false
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision"]
+position = Vector2(16, 16)
+scale = Vector2(1.6, 1.6)
+shape = SubResource("RectangleShape2D_xgdw3")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+modulate = Color(0.466667, 0, 1, 1)
+texture = ExtResource("1_vdtqo")
+centered = false
+hframes = 4
+
+[node name="SalvagePrep" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("3_4b6cq")
+volume_db = -0.46
+pitch_scale = 1.4
+
+[node name="Outline" type="Panel" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_right = 32.0
+offset_bottom = 32.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_u5uie")
+
+[node name="Number" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1.0
+offset_top = 19.0
+offset_right = 13.0
+offset_bottom = 41.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.35)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("2_gqm85")
+theme_override_font_sizes/font_size = 16
+text = "0"
