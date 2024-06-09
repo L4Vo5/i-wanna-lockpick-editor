@@ -10,6 +10,7 @@ class_name LockpickEditor
 @export var tile_editor: Control
 @export var level_properties_editor: LevelPropertiesEditor
 @export var entry_editor: EntryEditor
+@export var salvage_point_editor: SalvagePointEditor
 
 @export var level_container: LevelContainer
 
@@ -84,6 +85,7 @@ func _ready() -> void:
 	data.tile_editor = tile_editor
 	data.level_properties_editor = level_properties_editor
 	data.entry_editor = entry_editor
+	data.salvage_point_editor = salvage_point_editor
 	data.side_tabs = side_tabs
 	
 	
@@ -91,7 +93,7 @@ func _ready() -> void:
 	level_properties_editor.editor_data = data
 	entry_editor.editor_data = data
 	
-	side_tabs.tab_changed.connect(_update_mode.unbind(1))
+	side_tabs.tab_changed.connect(_update_mode)
 	play_button.pressed.connect(_on_play_pressed)
 	
 	save_button.pressed.connect(_on_save_pressed)
@@ -145,6 +147,10 @@ func _update_mode() -> void:
 	data.level_properties = current_tab == level_properties_editor
 	data.objects = current_tab == door_editor or current_tab == key_editor
 	data.entries = current_tab == entry_editor
+	data.salvage_points = current_tab == salvage_point_editor
+	print(data.salvage_points)
+	print(current_tab)
+	print(salvage_point_editor)
 
 func _on_play_pressed() -> void:
 	save_level()
@@ -157,7 +163,7 @@ func _on_play_pressed() -> void:
 	data.selected_highlight.stop_adapting()
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
-	level.reset()
+	level.reset(not data.is_playing)
 	resolve_visibility()
 	# fix for things staying focused when playing
 	set_focus_mode(Control.FOCUS_ALL)

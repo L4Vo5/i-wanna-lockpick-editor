@@ -209,16 +209,16 @@ func _set_level_number(new_number: int) -> void:
 		_level_pack_data.add_level(LevelData.get_default_level())
 		level_number.max_value = _level_pack_data.levels.size() + 1
 		level_count_label.text = str(_level_pack_data.levels.size())
-	editor_data.gameplay.transition_to_level(level_number.value - 1)
+	editor_data.gameplay.transition_to_level(level_number.value as int - 1)
 
 func _delete_current_level() -> void:
-	_level_pack_data.delete_level(level_number.value - 1)
+	_level_pack_data.delete_level(level_number.value as int - 1)
 	level_number.value -= 1
 	if _level_pack_data.levels.size() == 0:
 		_level_pack_data.add_level(LevelData.get_default_level())
 	level_number.max_value = _level_pack_data.levels.size() + 1
 	level_count_label.text = str(_level_pack_data.levels.size())
-	editor_data.gameplay.transition_to_level(level_number.value - 1)
+	editor_data.gameplay.transition_to_level(level_number.value as int - 1)
 
 func _reload_image() -> void:
 	if not visible: return

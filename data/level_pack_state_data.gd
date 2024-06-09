@@ -43,6 +43,16 @@ func disconnect_pack_data() -> void:
 	pack_data.added_level.disconnect(_on_added_level)
 	pack_data.deleted_level.disconnect(_on_deleted_level)
 
+func salvage_door(sid: int, door: DoorData) -> void:
+	if sid < 0 || sid > 99:
+		# for the sake of our memory not exploding till infinity, set limit to SID 99
+		return
+	# make sure there's space
+	while salvaged_doors.size() <= sid:
+		salvaged_doors.push_back(null)
+	salvaged_doors[sid] = door
+	save()
+
 func _on_added_level() -> void:
 	assert(pack_data.levels.size() == completed_levels.size() + 1)
 	completed_levels.resize(pack_data.levels.size())

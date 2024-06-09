@@ -47,6 +47,7 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if Global.in_editor: return
+	if level.in_transition(): return
 	if spr_i_view.visible:
 		spr_i_view.modulate = Rendering.i_view_palette[1]
 	update_on_floor()

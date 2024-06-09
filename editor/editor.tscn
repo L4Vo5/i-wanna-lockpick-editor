@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=31 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -21,13 +21,15 @@
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="19_qs4m8"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
+[ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/salvage_point_editor.tscn" id="21_ieeor"]
+[ext_resource type="Script" path="res://data/salvage_point_data.gd" id="22_hbtxh"]
 
-[sub_resource type="Resource" id="Resource_p5ljr"]
+[sub_resource type="Resource" id="Resource_plm0j"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_cjlln"]
+[sub_resource type="Resource" id="Resource_1hpi1"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -39,11 +41,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_ynrj2"]
+[sub_resource type="Resource" id="Resource_wkl2h"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_p5ljr")
+amount = SubResource("Resource_plm0j")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_cjlln")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_1hpi1")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -53,27 +55,34 @@ _curses = {
 }
 glitch_color = 13
 position = Vector2i(0, 0)
+sid = -1
 
-[sub_resource type="Resource" id="Resource_quc4g"]
+[sub_resource type="Resource" id="Resource_44nni"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_7koaw"]
+[sub_resource type="Resource" id="Resource_vdsmo"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_quc4g")
+amount = SubResource("Resource_44nni")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_12fmm"]
+[sub_resource type="Resource" id="Resource_bopst"]
 script = ExtResource("19_qs4m8")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
+[sub_resource type="Resource" id="Resource_qlgpm"]
+script = ExtResource("22_hbtxh")
+sid = 0
+is_output = false
+position = Vector2i(0, 0)
+
+[node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -89,6 +98,7 @@ key_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Keys")
 tile_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Tiles")
 level_properties_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Level")
 entry_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Entries")
+salvage_point_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/SalvagePoints")
 level_container = NodePath("HSplitContainer/LeftSide/LevelContainer")
 play_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Play")
 save_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Save")
@@ -299,20 +309,21 @@ camera = NodePath("../EditorCamera")
 anchor_mode = 0
 
 [node name="RightDock" type="MarginContainer" parent="HSplitContainer"]
-custom_minimum_size = Vector2(322, 0)
+custom_minimum_size = Vector2(362, 0)
 layout_mode = 2
 
 [node name="BookmarkTabContainer" parent="HSplitContainer/RightDock" instance=ExtResource("20_4gm0f")]
+custom_minimum_size = Vector2(345, 0)
 layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_ynrj2")
+door_data = SubResource("Resource_wkl2h")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_7koaw")
+key_data = SubResource("Resource_vdsmo")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -334,7 +345,12 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-entry_data = SubResource("Resource_12fmm")
+entry_data = SubResource("Resource_bopst")
+
+[node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
+visible = false
+layout_mode = 2
+salvage_point_data = SubResource("Resource_qlgpm")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)
@@ -347,5 +363,5 @@ show_hidden_files = true
 
 [node name="InvalidLevelLoad" parent="." instance=ExtResource("16_ayc8p")]
 position = Vector2i(10, 35)
-size = Vector2i(477, 955)
+size = Vector2i(477, 964)
 visible = false

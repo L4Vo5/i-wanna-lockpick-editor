@@ -10,6 +10,7 @@ var pack_state: LevelPackStateData:
 		return _pack_data.state_data
 
 @onready var level: Level = %Level
+@onready var transition: Transition = %Transition
 
 func _ready() -> void:
 	level.gameplay_manager = self
@@ -48,4 +49,3 @@ func win() -> void:
 	if pack_state.completed_levels[pack_state.current_level] != 1:
 		pack_state.completed_levels[pack_state.current_level] = 1
 		pack_state.save()
-		# TODO: transition or something

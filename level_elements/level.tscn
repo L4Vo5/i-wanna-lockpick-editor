@@ -35,6 +35,9 @@ unique_name_in_owner = true
 [node name="Entries" type="Node2D" parent="."]
 unique_name_in_owner = true
 
+[node name="SalvagePoints" type="Node2D" parent="."]
+unique_name_in_owner = true
+
 [node name="PlayerSpawnPoint" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false

@@ -46,6 +46,8 @@ func win(visual_only: bool) -> void:
 		if not has_won:
 			level.gameplay_manager.win()
 		snd_win.play()
+		level.gameplay_manager.transition.finished_animation.connect(level.reset)
+		level.gameplay_manager.transition.win_animation("Congratulations!")
 	has_won = true
 	win_time = time
 	sprite.frame = 2

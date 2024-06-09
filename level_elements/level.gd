@@ -36,12 +36,14 @@ signal changed_keys
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
 const ENTRY := preload("res://level_elements/entries/entry.tscn")
+const SALVAGE_POINT := preload("res://level_elements/salvages/salvage_point.tscn")
 const PLAYER := preload("res://level_elements/kid/kid.tscn")
 const GOAL := preload("res://level_elements/goal/goal.tscn")
 
 @onready var doors: Node2D = %Doors
 @onready var keys: Node2D = %Keys
 @onready var entries: Node2D = %Entries
+@onready var salvage_points: Node2D = %SalvagePoints
 @onready var player_parent: Node2D = %PlayerParent
 @onready var goal_parent: Node2D = %GoalParent
 @onready var tile_map: TileMap = %TileMap
@@ -71,6 +73,7 @@ var autorun_tween: Tween
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not Global.is_playing: return
+	if in_transition(): return
 	if event.is_action_pressed(&"i-view"):
 		logic.i_view = not logic.i_view
 		i_view_sound_1.play()
@@ -132,10 +135,13 @@ func undo() -> void:
 
 ## Resets the current level (when pressing r)
 ## Also used for starting it for the first time
-func reset() -> void:
+func reset(back_to_editor: bool = false) -> void:
 	if not is_node_ready(): return
 	if not level_data: return
 	assert(PerfManager.start("Level::reset"))
+	
+	for salvage_point: SalvagePoint in salvage_points.get_children():
+		salvage_point.remove_door()
 	
 	# This initial stuff looks ugly for optimization's sake
 	# (yes, it makes a measurable impact, specially on big levels)
@@ -164,9 +170,10 @@ func reset() -> void:
 	var needed_keys := level_data.keys.size()
 	var current_keys := keys.get_child_count()
 	
+	print("current ", current_keys, ", needed ", needed_keys)
 	# redo the current ones
 	for i in mini(needed_keys, current_keys):
-		var key := keys.get_child(i)
+		var key: Key = keys.get_child(i)
 		key.set_meta(&"original_key_data", level_data.keys[i])
 		key.key_data = level_data.keys[i].duplicated()
 	# shave off the rest
@@ -207,7 +214,7 @@ func reset() -> void:
 	
 	is_autorun_on = false
 	
-	logic.reset()
+	logic.reset(back_to_editor)
 	
 	assert(PerfManager.end("Level::reset"))
 
@@ -249,6 +256,7 @@ func try_open_door(door: Door) -> void:
 signal door_gui_input(event: InputEvent, door: Door)
 signal key_gui_input(event: InputEvent, key: Key)
 signal entry_gui_input(event: InputEvent, entry: Entry)
+signal salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint)
 
 ## Adds a door to the level data. Returns null if it wasn't added
 func add_door(door_data: DoorData) -> Door:
@@ -279,8 +287,8 @@ func _spawn_door(door_data: DoorData) -> Door:
 ## Removes a door from the level data
 func remove_door(door: Door) -> void:
 	var pos := level_data.doors.find(door.original_door_data)
-	assert(pos != -1)
-	level_data.doors.remove_at(pos)
+	if pos >= 0: # false for salvage
+		level_data.doors.remove_at(pos)
 	doors.remove_child(door)
 	disconnect_door(door)
 #	door.queue_free()
@@ -328,6 +336,7 @@ func remove_key(key: Key) -> void:
 	keys.remove_child(key)
 	disconnect_key(key)
 	key.queue_free()
+	NodePool.return_node(key)
 	level_data.changed_keys.emit()
 
 ## Moves a given key. Returns false if the move failed
@@ -387,6 +396,51 @@ func move_entry(entry: Entry, new_position: Vector2i) -> bool:
 		entry_data.position = new_position
 		entry.entry_data.position = new_position
 		level_data.changed_entries.emit()
+		return true
+	else:
+		return false
+
+
+## Adds a salvage point to the level data. Returns null if it wasn't added
+func add_salvage_point(salvage_point_data: SalvagePointData) -> SalvagePoint:
+	if is_space_occupied(salvage_point_data.get_rect()): return null
+	if not salvage_point_data in level_data.salvage_points:
+		level_data.salvage_points.push_back(salvage_point_data)
+		level_data.changed_entries.emit()
+	return _spawn_salvage_point(salvage_point_data)
+
+## Makes a salvage point physically appear (doesn't check collisions)
+func _spawn_salvage_point(salvage_point_data: SalvagePointData) -> SalvagePoint:
+	var salvage_point: SalvagePoint = NodePool.pool_node(SALVAGE_POINT)
+	salvage_point.salvage_point_data = salvage_point_data.duplicated()
+	salvage_point.set_meta(&"original_salvage_point_data", salvage_point_data)
+	connect_salvage_point(salvage_point)
+	salvage_point.level = self
+	assert(gameplay_manager.pack_state)
+	salvage_point.level_pack_state = gameplay_manager.pack_state
+	salvage_points.add_child(salvage_point)
+	return salvage_point
+
+## Removes a salvage point from the level data
+func remove_salvage_point(salvage_point: SalvagePoint) -> void:
+	var i := level_data.salvage_points.find(salvage_point.get_meta(&"original_salvage_point_data"))
+	assert(i != -1)
+	level_data.salvage_points.remove_at(i)
+	salvage_points.remove_child(salvage_point)
+	disconnect_salvage_point(salvage_point)
+	salvage_point.queue_free()
+	level_data.changed_entries.emit()
+
+## Moves a given salvage point. Returns false if the move failed
+func move_salvage_point(salvage_point: SalvagePoint, new_position: Vector2i) -> bool:
+	var salvage_point_data: SalvagePointData = salvage_point.get_meta(&"original_salvage_point_data")
+	var i := level_data.salvage_points.find(salvage_point_data)
+	assert(i != -1)
+	var rect := Rect2i(new_position, salvage_point_data.get_rect().size)
+	if not is_space_occupied(rect, [], [salvage_point_data]):
+		salvage_point_data.position = new_position
+		salvage_point.salvage_point_data.position = new_position
+		level_data.changed_salvage_points.emit()
 		return true
 	else:
 		return false
@@ -453,7 +507,6 @@ func update_tile(tile_coord: Vector2i) -> void:
 	var layer := 0
 	var id := 1
 	var what_tile := Vector2i(1,1)
-	var neighbor_count := 0
 	var all_count := count_tiles(NEIGHBORS_ALL, tile_coord)
 	var h_count := count_tiles(NEIGHBORS_H, tile_coord)
 	var v_count := count_tiles(NEIGHBORS_V, tile_coord)
@@ -524,6 +577,11 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 			if entry in excluded_objects: continue
 			if entry.get_rect().intersects(rect):
 				return true
+	if not &"salvage_points" in exclusions:
+		for salvage_point in level_data.salvage_points:
+			if salvage_point in excluded_objects: continue
+			if salvage_point.get_rect().intersects(rect):
+				return true
 	if not &"goal" in exclusions:
 		if Rect2i((level_data.goal_position), Vector2i(32, 32)).intersects(rect):
 			return true
@@ -535,6 +593,18 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 		for tile_pos in level_data.tiles:
 			if Rect2i(tile_pos * 32, Vector2i(32, 32)).intersects(rect):
 				return true
+	return false
+
+## Returns true if there's not enough space to fit a salvage
+# this cares about doors and tiles CURRENTLY in the level, not in the level data
+func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
+	for tile_pos in level_data.tiles:
+		if Rect2i(tile_pos * 32, Vector2i(32, 32)).intersects(rect):
+			return true
+	for door: Door in doors.get_children():
+		if door == exclude: continue
+		if door.door_data.get_rect().intersects(rect):
+			return true
 	return false
 
 ## Returns true if the space is fully inside the level
@@ -559,6 +629,10 @@ func _on_key_gui_input(event: InputEvent, key: Key) -> void:
 func _on_entry_gui_input(event: InputEvent, entry: Entry) -> void:
 	entry_gui_input.emit(event, entry)
 
+func _on_salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint) -> void:
+	print("hi")
+	salvage_point_gui_input.emit(event, salvage_point)
+
 func _on_door_mouse_entered(door: Door) -> void:
 	hover_highlight.adapt_to(door)
 
@@ -576,6 +650,12 @@ func _on_entry_mouse_entered(entry: Entry) -> void:
 
 func _on_entry_mouse_exited(entry: Entry) -> void:
 	hover_highlight.stop_adapting_to(entry)
+
+func _on_salvage_point_mouse_entered(salvage_point: SalvagePoint) -> void:
+	hover_highlight.adapt_to(salvage_point)
+
+func _on_salvage_point_mouse_exited(salvage_point: SalvagePoint) -> void:
+	hover_highlight.stop_adapting_to(salvage_point)
 
 func _on_hover_adapted_to(_what: Node) -> void:
 	update_mouseover()
@@ -631,6 +711,17 @@ func disconnect_entry(entry: Entry) -> void:
 	entry.mouse_entered.disconnect(_on_entry_mouse_entered.bind(entry))
 	entry.mouse_exited.disconnect(_on_entry_mouse_exited.bind(entry))
 
+func connect_salvage_point(salvage_point: SalvagePoint) -> void:
+	print("connect those")
+	salvage_point.gui_input.connect(_on_salvage_point_gui_input.bind(salvage_point))
+	salvage_point.mouse_entered.connect(_on_salvage_point_mouse_entered.bind(salvage_point))
+	salvage_point.mouse_exited.connect(_on_salvage_point_mouse_exited.bind(salvage_point))
+
+func disconnect_salvage_point(salvage_point: SalvagePoint) -> void:
+	salvage_point.gui_input.disconnect(_on_salvage_point_gui_input.bind(salvage_point))
+	salvage_point.mouse_entered.disconnect(_on_salvage_point_mouse_entered.bind(salvage_point))
+	salvage_point.mouse_exited.disconnect(_on_salvage_point_mouse_exited.bind(salvage_point))
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:
 		remove_all_pooled()
@@ -674,3 +765,7 @@ func immediately_adjust_camera() -> void:
 
 func get_camera_position() -> Vector2:
 	return camera.position
+
+func in_transition() -> bool:
+	var stage = gameplay_manager.transition.animation_stage
+	return stage == 0 or stage == 1

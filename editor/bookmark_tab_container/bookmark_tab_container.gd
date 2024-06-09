@@ -14,12 +14,21 @@ const name_to_icon := {
 	Keys = preload("res://editor/bookmark_tab_container/icons/key.png"),
 	Tiles = preload("res://editor/bookmark_tab_container/icons/tile.png"),
 	Level = preload("res://editor/bookmark_tab_container/icons/level.png"),
+	SalvagePoints = preload("res://editor/bookmark_tab_container/icons/salvage_point.png"),
 	Entries = preload("res://editor/bookmark_tab_container/icons/entry.png"),
 }
 
 const BOOKMARK_FLAP = preload("res://editor/bookmark_tab_container/bookmark_flap.tscn")
 
 var current_tab: Control = null
+
+func _notification(what):
+	if what == NOTIFICATION_SORT_CHILDREN:
+		# sort children
+		if current_tab == null:
+			return
+		custom_minimum_size.x = flaps_parent.get_minimum_size().x + current_tab.get_minimum_size().x
+		size.x = max(custom_minimum_size.x, flaps_parent.size.x + current_tab.size.x)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

@@ -36,7 +36,7 @@ func _general_update() -> void:
 	_update_level_name()
 
 func _update_leads_to() -> void:
-	entry_data.leads_to = leads_to.value - 1
+	entry_data.leads_to = leads_to.value as int - 1
 	_update_level_name()
 	print_debug("setting entry_data.leads_to to %d" % entry_data.leads_to)
 

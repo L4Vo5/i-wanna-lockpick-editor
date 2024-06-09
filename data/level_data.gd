@@ -13,6 +13,9 @@ signal changed_keys
 signal changed_entries
 @export var entries: Array[EntryData] = []
 
+signal changed_salvage_points
+@export var salvage_points: Array[SalvagePointData] = []
+
 ## This array refers to other levels in the level pack, that are required for this level to be unlocked.
 @export var required_levels := PackedInt32Array()
 
@@ -40,14 +43,6 @@ signal changed_goal_position
 		if goal_position == val: return
 		goal_position = val
 		changed_goal_position.emit()
- 
-@export var input_points: Array[salvage_point_data] = []
-@export var output_points: Array[salvage_point_data] = []
-class salvage_point_data:
-	extends Resource
-	@export var is_input := true
-	@export var position := Vector2i.ZERO
-	@export var SID := -1
 
 ## If the level uses custom lock arrangements, they'll be here
 @export var custom_lock_arrangements := {}

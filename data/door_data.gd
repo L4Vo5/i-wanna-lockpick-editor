@@ -56,6 +56,8 @@ class_name DoorData
 		position = val
 		changed.emit()
 
+@export var sid := -1
+
 func add_lock(lock: LockData) -> void:
 	locks.push_back(lock)
 	lock.changed.connect(emit_changed)
@@ -90,6 +92,7 @@ func duplicated() -> DoorData:
 	dupe.position = position
 	dupe._curses = _curses.duplicate()
 	dupe.amount = amount.duplicated()
+	dupe.sid = sid
 	
 #	assert(PerfManager.start("DoorData::duplicated (locks)"))
 	for l in locks:
@@ -225,4 +228,8 @@ func get_mouseover_text() -> String:
 	if effects_s != "":
 		s += "~ Effects ~\n"
 		s += effects_s
+	if sid != -1:
+		s += "\nSID: "
+		s += str(sid)
+		s += "\n"
 	return s

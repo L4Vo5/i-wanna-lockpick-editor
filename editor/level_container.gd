@@ -24,7 +24,7 @@ var entry_editor: EntryEditor:
 @export var ghost_canvas_group: CanvasGroup
 
 @export var editor: LockpickEditor
-var editor_data: EditorData
+var editor_data: EditorData: set = set_editor_data
 
 @export var danger_highlight: HoverHighlight
 @export var selected_highlight: HoverHighlight
@@ -63,55 +63,52 @@ var danger_obj: Node:
 #var level_offset :=  Vector2(0, 0)
 
 const OBJ_SIZE := Vector2(800, 608)
-func _on_resized() -> void:
-	if editor_data.is_playing:
-		_center_level()
-	return
 
-func _center_level() -> void:
-	# center it
+func _adjust_inner_container_dimensions() -> void:
 	if editor_data.is_playing:
 		inner_container.position = ((size - OBJ_SIZE) / 2).floor()
 		inner_container.size = OBJ_SIZE
 	else:
-		editor_camera.position = - (size - OBJ_SIZE) / 2
-
-func _expand_level() -> void:
-	inner_container.position = Vector2.ZERO
-	inner_container.size = size
+		inner_container.position = Vector2.ZERO
+		inner_container.size = size
 
 func _ready() -> void:
 	gameplay.level.door_gui_input.connect(_on_door_gui_input)
 	gameplay.level.key_gui_input.connect(_on_key_gui_input)
 	gameplay.level.entry_gui_input.connect(_on_entry_gui_input)
-	resized.connect(_on_resized)
+	gameplay.level.salvage_point_gui_input.connect(_on_salvage_point_gui_input)
+	resized.connect(_adjust_inner_container_dimensions)
 	level_viewport.get_parent().show()
-	
-	await get_tree().process_frame
+
+func set_editor_data(data: EditorData) -> void:
+	assert(editor_data == null, "This should only really run once.")
+	editor_data = data
 	editor_data.selected_highlight = selected_highlight
 	editor_data.danger_highlight = danger_highlight
 	editor_data.hover_highlight = gameplay.level.hover_highlight
 	
-	editor_data.side_tabs.tab_changed.connect(_retry_ghosts.unbind(1))
+	editor_data.side_tabs.tab_changed.connect(_retry_ghosts)
 	editor_data.level.changed_doors.connect(_retry_ghosts)
 	editor_data.level.changed_keys.connect(_retry_ghosts)
 	editor_data.changed_level_data.connect(_on_changed_level_data)
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_on_changed_is_playing, CONNECT_DEFERRED)
-	_on_changed_is_playing()
 	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
 	
 	editor_camera.make_current()
+	_on_changed_is_playing()
 	_center_level.call_deferred()
 
 func _on_changed_is_playing() -> void:
-	if editor_data.is_playing:
-		_center_level()
-	else:
+	_adjust_inner_container_dimensions()
+	if !editor_data.is_playing:
 		editor_camera.make_current()
-		_expand_level()
 	camera_dragger.enabled = not editor_data.is_playing
 	_retry_ghosts()
+
+# could be more sophisticated now that bigger level sizes are supported.
+func _center_level() -> void:
+	editor_camera.position = - (size - OBJ_SIZE) / 2
 
 func _on_changed_level_data() -> void:
 	# deselect everything
@@ -173,6 +170,26 @@ func _on_entry_gui_input(event: InputEvent, entry: Entry) -> void:
 			if remove_entry(entry):
 				accept_event()
 
+func _on_salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint) -> void:
+	print("salvage gui input ", event, " for ", salvage_point)
+	if editor_data.disable_editing: return
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.pressed:
+				if remove_salvage_point(salvage_point):
+					accept_event()
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				# damn, this gets long
+				editor_data.salvage_point_editor.salvage_point_data = salvage_point.salvage_point_data
+				editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.salvage_point_editor)
+				accept_event()
+				select_thing(salvage_point)
+	elif event is InputEventMouseMotion:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
+			if remove_salvage_point(salvage_point):
+				accept_event()
+
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
@@ -203,6 +220,12 @@ func _gui_input(event: InputEvent) -> void:
 				elif editor_data.entries:
 					if place_entry_on_mouse():
 						accept_event()
+				elif editor_data.salvage_points:
+					print("trying to place salvage point")
+					if place_salvage_point_on_mouse():
+						accept_event()
+				else:
+					print("something else happened")
 			else: # mouse button released
 				is_dragging = false
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
@@ -314,6 +337,28 @@ func remove_entry(entry: Entry) -> bool:
 	_retry_ghosts()
 	return true
 
+func place_salvage_point_on_mouse() -> bool:
+	if editor_data.disable_editing: return false
+	if is_mouse_out_of_bounds(): return false
+	var coord := get_mouse_coord(16)
+	if (coord.y % 32) != 0:
+		coord.y -= 16
+	print(coord)
+	coord += Vector2i(16, 32)
+	var salvage_point_data := editor_data.salvage_point_editor.salvage_point_data.duplicated()
+	salvage_point_data.position = coord
+	var salvage_point := gameplay.level.add_salvage_point(salvage_point_data)
+	if not is_instance_valid(salvage_point): return false
+	select_thing(salvage_point)
+	return true
+
+func remove_salvage_point(salvage_point: SalvagePoint) -> bool:
+	if not is_instance_valid(salvage_point): return false
+	gameplay.level.remove_salvage_point(salvage_point)
+	select_thing(salvage_point)
+	_retry_ghosts()
+	return true
+
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
@@ -345,6 +390,8 @@ func relocate_selected() -> void:
 		cond = gameplay.level.move_key(selected_obj, used_coord)
 	elif selected_obj is Entry:
 		cond = gameplay.level.move_entry(selected_obj, used_coord)
+	elif selected_obj is SalvagePoint:
+		cond = gameplay.level.move_salvage_point(selected_obj, used_coord)
 	else:
 		assert(false)
 	

@@ -11,6 +11,7 @@ var level: Level
 var player: Kid:
 	get:
 		return level.player if level else null
+var active_salvage: SalvagePoint
 
 var key_counts := {
 	Enums.colors.glitch: ComplexNumber.new(),
@@ -85,7 +86,7 @@ func _physics_process(_delta: float) -> void:
 
 
 ## should only be called from Level.reset
-func reset() -> void:
+func reset(back_to_editor: bool) -> void:
 	for color in key_counts.keys():
 		key_counts[color].set_to(0, 0)
 	for color in star_keys.keys():
@@ -96,6 +97,15 @@ func reset() -> void:
 		key._on_changed_glitch_color()
 	i_view = false
 	undo_redo.clear_history()
+	active_salvage = null
+	
+	if not back_to_editor:
+		for salvage_point: SalvagePoint in level.salvage_points.get_children():
+			salvage_point.prep_output_step_1()
+		for salvage_point: SalvagePoint in level.salvage_points.get_children():
+			salvage_point.prep_output_step_2()
+		for salvage_point: SalvagePoint in level.salvage_points.get_children():
+			salvage_point.prep_output_step_3()
 	
 	# set up the undo in the start position
 	if is_instance_valid(player): 
@@ -166,11 +176,24 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 	# so that it doesn't have to go through ALL all? 
 	
 	for key: Key in level.keys.get_children():
-		# TODO/PERF: no!
+		# better?
+		if key.key_data.color != Enums.colors.glitch:
+			continue
 		key._on_changed_glitch_color()
 	
 	for door: Door in level.doors.get_children():
 		var _door_data := door.door_data
+		var has_glitch := false
+		if _door_data.outer_color == Enums.colors.glitch:
+			has_glitch = true
+		else:
+			for lock in _door_data.locks:
+				if lock.color == Enums.colors.glitch:
+					has_glitch = true
+					break
+		if not has_glitch:
+			# better?
+			continue
 		if not _door_data.get_curse(Enums.curse.brown):
 			# If the door was previously cursed, its glitch color might not match up, so we need to keep track of that in the undo.
 			# (unless this is an undo)
@@ -227,6 +250,8 @@ func try_open_door(door: Door) -> void:
 	level.on_door_opened(door)
 	# TODO: refactor this too
 	if door_data.amount.is_zero():
+		if active_salvage != null:
+			on_salvaged_door(door)
 		assert(undo_redo.is_building_action())
 		undo_redo.add_do_method(door.hide)
 		door.hide()
@@ -445,6 +470,7 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 	if play_sounds:
 		player.master_equipped_sounds(last_master_equipped)
 
+# if you call this function, run _resolve_collision_mode on the key later
 func pick_up_key(key: Key) -> void:
 	var key_data := key.key_data
 	start_undo_action()
@@ -452,7 +478,9 @@ func pick_up_key(key: Key) -> void:
 	undo_redo.add_do_method(key.redo)
 	if not key_data.is_infinite:
 		key_data.is_spent = true
-		key.collision.call_deferred("set_process_mode", Node.PROCESS_MODE_DISABLED)
+		# can't do when reset happens in the same frame (salvages)
+		# key.collision.call_deferred(&"set_process_mode", PROCESS_MODE_DISABLED)
+		key._resolve_collision_mode.call_deferred()
 		key.hide()
 	var used_color := key_data.get_used_color()
 	var current_count: ComplexNumber = key_counts[used_color]
@@ -487,6 +515,14 @@ func pick_up_key(key: Key) -> void:
 	update_gates()
 	if used_color == Enums.colors.master:
 		update_master_equipped(false, false, true)
+
+func on_salvaged_door(door: Door) -> void:
+	assert(active_salvage != null)
+	var sid = active_salvage.salvage_point_data.sid
+	var door_data = door.door_data.duplicated()
+	level.gameplay_manager.pack_state.salvage_door(sid, door_data)
+	level.gameplay_manager.transition.finished_animation.connect(level.reset)
+	level.gameplay_manager.transition.win_animation("Door Salvaged!")
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
 func start_undo_action() -> void:

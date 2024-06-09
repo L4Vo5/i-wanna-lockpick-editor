@@ -54,17 +54,20 @@ func adapt_to(obj: Node) -> void:
 #		return
 	current_obj = obj
 	_hide_all()
+	var offset := Vector2(0, 0)
 	var size := Vector2i(32, 32)
 	if obj is Door:
 		var data: DoorData = obj.door_data
 		assert(is_instance_valid(data))
 		size = data.size
+	if obj is SalvagePoint:
+		offset = Vector2(-16, -32)
 	line.show()
 	line.global_position = obj.global_position
 	line.clear_points()
-	line.add_point(Vector2(0, 0))
-	line.add_point(Vector2(size.x, 0))
-	line.add_point(Vector2(size.x, size.y))
-	line.add_point(Vector2(0, size.y))
-	line.add_point(Vector2(0, 0))
+	line.add_point(offset + Vector2(0, 0))
+	line.add_point(offset + Vector2(size.x, 0))
+	line.add_point(offset + Vector2(size.x, size.y))
+	line.add_point(offset + Vector2(0, size.y))
+	line.add_point(offset + Vector2(0, 0))
 	adapted_to.emit(obj)
