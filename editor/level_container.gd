@@ -223,6 +223,7 @@ func select_thing(obj: Node) -> void:
 	_retry_ghosts()
 
 func place_tile_on_mouse() -> void:
+	print("tile place")
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
 	var coord := get_mouse_tile_coord(32)
@@ -257,13 +258,13 @@ func remove_element(node: Node, type: Enums.object_types) -> bool:
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_tile_coord(16)
+	var coord := get_mouse_coord(Vector2i(16, 16))
 	gameplay.level.place_player_spawn(coord)
 
 func place_goal_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_tile_coord(16)
+	var coord := get_mouse_coord(Vector2i(16, 16))
 	gameplay.level.place_goal(coord)
 
 func relocate_selected() -> void:
@@ -292,7 +293,7 @@ func get_mouse_coord(grid_size: Vector2i) -> Vector2i:
 	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), grid_size)
 
 func get_mouse_tile_coord(grid_size: int) -> Vector2i:
-	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), Vector2i(grid_size, grid_size))
+	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), Vector2i(grid_size, grid_size)) / grid_size
 
 func round_coord(coord: Vector2i, grid_size: Vector2i) -> Vector2i:
 	# wasn't sure how to do a "floor divide". this is crude but it works

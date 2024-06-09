@@ -80,7 +80,6 @@ func _on_flap_toggled(toggled: bool, flap: Button) -> void:
 
 func _get_minimum_size() -> Vector2:
 	var s := Vector2.ZERO
-
 	for child in get_children():
 		if child == flaps_parent: continue
 		s.x = max(s.x, child.get_combined_minimum_size().x)

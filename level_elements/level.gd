@@ -440,6 +440,7 @@ func _spawn_goal() -> void:
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
 # TODO: Optimize this obviously. mainly tiles OBVIOUSLY
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects: Array[Object] = []) -> bool:
+	print(rect)
 	if not is_space_inside(rect):
 		return true
 	if not &"doors" in exclusions:
