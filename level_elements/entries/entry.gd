@@ -10,6 +10,7 @@ class_name Entry
 		_connect_entry_data()
 var level: Level
 var pack_data: LevelPackData
+@export var active := false
 @export var ignore_position := false
 
 @onready var sprite: Sprite2D = %Sprite
@@ -31,6 +32,7 @@ const tween_y_offset := 20
 
 func _ready() -> void:
 	if Global.in_editor: return
+	if not active: return
 	level_name.position.y += tween_y_offset
 	level_name.modulate.a = 0
 	update_name()
@@ -38,6 +40,7 @@ func _ready() -> void:
 
 # called by kid.gd
 func player_touching() -> void:
+	if not active: return
 	if entry_data.leads_to >= 0 and entry_data.leads_to < pack_data.levels.size():
 		arrow.show()
 	level_name.show()
@@ -50,6 +53,7 @@ func player_touching() -> void:
 
 # called by kid.gd
 func player_stopped_touching() -> void:
+	if not active: return
 	arrow.hide()
 	#level_name.hide()
 	if name_tween: name_tween.kill()
@@ -61,6 +65,7 @@ func player_stopped_touching() -> void:
 
 # called by kid.gd
 func enter() -> void:
+	if not active: return
 	if entry_data.leads_to == -1: return
 	var gameplay := level.gameplay_manager
 	var level_pack := gameplay.get_level_pack()
@@ -74,6 +79,7 @@ func update_position() -> void:
 		position = entry_data.position
 
 func update_name() -> void:
+	if not active: return
 	if not entry_data: return
 	if not level: return
 	if not is_node_ready(): return
@@ -83,6 +89,7 @@ func update_name() -> void:
 		level_name.text = level_data.title + "\n" + level_data.name
 
 func update_status() -> void:
+	if not active: return
 	if not entry_data: return
 	if not level: return
 	if not is_node_ready(): return

@@ -23,7 +23,7 @@ var open_cooldown := 0.0
 		_connect_door_data()
 # used to be meta, but found enough uses to keep it around
 var original_door_data: DoorData
-@export var ignore_collisions := false
+@export var active := false
 # 1 when the gate is open (can pass through), 0 when closed, -1 if not a gate, 2 if it should be closed but the player is still inside
 var ignore_collisions_gate := -1
 const GATE_TWEEN_TIME := 0.25
@@ -55,7 +55,7 @@ func _ready() -> void:
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	copies.minimum_size_changed.connect(position_copies)
 	resolve_collision_mode()
-	if not ignore_collisions:
+	if active:
 		assert(visible)
 		assert(not door_data.amount.is_zero())
 	update_everything()
@@ -102,7 +102,7 @@ func _physics_process(delta: float) -> void:
 
 
 func resolve_collision_mode() -> void:
-	if ignore_collisions or door_data.amount.is_zero() or not visible or ignore_collisions_gate == 1:
+	if not active or door_data.amount.is_zero() or not visible or ignore_collisions_gate == 1:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
 	else:
 		# No collision if player is inside (intended use is for gates)

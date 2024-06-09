@@ -11,7 +11,7 @@ var baseline_time := 0.0
 func _ready() -> void:
 	if Global.in_editor: return
 	if Global.is_exported: return
-	return
+	if true: return
 	print("node count before: %d" % get_tree().get_node_count())
 	var l = preload("res://level_elements/level.tscn").instantiate()
 	var levels := [

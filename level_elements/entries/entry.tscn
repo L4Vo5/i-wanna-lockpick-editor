@@ -42,6 +42,7 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 32.0
 offset_bottom = 32.0
+mouse_filter = 1
 script = ExtResource("1_eb5iw")
 
 [node name="Sprite" type="Sprite2D" parent="."]
@@ -59,6 +60,7 @@ autoplay = "default"
 frame_progress = 0.0115035
 
 [node name="Area2D" type="Area2D" parent="."]
+visible = false
 collision_layer = 32
 collision_mask = 0
 

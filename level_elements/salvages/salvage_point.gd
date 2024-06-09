@@ -16,6 +16,9 @@ class_name SalvagePoint
 @export var door_error = false
 @export var door_error_size = false
 
+@export var active = false
+@export var ignore_position = false
+
 @onready var sprite: Sprite2D = %Sprite
 @onready var number: Label = %Number
 @onready var snd_salvage_prep: AudioStreamPlayer = %SalvagePrep
@@ -39,7 +42,7 @@ func prep_output_step_1() -> void:
 	if new_door_data == null:
 		return
 	new_door_data = new_door_data.duplicated()
-
+	
 	var new_position := Vector2()
 	new_position.x = position.x + 16 - new_door_data.size.x / 2
 	new_position.y = position.y + 32 - new_door_data.size.y
@@ -74,7 +77,8 @@ func remove_door() -> void:
 	door_error = false
 	show()
 
-func _on_touched(who: Node2D) -> void:
+func _on_touched(_who: Node2D) -> void:
+	if not active: return
 	if not is_instance_valid(salvage_point_data): return
 	if salvage_point_data.is_output: return
 	if level.logic.active_salvage != self:
@@ -97,7 +101,6 @@ func _disconnect_salvage_point_data() -> void:
 		salvage_point_data.changed.disconnect(update_visual)
 
 func _process(delta) -> void:
-	if level == null: return
 	if not is_instance_valid(salvage_point_data): return
 	var speed := 100
 	if salvage_point_data.is_output and door_error:
@@ -110,7 +113,8 @@ func _process(delta) -> void:
 func update_visual() -> void:
 	if not is_node_ready(): return
 	if not is_instance_valid(salvage_point_data): return
-	position = salvage_point_data.position
+	if not ignore_position:
+		position = salvage_point_data.position
 	var hue: float
 	outline.hide()
 	if salvage_point_data.is_output:
@@ -125,7 +129,7 @@ func update_visual() -> void:
 			sprite.frame = 1
 			hue = 0.55
 	else:
-		if is_instance_valid(level) && level.logic.active_salvage == self:
+		if active and level.logic.active_salvage == self:
 			hue = 0.333
 		else:
 			hue = 0.745

@@ -75,12 +75,11 @@ func save() -> void:
 
 static func find_state_file_for_pack_or_create_new(pack: LevelPackData) -> LevelPackStateData:
 	var state: LevelPackStateData = null
-	var pack_id := pack.pack_id
 	for file_name in DirAccess.get_files_at("user://level_saves"):
 		var file_path := "user://level_saves".path_join(file_name)
 		var possible_state = load(file_path)
 		if possible_state is LevelPackStateData:
-			if possible_state.pack_id == pack_id:
+			if possible_state.pack_id == pack.pack_id:
 				state = possible_state
 				state.pack_data = pack
 	if not state:

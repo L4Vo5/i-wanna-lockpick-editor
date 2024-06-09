@@ -294,6 +294,7 @@ func _spawn_element(data, type: Enums.object_types) -> Node:
 	var dupe = data.duplicated()
 	node[OBJECT_TYPE_TO_DATA[type]] = dupe
 	node.set_meta(&"original_data", data)
+	node.active = true
 	self[OBJECT_TYPE_TO_CONNECT[type]].call(node)
 	self[OBJECT_TYPE_TO_CONTAINER_NAME[type]].add_child(node)
 	return node
@@ -440,7 +441,6 @@ func _spawn_goal() -> void:
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
 # TODO: Optimize this obviously. mainly tiles OBVIOUSLY
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects: Array[Object] = []) -> bool:
-	print(rect)
 	if not is_space_inside(rect):
 		return true
 	if not &"doors" in exclusions:

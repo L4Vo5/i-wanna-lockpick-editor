@@ -59,11 +59,10 @@ func generate_keys() -> void:
 			var key: Key = KEY.instantiate()
 			key.position = pos
 			# make unique
-			key.key_data = key.key_data.duplicate(true)
+			key.key_data = key.key_data.duplicated()
 			key.key_data.color = KEY_COLORS[y * 2 + x]
 			key.key_data.amount = ComplexNumber.new_with(1, 0)
 			key.key_data.type = Enums.key_types.add
-			key.in_keypad = true
 			key.hide_shadow = true
 			key.ignore_position = true
 			keys.add_child(key)

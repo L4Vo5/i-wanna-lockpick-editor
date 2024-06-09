@@ -105,7 +105,7 @@ func set_editor_data(data: EditorData) -> void:
 
 func _on_changed_is_playing() -> void:
 	_adjust_inner_container_dimensions()
-	if !editor_data.is_playing:
+	if not editor_data.is_playing:
 		editor_camera.make_current()
 	camera_dragger.enabled = not editor_data.is_playing
 	_retry_ghosts()
@@ -136,9 +136,9 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.object_typ
 					accept_event()
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
-				var editor = editor_data[OBJECT_TYPE_TO_EDITOR[type]]
+				var editor_name = OBJECT_TYPE_TO_EDITOR[type]
 				var data_name = Level.OBJECT_TYPE_TO_DATA[type]
-				editor[data_name] = node[data_name]
+				editor[editor_name][data_name] = node[data_name]
 				editor_data.side_tabs.set_current_tab_control(editor)
 				accept_event()
 				select_thing(node)
@@ -184,7 +184,7 @@ func _gui_input(event: InputEvent) -> void:
 					accept_event()
 	elif event is InputEventMouseMotion:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			if selected_obj && is_dragging:
+			if selected_obj and is_dragging:
 				relocate_selected()
 			elif Input.is_action_pressed(&"unbound_action"):
 				for type in Enums.object_types.values():
@@ -223,7 +223,6 @@ func select_thing(obj: Node) -> void:
 	_retry_ghosts()
 
 func place_tile_on_mouse() -> void:
-	print("tile place")
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
 	var coord := get_mouse_tile_coord(32)
@@ -275,7 +274,7 @@ func relocate_selected() -> void:
 	var type := Enums.get_object_type(selected_obj)
 	var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
 	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
-	var cond: bool
+	var cond: bool = true
 	var obj_pos: Vector2i = selected_obj.position
 	gameplay.level.move_element(selected_obj, Enums.get_object_type(selected_obj), used_coord)
 	
@@ -329,6 +328,7 @@ func _retry_ghosts() -> void:
 	ghost_key.hide()
 	ghost_door.hide()
 	ghost_entry.hide()
+	ghost_salvage.hide()
 	
 	if not is_dragging:
 		_place_ghosts()
@@ -359,9 +359,9 @@ func _place_ghosts() -> void:
 		var editor_name = OBJECT_TYPE_TO_EDITOR[type]
 		var data_name = Level.OBJECT_TYPE_TO_DATA[type]
 		obj[data_name] = self[editor_name][data_name]
-
+		
 		var maybe_pos := get_mouse_coord(grid_size)
-		obj.position = maybe_pos
+		obj[data_name].position = maybe_pos
 		
 		var is_valid := true
 		
