@@ -22,15 +22,15 @@ const BOOKMARK_FLAP = preload("res://editor/bookmark_tab_container/bookmark_flap
 
 var current_tab: Control = null
 
-func _notification(what):
-	if what == NOTIFICATION_SORT_CHILDREN:
-		# sort children
-		if current_tab == null:
-			return
-		custom_minimum_size.x = flaps_parent.get_minimum_size().x + current_tab.get_minimum_size().x
-		size.x = max(custom_minimum_size.x, flaps_parent.size.x + current_tab.size.x)
+func set_current_tab_control(tab: Control):
+	var idx = 0
+	for child in get_children():
+		if child == flaps_parent:
+			continue
+		if child == tab:
+			_on_flap_toggled(true, flaps_parent.get_child(idx))
+		idx += 1
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	regen_flaps()
 	resized.connect(_on_resize)
@@ -62,7 +62,6 @@ func regen_flaps() -> void:
 		flaps_parent.add_child(new_flap)
 		flaps_size = max(flaps_size, new_flap.size.x)
 	#flaps_parent.position.x = -flaps_size
-	_on_resize()
 	if !flaps.is_empty():
 		_on_flap_toggled(true, flaps[0])
 
@@ -78,6 +77,15 @@ func _on_flap_toggled(toggled: bool, flap: Button) -> void:
 			other_flap.set_pressed_no_signal(false)
 			get_node(NodePath(other_flap.name)).hide()
 		tab_changed.emit()
+
+func _get_minimum_size() -> Vector2:
+	var s := Vector2.ZERO
+
+	for child in get_children():
+		if child == flaps_parent: continue
+		s.x = max(s.x, child.get_combined_minimum_size().x)
+	custom_minimum_size.x = s.x + flaps_size
+	return s
 
 func get_current_tab_control() -> Control:
 	return current_tab

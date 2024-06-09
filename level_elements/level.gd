@@ -145,56 +145,33 @@ func reset(back_to_editor: bool = false) -> void:
 	
 	# This initial stuff looks ugly for optimization's sake
 	# (yes, it makes a measurable impact, specially on big levels)
-	assert(PerfManager.start("Level::reset (doors)"))
-	var needed_doors := level_data.doors.size()
-	var current_doors := doors.get_child_count()
-	# redo the current ones
-	for i in mini(needed_doors, current_doors):
-		var door := doors.get_child(i)
-		door.original_door_data = level_data.doors[i]
-		door.door_data = door.original_door_data.duplicated()
-	# shave off the rest
-	if current_doors > needed_doors:
-		for _i in current_doors - needed_doors:
-			var door := doors.get_child(-1)
-			doors.remove_child(door)
-			disconnect_door(door)
-			NodePool.return_node(door)
-	# or add them
-	else:
-		for i in range(current_doors, needed_doors):
-			_spawn_door(level_data.doors[i])
-	assert(PerfManager.end("Level::reset (doors)"))
-	
-	assert(PerfManager.start("Level::reset (keys)"))
-	var needed_keys := level_data.keys.size()
-	var current_keys := keys.get_child_count()
-	
-	print("current ", current_keys, ", needed ", needed_keys)
-	# redo the current ones
-	for i in mini(needed_keys, current_keys):
-		var key: Key = keys.get_child(i)
-		key.set_meta(&"original_key_data", level_data.keys[i])
-		key.key_data = level_data.keys[i].duplicated()
-	# shave off the rest
-	if current_keys > needed_keys:
-		for _i in current_keys - needed_keys:
-			var key := keys.get_child(-1)
-			keys.remove_child(key)
-			disconnect_key(key)
-			NodePool.return_node(key)
-	# or add them
-	else:
-		for i in range(current_keys, needed_keys):
-			_spawn_key(level_data.keys[i])
-	
-	# Not gonna optimize entires rn. You shouldn't have that many anyways
-	for child in entries.get_children():
-		child.free()
-	for entry in level_data.entries:
-		_spawn_entry(entry)
-	
-	assert(PerfManager.end("Level::reset (keys)"))
+	for type in Enums.object_types.values():
+		assert(PerfManager.start("Level::reset (" + str(type) + ")"))
+		var cont_name: StringName = OBJECT_TYPE_TO_CONTAINER_NAME[type]
+
+		var list: Array = level_data[cont_name]
+		var container: Node2D = self[cont_name]
+
+		var needed := list.size()
+		var current := container.get_child_count()
+		# redo the current ones
+		for i in mini(needed, current):
+			var node := container.get_child(i)
+			var original_data = list[i]
+			node.set_meta(&"original_data", original_data)
+			node[OBJECT_TYPE_TO_DATA[type]] = original_data.duplicated()
+		# shave off the rest
+		if current > needed:
+			for _i in current - needed:
+				var node := container.get_child(-1)
+				container.remove_child(node)
+				self[OBJECT_TYPE_TO_DISCONNECT[type]].call(node)
+				NodePool.return_node(node)
+		# or add them
+		else:
+			for i in range(current, needed):
+				_spawn_element(list[i], type)
+		assert(PerfManager.end("Level::reset (" + str(type) + ")"))
 	
 	assert(PerfManager.start("Level::reset (tiles)"))
 	tile_map.clear()
@@ -258,189 +235,92 @@ signal key_gui_input(event: InputEvent, key: Key)
 signal entry_gui_input(event: InputEvent, entry: Entry)
 signal salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint)
 
-## Adds a door to the level data. Returns null if it wasn't added
-func add_door(door_data: DoorData) -> Door:
-	if is_space_occupied(door_data.get_rect()): return null
-	if not door_data.check_valid(level_data, true): return null
-	if not door_data in level_data.doors:
-		level_data.doors.push_back(door_data)
-		level_data.changed_doors.emit()
-	return _spawn_door(door_data)
+const OBJECT_TYPE_TO_CONTAINER_NAME := {
+	Enums.object_types.door: &"doors",
+	Enums.object_types.key: &"keys",
+	Enums.object_types.entry: &"entries",
+	Enums.object_types.salvage: &"salvage_points",
+};
 
-## Makes a door physically appear (doesn't check collisions)
-func _spawn_door(door_data: DoorData) -> Door:
-	assert(PerfManager.start("Level::_spawn_door"))
-	assert(PerfManager.start("Level::_spawn_door (instantiating)"))
-	var door: Door = NodePool.pool_node(DOOR)
-#	var door := DOOR.instantiate()
-	assert(PerfManager.end("Level::_spawn_door (instantiating)"))
-	var dd := door_data.duplicated()
-	door.door_data = dd
-	door.original_door_data = door_data
-	connect_door(door)
-	assert(PerfManager.start("Level::_spawn_door (adding child)"))
-	doors.add_child(door)
-	assert(PerfManager.end("Level::_spawn_door (adding child)"))
-	assert(PerfManager.end("Level::_spawn_door"))
-	return door
+const OBJECT_TYPE_TO_SIGNAL := {
+	Enums.object_types.door: &"changed_doors",
+	Enums.object_types.key: &"changed_keys",
+	Enums.object_types.entry: &"changed_entries",
+	Enums.object_types.salvage: &"changed_salvage_points",
+};
 
-## Removes a door from the level data
-func remove_door(door: Door) -> void:
-	var pos := level_data.doors.find(door.original_door_data)
-	if pos >= 0: # false for salvage
-		level_data.doors.remove_at(pos)
-	doors.remove_child(door)
-	disconnect_door(door)
-#	door.queue_free()
-	NodePool.return_node(door)
-	level_data.changed_doors.emit()
+const OBJECT_TYPE_TO_SCENE := {
+	Enums.object_types.door: DOOR,
+	Enums.object_types.key: KEY,
+	Enums.object_types.entry: ENTRY,
+	Enums.object_types.salvage: SALVAGE_POINT,
+};
 
-## Moves a given door. Returns false if the move failed
-func move_door(door: Door, new_position: Vector2i) -> bool:
-	var door_data: DoorData = door.original_door_data
-	var i := level_data.doors.find(door_data)
+const OBJECT_TYPE_TO_DATA := {
+	Enums.object_types.door: &"door_data",
+	Enums.object_types.key: &"key_data",
+	Enums.object_types.entry: &"entry_data",
+	Enums.object_types.salvage: &"salvage_point_data",
+};
+
+const OBJECT_TYPE_TO_CONNECT := {
+	Enums.object_types.door: &"connect_door",
+	Enums.object_types.key: &"connect_key",
+	Enums.object_types.entry: &"connect_entry",
+	Enums.object_types.salvage: &"connect_salvage_point",
+};
+
+const OBJECT_TYPE_TO_DISCONNECT := {
+	Enums.object_types.door: &"disconnect_door",
+	Enums.object_types.key: &"disconnect_key",
+	Enums.object_types.entry: &"disconnect_entry",
+	Enums.object_types.salvage: &"disconnect_salvage_point",
+};
+
+## Adds *something* to the level data. Returns null if it wasn't added
+func add_element(data, type: Enums.object_types) -> Node:
+	if is_space_occupied(data.get_rect()): return null
+	if type == Enums.object_types.door:
+		if not data.check_valid(level_data, true): return null
+	var list: Array = level_data[OBJECT_TYPE_TO_CONTAINER_NAME[type]];
+	if not data in list:
+		list.push_back(data)
+		level_data[OBJECT_TYPE_TO_SIGNAL[type]].emit() # changed_...
+	return _spawn_element(data, type)
+
+## Makes *something* physically appear (doesn't check collisions)
+func _spawn_element(data, type: Enums.object_types) -> Node:
+	var node := NodePool.pool_node(OBJECT_TYPE_TO_SCENE[type])
+	var dupe = data.duplicated()
+	node[OBJECT_TYPE_TO_DATA[type]] = dupe
+	node.set_meta(&"original_data", data)
+	self[OBJECT_TYPE_TO_CONNECT[type]].call(node)
+	self[OBJECT_TYPE_TO_CONTAINER_NAME[type]].add_child(node)
+	return node
+
+## Removes *something* from the level data
+func remove_element(node: Node, type: Enums.object_types) -> void:
+	var original_data = node.get_meta(&"original_data")
+	var list: Array = level_data[OBJECT_TYPE_TO_CONTAINER_NAME[type]]
+	var i := list.find(original_data)
+	if i != -1:
+		list.remove_at(i)
+	self[OBJECT_TYPE_TO_CONTAINER_NAME[type]].remove_child(node)
+	self[OBJECT_TYPE_TO_DISCONNECT[type]].call(node)
+	NodePool.return_node(node)
+	level_data[OBJECT_TYPE_TO_SIGNAL[type]].emit()
+
+## Moves *something*. Returns false if the move failed
+func move_element(node: Node, type: Enums.object_types, new_position: Vector2i) -> bool:
+	var original_data = node.get_meta(&"original_data")
+	var list: Array = level_data[OBJECT_TYPE_TO_CONTAINER_NAME[type]]
+	var i := list.find(original_data)
 	assert(i != -1)
-	assert(door_data.get_rect() == Rect2i(door_data.position, door_data.get_rect().size))
-	var rect := Rect2i(new_position, door_data.get_rect().size)
-	if not is_space_occupied(rect, [], [door_data]):
-		door_data.position = new_position
-		door.door_data.position = new_position
-		level_data.changed_doors.emit()
-		return true
-	else:
-		return false
-
-## Adds a key to the level data. Returns null if it wasn't added
-func add_key(key_data: KeyData) -> Key:
-	if is_space_occupied(key_data.get_rect()): return null
-	if not key_data in level_data.keys:
-		level_data.keys.push_back(key_data)
-		level_data.changed_keys.emit()
-	return _spawn_key(key_data)
-
-## Makes a key physically appear (doesn't check collisions)
-func _spawn_key(key_data: KeyData) -> Key:
-	var key: Key = NodePool.pool_node(KEY)
-	key.key_data = key_data.duplicated()
-	key.set_meta(&"original_key_data", key_data)
-	connect_key(key)
-	key.level = self
-	keys.add_child(key)
-	return key
-
-## Removes a key from the level data
-func remove_key(key: Key) -> void:
-	var i := level_data.keys.find(key.get_meta(&"original_key_data"))
-	assert(i != -1)
-	level_data.keys.remove_at(i)
-	keys.remove_child(key)
-	disconnect_key(key)
-	key.queue_free()
-	NodePool.return_node(key)
-	level_data.changed_keys.emit()
-
-## Moves a given key. Returns false if the move failed
-func move_key(key: Key, new_position: Vector2i) -> bool:
-	var key_data: KeyData = key.get_meta(&"original_key_data")
-	var i := level_data.keys.find(key_data)
-	assert(i != -1)
-	assert(key_data.get_rect() == Rect2i(key_data.position, key_data.get_rect().size))
-	var rect := Rect2i(new_position, key_data.get_rect().size)
-	if not is_space_occupied(rect, [], [key_data]):
-		key_data.position = new_position
-		key.key_data.position = new_position
-		level_data.changed_keys.emit()
-		return true
-	else:
-		return false
-
-
-## Adds an entry to the level data. Returns null if it wasn't added
-func add_entry(entry_data: EntryData) -> Entry:
-	if is_space_occupied(entry_data.get_rect()): return null
-	if not entry_data in level_data.entries:
-		level_data.entries.push_back(entry_data)
-		level_data.changed_entries.emit()
-	return _spawn_entry(entry_data)
-
-## Makes an entry physically appear (doesn't check collisions)
-func _spawn_entry(entry_data: EntryData) -> Entry:
-	var entry: Entry = NodePool.pool_node(ENTRY)
-	entry.entry_data = entry_data.duplicated()
-	entry.set_meta(&"original_entry_data", entry_data)
-	connect_entry(entry)
-	entry.level = self
-	assert(gameplay_manager.pack_data)
-	entry.pack_data = gameplay_manager.pack_data
-	entries.add_child(entry)
-	return entry
-
-## Removes an entry from the level data
-func remove_entry(entry: Entry) -> void:
-	var i := level_data.entries.find(entry.get_meta(&"original_entry_data"))
-	assert(i != -1)
-	level_data.entries.remove_at(i)
-	entries.remove_child(entry)
-	disconnect_entry(entry)
-	entry.queue_free()
-	level_data.changed_entries.emit()
-
-## Moves a given entry. Returns false if the move failed
-func move_entry(entry: Entry, new_position: Vector2i) -> bool:
-	var entry_data: EntryData = entry.get_meta(&"original_entry_data")
-	var i := level_data.entries.find(entry_data)
-	assert(i != -1)
-	assert(entry_data.get_rect() == Rect2i(entry_data.position, entry_data.get_rect().size))
-	var rect := Rect2i(new_position, entry_data.get_rect().size)
-	if not is_space_occupied(rect, [], [entry_data]):
-		entry_data.position = new_position
-		entry.entry_data.position = new_position
-		level_data.changed_entries.emit()
-		return true
-	else:
-		return false
-
-
-## Adds a salvage point to the level data. Returns null if it wasn't added
-func add_salvage_point(salvage_point_data: SalvagePointData) -> SalvagePoint:
-	if is_space_occupied(salvage_point_data.get_rect()): return null
-	if not salvage_point_data in level_data.salvage_points:
-		level_data.salvage_points.push_back(salvage_point_data)
-		level_data.changed_entries.emit()
-	return _spawn_salvage_point(salvage_point_data)
-
-## Makes a salvage point physically appear (doesn't check collisions)
-func _spawn_salvage_point(salvage_point_data: SalvagePointData) -> SalvagePoint:
-	var salvage_point: SalvagePoint = NodePool.pool_node(SALVAGE_POINT)
-	salvage_point.salvage_point_data = salvage_point_data.duplicated()
-	salvage_point.set_meta(&"original_salvage_point_data", salvage_point_data)
-	connect_salvage_point(salvage_point)
-	salvage_point.level = self
-	assert(gameplay_manager.pack_state)
-	salvage_point.level_pack_state = gameplay_manager.pack_state
-	salvage_points.add_child(salvage_point)
-	return salvage_point
-
-## Removes a salvage point from the level data
-func remove_salvage_point(salvage_point: SalvagePoint) -> void:
-	var i := level_data.salvage_points.find(salvage_point.get_meta(&"original_salvage_point_data"))
-	assert(i != -1)
-	level_data.salvage_points.remove_at(i)
-	salvage_points.remove_child(salvage_point)
-	disconnect_salvage_point(salvage_point)
-	salvage_point.queue_free()
-	level_data.changed_entries.emit()
-
-## Moves a given salvage point. Returns false if the move failed
-func move_salvage_point(salvage_point: SalvagePoint, new_position: Vector2i) -> bool:
-	var salvage_point_data: SalvagePointData = salvage_point.get_meta(&"original_salvage_point_data")
-	var i := level_data.salvage_points.find(salvage_point_data)
-	assert(i != -1)
-	var rect := Rect2i(new_position, salvage_point_data.get_rect().size)
-	if not is_space_occupied(rect, [], [salvage_point_data]):
-		salvage_point_data.position = new_position
-		salvage_point.salvage_point_data.position = new_position
-		level_data.changed_salvage_points.emit()
+	var rect := Rect2i(new_position, original_data.get_rect().size)
+	if not is_space_occupied(rect, [], [original_data]):
+		original_data.position = new_position
+		node[OBJECT_TYPE_TO_DATA[type]].position = new_position
+		level_data[OBJECT_TYPE_TO_SIGNAL[type]].emit()
 		return true
 	else:
 		return false
@@ -595,8 +475,19 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 				return true
 	return false
 
+## Returns the object at that position.
+func get_object_occupying(pos: Vector2i) -> Node:
+	for type in Enums.object_types.values():
+		var container: Node2D = self[OBJECT_TYPE_TO_CONTAINER_NAME[type]]
+		var data_name: StringName = OBJECT_TYPE_TO_DATA[type]
+		for child in container.get_children():
+			var rect: Rect2i = child[data_name].get_rect()
+			if rect.has_point(pos):
+				return child
+	return null
+
 ## Returns true if there's not enough space to fit a salvage
-# this cares about doors and tiles CURRENTLY in the level, not in the level data
+## this cares about doors and tiles CURRENTLY in the level, not in the level data
 func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
 	for tile_pos in level_data.tiles:
 		if Rect2i(tile_pos * 32, Vector2i(32, 32)).intersects(rect):
@@ -630,32 +521,7 @@ func _on_entry_gui_input(event: InputEvent, entry: Entry) -> void:
 	entry_gui_input.emit(event, entry)
 
 func _on_salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint) -> void:
-	print("hi")
 	salvage_point_gui_input.emit(event, salvage_point)
-
-func _on_door_mouse_entered(door: Door) -> void:
-	hover_highlight.adapt_to(door)
-
-func _on_door_mouse_exited(door: Door) -> void:
-	hover_highlight.stop_adapting_to(door)
-
-func _on_key_mouse_entered(key: Key) -> void:
-	hover_highlight.adapt_to(key)
-
-func _on_key_mouse_exited(key: Key) -> void:
-	hover_highlight.stop_adapting_to(key)
-
-func _on_entry_mouse_entered(entry: Entry) -> void:
-	hover_highlight.adapt_to(entry)
-
-func _on_entry_mouse_exited(entry: Entry) -> void:
-	hover_highlight.stop_adapting_to(entry)
-
-func _on_salvage_point_mouse_entered(salvage_point: SalvagePoint) -> void:
-	hover_highlight.adapt_to(salvage_point)
-
-func _on_salvage_point_mouse_exited(salvage_point: SalvagePoint) -> void:
-	hover_highlight.stop_adapting_to(salvage_point)
 
 func _on_hover_adapted_to(_what: Node) -> void:
 	update_mouseover()
@@ -677,50 +543,40 @@ func add_debris_child(debris: Node) -> void:
 
 func connect_door(door: Door) -> void:
 	door.gui_input.connect(_on_door_gui_input.bind(door))
-	door.mouse_entered.connect(_on_door_mouse_entered.bind(door))
-	door.mouse_exited.connect(_on_door_mouse_exited.bind(door))
 	door.changed_curse.connect(_on_door_changed_curse.bind(door))
 	door.level = self
 
 func disconnect_door(door: Door) -> void:
 	door.gui_input.disconnect(_on_door_gui_input.bind(door))
-	door.mouse_entered.disconnect(_on_door_mouse_entered.bind(door))
-	door.mouse_exited.disconnect(_on_door_mouse_exited.bind(door))
 	door.changed_curse.disconnect(_on_door_changed_curse.bind(door))
 	door.level = null
 
 func connect_key(key: Key) -> void:
 	key.gui_input.connect(_on_key_gui_input.bind(key))
-	key.mouse_entered.connect(_on_key_mouse_entered.bind(key))
-	key.mouse_exited.connect(_on_key_mouse_exited.bind(key))
 	key.picked_up.connect(_on_key_picked_up.bind(key))
+	key.level = self # that's where that belongs now
 
 func disconnect_key(key: Key) -> void:
 	key.gui_input.disconnect(_on_key_gui_input.bind(key))
-	key.mouse_entered.disconnect(_on_key_mouse_entered.bind(key))
-	key.mouse_exited.disconnect(_on_key_mouse_exited.bind(key))
 	key.picked_up.disconnect(_on_key_picked_up.bind(key))
 
 func connect_entry(entry: Entry) -> void:
 	entry.gui_input.connect(_on_entry_gui_input.bind(entry))
-	entry.mouse_entered.connect(_on_entry_mouse_entered.bind(entry))
-	entry.mouse_exited.connect(_on_entry_mouse_exited.bind(entry))
+	entry.level = self
+	assert(gameplay_manager.pack_data)
+	entry.pack_data = gameplay_manager.pack_data
 
 func disconnect_entry(entry: Entry) -> void:
 	entry.gui_input.disconnect(_on_entry_gui_input.bind(entry))
-	entry.mouse_entered.disconnect(_on_entry_mouse_entered.bind(entry))
-	entry.mouse_exited.disconnect(_on_entry_mouse_exited.bind(entry))
 
 func connect_salvage_point(salvage_point: SalvagePoint) -> void:
-	print("connect those")
 	salvage_point.gui_input.connect(_on_salvage_point_gui_input.bind(salvage_point))
-	salvage_point.mouse_entered.connect(_on_salvage_point_mouse_entered.bind(salvage_point))
-	salvage_point.mouse_exited.connect(_on_salvage_point_mouse_exited.bind(salvage_point))
+	salvage_point.level = self
+	assert(gameplay_manager.pack_state != null)
+	salvage_point.level_pack_state = gameplay_manager.pack_state
 
 func disconnect_salvage_point(salvage_point: SalvagePoint) -> void:
 	salvage_point.gui_input.disconnect(_on_salvage_point_gui_input.bind(salvage_point))
-	salvage_point.mouse_entered.disconnect(_on_salvage_point_mouse_entered.bind(salvage_point))
-	salvage_point.mouse_exited.disconnect(_on_salvage_point_mouse_exited.bind(salvage_point))
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:

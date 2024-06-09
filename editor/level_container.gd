@@ -17,10 +17,14 @@ var key_editor: KeyEditor:
 var entry_editor: EntryEditor:
 	get:
 		return editor_data.entry_editor
+var salvage_point_editor: SalvagePointEditor:
+	get:
+		return editor_data.salvage_point_editor
 
 @export var ghost_door: Door
 @export var ghost_key: Key
 @export var ghost_entry: Entry
+@export var ghost_salvage: SalvagePoint
 @export var ghost_canvas_group: CanvasGroup
 
 @export var editor: LockpickEditor
@@ -73,10 +77,10 @@ func _adjust_inner_container_dimensions() -> void:
 		inner_container.size = size
 
 func _ready() -> void:
-	gameplay.level.door_gui_input.connect(_on_door_gui_input)
-	gameplay.level.key_gui_input.connect(_on_key_gui_input)
-	gameplay.level.entry_gui_input.connect(_on_entry_gui_input)
-	gameplay.level.salvage_point_gui_input.connect(_on_salvage_point_gui_input)
+	gameplay.level.door_gui_input.connect(_on_element_gui_input.bind(Enums.object_types.door))
+	gameplay.level.key_gui_input.connect(_on_element_gui_input.bind(Enums.object_types.key))
+	gameplay.level.entry_gui_input.connect(_on_element_gui_input.bind(Enums.object_types.entry))
+	gameplay.level.salvage_point_gui_input.connect(_on_element_gui_input.bind(Enums.object_types.salvage))
 	resized.connect(_adjust_inner_container_dimensions)
 	level_viewport.get_parent().show()
 
@@ -116,78 +120,31 @@ func _on_changed_level_data() -> void:
 	hovered_obj = null
 	danger_obj = null
 
-func _on_door_gui_input(event: InputEvent, door: Door) -> void:
-	if editor_data.disable_editing: return
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT:
-			if event.pressed:
-				if remove_door(door):
-					accept_event()
-		elif event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				editor_data.door_editor.door_data = door.door_data
-				editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.door_editor)
-				accept_event()
-				select_thing(door)
-	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
-			if remove_door(door):
-				accept_event()
+const OBJECT_TYPE_TO_EDITOR := {
+	Enums.object_types.door: &"door_editor",
+	Enums.object_types.key: &"key_editor",
+	Enums.object_types.entry: &"entry_editor",
+	Enums.object_types.salvage: &"salvage_point_editor",
+}
 
-func _on_key_gui_input(event: InputEvent, key: Key) -> void:
+func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.object_types) -> void:
 	if editor_data.disable_editing: return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
-				if remove_key(key):
+				if remove_element(node, type):
 					accept_event()
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
-				editor_data.key_editor.key_data = key.key_data
-				editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.key_editor)
+				var editor = editor_data[OBJECT_TYPE_TO_EDITOR[type]]
+				var data_name = Level.OBJECT_TYPE_TO_DATA[type]
+				editor[data_name] = node[data_name]
+				editor_data.side_tabs.set_current_tab_control(editor)
 				accept_event()
-				select_thing(key)
+				select_thing(node)
 	elif event is InputEventMouseMotion:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
-			if remove_key(key):
-				accept_event()
-
-func _on_entry_gui_input(event: InputEvent, entry: Entry) -> void:
-	if editor_data.disable_editing: return
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT:
-			if event.pressed:
-				if remove_entry(entry):
-					accept_event()
-		elif event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				editor_data.entry_editor.entry_data = entry.entry_data
-				editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.entry_editor)
-				accept_event()
-				select_thing(entry)
-	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
-			if remove_entry(entry):
-				accept_event()
-
-func _on_salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint) -> void:
-	print("salvage gui input ", event, " for ", salvage_point)
-	if editor_data.disable_editing: return
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT:
-			if event.pressed:
-				if remove_salvage_point(salvage_point):
-					accept_event()
-		elif event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				# damn, this gets long
-				editor_data.salvage_point_editor.salvage_point_data = salvage_point.salvage_point_data
-				editor_data.side_tabs.current_tab = editor_data.side_tabs.get_tab_idx_from_control(editor_data.salvage_point_editor)
-				accept_event()
-				select_thing(salvage_point)
-	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
-			if remove_salvage_point(salvage_point):
+			if remove_element(node, type):
 				accept_event()
 
 
@@ -195,39 +152,31 @@ func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				# TODO: What's the focus for??
-				set_focus_mode(Control.FOCUS_ALL)
-				grab_focus()
-				# if the event got this far, we want to deselect
-				selected_obj = null
-				if editor_data.tilemap_edit:
-					place_tile_on_mouse()
-					accept_event()
-				elif editor_data.doors:
-					if place_door_on_mouse():
-						accept_event()
-				elif editor_data.keys:
-					if place_key_on_mouse():
-						accept_event()
-				elif editor_data.level_properties:
-					if editor_data.player_spawn:
-						place_player_spawn_on_mouse()
-						accept_event()
-					elif editor_data.goal_position:
-						place_goal_on_mouse()
-						accept_event()
-				elif editor_data.entries:
-					if place_entry_on_mouse():
-						accept_event()
-				elif editor_data.salvage_points:
-					print("trying to place salvage point")
-					if place_salvage_point_on_mouse():
-						accept_event()
-				else:
-					print("something else happened")
-			else: # mouse button released
+			if not event.pressed: # mouse button released
 				is_dragging = false
+				return
+			# TODO: What's the focus for??
+			set_focus_mode(Control.FOCUS_ALL)
+			grab_focus()
+			# if the event got this far, we want to deselect
+			selected_obj = null
+			if editor_data.tilemap_edit:
+				place_tile_on_mouse()
+				accept_event()
+				return
+			for type in Enums.object_types.values():
+				if editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]]:
+					place_element_on_mouse(type)
+					return
+			if editor_data.level_properties:
+				if editor_data.player_spawn:
+					place_player_spawn_on_mouse()
+					accept_event()
+				elif editor_data.goal_position:
+					place_goal_on_mouse()
+					accept_event()
+			else:
+				assert(false)
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
 				selected_obj = null
@@ -238,15 +187,10 @@ func _gui_input(event: InputEvent) -> void:
 			if selected_obj && is_dragging:
 				relocate_selected()
 			elif Input.is_action_pressed(&"unbound_action"):
-				if editor_data.doors:
-					if place_door_on_mouse():
-						accept_event()
-				elif editor_data.keys:
-					if place_key_on_mouse():
-						accept_event()
-				elif editor_data.entries:
-					if place_entry_on_mouse():
-						accept_event()
+				for type in Enums.object_types.values():
+					if editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]]:
+						place_element_on_mouse(type)
+						return
 			elif editor_data.tilemap_edit:
 				place_tile_on_mouse()
 				accept_event()
@@ -261,7 +205,15 @@ func _gui_input(event: InputEvent) -> void:
 #			if editor_data.tilemap_edit:
 				if remove_tile_on_mouse():
 					accept_event()
+		update_hover(get_global_mouse_position() - get_level_pos())
 		_retry_ghosts()
+
+func update_hover(pos: Vector2):
+	var node := editor.level.get_object_occupying(pos.floor())
+	if node == null:
+		hovered_obj = null
+	else:
+		hovered_obj = node
 
 func select_thing(obj: Node) -> void:
 	# is_dragging is set to true by _on_selected_highlight_adapted_to
@@ -282,93 +234,36 @@ func remove_tile_on_mouse() -> bool:
 	var coord := get_mouse_tile_coord(32)
 	return gameplay.level.remove_tile(coord)
 
-func place_door_on_mouse() -> bool:
+func place_element_on_mouse(type: Enums.object_types) -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_coord(32)
-	var door_data := door_editor.door_data.duplicated()
-	door_data.position = coord
-	var door := gameplay.level.add_door(door_data)
-	if not is_instance_valid(door): return false
-	select_thing(door)
+	var coord := get_mouse_coord(OBJECT_TYPE_TO_GRID_SIZE[type])
+	var editor_name: StringName = OBJECT_TYPE_TO_EDITOR[type]
+	var data_name: StringName = Level.OBJECT_TYPE_TO_DATA[type]
+	var data = self[editor_name][data_name].duplicated()
+	data.position = coord
+	var node := gameplay.level.add_element(data, type)
+	if not is_instance_valid(node): return false
+	select_thing(node)
 	return true
 
-func remove_door(door: Door) -> bool:
-	if not is_instance_valid(door): return false
-	gameplay.level.remove_door(door)
-	selected_obj = null
-	hovered_obj = null
-	_retry_ghosts()
-	return true
-
-func place_key_on_mouse() -> bool:
-	if editor_data.disable_editing: return false
-	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_coord(16)
-	var key_data := key_editor.key_data.duplicated()
-	key_data.position = coord
-	var key := gameplay.level.add_key(key_data)
-	if not is_instance_valid(key): return false
-	select_thing(key)
-	return true
-
-func remove_key(key: Key) -> bool:
-	if not is_instance_valid(key): return false
-	gameplay.level.remove_key(key)
-	select_thing(key)
-	_retry_ghosts()
-	return true
-
-func place_entry_on_mouse() -> bool:
-	if editor_data.disable_editing: return false
-	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_coord(32)
-	var entry_data := entry_editor.entry_data.duplicated()
-	entry_data.position = coord
-	var entry := gameplay.level.add_entry(entry_data)
-	if not is_instance_valid(entry): return false
-	select_thing(entry)
-	return true
-
-func remove_entry(entry: Entry) -> bool:
-	if not is_instance_valid(entry): return false
-	gameplay.level.remove_entry(entry)
-	select_thing(entry)
-	_retry_ghosts()
-	return true
-
-func place_salvage_point_on_mouse() -> bool:
-	if editor_data.disable_editing: return false
-	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_coord(16)
-	if (coord.y % 32) != 0:
-		coord.y -= 16
-	print(coord)
-	coord += Vector2i(16, 32)
-	var salvage_point_data := editor_data.salvage_point_editor.salvage_point_data.duplicated()
-	salvage_point_data.position = coord
-	var salvage_point := gameplay.level.add_salvage_point(salvage_point_data)
-	if not is_instance_valid(salvage_point): return false
-	select_thing(salvage_point)
-	return true
-
-func remove_salvage_point(salvage_point: SalvagePoint) -> bool:
-	if not is_instance_valid(salvage_point): return false
-	gameplay.level.remove_salvage_point(salvage_point)
-	select_thing(salvage_point)
+func remove_element(node: Node, type: Enums.object_types) -> bool:
+	if not is_instance_valid(node): return false
+	gameplay.level.remove_element(node, type)
+	select_thing(null)
 	_retry_ghosts()
 	return true
 
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_coord(16)
+	var coord := get_mouse_tile_coord(16)
 	gameplay.level.place_player_spawn(coord)
 
 func place_goal_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_coord(16)
+	var coord := get_mouse_tile_coord(16)
 	gameplay.level.place_goal(coord)
 
 func relocate_selected() -> void:
@@ -376,24 +271,12 @@ func relocate_selected() -> void:
 	if is_mouse_out_of_bounds(): return
 	if not is_dragging: return
 	if not is_instance_valid(selected_obj): return
-	var grid_size := 32
-	if selected_obj is Door:
-		grid_size = 32
-	elif selected_obj is Key:
-		grid_size = 16
+	var type := Enums.get_object_type(selected_obj)
+	var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
 	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
 	var cond: bool
 	var obj_pos: Vector2i = selected_obj.position
-	if selected_obj is Door:
-		cond = gameplay.level.move_door(selected_obj, used_coord)
-	elif selected_obj is Key:
-		cond = gameplay.level.move_key(selected_obj, used_coord)
-	elif selected_obj is Entry:
-		cond = gameplay.level.move_entry(selected_obj, used_coord)
-	elif selected_obj is SalvagePoint:
-		cond = gameplay.level.move_salvage_point(selected_obj, used_coord)
-	else:
-		assert(false)
+	gameplay.level.move_element(selected_obj, Enums.get_object_type(selected_obj), used_coord)
 	
 	if not cond and obj_pos != used_coord:
 		_place_danger_obj()
@@ -405,19 +288,19 @@ func relocate_selected() -> void:
 
 
 
-func get_mouse_coord(grid_size: int) -> Vector2i:
+func get_mouse_coord(grid_size: Vector2i) -> Vector2i:
 	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), grid_size)
 
 func get_mouse_tile_coord(grid_size: int) -> Vector2i:
-	return Vector2i((get_global_mouse_position() - get_level_pos()) / Vector2(grid_size, grid_size))
+	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), Vector2i(grid_size, grid_size))
 
-func round_coord(coord: Vector2i, grid_size: int) -> Vector2i:
+func round_coord(coord: Vector2i, grid_size: Vector2i) -> Vector2i:
 	# wasn't sure how to do a "floor divide". this is crude but it works
-	var val := coord.snapped(Vector2i(grid_size, grid_size))
+	var val := coord.snapped(grid_size)
 	if val.x > coord.x:
-		val.x -= grid_size
+		val.x -= grid_size.x
 	if val.y > coord.y:
-		val.y -= grid_size
+		val.y -= grid_size.y
 	return val
 
 func is_mouse_out_of_bounds() -> bool:
@@ -449,30 +332,39 @@ func _retry_ghosts() -> void:
 	if not is_dragging:
 		_place_ghosts()
 
+const OBJECT_TYPE_TO_GRID_SIZE := {
+	Enums.object_types.door: Vector2i(32, 32),
+	Enums.object_types.key: Vector2i(16, 16),
+	Enums.object_types.entry: Vector2i(32, 32),
+	Enums.object_types.salvage: Vector2i(16, 32),
+}
+
+const OBJECT_TYPE_TO_GHOST_NAME := {
+	Enums.object_types.door: &"ghost_door",
+	Enums.object_types.key: &"ghost_key",
+	Enums.object_types.entry: &"ghost_entry",
+	Enums.object_types.salvage: &"ghost_salvage",
+}
+
 func _place_ghosts() -> void:
 	assert(not is_dragging)
-	for i in 3:
-		var grid_size: int = [32, 16, 32][i]
-		var obj: Node = [ghost_door, ghost_key, ghost_entry][i]
-		var cond: bool = [editor_data.doors, editor_data.keys, editor_data.entries][i]
+	for type in Enums.object_types.values():
+		var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
+		var obj: Node = self[OBJECT_TYPE_TO_GHOST_NAME[type]]
+		var cond: bool = editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]] # doors, keys, ...
 		
 		if not cond or editor_data.is_playing:
 			continue
-		if obj is Door:
-			obj.door_data = door_editor.door_data
-		elif obj is Key:
-			obj.key_data = key_editor.key_data
-		elif obj is Entry:
-			obj.entry_data = entry_editor.entry_data
+		var editor_name = OBJECT_TYPE_TO_EDITOR[type]
+		var data_name = Level.OBJECT_TYPE_TO_DATA[type]
+		obj[data_name] = self[editor_name][data_name]
+
 		var maybe_pos := get_mouse_coord(grid_size)
 		obj.position = maybe_pos
 		
 		var is_valid := true
 		
-		
-		if not Rect2i(Vector2i.ZERO, gameplay.level.level_data.size).has_point(maybe_pos):
-			is_valid = false
-		elif gameplay.level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
+		if gameplay.level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
 			is_valid = false
 		elif obj is Door and not obj.door_data.check_valid(gameplay.level.level_data, false):
 			is_valid = false
@@ -490,19 +382,16 @@ func _place_ghosts() -> void:
 
 # places the danger obj only. this overrides the ghosts obvs
 func _place_danger_obj() -> void:
-	for i in 2:
-		var grid_size: int = [32, 16][i]
-		var obj: Node = [ghost_door, ghost_key, ghost_entry][i]
-		var cond: bool = [editor_data.doors, editor_data.keys, editor_data.entries][i]
+	for type in Enums.object_types.values():
+		var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
+		var obj: Node = self[OBJECT_TYPE_TO_GHOST_NAME[type]]
+		var cond: bool = editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]] # doors, keys, ...
 		
 		if not cond or editor_data.is_playing:
 			continue
-		if obj is Door:
-			obj.door_data = door_editor.door_data
-		elif obj is Key:
-			obj.key_data = key_editor.key_data
-		elif obj is Entry:
-			obj.entry_data = entry_editor.entry_data
+		var editor_name = OBJECT_TYPE_TO_EDITOR[type]
+		var data_name = Level.OBJECT_TYPE_TO_DATA[type]
+		obj[data_name] = self[editor_name][data_name]
 		
 		var maybe_pos := get_mouse_coord(grid_size)
 		if is_dragging:
@@ -515,4 +404,4 @@ func _on_selected_highlight_adapted_to(_obj: Node) -> void:
 	if (Input.get_mouse_button_mask() & MOUSE_BUTTON_MASK_LEFT):
 		if not is_dragging:
 			is_dragging = true
-			drag_offset = get_mouse_coord(1) - Vector2i(_obj.position)
+			drag_offset = get_mouse_tile_coord(1) - Vector2i(_obj.position)

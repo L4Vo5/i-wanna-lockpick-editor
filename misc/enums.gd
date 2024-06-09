@@ -88,3 +88,23 @@ const LOCK_TYPE_NAMES := {
 	lock_types.blank: "blank",
 	lock_types.all: "all",
 }
+
+enum object_types {
+	door,
+	key,
+	entry,
+	salvage,
+}
+
+static func get_object_type(node: Node) -> object_types:
+	if node is Door:
+		return object_types.door
+	elif node is Key:
+		return object_types.key
+	elif node is Entry:
+		return object_types.entry
+	elif node is SalvagePoint:
+		return object_types.salvage
+	else:
+		assert(false)
+		return object_types.key

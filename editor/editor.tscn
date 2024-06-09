@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=32 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="7_8vfxp"]
 [ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="7_46nwx"]
 [ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/door_editor.tscn" id="8_5qjay"]
+[ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvages/salvage_point.tscn" id="8_8di3k"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
 [ext_resource type="Script" path="res://editor/level_outline.gd" id="9_r4glf"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
@@ -24,12 +25,12 @@
 [ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/salvage_point_editor.tscn" id="21_ieeor"]
 [ext_resource type="Script" path="res://data/salvage_point_data.gd" id="22_hbtxh"]
 
-[sub_resource type="Resource" id="Resource_plm0j"]
+[sub_resource type="Resource" id="Resource_f7poy"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_1hpi1"]
+[sub_resource type="Resource" id="Resource_cn6ma"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -41,11 +42,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_wkl2h"]
+[sub_resource type="Resource" id="Resource_bronl"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_plm0j")
+amount = SubResource("Resource_f7poy")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_1hpi1")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_cn6ma")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -57,26 +58,26 @@ glitch_color = 13
 position = Vector2i(0, 0)
 sid = -1
 
-[sub_resource type="Resource" id="Resource_44nni"]
+[sub_resource type="Resource" id="Resource_ntvls"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_vdsmo"]
+[sub_resource type="Resource" id="Resource_ih5r2"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_44nni")
+amount = SubResource("Resource_ntvls")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_bopst"]
+[sub_resource type="Resource" id="Resource_044sx"]
 script = ExtResource("19_qs4m8")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[sub_resource type="Resource" id="Resource_qlgpm"]
+[sub_resource type="Resource" id="Resource_gge1h"]
 script = ExtResource("22_hbtxh")
 sid = 0
 is_output = false
@@ -193,7 +194,7 @@ editable = false
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "gameplay", "level_viewport", "ghost_door", "ghost_key", "ghost_entry", "ghost_canvas_group", "editor", "danger_highlight", "selected_highlight", "camera_dragger", "editor_camera")]
+[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "gameplay", "level_viewport", "ghost_door", "ghost_key", "ghost_entry", "ghost_salvage", "ghost_canvas_group", "editor", "danger_highlight", "selected_highlight", "camera_dragger", "editor_camera")]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -205,6 +206,7 @@ level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport"
 ghost_door = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostDoor")
 ghost_key = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostKey")
 ghost_entry = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostEntry")
+ghost_salvage = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostSalvage")
 ghost_canvas_group = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup")
 editor = NodePath("../../..")
 danger_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/DangerHighlight")
@@ -291,6 +293,9 @@ metadata/_edit_horizontal_guides_ = [32.0]
 visible = false
 mouse_filter = 2
 
+[node name="GhostSalvage" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("8_8di3k")]
+visible = false
+
 [node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("7_8vfxp")]
 color = Color(1, 1, 1, 1)
 width = 3
@@ -318,12 +323,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_wkl2h")
+door_data = SubResource("Resource_bronl")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_vdsmo")
+key_data = SubResource("Resource_ih5r2")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -345,12 +350,12 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-entry_data = SubResource("Resource_bopst")
+entry_data = SubResource("Resource_044sx")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-salvage_point_data = SubResource("Resource_qlgpm")
+salvage_point_data = SubResource("Resource_gge1h")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)
