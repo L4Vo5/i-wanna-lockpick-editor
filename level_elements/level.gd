@@ -386,34 +386,69 @@ const NEIGHBOR_D := [Vector2i( 0,  1)]
 const NEIGHBOR_L := [Vector2i(-1,  0)]
 const NEIGHBOR_R := [Vector2i( 1,  0)]
 
+const TILE_LOOKUP_ORDER := [
+	Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1),
+	Vector2i(-1,  0),                  Vector2i(1,  0),
+	Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
+]
+
+var tiling_lookup := create_tiling_lookup()
+
+func create_tiling_lookup() -> PackedInt32Array:
+	var array := PackedInt32Array()
+	for i in 256:
+		var what_tile = get_autotiling_tile(i)
+		array.push_back((what_tile.x << 16) + what_tile.y)
+	return array
+
+func count_tiles_bits(tiles: Array, bits: int) -> int:
+	var count := 0
+	var bit := 1
+	for vec in TILE_LOOKUP_ORDER:
+		if (bit & bits) != 0 and vec in tiles:
+			count += 1
+		bit *= 2
+	return count
+
+func get_autotiling_tile(bits: int) -> Vector2i:
+	var what_tile := Vector2i(1,1)
+	var all_count := count_tiles_bits(NEIGHBORS_ALL, bits)
+	var h_count := count_tiles_bits(NEIGHBORS_H, bits)
+	var v_count := count_tiles_bits(NEIGHBORS_V, bits)
+	if all_count == 8:
+		what_tile = Vector2i(0, 0)
+	elif h_count == 2 and v_count != 2:
+		what_tile = Vector2i(0, 1)
+		if count_tiles_bits(NEIGHBOR_U, bits) == 1:
+			if count_tiles_bits(NEIGHBORS_U, bits) != 3:
+				what_tile = Vector2i(1, 1)
+		if count_tiles_bits(NEIGHBOR_D, bits) == 1:
+			if count_tiles_bits(NEIGHBORS_D, bits) != 3:
+				what_tile = Vector2i(1, 1)
+	elif v_count == 2 and h_count != 2:
+		what_tile = Vector2i(1, 0)
+		if count_tiles_bits(NEIGHBOR_L, bits) == 1:
+			if count_tiles_bits(NEIGHBORS_L, bits) != 3:
+				what_tile = Vector2i(1, 1)
+		if count_tiles_bits(NEIGHBOR_R, bits) == 1:
+			if count_tiles_bits(NEIGHBORS_R, bits) != 3:
+				what_tile = Vector2i(1, 1)
+	return what_tile
+
 ## Autotiling!
 func update_tile(tile_coord: Vector2i) -> void:
 	if not level_data.get_tile(tile_coord): return
 	var layer := 0
 	var id := 1
-	var what_tile := Vector2i(1,1)
-	var all_count := count_tiles(NEIGHBORS_ALL, tile_coord)
-	var h_count := count_tiles(NEIGHBORS_H, tile_coord)
-	var v_count := count_tiles(NEIGHBORS_V, tile_coord)
-	if all_count == 8:
-		what_tile = Vector2i(0, 0)
-	elif h_count == 2 and v_count != 2:
-		what_tile = Vector2i(0, 1)
-		if count_tiles(NEIGHBOR_U, tile_coord) == 1:
-			if count_tiles(NEIGHBORS_U, tile_coord) != 3:
-				what_tile = Vector2i(1, 1)
-		if count_tiles(NEIGHBOR_D, tile_coord) == 1:
-			if count_tiles(NEIGHBORS_D, tile_coord) != 3:
-				what_tile = Vector2i(1, 1)
-	elif v_count == 2 and h_count != 2:
-		what_tile = Vector2i(1, 0)
-		if count_tiles(NEIGHBOR_L, tile_coord) == 1:
-			if count_tiles(NEIGHBORS_L, tile_coord) != 3:
-				what_tile = Vector2i(1, 1)
-		if count_tiles(NEIGHBOR_R, tile_coord) == 1:
-			if count_tiles(NEIGHBORS_R, tile_coord) != 3:
-				what_tile = Vector2i(1, 1)
-	tile_map.set_cell(layer, tile_coord, id, what_tile)
+	
+	var bits = 0
+	var bit = 1
+	for vec in TILE_LOOKUP_ORDER:
+		if level_data.get_tile(tile_coord + vec):
+			bits |= bit
+		bit <<= 1
+	var what_tile = tiling_lookup[bits]
+	tile_map.set_cell(layer, tile_coord, id, Vector2i(what_tile >> 16, what_tile & 0xFFFF))
 
 func count_tiles(tiles: Array, offset: Vector2i) -> int:
 	return tiles.reduce(func(acc:int, tile_coord: Vector2i) -> int:
