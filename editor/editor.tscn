@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=34 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://level_elements/camera_dragger.gd" id="10_nd33d"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="11_psli5"]
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/key_editor.tscn" id="12_cr7ft"]
+[ext_resource type="PackedScene" uid="uid://dfdbfek8pb1n6" path="res://level_elements/transition.tscn" id="13_eshis"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/level_properties_editor.tscn" id="14_dug7w"]
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/invalid_level_load_window.tscn" id="16_ayc8p"]
@@ -31,12 +32,12 @@ position = Vector2i(0, 0)
 leads_to = -1
 skin = 0
 
-[sub_resource type="Resource" id="Resource_jdp3p"]
+[sub_resource type="Resource" id="Resource_siaxa"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_ld5ex"]
+[sub_resource type="Resource" id="Resource_5bxhc"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -48,11 +49,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_7e375"]
+[sub_resource type="Resource" id="Resource_nqycp"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_jdp3p")
+amount = SubResource("Resource_siaxa")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_ld5ex")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_5bxhc")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -64,26 +65,26 @@ glitch_color = 13
 position = Vector2i(0, 0)
 sid = -1
 
-[sub_resource type="Resource" id="Resource_xbiw5"]
+[sub_resource type="Resource" id="Resource_46duw"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_gw4mi"]
+[sub_resource type="Resource" id="Resource_mc8sw"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_xbiw5")
+amount = SubResource("Resource_46duw")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_pf1vv"]
+[sub_resource type="Resource" id="Resource_qm115"]
 script = ExtResource("19_qs4m8")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[sub_resource type="Resource" id="Resource_b6u6k"]
+[sub_resource type="Resource" id="Resource_1c2er"]
 script = ExtResource("22_hbtxh")
 sid = 0
 is_output = false
@@ -288,11 +289,9 @@ self_modulate = Color(1, 1, 1, 0.498039)
 [node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("5_55fwv")]
 visible = false
 mouse_filter = 2
-active = false
 
 [node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("6_n53nq")]
 visible = false
-active = false
 metadata/_edit_vertical_guides_ = [32.0]
 metadata/_edit_horizontal_guides_ = [32.0]
 
@@ -321,6 +320,8 @@ camera = NodePath("../EditorCamera")
 [node name="EditorCamera" type="Camera2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]
 anchor_mode = 0
 
+[node name="Transition" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer" instance=ExtResource("13_eshis")]
+
 [node name="RightDock" type="MarginContainer" parent="HSplitContainer"]
 custom_minimum_size = Vector2(362, 0)
 layout_mode = 2
@@ -331,12 +332,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_7e375")
+door_data = SubResource("Resource_nqycp")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_gw4mi")
+key_data = SubResource("Resource_mc8sw")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -358,12 +359,12 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-entry_data = SubResource("Resource_pf1vv")
+entry_data = SubResource("Resource_qm115")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-salvage_point_data = SubResource("Resource_b6u6k")
+salvage_point_data = SubResource("Resource_1c2er")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)

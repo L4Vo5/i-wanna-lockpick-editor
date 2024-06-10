@@ -10,7 +10,9 @@ var pack_state: LevelPackStateData:
 		return _pack_data.state_data
 
 @onready var level: Level = %Level
-@onready var transition: Transition = %Transition
+
+# HACK to avoid the camera getting in the way
+@onready var transition: Transition = get_node(NodePath("../../Transition"))
 
 func _ready() -> void:
 	level.gameplay_manager = self
@@ -30,6 +32,7 @@ func get_level_pack() -> LevelPackData:
 
 ## Transitions to a different level in the pack
 func transition_to_level(id: int) -> void:
+	assert(PerfManager.start("GameplayManager::transition_to_level (%d)" % id))
 	if id == pack_state.current_level:
 		reset()
 	else:
@@ -38,6 +41,7 @@ func transition_to_level(id: int) -> void:
 		var level_data: LevelData = _pack_data.levels[pack_state.current_level]
 		level.level_data = level_data
 		reset()
+	assert(PerfManager.end("GameplayManager::transition_to_level (%d)" % id))
 
 func has_won_current_level() -> bool:
 	return pack_state.completed_levels[pack_state.current_level] == 1

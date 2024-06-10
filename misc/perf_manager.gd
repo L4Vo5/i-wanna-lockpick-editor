@@ -104,7 +104,14 @@ func print_report() -> void:
 #	if Global.in_editor: return
 	check_balances()
 	for key in times:
-		print_rich("%s (%d calls): [b]%s[/b] total, [b]%s[/b] self" % [key, times[key][2], get_time_string(times[key][0]), get_time_string(times[key][1])])
+		print_rich("%s (%d calls): [b]%s[/b] total, [b]%s[/b] self, average: [b]%s[/b] total, [b]%s[/b] self" % [
+				key,
+				times[key][2],
+				get_time_string(times[key][0]),
+				get_time_string(times[key][1]),
+				get_time_string(times[key][0] as float / times[key][2]),
+				get_time_string(times[key][1] as float / times[key][2]),
+		])
 	clear()
 
 func test_func(f: Callable, repetitions: int) -> void:

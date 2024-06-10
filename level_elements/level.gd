@@ -175,8 +175,10 @@ func reset(back_to_editor: bool = false) -> void:
 	
 	assert(PerfManager.start("Level::reset (tiles)"))
 	tile_map.clear()
-	for tile_coord in level_data.tiles:
-		_spawn_tile(tile_coord, false)
+	var tiles_size = level_data.tiles.get_size()
+	for x in tiles_size.x:
+		for y in tiles_size.y:
+			update_tile(Vector2i(x, y))
 	assert(PerfManager.end("Level::reset (tiles)"))
 	
 	_spawn_goal()
@@ -290,6 +292,7 @@ func add_element(data, type: Enums.object_types) -> Node:
 
 ## Makes *something* physically appear (doesn't check collisions)
 func _spawn_element(data, type: Enums.object_types) -> Node:
+	assert(PerfManager.start("Level::_spawn_element (%d)" % type))
 	var node := NodePool.pool_node(OBJECT_TYPE_TO_SCENE[type])
 	var dupe = data.duplicated()
 	node[OBJECT_TYPE_TO_DATA[type]] = dupe
@@ -297,6 +300,7 @@ func _spawn_element(data, type: Enums.object_types) -> Node:
 	node.active = true
 	self[OBJECT_TYPE_TO_CONNECT[type]].call(node)
 	self[OBJECT_TYPE_TO_CONTAINER_NAME[type]].add_child(node)
+	assert(PerfManager.end("Level::_spawn_element (%d)" % type))
 	return node
 
 ## Removes *something* from the level data
@@ -335,9 +339,9 @@ func place_goal(coord: Vector2i) -> void:
 	level_data.goal_position = coord
 
 func place_tile(tile_coord: Vector2i) -> void:
-	if level_data.tiles.has(tile_coord): return
+	if level_data.get_tile(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
-	level_data.tiles[tile_coord] = true
+	level_data.tiles.set_bitv(tile_coord, true)
 	_spawn_tile(tile_coord, true)
 	level_data.changed_tiles.emit()
 
@@ -353,8 +357,8 @@ func _spawn_tile(tile_coord: Vector2i, also_update_neighbors: bool) -> void:
 
 ## Removes a tile from the level data. Returns true if a tile was there.
 func remove_tile(tile_coord: Vector2i) -> bool:
-	if not level_data.tiles.has(tile_coord): return false
-	level_data.tiles.erase(tile_coord)
+	if not level_data.tiles.get_bitv(tile_coord): return false
+	level_data.tiles.set_bitv(tile_coord, false)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
 	level_data.changed_tiles.emit()
@@ -384,7 +388,7 @@ const NEIGHBOR_R := [Vector2i( 1,  0)]
 
 ## Autotiling!
 func update_tile(tile_coord: Vector2i) -> void:
-	if not level_data.tiles.get(tile_coord) == true: return
+	if not level_data.get_tile(tile_coord): return
 	var layer := 0
 	var id := 1
 	var what_tile := Vector2i(1,1)
@@ -413,7 +417,7 @@ func update_tile(tile_coord: Vector2i) -> void:
 
 func count_tiles(tiles: Array, offset: Vector2i) -> int:
 	return tiles.reduce(func(acc:int, tile_coord: Vector2i) -> int:
-		return acc + (1 if level_data.tiles.get(tile_coord+offset) == true else 0)
+		return acc + (1 if level_data.get_tile(tile_coord+offset) == true else 0)
 		, 0)
 
 func _spawn_player() -> void:
@@ -439,7 +443,7 @@ func _spawn_goal() -> void:
 	goal_parent.add_child(goal)
 
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
-# TODO: Optimize this obviously. mainly tiles OBVIOUSLY
+# TODO: Optimize this obviously. tiles are done at least
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects: Array[Object] = []) -> bool:
 	if not is_space_inside(rect):
 		return true
@@ -470,9 +474,19 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 		var spawn_pos := (level_data.player_spawn_position - Vector2i(14, 32))
 		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
 			return true
-	if not &"tiles" in exclusions:
-		for tile_pos in level_data.tiles:
-			if Rect2i(tile_pos * 32, Vector2i(32, 32)).intersects(rect):
+	if not &"tiles" in exclusions and tiles_intersecting(rect):
+		return true
+	return false
+
+func tiles_intersecting(rect: Rect2i):
+	# HACK: bad floor div and ceil div
+	var min_tile_x = floori(rect.position.x as float / 32)
+	var min_tile_y = floori(rect.position.y as float / 32)
+	var max_tile_x = ceili((rect.position.x + rect.size.y) as float / 32)
+	var max_tile_y = ceili((rect.position.y + rect.size.y) as float / 32)
+	for x in range(min_tile_x, max_tile_x):
+		for y in range(min_tile_y, max_tile_y):
+			if level_data.tiles.get_bit(x, y):
 				return true
 	return false
 
@@ -490,9 +504,8 @@ func get_object_occupying(pos: Vector2i) -> Node:
 ## Returns true if there's not enough space to fit a salvage
 ## this cares about doors and tiles CURRENTLY in the level, not in the level data
 func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
-	for tile_pos in level_data.tiles:
-		if Rect2i(tile_pos * 32, Vector2i(32, 32)).intersects(rect):
-			return true
+	if tiles_intersecting(rect):
+		return true
 	for door: Door in doors.get_children():
 		if door == exclude: continue
 		if door.door_data.get_rect().intersects(rect):

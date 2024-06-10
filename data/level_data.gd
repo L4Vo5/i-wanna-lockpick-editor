@@ -48,9 +48,9 @@ signal changed_goal_position
 @export var custom_lock_arrangements := {}
 
 ## Just saves all positions for the tiles... I'll come up with something better later ok
-# It's a dict so that it's not absurdly inefficient to check for repeats when placing new ones
+# It's a bitmap cause that's way better
 signal changed_tiles
-@export var tiles := {}
+@export var tiles: BitMap = BitMap.new()
 
 ## Name of the level, used when standing in front of an entry that leads to it
 @export var name := "":
@@ -92,6 +92,28 @@ func _init() -> void:
 	changed_tiles.connect(emit_changed)
 	changed_player_spawn_position.connect(emit_changed)
 	changed_goal_position.connect(emit_changed)
+	changed_size.connect(resize_tiles)
+	tiles.create(size / 32)
+
+func get_tile(vec) -> bool:
+	if vec.x < 0 or vec.y < 0:
+		return false
+	var tiles_size = tiles.get_size()
+	if vec.x >= tiles_size.x or vec.y >= tiles_size.y:
+		return false
+	return tiles.get_bitv(vec)
+
+func resize_tiles() -> void:
+	var old_size = tiles.get_size()
+	var new_size = size / 32
+	var new_tiles = BitMap.new()
+	new_tiles.create(new_size)
+	var common_size = Vector2i(mini(new_size.x, old_size.x), mini(new_size.y, old_size.y))
+	for x in common_size.x:
+		for y in common_size.y:
+			if tiles.get_bit(x, y):
+				new_tiles.set_bit(x, y, true)
+	tiles = new_tiles
 
 func duplicated() -> LevelData:
 	var dupe := LevelData.new()
@@ -120,15 +142,17 @@ func clear_outside_things() -> void:
 	var amount_deleted := 0
 	# tiles
 	var deleted_ones := []
-	for key in tiles.keys():
-		var pos = key * Vector2i(32, 32)
-		if pos.x < 0 or pos.y < 0 or pos.x + 32 > size.x or pos.y + 32 > size.y:
-			deleted_ones.push_back(key)
-	for pos in deleted_ones:
-		var worked := tiles.erase(pos)
-		assert(worked == true)
-	
-	amount_deleted += deleted_ones.size()
+
+	#for key in tiles.keys():
+		#var pos = key * Vector2i(32, 32)
+		#if pos.x < 0 or pos.y < 0 or pos.x + 32 > size.x or pos.y + 32 > size.y:
+			#deleted_ones.push_back(key)
+	#for pos in deleted_ones:
+		#var worked := tiles.erase(pos)
+		#assert(worked == true)
+	#
+	#amount_deleted += deleted_ones.size()
+
 	# doors
 	deleted_ones.clear()
 	for door in doors:

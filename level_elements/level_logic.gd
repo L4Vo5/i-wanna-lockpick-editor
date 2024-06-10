@@ -391,7 +391,7 @@ func update_gate(gate: Door) -> void:
 			gate.ignore_collisions_gate = -1
 			gate.resolve_collision_mode()
 	else:
-		if not gate.ignore_collisions:
+		if gate.active:
 			gate.ignore_collisions_gate = 0
 			if is_instance_valid(level) and is_instance_valid(level.player):
 				var result := try_open_door_data(door_data, true)

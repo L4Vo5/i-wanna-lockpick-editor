@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="2_ypxul"]
 [ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="4_7lve0"]
 
-[sub_resource type="Resource" id="Resource_a7gak"]
+[sub_resource type="Resource" id="Resource_gcdo2"]
 script = ExtResource("2_3mitj")
 position = Vector2i(0, 0)
 leads_to = 1
@@ -18,7 +18,7 @@ font = ExtResource("4_7lve0")
 offset_right = 305.0
 offset_bottom = 602.0
 script = ExtResource("1_xmuse")
-entry_data = SubResource("Resource_a7gak")
+entry_data = SubResource("Resource_gcdo2")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -44,7 +44,7 @@ layout_mode = 2
 [node name="Entry" parent="VBoxContainer/CenterContainer" instance=ExtResource("2_ypxul")]
 unique_name_in_owner = true
 layout_mode = 2
-entry_data = SubResource("Resource_a7gak")
+entry_data = SubResource("Resource_gcdo2")
 ignore_position = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]

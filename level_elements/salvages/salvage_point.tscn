@@ -49,7 +49,7 @@ shape = SubResource("RectangleShape2D_xgdw3")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 unique_name_in_owner = true
-modulate = Color(0.50817, 0.0720177, 1, 1)
+modulate = Color(0.688235, 0.411765, 1, 1)
 texture = ExtResource("1_vdtqo")
 centered = false
 hframes = 4
