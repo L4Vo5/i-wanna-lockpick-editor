@@ -390,16 +390,17 @@ const TILE_LOOKUP_ORDER := [
 	Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
 ]
 
-var tiling_lookup := create_tiling_lookup()
+static var tiling_lookup := create_tiling_lookup()
 
-func create_tiling_lookup() -> PackedInt32Array:
+static func create_tiling_lookup() -> PackedInt32Array:
 	var array := PackedInt32Array()
+	array.resize(256)
 	for i in 256:
 		var what_tile = get_autotiling_tile(i)
-		array.push_back((what_tile.x << 16) + what_tile.y)
+		array[i] = ((what_tile.x << 16) + what_tile.y)
 	return array
 
-func count_tiles_bits(tiles: Array, bits: int) -> int:
+static func count_tiles_bits(tiles: Array, bits: int) -> int:
 	var count := 0
 	var bit := 1
 	for vec in TILE_LOOKUP_ORDER:
@@ -408,7 +409,7 @@ func count_tiles_bits(tiles: Array, bits: int) -> int:
 		bit *= 2
 	return count
 
-func get_autotiling_tile(bits: int) -> Vector2i:
+static func get_autotiling_tile(bits: int) -> Vector2i:
 	var what_tile := Vector2i(1,1)
 	var all_count := count_tiles_bits(NEIGHBORS_ALL, bits)
 	var h_count := count_tiles_bits(NEIGHBORS_H, bits)
