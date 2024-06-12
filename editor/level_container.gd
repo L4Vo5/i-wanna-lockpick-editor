@@ -352,16 +352,16 @@ func _place_ghosts() -> void:
 	for type in Enums.level_element_types.values():
 		var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
 		var obj: Node = self[OBJECT_TYPE_TO_GHOST_NAME[type]]
-		var cond: bool = editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]] # doors, keys, ...
+		var cond: bool = editor_data.get(Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]) # doors, keys, ...
 		
 		if not cond or editor_data.is_playing:
 			continue
 		var editor_name = OBJECT_TYPE_TO_EDITOR[type]
 		var data_name = Level.OBJECT_TYPE_TO_DATA[type]
-		obj[data_name] = self[editor_name][data_name]
+		obj.set(data_name, get(editor_name).get(data_name))
 		
 		var maybe_pos := get_mouse_coord(grid_size)
-		obj[data_name].position = maybe_pos
+		obj.get(data_name).position = maybe_pos
 		
 		var is_valid := true
 		
@@ -385,14 +385,14 @@ func _place_ghosts() -> void:
 func _place_danger_obj() -> void:
 	for type in Enums.level_element_types.values():
 		var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
-		var obj: Node = self[OBJECT_TYPE_TO_GHOST_NAME[type]]
-		var cond: bool = editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]] # doors, keys, ...
+		var obj: Node = get(OBJECT_TYPE_TO_GHOST_NAME[type])
+		var cond: bool = get(Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]) # doors, keys, ...
 		
 		if not cond or editor_data.is_playing:
 			continue
 		var editor_name = OBJECT_TYPE_TO_EDITOR[type]
 		var data_name = Level.OBJECT_TYPE_TO_DATA[type]
-		obj[data_name] = self[editor_name][data_name]
+		obj.set(data_name, get(editor_name).get(data_name))
 		
 		var maybe_pos := get_mouse_coord(grid_size)
 		if is_dragging:

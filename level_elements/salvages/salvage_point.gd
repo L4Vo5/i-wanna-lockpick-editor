@@ -133,5 +133,12 @@ func update_visual() -> void:
 		outline.modulate = mod
 	number.text = str(salvage_point_data.sid)
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EDITOR_PRE_SAVE:
+		var mod := Color.WHITE
+		sprite.modulate = mod
+		if outline.visible:
+			outline.modulate = mod
+
 func get_mouseover_text() -> String:
 	return salvage_point_data.get_mouseover_text(door_error)
