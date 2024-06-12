@@ -10,9 +10,13 @@ static var level_element_type := Enums.level_element_types.entry
 		_disconnect_entry_data()
 		entry_data = val
 		_connect_entry_data()
-var level: Level
+var level: Level:
+	set(val):
+		level = val
+		if not is_instance_valid(val): return
+		pack_data = val.gameplay_manager.pack_data
 var pack_data: LevelPackData
-@export var active := false
+
 @export var ignore_position := false
 
 @onready var sprite: Sprite2D = %Sprite
@@ -34,7 +38,7 @@ const tween_y_offset := 20
 
 func _ready() -> void:
 	if Global.in_editor: return
-	if not active: return
+	if not is_instance_valid(level): return
 	level_name.position.y += tween_y_offset
 	level_name.modulate.a = 0
 	update_name()
@@ -42,7 +46,7 @@ func _ready() -> void:
 
 # called by kid.gd
 func player_touching() -> void:
-	if not active: return
+	if not is_instance_valid(level): return
 	if entry_data.leads_to >= 0 and entry_data.leads_to < pack_data.levels.size():
 		arrow.show()
 	level_name.show()
@@ -55,7 +59,7 @@ func player_touching() -> void:
 
 # called by kid.gd
 func player_stopped_touching() -> void:
-	if not active: return
+	if not is_instance_valid(level): return
 	arrow.hide()
 	#level_name.hide()
 	if name_tween: name_tween.kill()
@@ -67,7 +71,7 @@ func player_stopped_touching() -> void:
 
 # called by kid.gd
 func enter() -> void:
-	if not active: return
+	if not is_instance_valid(level): return
 	if entry_data.leads_to == -1: return
 	level.gameplay_manager.enter_level(entry_data.leads_to)
 
@@ -76,9 +80,7 @@ func update_position() -> void:
 		position = entry_data.position
 
 func update_name() -> void:
-	if not active: return
-	if not entry_data: return
-	if not level: return
+	if not is_instance_valid(level): return
 	if not is_node_ready(): return
 	level_name.text = "\n[Invalid entry]"
 	if entry_data.leads_to >= 0 and entry_data.leads_to < pack_data.levels.size():
@@ -86,9 +88,7 @@ func update_name() -> void:
 		level_name.text = level_data.title + "\n" + level_data.name
 
 func update_status() -> void:
-	if not active: return
-	if not entry_data: return
-	if not level: return
+	if not is_instance_valid(level): return
 	if not is_node_ready(): return
 	sprite.texture = ENTRY_OPEN
 	if entry_data.leads_to < 0 or entry_data.leads_to >= pack_data.levels.size():

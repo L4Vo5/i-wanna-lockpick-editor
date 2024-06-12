@@ -11,14 +11,17 @@ static var level_element_type := Enums.level_element_types.salvage
 		salvage_point_data = val
 		_connect_salvage_point_data()
 
-var level: Level
+var level: Level:
+	set(val):
+		level = val
+		if not is_instance_valid(val): return
+		level_pack_state = val.gameplay_manager.pack_state
 var level_pack_state: LevelPackStateData
 
 var door: Door = null
-@export var door_error = false
-@export var door_error_size = false
+var door_error = false
+var door_error_size = false
 
-@export var active = false
 @export var ignore_position = false
 
 @onready var sprite: Sprite2D = %Sprite
@@ -78,7 +81,7 @@ func remove_door() -> void:
 	show()
 
 func _on_touched(_who: Node2D) -> void:
-	if not active: return
+	if not is_instance_valid(level): return
 	if not is_instance_valid(salvage_point_data): return
 	if salvage_point_data.is_output: return
 	if level.logic.active_salvage != self:
@@ -100,7 +103,7 @@ func _disconnect_salvage_point_data() -> void:
 	if is_instance_valid(salvage_point_data):
 		salvage_point_data.changed.disconnect(update_visual)
 
-func _process(delta) -> void:
+func _process(_delta) -> void:
 	update_visual()
 
 func update_visual() -> void:
@@ -122,7 +125,7 @@ func update_visual() -> void:
 			sprite.frame = 1
 			mod = Rendering.salvage_point_output_color
 	else:
-		if active and level.logic.active_salvage == self:
+		if is_instance_valid(level) and level.logic.active_salvage == self:
 			mod = Rendering.salvage_point_active_input_color
 		else:
 			mod = Rendering.salvage_point_input_color

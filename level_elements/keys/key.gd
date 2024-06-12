@@ -12,8 +12,6 @@ static var level_element_type := Enums.level_element_types.key
 		_disconnect_key_data()
 		key_data = val
 		_connect_key_data()
-## Uses player input and glitch color
-@export var active := false
 @export var hide_shadow := false
 @export var ignore_position := false
 
@@ -89,7 +87,7 @@ func _process(_delta: float) -> void:
 		special.frame = (special.frame % 4) + frame * 4
 
 func _resolve_collision_mode() -> void:
-	if not active or key_data.is_spent:
+	if not is_instance_valid(level) or key_data.is_spent:
 		collision.process_mode = Node.PROCESS_MODE_DISABLED
 	else:
 		collision.process_mode = Node.PROCESS_MODE_INHERIT
@@ -137,7 +135,7 @@ func update_visual() -> void:
 		set_special_texture(key_data.color)
 	elif key_data.color == Enums.colors.glitch:
 		glitch.show()
-		if active and is_instance_valid(level) and level.logic.glitch_color != Enums.colors.glitch:
+		if is_instance_valid(level) and level.logic.glitch_color != Enums.colors.glitch:
 			if level.logic.glitch_color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
 				special.show()
 				set_special_texture(level.logic.glitch_color)

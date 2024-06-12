@@ -77,10 +77,7 @@ func _adjust_inner_container_dimensions() -> void:
 		inner_container.size = size
 
 func _ready() -> void:
-	gameplay.level.door_gui_input.connect(_on_element_gui_input.bind(Enums.level_element_types.door))
-	gameplay.level.key_gui_input.connect(_on_element_gui_input.bind(Enums.level_element_types.key))
-	gameplay.level.entry_gui_input.connect(_on_element_gui_input.bind(Enums.level_element_types.entry))
-	gameplay.level.salvage_point_gui_input.connect(_on_element_gui_input.bind(Enums.level_element_types.salvage))
+	gameplay.level.element_gui_input.connect(_on_element_gui_input)
 	resized.connect(_adjust_inner_container_dimensions)
 	level_viewport.get_parent().show()
 
@@ -205,15 +202,7 @@ func _gui_input(event: InputEvent) -> void:
 #			if editor_data.tilemap_edit:
 				if remove_tile_on_mouse():
 					accept_event()
-		update_hover(get_global_mouse_position() - get_level_pos())
 		_retry_ghosts()
-
-func update_hover(pos: Vector2):
-	var node := editor.level.get_object_occupying(pos.floor())
-	if node == null:
-		hovered_obj = null
-	else:
-		hovered_obj = node
 
 func select_thing(obj: Node) -> void:
 	# is_dragging is set to true by _on_selected_highlight_adapted_to

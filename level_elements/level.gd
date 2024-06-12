@@ -167,9 +167,7 @@ func reset() -> void:
 		if current > needed:
 			for _i in current - needed:
 				var node := container.get_child(-1)
-				container.remove_child(node)
-				get(OBJECT_TYPE_TO_DISCONNECT[type]).call(node)
-				NodePool.return_node(node)
+				_remove_element(container, node, type)
 		# or add them
 		else:
 			for i in range(current, needed):
@@ -179,7 +177,7 @@ func reset() -> void:
 	assert(PerfManager.start("Level::reset (tiles)"))
 	tile_map.clear()
 	for tile_coord in level_data.tiles:
-		_spawn_tile(tile_coord, false)
+		update_tile(tile_coord)
 	assert(PerfManager.end("Level::reset (tiles)"))
 	
 	_spawn_goal()
@@ -232,10 +230,7 @@ func try_open_door(door: Door) -> void:
 
 # Editor functions
 
-signal door_gui_input(event: InputEvent, door: Door)
-signal key_gui_input(event: InputEvent, key: Key)
-signal entry_gui_input(event: InputEvent, entry: Entry)
-signal salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint)
+signal element_gui_input(event: InputEvent, door: Door, type: Enums.level_element_types)
 
 const OBJECT_TYPE_TO_CONTAINER_NAME := {
 	Enums.level_element_types.door: &"doors",
@@ -279,6 +274,19 @@ const OBJECT_TYPE_TO_DISCONNECT := {
 	Enums.level_element_types.salvage: &"disconnect_salvage_point",
 };
 
+func _input(event: InputEvent):
+	if event is InputEventMouseMotion:
+		update_hover()
+
+func update_hover():
+	var pos = get_local_mouse_position()
+	print(pos)
+	var node := get_object_occupying(pos.floor())
+	if node == null:
+		hover_highlight.stop_adapting()
+	else:
+		hover_highlight.adapt_to(node)
+
 ## Adds *something* to the level data. Returns null if it wasn't added
 func add_element(data, type: Enums.level_element_types) -> Node:
 	if is_space_occupied(data.get_rect()): return null
@@ -297,8 +305,9 @@ func _spawn_element(data, type: Enums.level_element_types) -> Node:
 	var dupe = data.duplicated()
 	node.set(OBJECT_TYPE_TO_DATA[type], dupe)
 	node.set_meta(&"original_data", data)
-	node.active = true
-	get(OBJECT_TYPE_TO_CONNECT[type]).call(node)
+	node.level = self
+	node.gui_input.connect(_on_element_gui_input.bind(node, type))
+	call(OBJECT_TYPE_TO_CONNECT[type], node)
 	get(OBJECT_TYPE_TO_CONTAINER_NAME[type]).add_child(node)
 	assert(PerfManager.end("Level::_spawn_element (%d)" % type))
 	return node
@@ -306,14 +315,21 @@ func _spawn_element(data, type: Enums.level_element_types) -> Node:
 ## Removes *something* from the level data
 func remove_element(node: Node, type: Enums.level_element_types) -> void:
 	var original_data = node.get_meta(&"original_data")
-	var list: Array = level_data[OBJECT_TYPE_TO_CONTAINER_NAME[type]]
+	var list: Array = level_data.get(OBJECT_TYPE_TO_CONTAINER_NAME[type])
 	var i := list.find(original_data)
 	if i != -1:
 		list.remove_at(i)
-	get(OBJECT_TYPE_TO_CONTAINER_NAME[type]).remove_child(node)
-	get(OBJECT_TYPE_TO_DISCONNECT[type]).call(node)
-	NodePool.return_node(node)
+	_remove_element(get(OBJECT_TYPE_TO_CONTAINER_NAME[type]), node, type)
 	level_data.get(OBJECT_TYPE_TO_SIGNAL[type]).emit()
+
+func _remove_element(container: Node2D, node: Node, type: Enums.level_element_types) -> void:
+	container.remove_child(node)
+
+	node.gui_input.disconnect(_on_element_gui_input.bind(node, type))
+	call(OBJECT_TYPE_TO_DISCONNECT[type], node)
+	node.level = null
+
+	NodePool.return_node(node)
 
 ## Moves *something*. Returns false if the move failed
 func move_element(node: Node, type: Enums.level_element_types, new_position: Vector2i) -> bool:
@@ -341,18 +357,9 @@ func place_goal(coord: Vector2i) -> void:
 func place_tile(tile_coord: Vector2i) -> void:
 	if level_data.tiles.get(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
-	level_data.tiles[tile_coord] = 1
-	_spawn_tile(tile_coord, true)
+	level_data.tiles[tile_coord] = true
+	update_tile_and_neighbors(tile_coord)
 	level_data.changed_tiles.emit()
-
-func _spawn_tile(tile_coord: Vector2i, also_update_neighbors: bool) -> void:
-	var layer := 0
-	var id := 1
-	var what_tile := Vector2i(1,1)
-	if also_update_neighbors:
-		update_tile_and_neighbors(tile_coord)
-	else:
-		update_tile(tile_coord)
 
 ## Removes a tile from the level data. Returns true if a tile was there.
 func remove_tile(tile_coord: Vector2i) -> bool:
@@ -579,17 +586,8 @@ func _on_door_changed_curse(_door: Door) -> void:
 func _on_key_picked_up(_key: Key) -> void:
 	update_mouseover()
 
-func _on_door_gui_input(event: InputEvent, door: Door) -> void:
-	door_gui_input.emit(event, door)
-
-func _on_key_gui_input(event: InputEvent, key: Key) -> void:
-	key_gui_input.emit(event, key)
-
-func _on_entry_gui_input(event: InputEvent, entry: Entry) -> void:
-	entry_gui_input.emit(event, entry)
-
-func _on_salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint) -> void:
-	salvage_point_gui_input.emit(event, salvage_point)
+func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types) -> void:
+	element_gui_input.emit(event, node, type)
 
 func _on_hover_adapted_to(_what: Node) -> void:
 	update_mouseover()
@@ -610,44 +608,32 @@ func add_debris_child(debris: Node) -> void:
 
 
 func connect_door(door: Door) -> void:
-	door.gui_input.connect(_on_door_gui_input.bind(door))
 	door.changed_curse.connect(_on_door_changed_curse.bind(door))
-	door.level = self
 
 func disconnect_door(door: Door) -> void:
-	door.gui_input.disconnect(_on_door_gui_input.bind(door))
 	door.changed_curse.disconnect(_on_door_changed_curse.bind(door))
-	door.level = null
 
 func connect_key(key: Key) -> void:
-	key.gui_input.connect(_on_key_gui_input.bind(key))
 	key.picked_up.connect(_on_key_picked_up.bind(key))
-	key.level = self
 
 func disconnect_key(key: Key) -> void:
-	key.gui_input.disconnect(_on_key_gui_input.bind(key))
 	key.picked_up.disconnect(_on_key_picked_up.bind(key))
-	key.level = null
 
-func connect_entry(entry: Entry) -> void:
-	entry.gui_input.connect(_on_entry_gui_input.bind(entry))
-	entry.level = self
-	assert(gameplay_manager.pack_data)
-	entry.pack_data = gameplay_manager.pack_data
+func connect_entry(_entry: Entry) -> void:
+	# nothing to do
+	pass
 
-func disconnect_entry(entry: Entry) -> void:
-	entry.gui_input.disconnect(_on_entry_gui_input.bind(entry))
-	entry.level = null
+func disconnect_entry(_entry: Entry) -> void:
+	# nothing to do
+	pass
 
-func connect_salvage_point(salvage_point: SalvagePoint) -> void:
-	salvage_point.gui_input.connect(_on_salvage_point_gui_input.bind(salvage_point))
-	salvage_point.level = self
-	assert(gameplay_manager.pack_state)
-	salvage_point.level_pack_state = gameplay_manager.pack_state
+func connect_salvage_point(_salvage_point: SalvagePoint) -> void:
+	# nothing to do
+	pass
 
-func disconnect_salvage_point(salvage_point: SalvagePoint) -> void:
-	salvage_point.gui_input.disconnect(_on_salvage_point_gui_input.bind(salvage_point))
-	salvage_point.level = self
+func disconnect_salvage_point(_salvage_point: SalvagePoint) -> void:
+	# nothing to do
+	pass
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:
@@ -660,9 +646,7 @@ func remove_all_pooled() -> void:
 		var c := container.get_children()
 		c.reverse()
 		for node in c:
-			container.remove_child(node)
-			get(OBJECT_TYPE_TO_DISCONNECT[type]).call(node)
-			NodePool.return_node(node)
+			_remove_element(container, node, type)
 
 func limit_camera() -> void:
 	var limit := Vector2(
