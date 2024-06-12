@@ -30,6 +30,7 @@ func get_level_pack() -> LevelPackData:
 	return _pack_data
 
 ## Transitions to a different level in the pack
+# TODO: consider renaming? sicnce "transition" implies animation. this just switches the level
 func transition_to_level(id: int) -> void:
 	assert(PerfManager.start("GameplayManager::transition_to_level (%d)" % id))
 	if id == pack_state.current_level:
@@ -54,3 +55,11 @@ func win() -> void:
 		pack_state.save()
 	transition.finished_animation.connect(level.reset)
 	transition.win_animation("Congratulations!")
+
+func enter_level(id: int) -> void:
+	var _new_level_data := _pack_data.levels[id]
+	var target_level_name := _new_level_data.name
+	var target_level_title := _new_level_data.title
+	transition.level_enter_animation(target_level_name, target_level_title)
+	await transition.finished_animation
+	transition_to_level(id)

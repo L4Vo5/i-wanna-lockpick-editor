@@ -69,12 +69,7 @@ func player_stopped_touching() -> void:
 func enter() -> void:
 	if not active: return
 	if entry_data.leads_to == -1: return
-	var gameplay := level.gameplay_manager
-	var level_pack := gameplay.get_level_pack()
-	var target_level_name := level_pack.levels[entry_data.leads_to].name
-	var target_level_title := level_pack.levels[entry_data.leads_to].title
-	gameplay.transition.finished_animation.connect(gameplay.transition_to_level.bind(entry_data.leads_to))
-	gameplay.transition.level_enter_animation(target_level_name, target_level_title)
+	level.gameplay_manager.enter_level(entry_data.leads_to)
 
 func update_position() -> void:
 	if not ignore_position:
