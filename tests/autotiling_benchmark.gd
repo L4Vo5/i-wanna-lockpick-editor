@@ -44,6 +44,6 @@ func randomize_tiles(level_data: LevelData, proportion: float) -> void:
 		for y in level_data.size.y/32:
 			var v := Vector2i(x, y)
 			if rng.randf() < proportion:
-				level_data.tiles.set_bit(x, y, true)
+				level_data.tiles[Vector2i(x, y)] = true
 			else:
-				level_data.tiles.set_bit(x, y, false)
+				level_data.tiles.erase(Vector2i(x, y))

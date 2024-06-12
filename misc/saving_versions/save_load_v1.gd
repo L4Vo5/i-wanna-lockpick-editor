@@ -12,7 +12,7 @@ static func load(file: FileAccess) -> LevelData:
 	var tile_amount := file.get_32()
 	if SaveLoad.PRINT_LOAD: print("tile count is %d" % tile_amount)
 	for _i in tile_amount:
-		level.tiles.set_bit(file.get_32(), file.get_32(), true)
+		level.tiles[Vector2i(file.get_32(), file.get_32())] = true
 	
 	var key_amount := file.get_32()
 	if SaveLoad.PRINT_LOAD: print("key count is %d" % key_amount)

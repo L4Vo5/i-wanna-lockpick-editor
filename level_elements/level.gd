@@ -175,10 +175,8 @@ func reset(back_to_editor: bool = false) -> void:
 	
 	assert(PerfManager.start("Level::reset (tiles)"))
 	tile_map.clear()
-	var tiles_size = level_data.tiles.get_size()
-	for x in tiles_size.x:
-		for y in tiles_size.y:
-			update_tile(Vector2i(x, y))
+	for tile_coord in level_data.tiles:
+		_spawn_tile(tile_coord, false)
 	assert(PerfManager.end("Level::reset (tiles)"))
 	
 	_spawn_goal()
@@ -339,9 +337,9 @@ func place_goal(coord: Vector2i) -> void:
 	level_data.goal_position = coord
 
 func place_tile(tile_coord: Vector2i) -> void:
-	if level_data.get_tile(tile_coord): return
+	if level_data.tiles.get(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
-	level_data.tiles.set_bitv(tile_coord, true)
+	level_data.tiles[tile_coord] = 1
 	_spawn_tile(tile_coord, true)
 	level_data.changed_tiles.emit()
 
@@ -357,8 +355,8 @@ func _spawn_tile(tile_coord: Vector2i, also_update_neighbors: bool) -> void:
 
 ## Removes a tile from the level data. Returns true if a tile was there.
 func remove_tile(tile_coord: Vector2i) -> bool:
-	if not level_data.tiles.get_bitv(tile_coord): return false
-	level_data.tiles.set_bitv(tile_coord, false)
+	if not level_data.tiles.has(tile_coord): return false
+	level_data.tiles.erase(tile_coord)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
 	level_data.changed_tiles.emit()
@@ -437,14 +435,14 @@ func get_autotiling_tile(bits: int) -> Vector2i:
 
 ## Autotiling!
 func update_tile(tile_coord: Vector2i) -> void:
-	if not level_data.get_tile(tile_coord): return
+	if not level_data.tiles.get(tile_coord): return
 	var layer := 0
 	var id := 1
 	
 	var bits = 0
 	var bit = 1
 	for vec in TILE_LOOKUP_ORDER:
-		if level_data.get_tile(tile_coord + vec):
+		if level_data.tiles.get(tile_coord + vec):
 			bits |= bit
 		bit <<= 1
 	var what_tile = tiling_lookup[bits]
@@ -452,7 +450,7 @@ func update_tile(tile_coord: Vector2i) -> void:
 
 func count_tiles(tiles: Array, offset: Vector2i) -> int:
 	return tiles.reduce(func(acc:int, tile_coord: Vector2i) -> int:
-		return acc + (1 if level_data.get_tile(tile_coord+offset) == true else 0)
+		return acc + (1 if level_data.tiles.get(tile_coord+offset) == true else 0)
 		, 0)
 
 func _spawn_player() -> void:
@@ -521,7 +519,7 @@ func tiles_intersecting(rect: Rect2i):
 	var max_tile_y = ceili((rect.position.y + rect.size.y) as float / 32)
 	for x in range(min_tile_x, max_tile_x):
 		for y in range(min_tile_y, max_tile_y):
-			if level_data.tiles.get_bit(x, y):
+			if level_data.tiles.get(Vector2i(x, y)):
 				return true
 	return false
 

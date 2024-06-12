@@ -48,9 +48,8 @@ signal changed_goal_position
 @export var custom_lock_arrangements := {}
 
 ## Just saves all positions for the tiles... I'll come up with something better later ok
-# It's a bitmap cause that's way better
 signal changed_tiles
-@export var tiles: BitMap = BitMap.new()
+@export var tiles := {}
 
 ## Name of the level, used when standing in front of an entry that leads to it
 @export var name := "":
@@ -92,28 +91,6 @@ func _init() -> void:
 	changed_tiles.connect(emit_changed)
 	changed_player_spawn_position.connect(emit_changed)
 	changed_goal_position.connect(emit_changed)
-	changed_size.connect(resize_tiles)
-	tiles.create(size / 32)
-
-func get_tile(vec) -> bool:
-	if vec.x < 0 or vec.y < 0:
-		return false
-	var tiles_size = tiles.get_size()
-	if vec.x >= tiles_size.x or vec.y >= tiles_size.y:
-		return false
-	return tiles.get_bitv(vec)
-
-func resize_tiles() -> void:
-	var old_size = tiles.get_size()
-	var new_size = size / 32
-	var new_tiles = BitMap.new()
-	new_tiles.create(new_size)
-	var common_size = Vector2i(mini(new_size.x, old_size.x), mini(new_size.y, old_size.y))
-	for x in common_size.x:
-		for y in common_size.y:
-			if tiles.get_bit(x, y):
-				new_tiles.set_bit(x, y, true)
-	tiles = new_tiles
 
 func duplicated() -> LevelData:
 	var dupe := LevelData.new()

@@ -22,14 +22,10 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_u32(level.player_spawn_position.y)
 	# Tiles
 	# Make sure there aren't *checks notes* 2^32 - 1, or, 4294967295 tiles. Meaning the level size is constrained to about, uh, 2097120x2097120
-	var tile_count = level.tiles.get_true_bit_count()
-	var tiles_size = level.tiles.get_size()
-	data.store_u32(tile_count)
-	for x in tiles_size.x:
-		for y in tiles_size.y:
-			if level.tiles.get_bit(x, y):
-				data.store_u32(x)
-				data.store_u32(y)
+	data.store_u32(level.tiles.size())
+	for key in level.tiles:
+		data.store_u32(key.x)
+		data.store_u32(key.y)
 	# Keys
 	data.store_u32(level.keys.size())
 	for key in level.keys:
@@ -130,7 +126,7 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	var tile_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("tile count is %d" % tile_amount)
 	for _i in tile_amount:
-		level.tiles.set_bit(data.get_u32(), data.get_u32(), true)
+		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = true
 	
 	var key_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("key count is %d" % key_amount)
