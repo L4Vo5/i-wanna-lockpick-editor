@@ -622,11 +622,12 @@ func disconnect_door(door: Door) -> void:
 func connect_key(key: Key) -> void:
 	key.gui_input.connect(_on_key_gui_input.bind(key))
 	key.picked_up.connect(_on_key_picked_up.bind(key))
-	key.level = self # that's where that belongs now
+	key.level = self
 
 func disconnect_key(key: Key) -> void:
 	key.gui_input.disconnect(_on_key_gui_input.bind(key))
 	key.picked_up.disconnect(_on_key_picked_up.bind(key))
+	key.level = null
 
 func connect_entry(entry: Entry) -> void:
 	entry.gui_input.connect(_on_entry_gui_input.bind(entry))
@@ -636,33 +637,32 @@ func connect_entry(entry: Entry) -> void:
 
 func disconnect_entry(entry: Entry) -> void:
 	entry.gui_input.disconnect(_on_entry_gui_input.bind(entry))
+	entry.level = null
 
 func connect_salvage_point(salvage_point: SalvagePoint) -> void:
 	salvage_point.gui_input.connect(_on_salvage_point_gui_input.bind(salvage_point))
 	salvage_point.level = self
-	assert(gameplay_manager.pack_state != null)
+	assert(gameplay_manager.pack_state)
 	salvage_point.level_pack_state = gameplay_manager.pack_state
 
 func disconnect_salvage_point(salvage_point: SalvagePoint) -> void:
 	salvage_point.gui_input.disconnect(_on_salvage_point_gui_input.bind(salvage_point))
+	salvage_point.level = self
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:
 		remove_all_pooled()
 
 func remove_all_pooled() -> void:
-	var c := doors.get_children()
-	c.reverse()
-	for door in c:
-		doors.remove_child(door)
-		disconnect_door(door)
-		NodePool.return_node(door)
-	c = keys.get_children()
-	c.reverse()
-	for key in c:
-		keys.remove_child(key)
-		disconnect_key(key)
-		NodePool.return_node(key)
+	for type in Enums.object_types.values():
+		var cont_name: StringName = OBJECT_TYPE_TO_CONTAINER_NAME[type]
+		var container: Node2D = get(cont_name)
+		var c := container.get_children()
+		c.reverse()
+		for node in c:
+			container.remove_child(node)
+			get(OBJECT_TYPE_TO_DISCONNECT[type]).call(node)
+			NodePool.return_node(node)
 
 func limit_camera() -> void:
 	var limit := Vector2(
@@ -691,7 +691,5 @@ func get_camera_position() -> Vector2:
 	return camera.position
 
 func in_transition() -> bool:
-	# TODO: Avoids crash in the autotiling benchmark. Remove/reconsider when the find_node HACK in gameplay_manager is fixed? (damn, they should add TODO dependencies somehow)
-	if (!gameplay_manager.transition): return false
 	var stage = gameplay_manager.transition.animation_stage
 	return stage == 0 or stage == 1

@@ -9,10 +9,10 @@ class_name SalvagePoint
 		salvage_point_data = val
 		_connect_salvage_point_data()
 
-@export var level: Level
-@export var level_pack_state: LevelPackStateData
+var level: Level
+var level_pack_state: LevelPackStateData
 
-@export var door: Door = null
+var door: Door = null
 @export var door_error = false
 @export var door_error_size = false
 
