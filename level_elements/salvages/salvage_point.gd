@@ -25,8 +25,6 @@ class_name SalvagePoint
 @onready var collision: Area2D = %Collision
 @onready var outline: Panel = %Outline
 
-var animation_angle: float = 0
-
 func _ready() -> void:
 	collision.area_entered.connect(_on_touched)
 	update_visual()
@@ -101,13 +99,6 @@ func _disconnect_salvage_point_data() -> void:
 		salvage_point_data.changed.disconnect(update_visual)
 
 func _process(delta) -> void:
-	if not is_instance_valid(salvage_point_data): return
-	var speed := 100
-	if salvage_point_data.is_output and door_error:
-		speed = 300
-	animation_angle += speed * delta
-	if animation_angle >= 360:
-		animation_angle -= 360
 	update_visual()
 
 func update_visual() -> void:
@@ -115,30 +106,29 @@ func update_visual() -> void:
 	if not is_instance_valid(salvage_point_data): return
 	if not ignore_position:
 		position = salvage_point_data.position
-	var hue: float
+	var mod: Color
 	outline.hide()
 	if salvage_point_data.is_output:
 		if door_error:
 			sprite.frame = 2
-			hue = 0
+			mod = Rendering.salvage_point_error_output_color
 			outline.position.x = 16 - door_error_size.x / 2
 			outline.position.y = 32 - door_error_size.y
 			outline.size = door_error_size
 			outline.show()
 		else:
 			sprite.frame = 1
-			hue = 0.55
+			mod = Rendering.salvage_point_output_color
 	else:
 		if active and level.logic.active_salvage == self:
-			hue = 0.333
+			mod = Rendering.salvage_point_active_input_color
 		else:
-			hue = 0.745
+			mod = Rendering.salvage_point_input_color
 		sprite.frame = 0
-
-	var saturation := 150 + 105 * sin(deg_to_rad(animation_angle))
-	sprite.modulate = Color.from_hsv(hue, saturation / 255, 1)
+	
+	sprite.modulate = mod
 	if outline.visible:
-		outline.modulate = sprite.modulate
+		outline.modulate = mod
 	number.text = str(salvage_point_data.sid)
 
 func get_mouseover_text() -> String:

@@ -18,17 +18,31 @@ const frame_s_v := [
 	[100.0 / 100.0, 75.0 / 100.0]
 ]
 var i_view_palette := [
-		Color.from_hsv(0, frame_s_v[0][0], frame_s_v[0][1]),
-		Color.from_hsv(0, frame_s_v[1][0], frame_s_v[1][1]),
-		Color.from_hsv(0, frame_s_v[2][0], frame_s_v[2][1]),
+	Color.from_hsv(0, frame_s_v[0][0], frame_s_v[0][1]),
+	Color.from_hsv(0, frame_s_v[1][0], frame_s_v[1][1]),
+	Color.from_hsv(0, frame_s_v[2][0], frame_s_v[2][1]),
 ]
+var salvage_point_input_color := Color.WHITE
+var salvage_point_active_input_color := Color.WHITE
+var salvage_point_output_color := Color.WHITE
+var salvage_point_error_output_color := Color.WHITE
 
-func _physics_process(_delta: float) -> void:
-		# PERF: use shader instead? it's way too inefficient to update a bunch of sprites each frame, right?
-	var hue := fmod((Global.physics_step * 0.75) / 255.0, 1.0)
-	i_view_palette[0] = Color.from_hsv(hue, Rendering.frame_s_v[0][0], Rendering.frame_s_v[0][1])
-	i_view_palette[1] = Color.from_hsv(hue, Rendering.frame_s_v[1][0], Rendering.frame_s_v[1][1])
-	i_view_palette[2] = Color.from_hsv(hue, Rendering.frame_s_v[2][0], Rendering.frame_s_v[2][1])
+
+func _process(_delta: float) -> void:
+		# PERF: use shader instead? it's way too inefficient to update a bunch of sprites each frame, right? ... is it?
+	var i_view_hue := fmod((Global.time * 0.75 * 50.0) / 255.0, 1.0)
+	i_view_palette[0] = Color.from_hsv(i_view_hue, Rendering.frame_s_v[0][0], Rendering.frame_s_v[0][1])
+	i_view_palette[1] = Color.from_hsv(i_view_hue, Rendering.frame_s_v[1][0], Rendering.frame_s_v[1][1])
+	i_view_palette[2] = Color.from_hsv(i_view_hue, Rendering.frame_s_v[2][0], Rendering.frame_s_v[2][1])
+	
+	var salvage_sat := 150.0 + 105 * sin(deg_to_rad(Global.time * 100))
+	var salvage_error_sat := 150.0 + 105 * sin(deg_to_rad(Global.time * 300))
+	salvage_sat /= 255.0
+	salvage_error_sat /= 255.0
+	salvage_point_input_color = Color.from_hsv(0.745, salvage_sat, 1)
+	salvage_point_active_input_color = Color.from_hsv(0.333, salvage_sat, 1)
+	salvage_point_output_color = Color.from_hsv(0.55, salvage_sat, 1)
+	salvage_point_error_output_color = Color.from_hsv(0, salvage_error_sat, 1)
 
 var lock_colors := {
 	Enums.sign.positive: Color("2C2014"),
