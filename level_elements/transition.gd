@@ -8,32 +8,32 @@ class_name Transition
 @onready var name_text: OutlineText = %Name
 @onready var contributor_text: OutlineText = %Contributor
 
-var text_offset: float = 0
-var wiggle_angle: float = 0
-var title_wiggle: Vector2 = Vector2(0, 0)
-var name_wiggle: Vector2 = Vector2(0, 0)
+var text_offset:= 0.0
+var wiggle_angle:= 0.0
+var title_wiggle := Vector2(0, 0)
+var name_wiggle := Vector2(0, 0)
 
 var animation_stage := -1
-var animation_timer: float = 0
+var animation_timer:= 0.0
 
 # timings
 ## time for background alpha to reach 1
-var fade_in_length: float = 0
+var fade_in_length:= 0.0
 
 ## time when the fall starts
-var fall_start: float = 0
+var fall_start:= 0.0
 
 ## time for the text to reach the center
-var fall_length: float = 0
+var fall_length:= 0.0
 
 ## time you need to wait after fall_length
-var hold_length: float = 0
+var hold_length := 0.0
 
 ## whether you can press jump or restart to finish early
 var can_finish_early: bool = true
 
 ## time for background alpha to reach 0
-var fade_out_length: float = 0
+var fade_out_length:= 0.0
 
 signal finished_animation
 
@@ -72,10 +72,13 @@ func world_enter_animation():
 	set_timings(0.5, 0, 0.5, 0.5, false, 0.5)
 	start_animation("")
 
+func _init() -> void:
+	visibility_changed.connect(func(): set_process(visible))
+	set_process(visible)
+
 func _process(delta):
 	if animation_timer < 0 or animation_stage < 0:
 		hide()
-		pass
 	elif animation_stage == 0:
 		# fade in
 		if animation_timer >= fall_start + fall_length:
@@ -122,6 +125,13 @@ func _process(delta):
 	name_wiggle = Vector2.from_angle(deg_to_rad(wiggle_angle + 50)) * 6
 	update_visual()
 	animation_timer += delta
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EDITOR_PRE_SAVE:
+		text_offset = 0
+		title_wiggle = Vector2.ZERO
+		name_wiggle = Vector2.ZERO
+		update_visual()
 
 func update_visual():
 	title_text.position = Vector2(400, 240 + text_offset) + title_wiggle

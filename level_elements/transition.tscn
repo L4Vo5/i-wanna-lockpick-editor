@@ -18,7 +18,7 @@ color = Color(0.607843, 0.462745, 0, 1)
 
 [node name="Title" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(398.989, 237.175)
+position = Vector2(400, 240)
 script = ExtResource("4_6mbev")
 text = "Wahs"
 font = ExtResource("2_vw8ei")
@@ -30,7 +30,7 @@ center_vertically = true
 
 [node name="Name" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(403.028, 298.82)
+position = Vector2(400, 304)
 script = ExtResource("4_6mbev")
 text = "Hello, world"
 font = ExtResource("3_vgy7d")
@@ -42,7 +42,7 @@ center_vertically = true
 
 [node name="Contributor" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(398.989, 397.175)
+position = Vector2(400, 400)
 script = ExtResource("4_6mbev")
 text = "Peta"
 font = ExtResource("3_vgy7d")

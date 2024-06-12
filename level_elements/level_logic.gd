@@ -170,31 +170,15 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 	
 	# HACK: Come up with something better.
 	# (it's hard tho...)
-	# cleanest solution almost seems to be removing the level's
-	# changed_glitch_color signal altogether, and updating everything manually,
-	# either here or on the level... but that's troublesome and bad OOP (does that matter?)
 	# PERF: maybe the level keeps a list of all doors and keys with glitch, 
 	# so that it doesn't have to go through ALL all? 
 	
 	for key: Key in level.keys.get_children():
-		# better?
-		if key.key_data.color != Enums.colors.glitch:
-			continue
-		key._on_changed_glitch_color()
+		if key.key_data.color == Enums.colors.glitch:
+			key._on_changed_glitch_color()
 	
 	for door: Door in level.doors.get_children():
 		var _door_data := door.door_data
-		var has_glitch := false
-		if _door_data.outer_color == Enums.colors.glitch:
-			has_glitch = true
-		else:
-			for lock in _door_data.locks:
-				if lock.color == Enums.colors.glitch:
-					has_glitch = true
-					break
-		if not has_glitch:
-			# better?
-			continue
 		if not _door_data.get_curse(Enums.curse.brown):
 			# If the door was previously cursed, its glitch color might not match up, so we need to keep track of that in the undo.
 			# (unless this is an undo)
@@ -479,6 +463,7 @@ func pick_up_key(key: Key) -> void:
 	undo_redo.add_do_method(key.redo)
 	if not key_data.is_infinite:
 		key_data.is_spent = true
+		# TODO: hmm order of operations
 		# can't do when reset happens in the same frame (salvages)
 		# key.collision.call_deferred(&"set_process_mode", PROCESS_MODE_DISABLED)
 		key._resolve_collision_mode.call_deferred()
