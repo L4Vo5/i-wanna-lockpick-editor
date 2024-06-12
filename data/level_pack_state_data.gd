@@ -2,6 +2,8 @@ extends Resource
 class_name LevelPackStateData
 ## The state of a level pack. Also doubles as save data.
 
+static var SHOULD_PRINT := false
+
 ## Id of the pack this state data corresponds to (used for save data)
 @export var pack_id: int
 
@@ -69,9 +71,9 @@ func save() -> void:
 	if resource_path != "":
 		var res := ResourceSaver.save(self)
 		if res != OK:
-			print("Couldn't save! Error:" + error_string(res))
+			pr("Couldn't save! Error:" + error_string(res))
 	else:
-		print("Couldn't save! no resource_path!")
+		pr("Couldn't save! no resource_path!")
 
 static func find_state_file_for_pack_or_create_new(pack: LevelPackData) -> LevelPackStateData:
 	var state: LevelPackStateData = null
@@ -89,7 +91,11 @@ static func find_state_file_for_pack_or_create_new(pack: LevelPackData) -> Level
 			i = randi()
 		state.resource_path = "user://level_saves/" + str(i) + ".tres"
 		state.save()
-		print("Couldn't find save data, making a new one at %s" % state.resource_path)
+		pr("Couldn't find save data, making a new one at %s" % state.resource_path)
 	else:
-		print("Successfully loaded save data from %s!" % state.resource_path)
+		pr("Successfully loaded save data from %s!" % state.resource_path)
 	return state
+
+static func pr(s: String) -> void:
+	if SHOULD_PRINT:
+		print(s)

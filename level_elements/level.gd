@@ -672,5 +672,7 @@ func get_camera_position() -> Vector2:
 	return camera.position
 
 func in_transition() -> bool:
+	# TODO: Avoids crash in the autotiling benchmark. Remove/reconsider when the find_node HACK in gameplay_manager is fixed? (damn, they should add TODO dependencies somehow)
+	if (!gameplay_manager.transition): return false
 	var stage = gameplay_manager.transition.animation_stage
 	return stage == 0 or stage == 1

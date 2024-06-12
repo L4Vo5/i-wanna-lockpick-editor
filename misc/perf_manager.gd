@@ -100,10 +100,13 @@ func check_balances() -> bool:
 	assert(stack.is_empty())
 	return true
 
-func print_report() -> void:
+func print_report(specific_keys: PackedStringArray = []) -> void:
 #	if Global.in_editor: return
 	check_balances()
 	for key in times:
+		if not specific_keys.is_empty():
+			if not key in specific_keys:
+				continue
 		print_rich("%s (%d calls): [b]%s[/b] total, [b]%s[/b] self, average: [b]%s[/b] total, [b]%s[/b] self" % [
 				key,
 				times[key][2],
