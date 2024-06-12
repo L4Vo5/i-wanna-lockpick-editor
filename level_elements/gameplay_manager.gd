@@ -11,8 +11,7 @@ var pack_state: LevelPackStateData:
 
 @onready var level: Level = %Level
 
-# HACK to avoid the camera getting in the way
-@onready var transition: Transition = get_node(NodePath("../../Transition"))
+@onready var transition: Transition = %Transition
 
 func _ready() -> void:
 	level.gameplay_manager = self
