@@ -347,7 +347,6 @@ func _spawn_tile(tile_coord: Vector2i, also_update_neighbors: bool) -> void:
 	var layer := 0
 	var id := 1
 	var what_tile := Vector2i(1,1)
-	tile_map.set_cell(layer, tile_coord, id, what_tile)
 	if also_update_neighbors:
 		update_tile_and_neighbors(tile_coord)
 	else:
@@ -384,7 +383,7 @@ const NEIGHBOR_D := [Vector2i( 0,  1)]
 const NEIGHBOR_L := [Vector2i(-1,  0)]
 const NEIGHBOR_R := [Vector2i( 1,  0)]
 
-const TILE_LOOKUP_ORDER := [
+const TILE_LOOKUP_ORDER: Array = [
 	Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1),
 	Vector2i(-1,  0),                  Vector2i(1,  0),
 	Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
@@ -440,13 +439,30 @@ func update_tile(tile_coord: Vector2i) -> void:
 	var layer := 0
 	var id := 1
 	
-	var bits = 0
-	var bit = 1
-	for vec in TILE_LOOKUP_ORDER:
-		if level_data.tiles.get(tile_coord + vec):
-			bits |= bit
-		bit <<= 1
-	var what_tile = tiling_lookup[bits]
+	var bits := 0
+	# Manually unrolling the loop is about 10-20% faster...
+	if level_data.tiles.get(tile_coord + Vector2i(-1, -1)):
+		bits |= 1 
+	if level_data.tiles.get(tile_coord + Vector2i(0, -1)):
+		bits |= 1 << 1
+	if level_data.tiles.get(tile_coord + Vector2i(1, -1)):
+		bits |= 1 << 2
+	if level_data.tiles.get(tile_coord + Vector2i(-1, 0)):
+		bits |= 1 << 3
+	if level_data.tiles.get(tile_coord + Vector2i(1, 0)):
+		bits |= 1 << 4
+	if level_data.tiles.get(tile_coord + Vector2i(-1, 1)):
+		bits |= 1 << 5
+	if level_data.tiles.get(tile_coord + Vector2i(0, 1)):
+		bits |= 1 << 6
+	if level_data.tiles.get(tile_coord + Vector2i(1, 1)):
+		bits |= 1 << 7
+	#var vec: Vector2i
+	#for i in TILE_LOOKUP_ORDER.size():
+		#vec = TILE_LOOKUP_ORDER[i]
+		#if level_data.tiles.get(tile_coord + vec):
+			#bits |= 1 << i
+	var what_tile := tiling_lookup[bits]
 	tile_map.set_cell(layer, tile_coord, id, Vector2i(what_tile >> 16, what_tile & 0xFFFF))
 
 func count_tiles(tiles: Array, offset: Vector2i) -> int:
