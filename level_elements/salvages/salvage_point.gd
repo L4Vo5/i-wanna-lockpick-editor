@@ -2,6 +2,8 @@
 extends Control
 class_name SalvagePoint
 
+static var level_element_type := Enums.level_element_types.salvage
+
 @export var salvage_point_data: SalvagePointData:
 	set(val):
 		if salvage_point_data == val: return
@@ -49,7 +51,7 @@ func prep_output_step_1() -> void:
 	new_door_data.glitch_color = Enums.colors.glitch
 	new_door_data.amount.set_to(1, 0)
 	new_door_data.sid = sid
-	door = level._spawn_element(new_door_data, Enums.object_types.door)
+	door = level._spawn_element(new_door_data, Enums.level_element_types.door)
 	door_error = false
 
 func prep_output_step_2() -> void:
@@ -63,14 +65,14 @@ func prep_output_step_3() -> void:
 	if not salvage_point_data.is_output:
 		return
 	if door != null and door_error:
-		level.remove_element(door, Enums.object_types.door)
+		level.remove_element(door, Enums.level_element_types.door)
 		door = null
 	if door != null:
 		hide()
 
 func remove_door() -> void:
 	if door != null:
-		level.remove_element(door, Enums.object_types.door)
+		level.remove_element(door, Enums.level_element_types.door)
 		door = null
 	door_error = false
 	show()

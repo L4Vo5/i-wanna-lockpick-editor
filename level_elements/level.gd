@@ -148,7 +148,7 @@ func reset() -> void:
 	
 	# This initial stuff looks ugly for optimization's sake
 	# (yes, it makes a measurable impact, specially on big levels)
-	for type in Enums.object_types.values():
+	for type in Enums.level_element_types.values():
 		assert(PerfManager.start("Level::reset (" + str(type) + ")"))
 		var cont_name: StringName = OBJECT_TYPE_TO_CONTAINER_NAME[type]
 
@@ -238,51 +238,51 @@ signal entry_gui_input(event: InputEvent, entry: Entry)
 signal salvage_point_gui_input(event: InputEvent, salvage_point: SalvagePoint)
 
 const OBJECT_TYPE_TO_CONTAINER_NAME := {
-	Enums.object_types.door: &"doors",
-	Enums.object_types.key: &"keys",
-	Enums.object_types.entry: &"entries",
-	Enums.object_types.salvage: &"salvage_points",
+	Enums.level_element_types.door: &"doors",
+	Enums.level_element_types.key: &"keys",
+	Enums.level_element_types.entry: &"entries",
+	Enums.level_element_types.salvage: &"salvage_points",
 };
 
 const OBJECT_TYPE_TO_SIGNAL := {
-	Enums.object_types.door: &"changed_doors",
-	Enums.object_types.key: &"changed_keys",
-	Enums.object_types.entry: &"changed_entries",
-	Enums.object_types.salvage: &"changed_salvage_points",
+	Enums.level_element_types.door: &"changed_doors",
+	Enums.level_element_types.key: &"changed_keys",
+	Enums.level_element_types.entry: &"changed_entries",
+	Enums.level_element_types.salvage: &"changed_salvage_points",
 };
 
 const OBJECT_TYPE_TO_SCENE := {
-	Enums.object_types.door: DOOR,
-	Enums.object_types.key: KEY,
-	Enums.object_types.entry: ENTRY,
-	Enums.object_types.salvage: SALVAGE_POINT,
+	Enums.level_element_types.door: DOOR,
+	Enums.level_element_types.key: KEY,
+	Enums.level_element_types.entry: ENTRY,
+	Enums.level_element_types.salvage: SALVAGE_POINT,
 };
 
 const OBJECT_TYPE_TO_DATA := {
-	Enums.object_types.door: &"door_data",
-	Enums.object_types.key: &"key_data",
-	Enums.object_types.entry: &"entry_data",
-	Enums.object_types.salvage: &"salvage_point_data",
+	Enums.level_element_types.door: &"door_data",
+	Enums.level_element_types.key: &"key_data",
+	Enums.level_element_types.entry: &"entry_data",
+	Enums.level_element_types.salvage: &"salvage_point_data",
 };
 
 const OBJECT_TYPE_TO_CONNECT := {
-	Enums.object_types.door: &"connect_door",
-	Enums.object_types.key: &"connect_key",
-	Enums.object_types.entry: &"connect_entry",
-	Enums.object_types.salvage: &"connect_salvage_point",
+	Enums.level_element_types.door: &"connect_door",
+	Enums.level_element_types.key: &"connect_key",
+	Enums.level_element_types.entry: &"connect_entry",
+	Enums.level_element_types.salvage: &"connect_salvage_point",
 };
 
 const OBJECT_TYPE_TO_DISCONNECT := {
-	Enums.object_types.door: &"disconnect_door",
-	Enums.object_types.key: &"disconnect_key",
-	Enums.object_types.entry: &"disconnect_entry",
-	Enums.object_types.salvage: &"disconnect_salvage_point",
+	Enums.level_element_types.door: &"disconnect_door",
+	Enums.level_element_types.key: &"disconnect_key",
+	Enums.level_element_types.entry: &"disconnect_entry",
+	Enums.level_element_types.salvage: &"disconnect_salvage_point",
 };
 
 ## Adds *something* to the level data. Returns null if it wasn't added
-func add_element(data, type: Enums.object_types) -> Node:
+func add_element(data, type: Enums.level_element_types) -> Node:
 	if is_space_occupied(data.get_rect()): return null
-	if type == Enums.object_types.door:
+	if type == Enums.level_element_types.door:
 		if not data.check_valid(level_data, true): return null
 	var list: Array = level_data.get(OBJECT_TYPE_TO_CONTAINER_NAME[type]);
 	if not data in list:
@@ -291,7 +291,7 @@ func add_element(data, type: Enums.object_types) -> Node:
 	return _spawn_element(data, type)
 
 ## Makes *something* physically appear (doesn't check collisions)
-func _spawn_element(data, type: Enums.object_types) -> Node:
+func _spawn_element(data, type: Enums.level_element_types) -> Node:
 	assert(PerfManager.start("Level::_spawn_element (%d)" % type))
 	var node := NodePool.pool_node(OBJECT_TYPE_TO_SCENE[type])
 	var dupe = data.duplicated()
@@ -304,7 +304,7 @@ func _spawn_element(data, type: Enums.object_types) -> Node:
 	return node
 
 ## Removes *something* from the level data
-func remove_element(node: Node, type: Enums.object_types) -> void:
+func remove_element(node: Node, type: Enums.level_element_types) -> void:
 	var original_data = node.get_meta(&"original_data")
 	var list: Array = level_data[OBJECT_TYPE_TO_CONTAINER_NAME[type]]
 	var i := list.find(original_data)
@@ -316,7 +316,7 @@ func remove_element(node: Node, type: Enums.object_types) -> void:
 	level_data.get(OBJECT_TYPE_TO_SIGNAL[type]).emit()
 
 ## Moves *something*. Returns false if the move failed
-func move_element(node: Node, type: Enums.object_types, new_position: Vector2i) -> bool:
+func move_element(node: Node, type: Enums.level_element_types, new_position: Vector2i) -> bool:
 	var original_data = node.get_meta(&"original_data")
 	var list: Array = level_data.get(OBJECT_TYPE_TO_CONTAINER_NAME[type])
 	var i := list.find(original_data)
@@ -546,7 +546,7 @@ func tiles_intersecting(rect: Rect2i) -> bool:
 
 ## Returns the object at that position.
 func get_object_occupying(pos: Vector2i) -> Node:
-	for type in Enums.object_types.values():
+	for type in Enums.level_element_types.values():
 		var container: Node2D = get(OBJECT_TYPE_TO_CONTAINER_NAME[type])
 		var data_name: StringName = OBJECT_TYPE_TO_DATA[type]
 		for child in container.get_children():
@@ -654,7 +654,7 @@ func _notification(what: int) -> void:
 		remove_all_pooled()
 
 func remove_all_pooled() -> void:
-	for type in Enums.object_types.values():
+	for type in Enums.level_element_types.values():
 		var cont_name: StringName = OBJECT_TYPE_TO_CONTAINER_NAME[type]
 		var container: Node2D = get(cont_name)
 		var c := container.get_children()

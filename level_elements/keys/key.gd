@@ -4,6 +4,7 @@ class_name Key
 ## Key lol
 
 signal picked_up
+static var level_element_type := Enums.level_element_types.key
 
 @export var key_data: KeyData:
 	set(val):

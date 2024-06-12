@@ -77,10 +77,10 @@ func _adjust_inner_container_dimensions() -> void:
 		inner_container.size = size
 
 func _ready() -> void:
-	gameplay.level.door_gui_input.connect(_on_element_gui_input.bind(Enums.object_types.door))
-	gameplay.level.key_gui_input.connect(_on_element_gui_input.bind(Enums.object_types.key))
-	gameplay.level.entry_gui_input.connect(_on_element_gui_input.bind(Enums.object_types.entry))
-	gameplay.level.salvage_point_gui_input.connect(_on_element_gui_input.bind(Enums.object_types.salvage))
+	gameplay.level.door_gui_input.connect(_on_element_gui_input.bind(Enums.level_element_types.door))
+	gameplay.level.key_gui_input.connect(_on_element_gui_input.bind(Enums.level_element_types.key))
+	gameplay.level.entry_gui_input.connect(_on_element_gui_input.bind(Enums.level_element_types.entry))
+	gameplay.level.salvage_point_gui_input.connect(_on_element_gui_input.bind(Enums.level_element_types.salvage))
 	resized.connect(_adjust_inner_container_dimensions)
 	level_viewport.get_parent().show()
 
@@ -121,13 +121,13 @@ func _on_changed_level_data() -> void:
 	danger_obj = null
 
 const OBJECT_TYPE_TO_EDITOR := {
-	Enums.object_types.door: &"door_editor",
-	Enums.object_types.key: &"key_editor",
-	Enums.object_types.entry: &"entry_editor",
-	Enums.object_types.salvage: &"salvage_point_editor",
+	Enums.level_element_types.door: &"door_editor",
+	Enums.level_element_types.key: &"key_editor",
+	Enums.level_element_types.entry: &"entry_editor",
+	Enums.level_element_types.salvage: &"salvage_point_editor",
 }
 
-func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.object_types) -> void:
+func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types) -> void:
 	if editor_data.disable_editing: return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
@@ -164,7 +164,7 @@ func _gui_input(event: InputEvent) -> void:
 				place_tile_on_mouse()
 				accept_event()
 				return
-			for type in Enums.object_types.values():
+			for type in Enums.level_element_types.values():
 				if editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]]:
 					place_element_on_mouse(type)
 					return
@@ -187,7 +187,7 @@ func _gui_input(event: InputEvent) -> void:
 			if selected_obj and is_dragging:
 				relocate_selected()
 			elif Input.is_action_pressed(&"unbound_action"):
-				for type in Enums.object_types.values():
+				for type in Enums.level_element_types.values():
 					if editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]]:
 						place_element_on_mouse(type)
 						return
@@ -234,7 +234,7 @@ func remove_tile_on_mouse() -> bool:
 	var coord := get_mouse_tile_coord(32)
 	return gameplay.level.remove_tile(coord)
 
-func place_element_on_mouse(type: Enums.object_types) -> bool:
+func place_element_on_mouse(type: Enums.level_element_types) -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
 	var coord := get_mouse_coord(OBJECT_TYPE_TO_GRID_SIZE[type])
@@ -247,7 +247,7 @@ func place_element_on_mouse(type: Enums.object_types) -> bool:
 	select_thing(node)
 	return true
 
-func remove_element(node: Node, type: Enums.object_types) -> bool:
+func remove_element(node: Node, type: Enums.level_element_types) -> bool:
 	if not is_instance_valid(node): return false
 	gameplay.level.remove_element(node, type)
 	select_thing(null)
@@ -271,12 +271,12 @@ func relocate_selected() -> void:
 	if is_mouse_out_of_bounds(): return
 	if not is_dragging: return
 	if not is_instance_valid(selected_obj): return
-	var type := Enums.get_object_type(selected_obj)
+	var type: Enums.level_element_types = selected_obj.level_element_type
 	var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
 	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
 	var cond: bool = true
 	var obj_pos: Vector2i = selected_obj.position
-	gameplay.level.move_element(selected_obj, Enums.get_object_type(selected_obj), used_coord)
+	gameplay.level.move_element(selected_obj, selected_obj.level_element_type, used_coord)
 	
 	if not cond and obj_pos != used_coord:
 		_place_danger_obj()
@@ -334,22 +334,22 @@ func _retry_ghosts() -> void:
 		_place_ghosts()
 
 const OBJECT_TYPE_TO_GRID_SIZE := {
-	Enums.object_types.door: Vector2i(32, 32),
-	Enums.object_types.key: Vector2i(16, 16),
-	Enums.object_types.entry: Vector2i(32, 32),
-	Enums.object_types.salvage: Vector2i(16, 32),
+	Enums.level_element_types.door: Vector2i(32, 32),
+	Enums.level_element_types.key: Vector2i(16, 16),
+	Enums.level_element_types.entry: Vector2i(32, 32),
+	Enums.level_element_types.salvage: Vector2i(16, 32),
 }
 
 const OBJECT_TYPE_TO_GHOST_NAME := {
-	Enums.object_types.door: &"ghost_door",
-	Enums.object_types.key: &"ghost_key",
-	Enums.object_types.entry: &"ghost_entry",
-	Enums.object_types.salvage: &"ghost_salvage",
+	Enums.level_element_types.door: &"ghost_door",
+	Enums.level_element_types.key: &"ghost_key",
+	Enums.level_element_types.entry: &"ghost_entry",
+	Enums.level_element_types.salvage: &"ghost_salvage",
 }
 
 func _place_ghosts() -> void:
 	assert(not is_dragging)
-	for type in Enums.object_types.values():
+	for type in Enums.level_element_types.values():
 		var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
 		var obj: Node = self[OBJECT_TYPE_TO_GHOST_NAME[type]]
 		var cond: bool = editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]] # doors, keys, ...
@@ -383,7 +383,7 @@ func _place_ghosts() -> void:
 
 # places the danger obj only. this overrides the ghosts obvs
 func _place_danger_obj() -> void:
-	for type in Enums.object_types.values():
+	for type in Enums.level_element_types.values():
 		var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
 		var obj: Node = self[OBJECT_TYPE_TO_GHOST_NAME[type]]
 		var cond: bool = editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]] # doors, keys, ...

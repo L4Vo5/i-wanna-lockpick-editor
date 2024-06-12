@@ -2,6 +2,8 @@
 extends Control
 class_name Entry
 
+static var level_element_type := Enums.level_element_types.entry
+
 @export var entry_data: EntryData:
 	set(val):
 		if entry_data == val: return

@@ -5,6 +5,7 @@ class_name Door
 signal lock_clicked(event: InputEventMouseButton, lock: Lock)
 ## Emitted when the state of some curse has been changed
 signal changed_curse
+static var level_element_type := Enums.level_element_types.door
 
 const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tscn")
