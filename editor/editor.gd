@@ -148,9 +148,6 @@ func _update_mode() -> void:
 	data.objects = current_tab == door_editor or current_tab == key_editor
 	data.entries = current_tab == entry_editor
 	data.salvage_points = current_tab == salvage_point_editor
-	print(data.salvage_points)
-	print(current_tab)
-	print(salvage_point_editor)
 
 func _on_play_pressed() -> void:
 	save_level()
