@@ -64,6 +64,7 @@ func _ready() -> void:
 	data.gameplay = gameplay
 	data.level = level
 	gameplay.level.exclude_player = true
+	level.load_output_points = false
 	
 	if Global.is_exported:
 		_on_new_level_button_pressed()
@@ -154,13 +155,14 @@ func _on_play_pressed() -> void:
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
+	level.load_output_points = data.is_playing
 	right_dock.visible = not data.disable_editing
 	data.danger_highlight.stop_adapting()
 	data.hover_highlight.stop_adapting()
 	data.selected_highlight.stop_adapting()
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
-	level.reset(not data.is_playing)
+	gameplay.reset()
 	resolve_visibility()
 	# fix for things staying focused when playing
 	set_focus_mode(Control.FOCUS_ALL)

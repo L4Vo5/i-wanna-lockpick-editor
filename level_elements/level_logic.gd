@@ -86,7 +86,7 @@ func _physics_process(_delta: float) -> void:
 
 
 ## should only be called from Level.reset
-func reset(back_to_editor: bool) -> void:
+func reset() -> void:
 	for color in key_counts.keys():
 		key_counts[color].set_to(0, 0)
 	for color in star_keys.keys():
@@ -99,7 +99,8 @@ func reset(back_to_editor: bool) -> void:
 	undo_redo.clear_history()
 	active_salvage = null
 	
-	if not back_to_editor:
+	# TODO: Change how this is handled (output collision)
+	if level.load_output_points:
 		for salvage_point: SalvagePoint in level.salvage_points.get_children():
 			salvage_point.prep_output_step_1()
 		for salvage_point: SalvagePoint in level.salvage_points.get_children():

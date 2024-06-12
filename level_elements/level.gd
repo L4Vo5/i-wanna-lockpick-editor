@@ -24,6 +24,9 @@ var level_data: LevelData = null:
 		exclude_player = val
 		_spawn_player()
 
+## If true, output points' doors will be loaded, if available.
+@export var load_output_points := true
+
 # makes it so the level doesn't set Global.current_level to itself
 var dont_make_current := false
 
@@ -135,7 +138,7 @@ func undo() -> void:
 
 ## Resets the current level (when pressing r)
 ## Also used for starting it for the first time
-func reset(back_to_editor: bool = false) -> void:
+func reset() -> void:
 	if not is_node_ready(): return
 	if not level_data: return
 	assert(PerfManager.start("Level::reset"))
@@ -191,7 +194,7 @@ func reset(back_to_editor: bool = false) -> void:
 	
 	is_autorun_on = false
 	
-	logic.reset(back_to_editor)
+	logic.reset()
 	
 	assert(PerfManager.end("Level::reset"))
 
@@ -206,7 +209,6 @@ func _connect_level_data() -> void:
 	_update_goal_position()
 	level_data.changed_doors.connect(emit_signal.bind(&"changed_doors"))
 	level_data.changed_keys.connect(emit_signal.bind(&"changed_keys"))
-	reset()
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(level_data): return
