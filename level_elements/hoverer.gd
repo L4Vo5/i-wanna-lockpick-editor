@@ -34,10 +34,11 @@ func stop_adapting_to(obj: Object) -> void:
 	if obj == current_obj:
 		stop_adapting()
 
-func stop_adapting() -> void:
+func stop_adapting(no_signal: bool = false) -> void:
 	_hide_all()
 	current_obj = null
-	stopped_adapting.emit()
+	if not no_signal:
+		stopped_adapting.emit()
 
 func _hide_all() -> void:
 	line.hide()
@@ -45,7 +46,7 @@ func _hide_all() -> void:
 func is_adapting() -> bool:
 	return current_obj == null
 
-func adapt_to(obj: Node) -> void:
+func adapt_to(obj: Node, no_signal: bool = false) -> void:
 	if not is_instance_valid(obj):
 		stop_adapting()
 		return
@@ -67,4 +68,5 @@ func adapt_to(obj: Node) -> void:
 	line.add_point(Vector2(size.x, size.y))
 	line.add_point(Vector2(0, size.y))
 	line.add_point(Vector2(0, 0))
-	adapted_to.emit(obj)
+	if not no_signal:
+		adapted_to.emit(obj)

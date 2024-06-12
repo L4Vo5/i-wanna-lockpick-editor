@@ -9,6 +9,8 @@ script = ExtResource("1_3up8c")
 
 [node name="Level" parent="." instance=ExtResource("2_8pnk0")]
 unique_name_in_owner = true
+exclude_player = false
+load_output_points = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

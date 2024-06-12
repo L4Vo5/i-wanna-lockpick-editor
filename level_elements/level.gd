@@ -127,6 +127,13 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	adjust_camera()
+	
+	var mouse_pos = get_local_mouse_position()
+	var camera_pos = camera.position
+	var camera_pos2 = camera_pos + camera.get_viewport_rect().size
+	if mouse_pos.x < camera_pos.x or mouse_pos.y < camera_pos.y \
+		or mouse_pos.x >= camera_pos2.x or mouse_pos.y >= camera_pos2.y:
+		hover_highlight.stop_adapting()
 
 # For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
 func undo() -> void:
@@ -262,30 +269,25 @@ const OBJECT_TYPE_TO_DATA := {
 
 const OBJECT_TYPE_TO_CONNECT := {
 	Enums.level_element_types.door: &"connect_door",
-	Enums.level_element_types.key: &"connect_key",
-	Enums.level_element_types.entry: &"connect_entry",
-	Enums.level_element_types.salvage: &"connect_salvage_point",
+	Enums.level_element_types.key: &"connect_key"
 };
 
 const OBJECT_TYPE_TO_DISCONNECT := {
 	Enums.level_element_types.door: &"disconnect_door",
-	Enums.level_element_types.key: &"disconnect_key",
-	Enums.level_element_types.entry: &"disconnect_entry",
-	Enums.level_element_types.salvage: &"disconnect_salvage_point",
+	Enums.level_element_types.key: &"disconnect_key"
 };
 
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion:
-		update_hover()
+		update_mouseover()
 
 func update_hover():
-	var pos = get_local_mouse_position()
-	print(pos)
+	var pos := get_local_mouse_position()
 	var node := get_object_occupying(pos.floor())
 	if node == null:
-		hover_highlight.stop_adapting()
-	else:
-		hover_highlight.adapt_to(node)
+		hover_highlight.stop_adapting(true)
+	elif node != hovering_over:
+		hover_highlight.adapt_to(node, true)
 
 ## Adds *something* to the level data. Returns null if it wasn't added
 func add_element(data, type: Enums.level_element_types) -> Node:
@@ -307,7 +309,8 @@ func _spawn_element(data, type: Enums.level_element_types) -> Node:
 	node.set_meta(&"original_data", data)
 	node.level = self
 	node.gui_input.connect(_on_element_gui_input.bind(node, type))
-	call(OBJECT_TYPE_TO_CONNECT[type], node)
+	if OBJECT_TYPE_TO_CONNECT.has(type):
+		call(OBJECT_TYPE_TO_CONNECT[type], node)
 	get(OBJECT_TYPE_TO_CONTAINER_NAME[type]).add_child(node)
 	assert(PerfManager.end("Level::_spawn_element (%d)" % type))
 	return node
@@ -326,7 +329,8 @@ func _remove_element(container: Node2D, node: Node, type: Enums.level_element_ty
 	container.remove_child(node)
 
 	node.gui_input.disconnect(_on_element_gui_input.bind(node, type))
-	call(OBJECT_TYPE_TO_DISCONNECT[type], node)
+	if OBJECT_TYPE_TO_DISCONNECT.has(type):
+		call(OBJECT_TYPE_TO_DISCONNECT[type], node)
 	node.level = null
 
 	NodePool.return_node(node)
@@ -557,6 +561,8 @@ func get_object_occupying(pos: Vector2i) -> Node:
 		var container: Node2D = get(OBJECT_TYPE_TO_CONTAINER_NAME[type])
 		var data_name: StringName = OBJECT_TYPE_TO_DATA[type]
 		for child in container.get_children():
+			if not child.visible:
+				continue
 			var rect: Rect2i = child.get(data_name).get_rect()
 			if rect.has_point(pos):
 				return child
@@ -593,6 +599,7 @@ func _on_hover_adapted_to(_what: Node) -> void:
 	update_mouseover()
 
 func update_mouseover() -> void:
+	update_hover()
 	mouseover.hide()
 	var obj := hover_highlight.current_obj
 	if obj:
@@ -619,25 +626,11 @@ func connect_key(key: Key) -> void:
 func disconnect_key(key: Key) -> void:
 	key.picked_up.disconnect(_on_key_picked_up.bind(key))
 
-func connect_entry(_entry: Entry) -> void:
-	# nothing to do
-	pass
-
-func disconnect_entry(_entry: Entry) -> void:
-	# nothing to do
-	pass
-
-func connect_salvage_point(_salvage_point: SalvagePoint) -> void:
-	# nothing to do
-	pass
-
-func disconnect_salvage_point(_salvage_point: SalvagePoint) -> void:
-	# nothing to do
-	pass
-
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:
 		remove_all_pooled()
+	if what == NOTIFICATION_WM_MOUSE_EXIT:
+		hover_highlight.stop_adapting()
 
 func remove_all_pooled() -> void:
 	for type in Enums.level_element_types.values():
