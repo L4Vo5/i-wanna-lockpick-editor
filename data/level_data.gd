@@ -120,15 +120,15 @@ func clear_outside_things() -> void:
 	# tiles
 	var deleted_ones := []
 
-	#for key in tiles.keys():
-		#var pos = key * Vector2i(32, 32)
-		#if pos.x < 0 or pos.y < 0 or pos.x + 32 > size.x or pos.y + 32 > size.y:
-			#deleted_ones.push_back(key)
-	#for pos in deleted_ones:
-		#var worked := tiles.erase(pos)
-		#assert(worked == true)
-	#
-	#amount_deleted += deleted_ones.size()
+	for key in tiles.keys():
+		var pos = key * Vector2i(32, 32)
+		if pos.x < 0 or pos.y < 0 or pos.x + 32 > size.x or pos.y + 32 > size.y:
+			deleted_ones.push_back(key)
+	for pos in deleted_ones:
+		var worked := tiles.erase(pos)
+		assert(worked == true)
+	
+	amount_deleted += deleted_ones.size()
 
 	# doors
 	deleted_ones.clear()
