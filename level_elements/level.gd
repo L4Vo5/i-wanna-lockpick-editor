@@ -152,8 +152,8 @@ func reset() -> void:
 		assert(PerfManager.start("Level::reset (" + str(type) + ")"))
 		var cont_name: StringName = OBJECT_TYPE_TO_CONTAINER_NAME[type]
 
-		var list: Array = level_data[cont_name]
-		var container: Node2D = self[cont_name]
+		var list: Array = level_data.get(cont_name)
+		var container: Node2D = get(cont_name)
 
 		var needed := list.size()
 		var current := container.get_child_count()
@@ -162,13 +162,13 @@ func reset() -> void:
 			var node := container.get_child(i)
 			var original_data = list[i]
 			node.set_meta(&"original_data", original_data)
-			node[OBJECT_TYPE_TO_DATA[type]] = original_data.duplicated()
+			node.set(OBJECT_TYPE_TO_DATA[type], original_data.duplicated())
 		# shave off the rest
 		if current > needed:
 			for _i in current - needed:
 				var node := container.get_child(-1)
 				container.remove_child(node)
-				self[OBJECT_TYPE_TO_DISCONNECT[type]].call(node)
+				get(OBJECT_TYPE_TO_DISCONNECT[type]).call(node)
 				NodePool.return_node(node)
 		# or add them
 		else:
@@ -284,10 +284,10 @@ func add_element(data, type: Enums.object_types) -> Node:
 	if is_space_occupied(data.get_rect()): return null
 	if type == Enums.object_types.door:
 		if not data.check_valid(level_data, true): return null
-	var list: Array = level_data[OBJECT_TYPE_TO_CONTAINER_NAME[type]];
+	var list: Array = level_data.get(OBJECT_TYPE_TO_CONTAINER_NAME[type]);
 	if not data in list:
 		list.push_back(data)
-		level_data[OBJECT_TYPE_TO_SIGNAL[type]].emit() # changed_...
+		level_data.get(OBJECT_TYPE_TO_SIGNAL[type]).emit() # changed_...
 	return _spawn_element(data, type)
 
 ## Makes *something* physically appear (doesn't check collisions)
@@ -295,11 +295,11 @@ func _spawn_element(data, type: Enums.object_types) -> Node:
 	assert(PerfManager.start("Level::_spawn_element (%d)" % type))
 	var node := NodePool.pool_node(OBJECT_TYPE_TO_SCENE[type])
 	var dupe = data.duplicated()
-	node[OBJECT_TYPE_TO_DATA[type]] = dupe
+	node.set(OBJECT_TYPE_TO_DATA[type], dupe)
 	node.set_meta(&"original_data", data)
 	node.active = true
-	self[OBJECT_TYPE_TO_CONNECT[type]].call(node)
-	self[OBJECT_TYPE_TO_CONTAINER_NAME[type]].add_child(node)
+	get(OBJECT_TYPE_TO_CONNECT[type]).call(node)
+	get(OBJECT_TYPE_TO_CONTAINER_NAME[type]).add_child(node)
 	assert(PerfManager.end("Level::_spawn_element (%d)" % type))
 	return node
 
@@ -310,22 +310,22 @@ func remove_element(node: Node, type: Enums.object_types) -> void:
 	var i := list.find(original_data)
 	if i != -1:
 		list.remove_at(i)
-	self[OBJECT_TYPE_TO_CONTAINER_NAME[type]].remove_child(node)
-	self[OBJECT_TYPE_TO_DISCONNECT[type]].call(node)
+	get(OBJECT_TYPE_TO_CONTAINER_NAME[type]).remove_child(node)
+	get(OBJECT_TYPE_TO_DISCONNECT[type]).call(node)
 	NodePool.return_node(node)
-	level_data[OBJECT_TYPE_TO_SIGNAL[type]].emit()
+	level_data.get(OBJECT_TYPE_TO_SIGNAL[type]).emit()
 
 ## Moves *something*. Returns false if the move failed
 func move_element(node: Node, type: Enums.object_types, new_position: Vector2i) -> bool:
 	var original_data = node.get_meta(&"original_data")
-	var list: Array = level_data[OBJECT_TYPE_TO_CONTAINER_NAME[type]]
+	var list: Array = level_data.get(OBJECT_TYPE_TO_CONTAINER_NAME[type])
 	var i := list.find(original_data)
 	assert(i != -1)
 	var rect := Rect2i(new_position, original_data.get_rect().size)
 	if not is_space_occupied(rect, [], [original_data]):
 		original_data.position = new_position
-		node[OBJECT_TYPE_TO_DATA[type]].position = new_position
-		level_data[OBJECT_TYPE_TO_SIGNAL[type]].emit()
+		node.get(OBJECT_TYPE_TO_DATA[type]).position = new_position
+		level_data.get(OBJECT_TYPE_TO_SIGNAL[type]).emit()
 		return true
 	else:
 		return false
@@ -468,9 +468,11 @@ func update_tile(tile_coord: Vector2i) -> void:
 	tile_map.set_cell(layer, tile_coord, id, Vector2i(what_tile >> 16, what_tile & 0xFFFF))
 
 func count_tiles(tiles: Array, offset: Vector2i) -> int:
-	return tiles.reduce(func(acc:int, tile_coord: Vector2i) -> int:
-		return acc + (1 if level_data.tiles.get(tile_coord+offset) == true else 0)
-		, 0)
+	return tiles.reduce(
+		func(acc:int, tile_coord: Vector2i) -> int:
+			var add := (1 if level_data.tiles.get(tile_coord+offset) == true else 0)
+			return acc + add
+	, 0)
 
 func _spawn_player() -> void:
 	if is_instance_valid(player):
@@ -495,7 +497,7 @@ func _spawn_goal() -> void:
 	goal_parent.add_child(goal)
 
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
-# TODO: Optimize this obviously. tiles are done at least
+# TODO: Optimize this obviously
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects: Array[Object] = []) -> bool:
 	if not is_space_inside(rect):
 		return true
@@ -530,7 +532,7 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 		return true
 	return false
 
-func tiles_intersecting(rect: Rect2i):
+func tiles_intersecting(rect: Rect2i) -> bool:
 	# HACK: bad floor div and ceil div
 	var min_tile_x = floori(rect.position.x as float / 32)
 	var min_tile_y = floori(rect.position.y as float / 32)
@@ -545,10 +547,10 @@ func tiles_intersecting(rect: Rect2i):
 ## Returns the object at that position.
 func get_object_occupying(pos: Vector2i) -> Node:
 	for type in Enums.object_types.values():
-		var container: Node2D = self[OBJECT_TYPE_TO_CONTAINER_NAME[type]]
+		var container: Node2D = get(OBJECT_TYPE_TO_CONTAINER_NAME[type])
 		var data_name: StringName = OBJECT_TYPE_TO_DATA[type]
 		for child in container.get_children():
-			var rect: Rect2i = child[data_name].get_rect()
+			var rect: Rect2i = child.get(data_name).get_rect()
 			if rect.has_point(pos):
 				return child
 	return null
