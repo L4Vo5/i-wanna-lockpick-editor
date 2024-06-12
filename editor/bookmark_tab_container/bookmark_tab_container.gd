@@ -8,6 +8,8 @@ var flaps:
 	get:
 		return flaps_parent.get_children()
 @onready var flaps_parent: VBoxContainer = $flaps
+var tab_to_flap := {}
+var flap_to_tab := {}
 
 const name_to_icon := {
 	Doors = preload("res://editor/bookmark_tab_container/icons/door.png"),
@@ -23,13 +25,7 @@ const BOOKMARK_FLAP = preload("res://editor/bookmark_tab_container/bookmark_flap
 var current_tab: Control = null
 
 func set_current_tab_control(tab: Control):
-	var idx = 0
-	for child in get_children():
-		if child == flaps_parent:
-			continue
-		if child == tab:
-			_on_flap_toggled(true, flaps_parent.get_child(idx))
-		idx += 1
+	_on_flap_toggled(true, tab_to_flap[tab])
 
 func _ready() -> void:
 	regen_flaps()
@@ -52,15 +48,18 @@ func regen_flaps() -> void:
 	flaps_size = 0
 	for flap in flaps:
 		flap.queue_free()
+	tab_to_flap.clear()
+	flap_to_tab.clear()
 	for child in get_children():
 		if child == flaps_parent: continue
 		var new_flap: Button = BOOKMARK_FLAP.instantiate()
 		new_flap.icon = name_to_icon[child.name]
 		new_flap.name = child.name
-		#new_flap.button_group = button_group
 		new_flap.toggled.connect(_on_flap_toggled.bind(new_flap))
 		flaps_parent.add_child(new_flap)
 		flaps_size = max(flaps_size, new_flap.size.x)
+		tab_to_flap[child] = new_flap
+		flap_to_tab[new_flap] = child
 	#flaps_parent.position.x = -flaps_size
 	if !flaps.is_empty():
 		_on_flap_toggled(true, flaps[0])
@@ -70,12 +69,12 @@ func _on_flap_toggled(toggled: bool, flap: Button) -> void:
 	if !toggled:
 		return
 	else:
-		current_tab = get_node(NodePath(flap.name))
-		get_node(NodePath(flap.name)).show()
+		current_tab = flap_to_tab[flap]
+		current_tab.show()
 		for other_flap in flaps:
 			if other_flap == flap: continue
 			other_flap.set_pressed_no_signal(false)
-			get_node(NodePath(other_flap.name)).hide()
+			flap_to_tab[other_flap].hide()
 		tab_changed.emit()
 
 func _get_minimum_size() -> Vector2:

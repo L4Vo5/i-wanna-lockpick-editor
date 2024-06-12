@@ -138,8 +138,8 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.object_typ
 			if event.pressed:
 				var editor_name = OBJECT_TYPE_TO_EDITOR[type]
 				var data_name = Level.OBJECT_TYPE_TO_DATA[type]
-				editor[editor_name][data_name] = node[data_name]
-				editor_data.side_tabs.set_current_tab_control(editor)
+				editor.get(editor_name).set(data_name, node.get(data_name))
+				editor_data.side_tabs.set_current_tab_control(editor.get(editor_name))
 				accept_event()
 				select_thing(node)
 	elif event is InputEventMouseMotion:
