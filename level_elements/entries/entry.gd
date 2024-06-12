@@ -20,6 +20,7 @@ var pack_data: LevelPackData
 @export var ignore_position := false
 
 @onready var sprite: Sprite2D = %Sprite
+@onready var completion_overlay: Sprite2D = %CompletionOverlay
 @onready var arrow: AnimatedSprite2D = %Arrow
 @onready var level_name: Node2D = %Name
 
@@ -29,6 +30,11 @@ const ENTRY_ERR = preload("res://level_elements/entries/textures/simple/entry_er
 const ENTRY_OPEN = preload("res://level_elements/entries/textures/simple/entry_open.png")
 const ENTRY_STAR_2 = preload("res://level_elements/entries/textures/simple/entry_star2.png")
 const ENTRY_STAR = preload("res://level_elements/entries/textures/simple/entry_star.png")
+
+const ENTRY_WORLD = preload("res://level_elements/entries/textures/world/entry_world.png")
+
+const COMPLETED = preload("res://level_elements/entries/textures/completion/completed.png")
+const STAR = preload("res://level_elements/entries/textures/completion/star.png")
 
 var name_tween: Tween
 @onready var name_start_y := level_name.position.y
@@ -80,19 +86,38 @@ func update_position() -> void:
 		position = entry_data.position
 
 func update_name() -> void:
-	if not is_instance_valid(level): return
+	if not is_instance_valid(pack_data): return
 	if not is_node_ready(): return
 	level_name.text = "\n[Invalid entry]"
 	if entry_data.leads_to >= 0 and entry_data.leads_to < pack_data.levels.size():
-		var level_data := level.gameplay_manager.pack_data.levels[entry_data.leads_to]
+		var level_data := pack_data.levels[entry_data.leads_to]
 		level_name.text = level_data.title + "\n" + level_data.name
 
 func update_status() -> void:
-	if not is_instance_valid(level): return
+	if not is_instance_valid(pack_data): return
 	if not is_node_ready(): return
-	sprite.texture = ENTRY_OPEN
 	if entry_data.leads_to < 0 or entry_data.leads_to >= pack_data.levels.size():
 		sprite.texture = ENTRY_ERR
+		return
+	# [completed, required, total]
+	var completion: Array = pack_data.get_completion_information(entry_data.leads_to)
+	var completed: int = completion[0]
+	var required: int = completion[1]
+	var total: int = completion[2]
+	if total == -1: # normal level
+		sprite.texture = ENTRY_OPEN
+		sprite.position.y = -4
+	else: # world
+		sprite.texture = ENTRY_WORLD
+		sprite.position.y = -36
+	if completed == 0 or required == 0 or completed < required:
+		completion_overlay.hide()
+	elif completed == total:
+		completion_overlay.texture = STAR
+		completion_overlay.show()
+	else:
+		completion_overlay.texture = COMPLETED
+		completion_overlay.show()
 
 func _disconnect_entry_data() -> void:
 	if not is_instance_valid(entry_data): return

@@ -83,6 +83,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		i_view_sound_2.play()
 	elif event.is_action_pressed(&"restart"):
 		gameplay_manager.reset()
+	elif event.is_action_pressed(&"exit_level"):
+		gameplay_manager.exit_level()
 	elif event.is_action_pressed(&"undo", true):
 		undo.call_deferred()
 	# TODO: Make redo work properly (bugs related to standing on doors?)
@@ -499,12 +501,14 @@ func _spawn_player() -> void:
 	immediately_adjust_camera.call_deferred()
 
 func _spawn_goal() -> void:
+	# goal's pre-process takes a long time, so...
 	if is_instance_valid(goal):
 		goal_parent.remove_child(goal)
-		goal.queue_free()
-	goal = GOAL.instantiate()
+	else:
+		goal = GOAL.instantiate()
 	goal.position = level_data.goal_position + Vector2i(16, 16)
 	goal.level = self
+	goal.visible = level_data.world_completion_count == -1
 	goal_parent.add_child(goal)
 
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries

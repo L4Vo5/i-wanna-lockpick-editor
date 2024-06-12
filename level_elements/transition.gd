@@ -42,11 +42,13 @@ func cancel() -> void:
 	text_offset = -500
 	animation_stage = -1
 	hide()
+	for con in finished_animation.get_connections():
+		finished_animation.disconnect(con.callable)
 
 func set_timings(fade_in: float, fall_offset: float, fall: float, hold: float, finish_early: bool, fade_out: float) -> void:
 	if animation_stage != -1:
 		# already playing animation
-		return
+		cancel()
 	fade_in_length = fade_in
 	fall_start = fall_offset
 	fall_length = fall
@@ -57,7 +59,7 @@ func set_timings(fade_in: float, fall_offset: float, fall: float, hold: float, f
 func start_animation(name_str: String, title: String = "", contributor: String = "") -> void:
 	if animation_stage != -1:
 		# already playing animation
-		return
+		cancel()
 	animation_stage = 0
 	name_text.text = name_str
 	title_text.text = title
