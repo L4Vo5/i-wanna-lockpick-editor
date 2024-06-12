@@ -13,8 +13,7 @@ class_name SalvagePointEditor
 @onready var type: OptionButton = %TypeChoice
 
 func _init() -> void:
-	if not is_instance_valid(salvage_point_data):
-		salvage_point_data = SalvagePointData.new()
+	salvage_point_data = SalvagePointData.new()
 
 func _ready() -> void:
 	type.clear()

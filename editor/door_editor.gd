@@ -31,12 +31,11 @@ var non_standard_mode := false
 var editor_data: EditorData
 
 func _init() -> void:
-	if not is_instance_valid(door_data):
-		door_data = DoorData.new()
-		door_data.outer_color = Enums.colors.white
-		var lock := LockData.new()
-		lock.color = Enums.colors.white
-		door_data.locks.push_back(lock)
+	door_data = DoorData.new()
+	door_data.outer_color = Enums.colors.white
+	var lock := LockData.new()
+	lock.color = Enums.colors.white
+	door_data.locks.push_back(lock)
 
 func _ready() -> void:
 	door.door_data = door_data

@@ -18,9 +18,8 @@ class_name KeyEditor
 @onready var is_infinite: CheckBox = %IsInfinite
 
 func _init() -> void:
-	if not is_instance_valid(key_data):
-		key_data = KeyData.new()
-		key_data.color = Enums.colors.white
+	key_data = KeyData.new()
+	key_data.color = Enums.colors.white
 
 func _ready() -> void:
 	key.key_data = key_data

@@ -31,12 +31,12 @@ position = Vector2i(0, 0)
 leads_to = -1
 skin = 0
 
-[sub_resource type="Resource" id="Resource_17s17"]
+[sub_resource type="Resource" id="Resource_lcofv"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_d0jt4"]
+[sub_resource type="Resource" id="Resource_c42af"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -48,11 +48,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_jyr5y"]
+[sub_resource type="Resource" id="Resource_jcfd5"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_17s17")
+amount = SubResource("Resource_lcofv")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_d0jt4")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_c42af")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -64,26 +64,26 @@ glitch_color = 13
 position = Vector2i(0, 0)
 sid = -1
 
-[sub_resource type="Resource" id="Resource_8ecfr"]
+[sub_resource type="Resource" id="Resource_vums6"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_jksc4"]
+[sub_resource type="Resource" id="Resource_ckn7j"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_8ecfr")
+amount = SubResource("Resource_vums6")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_n3o1o"]
+[sub_resource type="Resource" id="Resource_pbdev"]
 script = ExtResource("19_qs4m8")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[sub_resource type="Resource" id="Resource_s7u4o"]
+[sub_resource type="Resource" id="Resource_kyvcv"]
 script = ExtResource("22_hbtxh")
 sid = 0
 is_output = false
@@ -329,12 +329,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-door_data = SubResource("Resource_jyr5y")
+door_data = SubResource("Resource_jcfd5")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-key_data = SubResource("Resource_jksc4")
+key_data = SubResource("Resource_ckn7j")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -356,12 +356,12 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-entry_data = SubResource("Resource_n3o1o")
+entry_data = SubResource("Resource_pbdev")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-salvage_point_data = SubResource("Resource_s7u4o")
+salvage_point_data = SubResource("Resource_kyvcv")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)
