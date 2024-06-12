@@ -506,6 +506,7 @@ func on_salvaged_door(door: Door) -> void:
 	assert(active_salvage != null)
 	var sid = active_salvage.salvage_point_data.sid
 	var door_data = door.door_data.duplicated()
+	level.goal.snd_win.play()
 	level.gameplay_manager.pack_state.salvage_door(sid, door_data)
 	level.gameplay_manager.transition.finished_animation.connect(level.reset)
 	level.gameplay_manager.transition.win_animation("Door Salvaged!")

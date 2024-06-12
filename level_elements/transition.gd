@@ -37,6 +37,12 @@ var fade_out_length:= 0.0
 
 signal finished_animation
 
+func cancel() -> void:
+	background.modulate.a = 0
+	text_offset = -500
+	animation_stage = -1
+	hide()
+
 func set_timings(fade_in: float, fall_offset: float, fall: float, hold: float, finish_early: bool, fade_out: float) -> void:
 	if animation_stage != -1:
 		# already playing animation
