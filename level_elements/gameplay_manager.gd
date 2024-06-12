@@ -53,3 +53,5 @@ func win() -> void:
 	if pack_state.completed_levels[pack_state.current_level] != 1:
 		pack_state.completed_levels[pack_state.current_level] = 1
 		pack_state.save()
+	transition.finished_animation.connect(level.reset)
+	transition.win_animation("Congratulations!")

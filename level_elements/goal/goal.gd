@@ -43,11 +43,8 @@ func _physics_process(_delta: float) -> void:
 
 func win(visual_only: bool) -> void:
 	if not visual_only:
-		if not has_won:
-			level.gameplay_manager.win()
+		level.gameplay_manager.win()
 		snd_win.play()
-		level.gameplay_manager.transition.finished_animation.connect(level.reset)
-		level.gameplay_manager.transition.win_animation("Congratulations!")
 	has_won = true
 	win_time = time
 	sprite.frame = 2
