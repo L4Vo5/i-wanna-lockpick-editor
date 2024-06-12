@@ -17,6 +17,7 @@ func _init() -> void:
 		salvage_point_data = SalvagePointData.new()
 
 func _ready() -> void:
+	type.clear()
 	type.add_item("Input Point")
 	type.add_item("Output Point")
 	salvage_point.salvage_point_data = salvage_point_data
