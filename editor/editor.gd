@@ -164,7 +164,6 @@ func _on_play_pressed() -> void:
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
 	gameplay.reset()
-	gameplay.enter_stack.clear()
 	resolve_visibility()
 	# fix for things staying focused when playing
 	set_focus_mode(Control.FOCUS_ALL)

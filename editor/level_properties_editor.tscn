@@ -160,23 +160,6 @@ placeholder_text = "(unknown)"
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="IsWorld" type="CheckBox" parent="VBoxContainer/Level"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Is World"
-
-[node name="World" type="HBoxContainer" parent="VBoxContainer/Level"]
-visible = false
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/Level/World"]
-layout_mode = 2
-text = "World Completion Count: "
-
-[node name="CompletionCount" type="SpinBox" parent="VBoxContainer/Level/World"]
-unique_name_in_owner = true
-layout_mode = 2
-
 [node name="Size" type="HBoxContainer" parent="VBoxContainer/Level"]
 layout_mode = 2
 

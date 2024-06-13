@@ -43,8 +43,6 @@ var _level_pack_data: LevelPackData:
 @onready var level_name: LineEdit = %LevelName
 @onready var level_title: LineEdit = %LevelTitle
 @onready var level_author: LineEdit = %LevelAuthor
-@onready var is_world: CheckBox = %IsWorld
-@onready var completion_count: SpinBox = %CompletionCount
 @onready var width: SpinBox = %Width
 @onready var height: SpinBox = %Height
 
@@ -91,7 +89,6 @@ func _ready() -> void:
 	
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
-	what_to_place.clear()
 	what_to_place.add_item("Player Spawn")
 	what_to_place.add_item("Goal")
 	what_to_place.item_selected.connect(_on_what_to_place_changed.unbind(1))
@@ -107,8 +104,6 @@ func _ready() -> void:
 	copy_to_clipboard.pressed.connect(_copy_image_to_clipboard)
 	width.value_changed.connect(_on_size_changed.unbind(1))
 	height.value_changed.connect(_on_size_changed.unbind(1))
-	is_world.pressed.connect(_on_changed_is_world)
-	completion_count.value_changed.connect(_on_changed_completion_count.unbind(1))
 	
 	level_number.value_changed.connect(_set_level_number)
 	delete_level.pressed.connect(_delete_current_level)
@@ -135,33 +130,6 @@ func _on_what_to_place_changed() -> void:
 	editor_data.player_spawn = what_to_place.selected == 0
 	editor_data.goal_position = what_to_place.selected == 1
 
-func _on_changed_is_world() -> void:
-	if not is_node_ready(): return
-	if not is_instance_valid(_level_data): return
-	if not is_instance_valid(editor_data): return
-	var pressed = is_world.button_pressed
-	completion_count.get_parent().visible = pressed
-	goal_coord.get_parent().visible = not pressed
-	editor_data.level.goal.visible = not pressed
-	_on_changed_completion_count()
-	# If any entry refers to itself
-	for entry: Entry in editor_data.level.entries.get_children():
-		entry.update_status()
-	# cannot place goals in worlds
-	what_to_place.clear()
-	what_to_place.add_item("Player Spawn")
-	if not pressed:
-		what_to_place.add_item("Goal")
-	_on_what_to_place_changed()
-
-func _on_changed_completion_count() -> void:
-	if not is_node_ready(): return
-	if not is_instance_valid(_level_data): return
-	if is_world.button_pressed:
-		_level_data.world_completion_count = completion_count.value as int
-	else:
-		_level_data.world_completion_count = -1
-
 # adapts the controls to the level's data
 var _setting_to_data := false
 func _set_to_level_data() -> void:
@@ -171,9 +139,6 @@ func _set_to_level_data() -> void:
 	# Stop the caret from going back to the start
 	width.value = _level_data.size.x
 	height.value = _level_data.size.y
-	is_world.button_pressed = _level_data.world_completion_count != -1
-	completion_count.value = maxi(0, _level_data.world_completion_count)
-	_on_changed_is_world()
 	if level_name.text != _level_data.name:
 		level_name.text = _level_data.name
 	if level_title.text != _level_data.title:

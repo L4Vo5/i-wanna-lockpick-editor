@@ -81,29 +81,4 @@ func delete_level(id: int) -> void:
 				entry.leads_to -= 1
 			elif entry.leads_to == id:
 				entry.leads_to = -1
-		for i in level.required_levels.size():
-			if level.required_levels[i] > id:
-				level.required_levels[i] -= 1
-			if level.required_levels[i] == id:
-				level.required_levels[i] = -1
 	deleted_level.emit(id)
-
-func level_is_world(id: int) -> bool:
-	return levels[id].world_completion_count != -1
-
-## Returns [completed, required, total]
-func get_completion_information(id: int) -> Array:
-	var level := levels[id]
-	if level.world_completion_count == -1:
-		var completed := state_data.completed_levels[id]
-		return [completed, 1, -1]
-	var total = 0
-	var count = 0
-	for entry in level.entries:
-		var leads_to = entry.leads_to
-		if leads_to < 0 or leads_to >= levels.size() or level_is_world(leads_to):
-			continue
-		if state_data.completed_levels[entry.leads_to]:
-			count += 1
-		total += 1
-	return [count, level.world_completion_count, total]

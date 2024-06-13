@@ -13,9 +13,6 @@ const PART := preload("res://level_elements/goal/goal_particle.tscn")
 @onready var sprite: Sprite2D = $Sprite
 @onready var snd_win: AudioStreamPlayer = $Win
 
-func _init() -> void:
-	visibility_changed.connect(func(): monitoring = visible)
-
 func _ready() -> void:
 	area_entered.connect(_on_body_entered)
 	area_exited.connect(_on_body_exited)

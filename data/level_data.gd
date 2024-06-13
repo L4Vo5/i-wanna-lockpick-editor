@@ -22,10 +22,6 @@ signal changed_salvage_points
 ## How many levels from required_levels need to be completed for this level to be unlocked.
 @export var min_required_level_count := 0
 
-## How many levels need to be solved in order for this world to count as completed.
-## -1 for "not a world"
-@export var world_completion_count := -1
-
 const SMALLEST_SIZE := Vector2i(800, 608)
 signal changed_size
 @export var size := SMALLEST_SIZE:
