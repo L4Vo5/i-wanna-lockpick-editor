@@ -4,7 +4,7 @@ class_name BookmarkTabContainer
 
 signal tab_changed
 
-var flaps:
+var flaps: Array[Node]:
 	get:
 		return flaps_parent.get_children()
 @onready var flaps_parent: VBoxContainer = $flaps
@@ -31,6 +31,7 @@ func _ready() -> void:
 	regen_flaps()
 	resized.connect(_on_resize)
 	_on_resize()
+	flaps_parent.gui_input.connect(_on_flap_parent_input)
 
 func _on_resize() -> void:
 	var r := get_rect()
@@ -40,6 +41,7 @@ func _on_resize() -> void:
 	for child in get_children():
 		if child == flaps_parent: continue
 		fit_child_in_rect(child, r)
+	flaps_parent.size.y = size.y
 
 var flaps_size := 0
 
@@ -63,6 +65,23 @@ func regen_flaps() -> void:
 	#flaps_parent.position.x = -flaps_size
 	if !flaps.is_empty():
 		_on_flap_toggled(true, flaps[0])
+
+func _on_flap_parent_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.pressed:
+			if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+				scroll(-1)
+				accept_event()
+			if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+				scroll(1)
+				accept_event()
+
+func scroll(direction: int) -> void:
+	var i := flaps.find(tab_to_flap[current_tab])
+	assert(i != -1)
+	i += direction
+	i = (i + flaps.size()) % flaps.size()
+	_on_flap_toggled(true, flaps[i])
 
 func _on_flap_toggled(toggled: bool, flap: Button) -> void:
 	flap.set_pressed_no_signal(true)
