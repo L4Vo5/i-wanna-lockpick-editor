@@ -1,5 +1,5 @@
 @tool
-extends EditorScript
+extends RefCounted
 class_name CollisionSystem
 ## Collision system, implemented manually, unfortunately.
 ##
@@ -23,6 +23,18 @@ var _rects_data := {}
 
 var _next_rect_id := 1
 
+func _init(_tile_size: int) -> void:
+	assert(_tile_size == 16)
+	return
+	tile_size = _tile_size
+	inv_tile_size = 1.0 / tile_size
+
+func clear() -> void:
+	_tile_to_rects.clear()
+	_rects.clear()
+	_rects_data.clear()
+	_next_rect_id = 1
+
 ## Adds a rect to the system.
 ## Returns the unique id given to that rect.
 func add_rect(rect: Rect2i, associated_data: Variant = null) -> int:
@@ -31,13 +43,12 @@ func add_rect(rect: Rect2i, associated_data: Variant = null) -> int:
 	_rects[id] = rect
 	
 	var tile_iter := _get_rect_tile_iter(rect)
-	
+	print("tile_iter is " + str(tile_iter))
 	for x in range(tile_iter.position.x, tile_iter.end.x):
 		for y in range(tile_iter.position.y, tile_iter.end.y):
 			if !(_tile_to_rects.has(Vector2i(x, y))):
-				_tile_to_rects[Vector2i(x,y)] = PackedInt64Array[id]
-			else:
-				_tile_to_rects[Vector2i(x,y)].push_back(id)
+				_tile_to_rects[Vector2i(x,y)] = PackedInt64Array()
+			_tile_to_rects[Vector2i(x,y)].push_back(id)
 	
 	_rects_data[id] = associated_data
 	return id
@@ -82,11 +93,25 @@ func point_has_collision_in_grid(point: Vector2i) -> bool:
 	var tile_pos := Vector2i((point * inv_tile_size).floor())
 	return _tile_to_rects.has(tile_pos)
 
+## Returns a dict where the keys are the ids of all the rects that interect with [rect]. The values are meaningless.
+# (Turning it into a PackedInt64Array would've been needless work)
+func get_rects_intersecting_rect_in_grid(rect: Rect2i) -> Dictionary:
+	var tile_iter := _get_rect_tile_iter(rect)
+	var dict := {}
+	for x in range(tile_iter.position.x, tile_iter.end.x):
+		for y in range(tile_iter.position.y, tile_iter.end.y):
+			var arr = _tile_to_rects.get(Vector2i(x, y))
+			if arr is PackedInt64Array:
+				for id in arr:
+					dict[id] = true
+	return dict
+
 ## The array here is READ ONLY. Unless it's empty, duplicate it before modifying it.
 func get_rects_containing_point_in_grid(point: Vector2i) -> PackedInt64Array:
 	var tile_pos := Vector2i((point * inv_tile_size).floor())
-	if _tile_to_rects.has(tile_pos):
-		return _tile_to_rects.get(tile_pos)
+	var arr = _tile_to_rects.get(tile_pos)
+	if arr != null:
+		return arr
 	else:
 		return []
 

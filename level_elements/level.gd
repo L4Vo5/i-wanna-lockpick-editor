@@ -142,6 +142,7 @@ func reset() -> void:
 	if not is_node_ready(): return
 	if not level_data: return
 	assert(PerfManager.start("Level::reset"))
+	level_data.regen_collision_system()
 	
 	for salvage_point: SalvagePoint in salvage_points.get_children():
 		salvage_point.remove_door()
@@ -287,8 +288,16 @@ func add_element(data, type: Enums.level_element_types) -> Node:
 	var list: Array = level_data.get(OBJECT_TYPE_TO_CONTAINER_NAME[type]);
 	if not data in list:
 		list.push_back(data)
+		
+		var id := level_data.collision_system.add_rect(data.get_rect(), data)
+		level_data.elem_to_collision_system_id[data] = id
 		level_data.get(OBJECT_TYPE_TO_SIGNAL[type]).emit() # changed_...
+		
 	return _spawn_element(data, type)
+
+var coll:
+	get:
+		return level_data.collision_system
 
 ## Makes *something* physically appear (doesn't check collisions)
 func _spawn_element(data, type: Enums.level_element_types) -> Node:
@@ -310,6 +319,11 @@ func remove_element(node: Node, type: Enums.level_element_types) -> void:
 	var i := list.find(original_data)
 	if i != -1:
 		list.remove_at(i)
+		
+		var id: int = level_data.elem_to_collision_system_id[original_data]
+		level_data.elem_to_collision_system_id.erase(original_data)
+		level_data.collision_system.remove_rect(id)
+	
 	get(OBJECT_TYPE_TO_CONTAINER_NAME[type]).remove_child(node)
 	get(OBJECT_TYPE_TO_DISCONNECT[type]).call(node)
 	NodePool.return_node(node)
@@ -321,10 +335,17 @@ func move_element(node: Node, type: Enums.level_element_types, new_position: Vec
 	var list: Array = level_data.get(OBJECT_TYPE_TO_CONTAINER_NAME[type])
 	var i := list.find(original_data)
 	assert(i != -1)
+	
 	var rect := Rect2i(new_position, original_data.get_rect().size)
 	if not is_space_occupied(rect, [], [original_data]):
 		original_data.position = new_position
 		node.get(OBJECT_TYPE_TO_DATA[type]).position = new_position
+		
+		var id: int = level_data.elem_to_collision_system_id[original_data]
+		level_data.collision_system.remove_rect(id)
+		id = level_data.collision_system.add_rect(original_data.get_rect(), original_data)
+		level_data.elem_to_collision_system_id[original_data] = id
+		
 		level_data.get(OBJECT_TYPE_TO_SIGNAL[type]).emit()
 		return true
 	else:
@@ -342,6 +363,8 @@ func place_tile(tile_coord: Vector2i) -> void:
 	if level_data.tiles.get(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
 	level_data.tiles[tile_coord] = 1
+	var id := level_data.collision_system.add_rect(Rect2i(tile_coord, Vector2i(32, 32)), tile_coord)
+	level_data.elem_to_collision_system_id[tile_coord] = id
 	_spawn_tile(tile_coord, true)
 	level_data.changed_tiles.emit()
 
@@ -497,30 +520,9 @@ func _spawn_goal() -> void:
 	goal_parent.add_child(goal)
 
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
-# TODO: Optimize this obviously
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects: Array[Object] = []) -> bool:
 	if not is_space_inside(rect):
 		return true
-	if not &"doors" in exclusions:
-		for door in level_data.doors:
-			if door in excluded_objects: continue
-			if door.get_rect().intersects(rect):
-				return true
-	if not &"keys" in exclusions:
-		for key in level_data.keys:
-			if key in excluded_objects: continue
-			if key.get_rect().intersects(rect):
-				return true
-	if not &"entries" in exclusions:
-		for entry in level_data.entries:
-			if entry in excluded_objects: continue
-			if entry.get_rect().intersects(rect):
-				return true
-	if not &"salvage_points" in exclusions:
-		for salvage_point in level_data.salvage_points:
-			if salvage_point in excluded_objects: continue
-			if salvage_point.get_rect().intersects(rect):
-				return true
 	if not &"goal" in exclusions:
 		if Rect2i((level_data.goal_position), Vector2i(32, 32)).intersects(rect):
 			return true
@@ -528,19 +530,24 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 		var spawn_pos := (level_data.player_spawn_position - Vector2i(14, 32))
 		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
 			return true
-	if not &"tiles" in exclusions and tiles_intersecting(rect):
-		return true
-	return false
-
-func tiles_intersecting(rect: Rect2i) -> bool:
-	# HACK: bad floor div and ceil div
-	var min_tile_x = floori(rect.position.x as float / 32)
-	var min_tile_y = floori(rect.position.y as float / 32)
-	var max_tile_x = ceili((rect.position.x + rect.size.y) as float / 32)
-	var max_tile_y = ceili((rect.position.y + rect.size.y) as float / 32)
-	for x in range(min_tile_x, max_tile_x):
-		for y in range(min_tile_y, max_tile_y):
-			if level_data.tiles.get(Vector2i(x, y)):
+	# Currently the collision system accounts for doors, keys, entries, salvages, and tiles
+	if exclusions.is_empty() and excluded_objects.is_empty():
+		return level_data.collision_system.rect_has_collision_in_grid(rect)
+	else:
+		var dict: Dictionary = level_data.collision_system.get_rects_intersecting_rect_in_grid(rect)
+		for id in dict.keys():
+			var obj = level_data.collision_system.get_rect_data(id)
+			if obj in excluded_objects:
+				continue
+			if obj is Vector2i and not &"tiles" in exclusions:
+				return true
+			if obj is DoorData and not &"doors" in exclusions:
+				return true
+			if obj is KeyData and not &"keys" in exclusions:
+				return true
+			if obj is EntryData and not &"entries" in exclusions:
+				return true
+			if obj is SalvagePointData and not &"salvage_points" in exclusions:
 				return true
 	return false
 
@@ -557,8 +564,9 @@ func get_object_occupying(pos: Vector2i) -> Node:
 
 ## Returns true if there's not enough space to fit a salvage
 ## this cares about doors and tiles CURRENTLY in the level, not in the level data
+# TODO: revamp
 func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
-	if tiles_intersecting(rect):
+	if is_space_occupied(rect, [], [exclude]):
 		return true
 	for door: Door in doors.get_children():
 		if door == exclude: continue

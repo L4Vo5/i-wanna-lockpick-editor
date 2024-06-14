@@ -84,6 +84,8 @@ signal changed_tiles
 ## KEPT FOR COMPATIBILITY (for now?)
 @export var editor_version: String
 
+var collision_system := CollisionSystem.new(16)
+
 func _init() -> void:
 	changed_doors.connect(emit_changed)
 	changed_keys.connect(emit_changed)
@@ -107,12 +109,39 @@ func duplicated() -> LevelData:
 		dupe.keys.push_back(key.duplicated())
 	for entry in entries:
 		dupe.entries.push_back(entry.duplicated())
+	for salvage in salvage_points:
+		dupe.salvage_points.push_back(salvage.duplicated())
+	dupe.regen_collision_system()
 	return dupe
 
 static func get_default_level() -> LevelData:
 	var level: LevelData = load("res://editor/levels/default_level.tres").duplicated()
 	level.resource_path = ""
 	return level
+
+var elem_to_collision_system_id := {}
+func regen_collision_system() -> void:
+	collision_system.clear()
+	elem_to_collision_system_id.clear()
+	var id: int
+	assert(PerfManager.start("LevelData::regen_collision_system"))
+	for door in doors:
+		id = collision_system.add_rect(door.get_rect(), door)
+		elem_to_collision_system_id[door] = id
+	for key in keys:
+		id = collision_system.add_rect(key.get_rect(), key)
+		elem_to_collision_system_id[key] = id
+	for entry in entries:
+		id = collision_system.add_rect(entry.get_rect(), entry)
+		elem_to_collision_system_id[entry] = id
+	for salvage in salvage_points:
+		id = collision_system.add_rect(salvage.get_rect(), salvage)
+		elem_to_collision_system_id[salvage] = id
+	for tile in tiles.keys():
+		# Bad idea to store just a Vector2i without identifying it as a tile, perhaps?
+		id = collision_system.add_rect(Rect2i(tile, Vector2i(32, 32)), tile)
+		elem_to_collision_system_id[tile] = id
+	assert(PerfManager.end("LevelData::regen_collision_system"))
 
 ## Deletes stuff outside the level boundary
 func clear_outside_things() -> void:
