@@ -137,10 +137,10 @@ func regen_collision_system() -> void:
 	for salvage in salvage_points:
 		id = collision_system.add_rect(salvage.get_rect(), salvage)
 		elem_to_collision_system_id[salvage] = id
-	for tile in tiles.keys():
+	for tile_coord in tiles.keys():
 		# Bad idea to store just a Vector2i without identifying it as a tile, perhaps?
-		id = collision_system.add_rect(Rect2i(tile, Vector2i(32, 32)), tile)
-		elem_to_collision_system_id[tile] = id
+		id = collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
+		elem_to_collision_system_id[tile_coord] = id
 	assert(PerfManager.end("LevelData::regen_collision_system"))
 
 ## Deletes stuff outside the level boundary

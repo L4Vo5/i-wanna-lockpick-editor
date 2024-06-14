@@ -43,7 +43,7 @@ func add_rect(rect: Rect2i, associated_data: Variant = null) -> int:
 	_rects[id] = rect
 	
 	var tile_iter := _get_rect_tile_iter(rect)
-	print("tile_iter is " + str(tile_iter))
+	
 	for x in range(tile_iter.position.x, tile_iter.end.x):
 		for y in range(tile_iter.position.y, tile_iter.end.y):
 			if !(_tile_to_rects.has(Vector2i(x, y))):
@@ -121,8 +121,9 @@ func get_rects_containing_point_in_grid(point: Vector2i) -> PackedInt64Array:
 # I don't like using floats, but this is seemingly the fastest method to do it (I tried others). Inlining the function should make it about twice as fast, if really needed (it's probably not).
 # Rect2i and Vector2i use 32-bit integers, so there should be no precision concerns anyways, I think? since floats are 64-bit
 func _get_rect_tile_iter(r: Rect2i) -> Rect2i:
+	var orig_end := r.end
 	r.position = Vector2i((r.position * inv_tile_size).floor())
-	r.end = Vector2i((r.end * inv_tile_size).ceil())
+	r.end = Vector2i((orig_end * inv_tile_size).ceil())
 	return r
 
 # Silly test stuff. Ignore it.

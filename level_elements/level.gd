@@ -363,7 +363,7 @@ func place_tile(tile_coord: Vector2i) -> void:
 	if level_data.tiles.get(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
 	level_data.tiles[tile_coord] = 1
-	var id := level_data.collision_system.add_rect(Rect2i(tile_coord, Vector2i(32, 32)), tile_coord)
+	var id := level_data.collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
 	level_data.elem_to_collision_system_id[tile_coord] = id
 	_spawn_tile(tile_coord, true)
 	level_data.changed_tiles.emit()
@@ -381,6 +381,9 @@ func _spawn_tile(tile_coord: Vector2i, also_update_neighbors: bool) -> void:
 func remove_tile(tile_coord: Vector2i) -> bool:
 	if not level_data.tiles.has(tile_coord): return false
 	level_data.tiles.erase(tile_coord)
+	var id: int = level_data.elem_to_collision_system_id[tile_coord]
+	level_data.elem_to_collision_system_id.erase(tile_coord)
+	level_data.collision_system.remove_rect(id)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
 	level_data.changed_tiles.emit()
