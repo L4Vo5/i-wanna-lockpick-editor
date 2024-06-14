@@ -177,9 +177,8 @@ static func _load_door(data: ByteAccess) -> DoorData:
 	door.outer_color = curses_color & 0b1111
 	
 	var lock_amount := data.get_u16()
-	door.locks.resize(lock_amount)
-	for i in lock_amount:
-		door.locks[i] = _load_lock(data)
+	for _i in lock_amount:
+		door.add_lock(_load_lock(data))
 	
 	return door
 

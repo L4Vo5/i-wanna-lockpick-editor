@@ -96,7 +96,9 @@ func duplicated() -> DoorData:
 	
 #	assert(PerfManager.start("DoorData::duplicated (locks)"))
 	for l in locks:
-		dupe.locks.push_back(l.duplicated())
+		# "Please don't push_back on these or anything!! use add_lock or remove_lock"
+		#dupe.locks.push_back(l.duplicated())
+		dupe.add_lock(l.duplicated())
 #	assert(PerfManager.end("DoorData::duplicated (locks)"))
 #	assert(PerfManager.end("DoorData::duplicated"))
 	return dupe

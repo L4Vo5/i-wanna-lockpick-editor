@@ -219,10 +219,8 @@ static func _load_door(data: ByteReader) -> DoorData:
 	door.outer_color = curses_color & 0b1111
 	
 	var lock_amount := data.get_uint()
-	door.locks.resize(lock_amount)
-	for i in lock_amount:
-		door.locks[i] = _load_lock(data)
-		door.locks[i].changed.connect(door.emit_changed)
+	for _i in lock_amount:
+		door.add_lock(_load_lock(data))
 	
 	return door
 

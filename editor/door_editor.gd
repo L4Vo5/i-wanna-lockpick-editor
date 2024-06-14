@@ -35,7 +35,9 @@ func _init() -> void:
 	door_data.outer_color = Enums.colors.white
 	var lock := LockData.new()
 	lock.color = Enums.colors.white
-	door_data.locks.push_back(lock)
+	# "Please don't push_back on these or anything!! use add_lock or remove_lock"
+	#door_data.locks.push_back(lock)
+	door_data.add_lock(lock)
 
 func _ready() -> void:
 	door.door_data = door_data
