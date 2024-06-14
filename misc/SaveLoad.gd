@@ -1,20 +1,20 @@
 class_name SaveLoad
 
 const PRINT_LOAD := true
-const LATEST_FORMAT := 5
+const LATEST_FORMAT := 4
 const V1 := preload("res://misc/saving_versions/save_load_v1.gd")
 const V2 := preload("res://misc/saving_versions/save_load_v2.gd")
 const V3 := preload("res://misc/saving_versions/save_load_v3.gd")
 const V4 := preload("res://misc/saving_versions/save_load_v4.gd")
-const V5 := preload("res://misc/saving_versions/save_load_v5.gd")
 ## A reference to the current save/load version
-const VC := V5
+const VC := V4
+const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
 	var data: PackedByteArray
-	var byte_access := VC.make_byte_writer()
+	var byte_access := VC.make_byte_access([])
 	VC.save(level_pack, byte_access)
-	data = byte_access.get_data()
+	data = byte_access.data
 	return data
 
 static func get_image(level_pack: LevelPackData) -> Image:
@@ -34,10 +34,11 @@ static func get_image(level_pack: LevelPackData) -> Image:
 static func load_from_image(image: Image) -> LevelPackData:
 	image.convert(Image.FORMAT_RGB8)
 	var data := image.get_data()
-	var byte_access := VC.make_byte_reader(data)
+	var byte_access := VC.make_byte_access(data)
 	var version := byte_access.get_u16()
-	var editor_ver := byte_access.get_pascal_string()
-	return load_from_buffer(data, byte_access.get_position(), version, editor_ver, "")
+	var editor_ver := byte_access.get_string()
+	data = data.slice(byte_access.get_position())
+	return load_from_buffer(data, version, editor_ver, "")
 
 static func save_level(level_pack: LevelPackData) -> void:
 	var path := level_pack.file_path
@@ -59,7 +60,6 @@ static func load_from(path: String) -> LevelPackData:
 	var version: int = -1
 	var original_editor_version := ""
 	var buf: PackedByteArray
-	var offset := 0
 	
 	# first, handle version 1 which is exceptional as it requires reading a file
 	# the rest will be handled from a buffer
@@ -77,19 +77,17 @@ static func load_from(path: String) -> LevelPackData:
 	elif path.get_extension() == "png":
 		var img := Image.load_from_file(path)
 		var data := img.get_data()
-		var byte_access := VC.make_byte_reader(data)
+		var byte_access := VC.make_byte_access(data)
 		version = byte_access.get_u16()
 		original_editor_version = byte_access.get_string()
 		buf = data.slice(byte_access.get_position())
-		offset = byte_access.get_position()
 	
 	# with the buffer and V1 out of the way, we can load in a more generic way
-	return load_from_buffer(buf, offset, version, original_editor_version, path)
+	return load_from_buffer(buf, version, original_editor_version, path)
 
 # data DOESN'T include version and original_editor_version
 static func load_from_buffer(
 	data: PackedByteArray,
-	offset: int,
 	version: int,
 	original_editor_version: String, path: String) -> LevelPackData:
 	if original_editor_version == "":
@@ -106,18 +104,15 @@ If you're on the latest version, please report this."""
 		Global.safe_error(error_text, Vector2i(700, 100))
 		return null
 	elif version == 2:
-		var byte_access := V2.make_byte_access(data, offset)
+		var byte_access := V2.make_byte_access(data)
 		var lvl_data: LevelData = V2.load(byte_access)
 		lvl_pack_data = LevelPackData.make_from_level(lvl_data)
 	elif version == 3:
-		var byte_access := V3.make_byte_access(data, offset)
+		var byte_access := V3.make_byte_access(data)
 		lvl_pack_data = V3.load(byte_access)
 	elif version == 4:
-		var byte_access := V4.make_byte_access(data, offset)
+		var byte_access := V4.make_byte_access(data)
 		lvl_pack_data = V4.load(byte_access)
-	elif version == 5:
-		var byte_access := V5.make_byte_reader(data, offset)
-		lvl_pack_data = V5.load(byte_access)
 	else:
 		var error_text := \
 """This level was made in editor version %s and uses the saving format N°%d.

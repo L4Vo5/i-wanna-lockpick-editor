@@ -16,7 +16,7 @@ signal deleted_level(level_id: int)
 ## Description of the level pack, displayed in level selection
 @export var description: String
 ## Pack id, this SHOULD be unique.
-@export var pack_id: int = Global.random_int64()
+@export var pack_id: int = randi()
 
 ## true if loaded from file or saved in a file
 ## used for save file management

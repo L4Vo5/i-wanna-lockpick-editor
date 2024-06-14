@@ -18,13 +18,13 @@ var animation_timer:= 0.0
 
 # timings
 ## time for background alpha to reach 1
-var fade_in_length := 0.0
+var fade_in_length:= 0.0
 
 ## time when the fall starts
-var fall_start := 0.0
+var fall_start:= 0.0
 
 ## time for the text to reach the center
-var fall_length := 0.0
+var fall_length:= 0.0
 
 ## time you need to wait after fall_length
 var hold_length := 0.0
@@ -33,7 +33,7 @@ var hold_length := 0.0
 var can_finish_early: bool = true
 
 ## time for background alpha to reach 0
-var fade_out_length := 0.0
+var fade_out_length:= 0.0
 
 signal finished_animation
 
@@ -46,11 +46,7 @@ func cancel() -> void:
 func set_timings(fade_in: float, fall_offset: float, fall: float, hold: float, finish_early: bool, fade_out: float) -> void:
 	if animation_stage != -1:
 		# already playing animation
-		if animation_stage == 2:
-			# only fading out
-			cancel()
-		else:
-			return
+		return
 	fade_in_length = fade_in
 	fall_start = fall_offset
 	fall_length = fall
@@ -61,11 +57,7 @@ func set_timings(fade_in: float, fall_offset: float, fall: float, hold: float, f
 func start_animation(name_str: String, title: String = "", contributor: String = "") -> void:
 	if animation_stage != -1:
 		# already playing animation
-		if animation_stage == 2:
-			# only fading out
-			cancel()
-		else:
-			return
+		return
 	animation_stage = 0
 	name_text.text = name_str
 	title_text.text = title
