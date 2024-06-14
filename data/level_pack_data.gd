@@ -16,7 +16,7 @@ signal deleted_level(level_id: int)
 ## Description of the level pack, displayed in level selection
 @export var description: String
 ## Pack id, this SHOULD be unique.
-@export var pack_id: int = randi()
+@export var pack_id: int = Global.random_int64()
 
 ## For simplicity, let's just say each pack data has one state associated with it. If this brings trouble I'll have to rethink some things
 var state_data: LevelPackStateData:

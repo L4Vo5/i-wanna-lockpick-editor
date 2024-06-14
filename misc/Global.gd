@@ -246,3 +246,20 @@ func smart_adjust_rect(rect: Rect2i, bound: Rect2i) -> Rect2i:
 	var max_pos := bound.position + bound.size - rect.size
 	rect.position = rect.position.clamp(bound.position, max_pos)
 	return rect
+
+var _crypto = Crypto.new()
+
+func random_int64() -> int:
+	return _combine_to_int(_crypto.generate_random_bytes(8), 0)
+
+func _combine_to_int(bytes: PackedByteArray, offset: int) -> int: 
+	var value = 0
+	value |= bytes[offset] << 56
+	value |= bytes[offset + 1] << 48
+	value |= bytes[offset + 2] << 40
+	value |= bytes[offset + 3] << 32
+	value |= bytes[offset + 4] << 24
+	value |= bytes[offset + 5] << 16
+	value |= bytes[offset + 6] << 8
+	value |= bytes[offset + 7]
+	return value

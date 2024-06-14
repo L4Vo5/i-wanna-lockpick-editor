@@ -1,7 +1,6 @@
 extends Resource
 class_name LevelData
 
-
 # currently only emitted by level when a door is placed or removed
 signal changed_doors
 @export var doors: Array[DoorData] = []
