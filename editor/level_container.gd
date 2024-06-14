@@ -24,8 +24,14 @@ var salvage_point_editor: SalvagePointEditor:
 @export var ghost_door: Door
 @export var ghost_key: Key
 @export var ghost_entry: Entry
-@export var ghost_salvage: SalvagePoint
-@export var ghost_canvas_group: CanvasGroup
+@export var ghost_salvage_point: SalvagePoint
+
+@onready var ghosts: Dictionary = {
+	Enums.level_element_types.door: ghost_door,
+	Enums.level_element_types.key: ghost_key,
+	Enums.level_element_types.entry: ghost_entry,
+	Enums.level_element_types.salvage_point: ghost_salvage_point,
+}
 
 @export var editor: LockpickEditor
 var editor_data: EditorData: set = set_editor_data
@@ -117,13 +123,6 @@ func _on_changed_level_data() -> void:
 	hovered_obj = null
 	danger_obj = null
 
-const OBJECT_TYPE_TO_EDITOR := {
-	Enums.level_element_types.door: &"door_editor",
-	Enums.level_element_types.key: &"key_editor",
-	Enums.level_element_types.entry: &"entry_editor",
-	Enums.level_element_types.salvage: &"salvage_point_editor",
-}
-
 func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types) -> void:
 	if editor_data.disable_editing: return
 	if event is InputEventMouseButton:
@@ -133,10 +132,10 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_elem
 					accept_event()
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
-				var editor_name = OBJECT_TYPE_TO_EDITOR[type]
-				var data_name = Level.OBJECT_TYPE_TO_DATA[type]
-				editor.get(editor_name).set(data_name, node.get(data_name))
-				editor_data.side_tabs.set_current_tab_control(editor.get(editor_name))
+				var editor_control = editor_data.level_element_editors[type]
+				var data_name = Level.LEVEL_ELEMENT_DATA[type]
+				editor_control.set(data_name, node.get(data_name))
+				editor_data.side_tabs.set_current_tab_control(editor_control)
 				accept_event()
 				select_thing(node)
 	elif event is InputEventMouseMotion:
@@ -161,11 +160,9 @@ func _gui_input(event: InputEvent) -> void:
 				place_tile_on_mouse()
 				accept_event()
 				return
-			for type in Enums.level_element_types.values():
-				if editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]]:
-					place_element_on_mouse(type)
-					return
-			if editor_data.level_properties:
+			if editor_data.level_elements:
+				place_element_on_mouse(editor_data.level_element_type)
+			elif editor_data.level_properties:
 				if editor_data.player_spawn:
 					place_player_spawn_on_mouse()
 					accept_event()
@@ -183,11 +180,8 @@ func _gui_input(event: InputEvent) -> void:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			if selected_obj and is_dragging:
 				relocate_selected()
-			elif Input.is_action_pressed(&"unbound_action"):
-				for type in Enums.level_element_types.values():
-					if editor_data[Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]]:
-						place_element_on_mouse(type)
-						return
+			elif Input.is_action_pressed(&"unbound_action") and editor_data.level_elements:
+				place_element_on_mouse(editor_data.level_element_type)
 			elif editor_data.tilemap_edit:
 				place_tile_on_mouse()
 				accept_event()
@@ -226,10 +220,9 @@ func remove_tile_on_mouse() -> bool:
 func place_element_on_mouse(type: Enums.level_element_types) -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_coord(OBJECT_TYPE_TO_GRID_SIZE[type])
-	var editor_name: StringName = OBJECT_TYPE_TO_EDITOR[type]
-	var data_name: StringName = Level.OBJECT_TYPE_TO_DATA[type]
-	var data = self[editor_name][data_name].duplicated()
+	var coord := get_mouse_coord(LEVEL_ELEMENT_GRID_SIZE[type])
+	var data_name: StringName = Level.LEVEL_ELEMENT_DATA[type]
+	var data = editor.level_element_editors[type].get(data_name).duplicated()
 	data.position = coord
 	var node := gameplay.level.add_element(data, type)
 	if not is_instance_valid(node): return false
@@ -261,7 +254,7 @@ func relocate_selected() -> void:
 	if not is_dragging: return
 	if not is_instance_valid(selected_obj): return
 	var type: Enums.level_element_types = selected_obj.level_element_type
-	var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
+	var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[type]
 	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
 	var cond: bool = true
 	var obj_pos: Vector2i = selected_obj.position
@@ -314,81 +307,68 @@ func get_level_pos() -> Vector2:
 
 
 func _retry_ghosts() -> void:
-	ghost_key.hide()
-	ghost_door.hide()
-	ghost_entry.hide()
-	ghost_salvage.hide()
+	for ghost: Node in ghosts.values():
+		ghost.hide()
 	
 	if not is_dragging:
 		_place_ghosts()
 
-const OBJECT_TYPE_TO_GRID_SIZE := {
+const LEVEL_ELEMENT_GRID_SIZE := {
 	Enums.level_element_types.door: Vector2i(32, 32),
 	Enums.level_element_types.key: Vector2i(16, 16),
 	Enums.level_element_types.entry: Vector2i(32, 32),
-	Enums.level_element_types.salvage: Vector2i(16, 32),
-}
-
-const OBJECT_TYPE_TO_GHOST_NAME := {
-	Enums.level_element_types.door: &"ghost_door",
-	Enums.level_element_types.key: &"ghost_key",
-	Enums.level_element_types.entry: &"ghost_entry",
-	Enums.level_element_types.salvage: &"ghost_salvage",
+	Enums.level_element_types.salvage_point: Vector2i(16, 32),
 }
 
 func _place_ghosts() -> void:
 	assert(not is_dragging)
-	for type in Enums.level_element_types.values():
-		var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
-		var obj: Node = self[OBJECT_TYPE_TO_GHOST_NAME[type]]
-		var cond: bool = editor_data.get(Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]) # doors, keys, ...
-		
-		if not cond or editor_data.is_playing:
-			continue
-		var editor_name = OBJECT_TYPE_TO_EDITOR[type]
-		var data_name = Level.OBJECT_TYPE_TO_DATA[type]
-		obj.set(data_name, get(editor_name).get(data_name))
-		
-		var maybe_pos := get_mouse_coord(grid_size)
-		obj.get(data_name).position = maybe_pos
-		
-		var is_valid := true
-		
-		if gameplay.level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
-			is_valid = false
-		elif obj is Door and not obj.door_data.check_valid(gameplay.level.level_data, false):
-			is_valid = false
-		obj.visible = is_valid
-		
-		if (
-		not is_instance_valid(gameplay.level.hovering_over)
-		and not obj.visible
-		# TODO: This is just a double-check, but looks weird since tiles can't be hovered on yet
+	if not editor_data.level_elements or editor_data.is_playing:
+		return
+	var type := editor_data.level_element_type
+	var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[type]
+	var obj: Node = ghosts[type]
+	
+	var editor_control: Control = editor_data.level_element_editors[type]
+	var data_name: StringName = Level.LEVEL_ELEMENT_DATA[type]
+	obj.set(data_name, editor_control.get(data_name))
+	
+	var maybe_pos := get_mouse_coord(grid_size)
+	obj.get(data_name).position = maybe_pos
+	
+	var is_valid := true
+	
+	if gameplay.level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
+		is_valid = false
+	elif obj is Door and not obj.door_data.check_valid(gameplay.level.level_data, false):
+		is_valid = false
+	obj.visible = is_valid
+	
+	if (
+	not is_instance_valid(gameplay.level.hovering_over)
+	and not obj.visible
+	# TODO: This is just a double-check, but looks weird since tiles can't be hovered on yet
 	#	and not level.is_space_occupied(Rect2i(get_mouse_coord(1), Vector2.ONE))
-		):
-			danger_obj = obj
-		else:
-			danger_obj = null
+	):
+		danger_obj = obj
+	else:
+		danger_obj = null
 
 # places the danger obj only. this overrides the ghosts obvs
 func _place_danger_obj() -> void:
-	for type in Enums.level_element_types.values():
-		var grid_size: Vector2i = OBJECT_TYPE_TO_GRID_SIZE[type]
-		var obj: Node = get(OBJECT_TYPE_TO_GHOST_NAME[type])
-		var cond: bool = get(Level.OBJECT_TYPE_TO_CONTAINER_NAME[type]) # doors, keys, ...
+	if not editor_data.level_elements or editor_data.is_playing:
+		return
+	var type := editor_data.level_element_type
+	var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[type]
+	var obj: Node = ghosts[type]
+	
+	var data_name = Level.LEVEL_ELEMENT_DATA[type]
+	obj.set(data_name, editor_data.level_element_editors.get(data_name))
 		
-		if not cond or editor_data.is_playing:
-			continue
-		var editor_name = OBJECT_TYPE_TO_EDITOR[type]
-		var data_name = Level.OBJECT_TYPE_TO_DATA[type]
-		obj.set(data_name, get(editor_name).get(data_name))
-		
-		var maybe_pos := get_mouse_coord(grid_size)
-		if is_dragging:
-			maybe_pos -= round_coord(drag_offset, grid_size)
-		obj.position = maybe_pos
-		danger_obj = obj
-
+	var maybe_pos := get_mouse_coord(grid_size)
+	if is_dragging:
+		maybe_pos -= round_coord(drag_offset, grid_size)
+	obj.position = maybe_pos
+	danger_obj = obj
 
 func _on_selected_highlight_adapted_to(_obj: Node) -> void:
 	if (Input.get_mouse_button_mask() & MOUSE_BUTTON_MASK_LEFT):

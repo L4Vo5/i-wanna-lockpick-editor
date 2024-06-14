@@ -93,5 +93,5 @@ enum level_element_types {
 	door,
 	key,
 	entry,
-	salvage,
+	salvage_point,
 }

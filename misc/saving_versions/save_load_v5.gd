@@ -222,6 +222,7 @@ static func _load_door(data: ByteReader) -> DoorData:
 	door.locks.resize(lock_amount)
 	for i in lock_amount:
 		door.locks[i] = _load_lock(data)
+		door.locks[i].changed.connect(door.emit_changed)
 	
 	return door
 

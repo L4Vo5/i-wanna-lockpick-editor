@@ -111,9 +111,9 @@ func _process(delta):
 		# hold
 		var finish_animation: bool = false
 		if can_finish_early:
-			if Input.is_action_pressed(&"restart"):
+			if Input.is_action_just_pressed(&"restart"):
 				finish_animation = true
-			if Input.is_action_pressed(&"jump"):
+			if Input.is_action_just_pressed(&"jump"):
 				finish_animation = true
 		if finish_animation or animation_timer >= hold_length:
 			animation_stage = 2

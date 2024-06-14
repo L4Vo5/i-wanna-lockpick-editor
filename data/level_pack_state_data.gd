@@ -68,6 +68,10 @@ func _on_deleted_level(level_id: int) -> void:
 	save()
 
 func save() -> void:
+	if not pack_data.is_saved:
+		# pack is not saved anywhere
+		# don't unnecessarily spam save files
+		return
 	pr("Saving data...")
 	if file_path == "":
 		var i := pack_data.pack_id
@@ -128,6 +132,7 @@ static func load_state_and_test_id(path: String, pack: LevelPackData) -> LevelPa
 	var state := LevelPackStateData.new()
 	state.file_path = path
 	state.pack_id = id
+	state.completed_levels = PackedByteArray()
 	state.completed_levels.resize(pack.levels.size())
 	state.pack_data = pack
 	var buffer := file.get_buffer(file.get_length() - file.get_position())

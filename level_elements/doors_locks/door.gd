@@ -218,7 +218,7 @@ func open(result: Dictionary) -> void:
 			snd_open.stream = preload("res://level_elements/doors_locks/copy.wav")
 		elif result.master_key:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
-		elif door_data.locks.size() > 1:
+		elif door_data.locks.size() != 1:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_combo.wav")
 		elif door_data.outer_color == Enums.colors.master:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")

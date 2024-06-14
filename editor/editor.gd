@@ -12,6 +12,13 @@ class_name LockpickEditor
 @export var entry_editor: EntryEditor
 @export var salvage_point_editor: SalvagePointEditor
 
+@onready var level_element_editors: Dictionary = {
+	Enums.level_element_types.door: door_editor,
+	Enums.level_element_types.key: key_editor,
+	Enums.level_element_types.entry: entry_editor,
+	Enums.level_element_types.salvage_point: salvage_point_editor,
+}
+
 @export var level_container: LevelContainer
 
 @export var play_button: Button
@@ -88,7 +95,7 @@ func _ready() -> void:
 	data.entry_editor = entry_editor
 	data.salvage_point_editor = salvage_point_editor
 	data.side_tabs = side_tabs
-	
+	data.level_element_editors = level_element_editors
 	
 	level_container.editor_data = data
 	level_properties_editor.editor_data = data
@@ -144,12 +151,13 @@ func resolve_visibility() -> void:
 func _update_mode() -> void:
 	var current_tab := side_tabs.get_current_tab_control()
 	data.tilemap_edit = current_tab == tile_editor
-	data.doors = current_tab == door_editor
-	data.keys = current_tab == key_editor
+	data.level_elements = false
+	for type in Enums.level_element_types.values():
+		if current_tab == level_element_editors[type]:
+			data.level_elements = true
+			data.level_element_type = type
+			break
 	data.level_properties = current_tab == level_properties_editor
-	data.objects = current_tab == door_editor or current_tab == key_editor
-	data.entries = current_tab == entry_editor
-	data.salvage_points = current_tab == salvage_point_editor
 
 func _on_play_pressed() -> void:
 	save_level()
@@ -186,6 +194,8 @@ func save_level() -> void:
 				else:
 					Global.safe_error("Report this (saving resource).", Vector2(300, 100))
 			elif ext in ["lvl", "png"]:
+				data.level_pack_data.is_saved = true
+				data.level_pack_data.state_data.save()
 				data.level_pack_data.resource_path = ""
 				SaveLoad.save_level(data.level_pack_data)
 	_update_level_path_display()
@@ -224,6 +234,7 @@ func _on_load_from_clipboard_pressed() -> void:
 
 func finish_loading_level() -> void:
 	if is_instance_valid(new_level_pack):
+		new_level_pack.is_saved = true
 		new_level_pack.check_valid(false)
 		var fixable_problems := new_level_pack.get_fixable_invalid_reasons()
 		var unfixable_problems := new_level_pack.get_unfixable_invalid_reasons()

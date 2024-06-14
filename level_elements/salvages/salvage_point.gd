@@ -2,7 +2,7 @@
 extends Control
 class_name SalvagePoint
 
-static var level_element_type := Enums.level_element_types.salvage
+static var level_element_type := Enums.level_element_types.salvage_point
 
 @export var salvage_point_data: SalvagePointData:
 	set(val):
