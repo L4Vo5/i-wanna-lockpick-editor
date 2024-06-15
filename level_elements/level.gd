@@ -532,7 +532,7 @@ func _spawn_goal() -> void:
 	goal_parent.add_child(goal)
 
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
-func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects: Array[Object] = []) -> bool:
+func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects := []) -> bool:
 	if not is_space_inside(rect):
 		return true
 	if not &"goal" in exclusions:
