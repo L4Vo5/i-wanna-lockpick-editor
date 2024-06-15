@@ -8,30 +8,25 @@ signal changed_lock_data
 @export var lock_data: LockData:
 	set(val):
 		if lock_data == val: return
-		disconnect_lock_data()
+		_disconnect_lock_data()
 		lock_data = val
-		connect_lock_data()
+		_connect_lock_data()
 
 @export var ignore_position := false
 var level: Level
 
-func connect_lock_data() -> void:
+func _connect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
 	if not is_node_ready(): return
-	assert(PerfManager.start(&"Lock::connect_lock_data"))
-	# Connect all the signals
-	lock_data.changed.connect(update_everything)
-	
-	# Call the methods to update everything now
-	update_everything()
-	assert(PerfManager.end(&"Lock::connect_lock_data"))
+	lock_data.changed.connect(update_visuals)
+	update_visuals()
 
-func disconnect_lock_data() -> void:
+func _disconnect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
 	if not is_node_ready(): return
-	lock_data.changed.disconnect(update_everything)
+	lock_data.changed.disconnect(update_visuals)
 
-func update_everything() -> void:
+func update_visuals() -> void:
 	update_position()
 	update_size()
 	update_lock_size()
@@ -40,7 +35,7 @@ func update_everything() -> void:
 	draw_locks()
 
 func _ready() -> void:
-	connect_lock_data()
+	_connect_lock_data()
 
 func _init() -> void:
 	_create_canvas_items()

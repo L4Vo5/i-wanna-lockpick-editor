@@ -2,35 +2,15 @@
 extends Resource
 class_name LockData
 
-@export var color := Enums.colors.none:
-	set(val):
-		if color == val: return
-		color = val
-		changed.emit()
+@export var color := Enums.colors.none
 
-@export var magnitude := 1:
-	set(val):
-		if magnitude == val: return
-		magnitude = val
-		changed.emit()
+@export var magnitude := 1
 
-@export var sign := Enums.sign.positive:
-	set(val):
-		if sign == val: return
-		sign = val
-		changed.emit()
+@export var sign := Enums.sign.positive
 
-@export var value_type := Enums.value.real:
-	set(val):
-		if value_type == val: return
-		value_type = val
-		changed.emit()
+@export var value_type := Enums.value.real
 
-@export var lock_type := Enums.lock_types.normal:
-	set(val):
-		if lock_type == val: return
-		lock_type = val
-		changed.emit()
+@export var lock_type := Enums.lock_types.normal
 
 # visual settings
 
