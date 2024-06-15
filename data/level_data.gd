@@ -1,7 +1,6 @@
 extends Resource
 class_name LevelData
 
-
 @export var doors: Array[DoorData] = []
 
 @export var keys: Array[KeyData] = []
