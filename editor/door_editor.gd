@@ -40,7 +40,7 @@ func _init() -> void:
 func _ready() -> void:
 	door.data = data
 	for spin_box in [width, height, real_copies, imaginary_copies]:
-		var line_edit = spin_box.get_line_edit
+		var line_edit = spin_box.get_line_edit()
 		line_edit.add_theme_constant_override(&"minimum_character_width", 2)
 		line_edit.expand_to_text_length = true
 	

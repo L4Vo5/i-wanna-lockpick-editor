@@ -165,6 +165,7 @@ func _update_lock_amount() -> void:
 		if is_negative.button_pressed:
 			is_negative.button_pressed = false
 	last_amount_value = int(amount.value)
+	arrangement_chooser.update_options()
 
 func _update_is_imaginary() -> void:
 	if _setting_to_data: return

@@ -29,6 +29,7 @@ script = ExtResource("4_1c01c")
 amount = SubResource("Resource_37cjk")
 outer_color = 1
 locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_chebn")])
+position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -37,7 +38,6 @@ _curses = {
 3: false
 }
 glitch_color = 13
-position = Vector2i(0, 0)
 sid = -1
 
 [node name="DoorEditor" type="MarginContainer"]

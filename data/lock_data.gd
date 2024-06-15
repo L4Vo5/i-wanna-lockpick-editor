@@ -2,54 +2,43 @@
 extends Resource
 class_name LockData
 
-signal changed_color
 @export var color := Enums.colors.none:
 	set(val):
 		if color == val: return
 		color = val
-		changed_color.emit()
 		changed.emit()
 
-signal changed_magnitude
 @export var magnitude := 1:
 	set(val):
 		if magnitude == val: return
 		magnitude = val
-		changed_magnitude.emit()
 		changed.emit()
 
-signal changed_sign
 @export var sign := Enums.sign.positive:
 	set(val):
 		if sign == val: return
 		sign = val
-		changed_sign.emit()
 		changed.emit()
 
-signal changed_value_type
 @export var value_type := Enums.value.real:
 	set(val):
 		if value_type == val: return
 		value_type = val
-		changed_value_type.emit()
 		changed.emit()
 
-signal changed_lock_type
 @export var lock_type := Enums.lock_types.normal:
 	set(val):
 		if lock_type == val: return
 		lock_type = val
-		changed_lock_type.emit()
 		changed.emit()
 
 # visual settings
+
 ## displayed size
-signal changed_size
 @export var size := Vector2i(18, 18):
 	set(val):
 		if size == val: return
 		size = val
-		changed_size.emit()
 		changed.emit()
 
 ## minimum size (editor info. the editor itself should enforce this to be the actual minimum size)
@@ -63,49 +52,39 @@ var minimum_size := Vector2i(0, 0):
 #		changed.emit()
 
 ## position in door
-signal changed_position
 @export var position := Vector2i(7, 7):
 	set(val):
 		if position == val: return
 		position = val
-		changed_position.emit()
 		changed.emit()
 
-signal changed_lock_arrangement
 ## the lock pattern to use, or -1 for numbers
 ## (nonexistent arrangements will default to numbers too)
 @export var lock_arrangement := 0:
 	set(val):
 		if lock_arrangement == val: return
 		lock_arrangement = val
-		changed_lock_arrangement.emit()
 		changed.emit()
 
-signal changed_dont_show_lock
 ## if rendering as number, don't show the lock symbol
 @export var dont_show_lock := false:
 	set(val):
 		if dont_show_lock == val: return
 		dont_show_lock = val
-		changed_dont_show_lock.emit()
 		changed.emit()
 
 ## Variables modified by the door data for easier rendering. Not meant to be stored, but I guess they can be used for logic?
-signal changed_glitch
 var glitch_color := Enums.colors.glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
-		changed_glitch.emit()
 		changed.emit()
 
-signal changed_is_cursed
 ## When cursed, this is true to force the lock to be rendered brown.
 var is_cursed := false:
 	set(val):
 		if is_cursed == val: return
 		is_cursed = val
-		changed_is_cursed.emit()
 		changed.emit()
 
 ## used if the door's count doesn't align with the i-view status
@@ -122,13 +101,11 @@ var dont_show_locks := false:
 		dont_show_locks = val
 		changed.emit()
 
-signal changed_rotation
 ## rotation for rendering i-view and negative doors without destructively affecting the lock data
 var rotation := 0:
 	set(val):
 		if rotation == val: return
 		rotation = val
-		changed_rotation.emit()
 		changed.emit()
 
 func duplicated() -> LockData:
