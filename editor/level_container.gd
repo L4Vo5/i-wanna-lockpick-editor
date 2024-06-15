@@ -352,6 +352,8 @@ func _place_ghosts() -> void:
 
 # places the danger obj only. this overrides the ghosts obvs
 func _place_danger_obj() -> void:
+	# TODO
+	assert(false, "This doesn't trigger! but relocating stuff doesn't show danger currently...")
 	if not editor_data.level_elements or editor_data.is_playing:
 		return
 	var type := editor_data.level_element_type
