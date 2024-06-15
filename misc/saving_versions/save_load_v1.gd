@@ -59,7 +59,7 @@ static func _load_door(file: FileAccess) -> DoorData:
 	door.locks.resize(lock_amount)
 	for i in lock_amount:
 		door.locks[i] = _load_lock(file)
-	
+	door.connect_all_locks()
 	return door
 
 static func _load_lock(file: FileAccess) -> LockData:

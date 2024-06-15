@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=32 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
 [ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/salvage_point_editor.tscn" id="21_ieeor"]
+[ext_resource type="Script" path="res://data/salvage_point_data.gd" id="22_djptt"]
 
 [sub_resource type="Resource" id="Resource_k5lmb"]
 script = ExtResource("9_0kc5k")
@@ -36,12 +37,12 @@ type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_ke2df"]
+[sub_resource type="Resource" id="Resource_wkk63"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_jealp"]
+[sub_resource type="Resource" id="Resource_kvdjv"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -53,11 +54,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_464dx"]
+[sub_resource type="Resource" id="Resource_pi1oi"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_ke2df")
+amount = SubResource("Resource_wkk63")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_jealp")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_kvdjv")])
 size = Vector2i(32, 32)
 _curses = {
 0: false,
@@ -69,17 +70,23 @@ glitch_color = 13
 position = Vector2i(0, 0)
 sid = -1
 
-[sub_resource type="Resource" id="Resource_sn6kc"]
+[sub_resource type="Resource" id="Resource_av8aa"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_wgwml"]
+[sub_resource type="Resource" id="Resource_1aafn"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_sn6kc")
+amount = SubResource("Resource_av8aa")
 is_infinite = false
 type = 0
 color = 1
+position = Vector2i(0, 0)
+
+[sub_resource type="Resource" id="Resource_sdjwy"]
+script = ExtResource("22_djptt")
+sid = 0
+is_output = false
 position = Vector2i(0, 0)
 
 [node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
@@ -282,7 +289,6 @@ visible = false
 mouse_filter = 2
 
 [node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("6_n53nq")]
-visible = false
 data = SubResource("Resource_jn77e")
 metadata/_edit_vertical_guides_ = [32.0]
 metadata/_edit_horizontal_guides_ = [32.0]
@@ -321,12 +327,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-data = SubResource("Resource_464dx")
+data = SubResource("Resource_pi1oi")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_wgwml")
+data = SubResource("Resource_1aafn")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -352,6 +358,7 @@ layout_mode = 2
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
+data = SubResource("Resource_sdjwy")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)
@@ -364,5 +371,5 @@ show_hidden_files = true
 
 [node name="InvalidLevelLoad" parent="." instance=ExtResource("16_ayc8p")]
 position = Vector2i(10, 35)
-size = Vector2i(477, 952)
+size = Vector2i(477, 964)
 visible = false

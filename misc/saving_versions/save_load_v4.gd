@@ -182,7 +182,7 @@ static func _load_door(data: ByteAccess) -> DoorData:
 	door.locks.resize(lock_amount)
 	for i in lock_amount:
 		door.locks[i] = _load_lock(data)
-	
+	door.connect_all_locks()
 	return door
 
 static func _load_entry(data: ByteAccess) -> EntryData:

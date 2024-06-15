@@ -1,8 +1,6 @@
-[gd_scene load_steps=18 format=3 uid="uid://b0dwb73yoj3sr"]
+[gd_scene load_steps=14 format=3 uid="uid://b0dwb73yoj3sr"]
 
 [ext_resource type="Script" path="res://level_elements/keys/key.gd" id="1_rurb5"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="2_280nl"]
-[ext_resource type="Script" path="res://data/key_data.gd" id="3_j3yb5"]
 [ext_resource type="Texture2D" uid="uid://rek5hwp2r3c4" path="res://level_elements/keys/spr_key_shadow.png" id="4_ojsbs"]
 [ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="5_v3m1s"]
 [ext_resource type="Texture2D" uid="uid://dr8mnidwq7oss" path="res://level_elements/keys/spr_glitch.png" id="6_rbnyw"]
@@ -12,19 +10,6 @@
 [ext_resource type="AudioStream" uid="uid://cvfd3d4c881kw" path="res://level_elements/keys/key_pickup.wav" id="10_mlryn"]
 [ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="11_f7y7t"]
 [ext_resource type="Texture2D" uid="uid://x877lijg33ow" path="res://level_elements/keys/spr_special_keys.png" id="12_4mi1v"]
-
-[sub_resource type="Resource" id="Resource_k5lmb"]
-script = ExtResource("2_280nl")
-real_part = 1
-imaginary_part = 0
-
-[sub_resource type="Resource" id="Resource_jn77e"]
-script = ExtResource("3_j3yb5")
-amount = SubResource("Resource_k5lmb")
-is_infinite = false
-type = 0
-color = 1
-position = Vector2i(0, 0)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mb7fb"]
 radius = 9.5
@@ -43,7 +28,6 @@ offset_right = 32.0
 offset_bottom = 32.0
 mouse_filter = 1
 script = ExtResource("1_rurb5")
-key_data = SubResource("Resource_jn77e")
 
 [node name="Shadow" type="Sprite2D" parent="."]
 unique_name_in_owner = true

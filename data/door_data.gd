@@ -68,6 +68,11 @@ func remove_lock_at(pos: int) -> void:
 	locks.remove_at(pos)
 	changed.emit()
 
+# for save load, since all locks are loaded unsafely
+func connect_all_locks() -> void:
+	for lock in locks:
+		lock.changed.connect(emit_changed)
+
 func set_curse(curse: Enums.curse, val: bool) -> void:
 	if _curses[curse] == val: return
 	if outer_color == Enums.colors.gate:
@@ -95,6 +100,7 @@ func duplicated() -> DoorData:
 	
 	for l in locks:
 		dupe.locks.push_back(l.duplicated())
+	dupe.connect_all_locks()
 	return dupe
 
 func has_point(point: Vector2i) -> bool:
