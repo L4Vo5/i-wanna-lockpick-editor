@@ -231,7 +231,7 @@ func try_open_door(door: Door) -> void:
 
 # Editor functions
 
-signal element_gui_input(event: InputEvent, door: Door, type: Enums.level_element_types)
+signal element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types)
 
 const LEVEL_ELEMENT_CONTAINER_NAME := {
 	Enums.level_element_types.door: &"doors",
