@@ -255,7 +255,7 @@ const LEVEL_ELEMENT_TO_SCENE := {
 };
 
 const ELEMENT_TO_DATA_VAR_NAME := {
-	Enums.level_element_types.door: &"door_data",
+	Enums.level_element_types.door: &"data",
 	Enums.level_element_types.key: &"key_data",
 	Enums.level_element_types.entry: &"entry_data",
 	Enums.level_element_types.salvage_point: &"salvage_point_data",
@@ -577,7 +577,7 @@ func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
 		return true
 	for door: Door in doors.get_children():
 		if door == exclude: continue
-		if door.door_data.get_rect().intersects(rect):
+		if door.data.get_rect().intersects(rect):
 			return true
 	return false
 

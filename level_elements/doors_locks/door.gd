@@ -16,14 +16,12 @@ const FRAME_NEG := preload("res://level_elements/doors_locks/textures/door_frame
 var open_cooldown := 0.0
 
 @export var ignore_position := false
-@export var door_data: DoorData:
+@export var data: DoorData:
 	set(val):
-		if door_data == val: return
-		_disconnect_door_data()
-		door_data = val
-		_connect_door_data()
-# used to be meta, but found enough uses to keep it around
-var original_door_data: DoorData
+		if data == val: return
+		_disconnect_data()
+		data = val
+		_connect_data()
 # 1 when the gate is open (can pass through), 0 when closed, -1 if not a gate, 2 if it should be closed but the player is still inside
 var ignore_collisions_gate := -1
 const GATE_TWEEN_TIME := 0.25
@@ -57,7 +55,7 @@ func _ready() -> void:
 	resolve_collision_mode()
 	if is_instance_valid(level):
 		assert(visible)
-		assert(not door_data.amount.is_zero())
+		assert(not data.amount.is_zero())
 	update_everything()
 	assert(PerfManager.end("Door::_ready"))
 
@@ -65,9 +63,9 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		_destroy_canvas_items()
 
-func _connect_door_data() -> void:
-	if not is_instance_valid(door_data): return
-	door_data.changed.connect(update_everything)
+func _connect_data() -> void:
+	if not is_instance_valid(data): return
+	data.changed.connect(update_everything)
 	if not is_node_ready(): return
 	update_everything()
 	# look.... ok?
@@ -75,9 +73,9 @@ func _connect_door_data() -> void:
 	show()
 	resolve_collision_mode()
 
-func _disconnect_door_data() -> void:
-	if not is_instance_valid(door_data): return
-	door_data.changed.disconnect(update_everything)
+func _disconnect_data() -> void:
+	if not is_instance_valid(data): return
+	data.changed.disconnect(update_everything)
 
 func connect_level() -> void:
 	if not is_instance_valid(level): return
@@ -89,10 +87,10 @@ func disconnect_level() -> void:
 func _physics_process(delta: float) -> void:
 	if open_cooldown > 0:
 		open_cooldown -= delta
-	if not is_instance_valid(door_data): return
+	if not is_instance_valid(data): return
 	var text := ""
-	if not door_data.amount.has_value(1,0):
-		text = "×" + str(door_data.amount)
+	if not data.amount.has_value(1,0):
+		text = "×" + str(data.amount)
 	copies.text = text
 	if using_i_view_colors:
 		_draw_frame()
@@ -102,7 +100,7 @@ func _physics_process(delta: float) -> void:
 
 
 func resolve_collision_mode() -> void:
-	if not is_instance_valid(level) or door_data.amount.is_zero() or not visible or ignore_collisions_gate == 1:
+	if not is_instance_valid(level) or data.amount.is_zero() or not visible or ignore_collisions_gate == 1:
 		static_body.process_mode = Node.PROCESS_MODE_DISABLED
 	else:
 		# No collision if player is inside (intended use is for gates)
@@ -118,7 +116,7 @@ func resolve_collision_mode() -> void:
 		static_body.process_mode = Node.PROCESS_MODE_INHERIT
 
 func update_everything() -> void:
-	if not is_instance_valid(door_data): return
+	if not is_instance_valid(data): return
 	assert(PerfManager.start(&"Door::update_everything"))
 	
 	_draw_base()
@@ -131,7 +129,7 @@ func update_everything() -> void:
 	update_gate_anim()
 	
 	if not ignore_position:
-		position = door_data.position
+		position = data.position
 	assert(PerfManager.end(&"Door::update_everything"))
 
 func position_copies() -> void:
@@ -141,22 +139,22 @@ func position_copies() -> void:
 
 func _on_changed_i_view() -> void:
 	if not is_instance_valid(level): return
-	if not is_instance_valid(door_data): return
+	if not is_instance_valid(data): return
 	var i_view := level.logic.i_view
 	var is_aligned := false
 	var is_flipped := false
-	if not i_view and door_data.amount.real_part != 0:
+	if not i_view and data.amount.real_part != 0:
 		is_aligned = true
-		if door_data.amount.real_part < 0:
+		if data.amount.real_part < 0:
 			is_flipped = true
-	if i_view and door_data.amount.imaginary_part != 0:
+	if i_view and data.amount.imaginary_part != 0:
 		is_aligned = true
-		if door_data.amount.imaginary_part < 0:
+		if data.amount.imaginary_part < 0:
 			is_flipped = true
-	using_i_view_colors = not is_aligned and not door_data.amount.is_zero()
+	using_i_view_colors = not is_aligned and not data.amount.is_zero()
 	if not using_i_view_colors:
 		update_textures()
-	for lock in door_data.locks:
+	for lock in data.locks:
 		if not is_instance_valid(lock): continue
 		lock.dont_show_frame = not is_aligned
 		lock.dont_show_locks = not is_aligned
@@ -164,23 +162,23 @@ func _on_changed_i_view() -> void:
 
 func update_textures() -> void:
 	if not is_node_ready(): return
-	if not is_instance_valid(door_data): return
-	custom_minimum_size = door_data.size
-	size = door_data.size
+	if not is_instance_valid(data): return
+	custom_minimum_size = data.size
+	size = data.size
 	position_copies()
 	static_body.scale = size
 	_draw_frame()
 
 func update_locks() -> void:
-	if not is_instance_valid(door_data): return
+	if not is_instance_valid(data): return
 	assert(PerfManager.start(&"Door::update_locks"))
 	
-	var needed_locks := door_data.locks.size()
+	var needed_locks := data.locks.size()
 	var current_locks := lock_holder.get_child_count()
 	# redo the current ones
 	for i in mini(needed_locks, current_locks):
 		var lock := lock_holder.get_child(i)
-		lock.lock_data = door_data.locks[i]
+		lock.lock_data = data.locks[i]
 	# shave off the rest
 	if current_locks > needed_locks:
 		for _i in current_locks - needed_locks:
@@ -193,7 +191,7 @@ func update_locks() -> void:
 		for i in range(current_locks, needed_locks):
 			var new_lock = NodePool.pool_node(LOCK)
 			new_lock.clicked.connect(_on_lock_clicked.bind(new_lock))
-			new_lock.lock_data = door_data.locks[i]
+			new_lock.lock_data = data.locks[i]
 			lock_holder.add_child(new_lock)
 	
 	for lock: Lock in lock_holder.get_children():
@@ -205,11 +203,11 @@ func _on_lock_clicked(event: InputEventMouseButton, lock: Lock) -> void:
 	lock_clicked.emit(event, lock)
 
 func update_curses() -> void:
-	if not is_instance_valid(door_data): return
-	ice.visible = door_data.get_curse(Enums.curse.ice)
-	erosion.visible = door_data.get_curse(Enums.curse.erosion)
-	paint.visible = door_data.get_curse(Enums.curse.paint)
-	brown_curse.visible = door_data.get_curse(Enums.curse.brown)
+	if not is_instance_valid(data): return
+	ice.visible = data.get_curse(Enums.curse.ice)
+	erosion.visible = data.get_curse(Enums.curse.erosion)
+	paint.visible = data.get_curse(Enums.curse.paint)
+	brown_curse.visible = data.get_curse(Enums.curse.brown)
 
 ## Perform animations, plays sounds, etc. after the door was opened with some result
 func open(result: Dictionary) -> void:
@@ -218,9 +216,9 @@ func open(result: Dictionary) -> void:
 			snd_open.stream = preload("res://level_elements/doors_locks/copy.wav")
 		elif result.master_key:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
-		elif door_data.locks.size() > 1:
+		elif data.locks.size() > 1:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_combo.wav")
-		elif door_data.outer_color == Enums.colors.master:
+		elif data.outer_color == Enums.colors.master:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
 		else:
 			snd_open.stream = preload("res://level_elements/doors_locks/open.wav")
@@ -245,7 +243,7 @@ func update_gate_anim() -> void:
 		gate_tween.tween_property(self, "modulate:a", obj_alpha, GATE_TWEEN_TIME * (1.0 - tween_progress))
 
 func get_mouseover_text() -> String:
-	return door_data.get_mouseover_text()
+	return data.get_mouseover_text()
 
 # do the vfx/sfx for the curses
 func break_curse_ice() -> void:
@@ -271,11 +269,11 @@ func create_debris() -> void:
 			var timer := Timer.new()
 			timer.timeout.connect(debris.queue_free)
 			debris.add_child(timer)
-			debris.color = door_data.outer_color
-			if door_data.get_curse(Enums.curse.brown):
+			debris.color = data.outer_color
+			if data.get_curse(Enums.curse.brown):
 				debris.color = Enums.colors.brown
-			elif door_data.outer_color == Enums.colors.glitch:
-				debris.color = door_data.glitch_color
+			elif data.outer_color == Enums.colors.glitch:
+				debris.color = data.glitch_color
 				debris.is_glitched_color = true
 			debris.global_position = global_position
 			debris.position.x += randf_range(-4, 4) + 16 * x
@@ -328,7 +326,7 @@ const GLITCH_2_RECT := Rect2(0, 0, 58, 58)
 const GLITCH_2_DIST := Vector2(6, 6)
 
 func _draw_base() -> void:
-	if not is_instance_valid(door_data): return
+	if not is_instance_valid(data): return
 	assert(BASE_TEX_RECT.size == BASE_LIGHT.get_size())
 	assert(BASE_TEX_RECT.size == BASE_MID.get_size())
 	assert(BASE_TEX_RECT.size == BASE_DARK.get_size())
@@ -340,25 +338,25 @@ func _draw_base() -> void:
 	
 	RenderingServer.canvas_item_clear(door_base)
 	RenderingServer.canvas_item_clear(door_glitch)
-	var rect := Rect2(Vector2(3,3),door_data.size - Vector2i(6, 6))
-	var used_color := door_data.outer_color
-	if door_data.get_curse(Enums.curse.brown):
+	var rect := Rect2(Vector2(3,3),data.size - Vector2i(6, 6))
+	var used_color := data.outer_color
+	if data.get_curse(Enums.curse.brown):
 		used_color = Enums.colors.brown
 	
 	# Glitch is a special boy...
 	if used_color == Enums.colors.glitch:
-		if door_data.glitch_color == Enums.colors.glitch:
+		if data.glitch_color == Enums.colors.glitch:
 			RenderingServer.canvas_item_add_nine_patch(door_glitch, rect, BASE_TEX_RECT, GLITCH_BASE.get_rid(), BASE_DIST, BASE_DIST)
 			assert(PerfManager.end("Door:_draw_base"))
 			return
 		else:
-			used_color = door_data.glitch_color
+			used_color = data.glitch_color
 			
 			RenderingServer.canvas_item_add_nine_patch(door_glitch, rect, GLITCH_2_RECT, GLITCH_BASE_SHARED.get_rid(), GLITCH_2_DIST, GLITCH_2_DIST, RenderingServer.NINE_PATCH_TILE, RenderingServer.NINE_PATCH_TILE)
 	
 	match used_color:
 		Enums.colors.master, Enums.colors.pure:
-			if door_data.outer_color == Enums.colors.glitch:
+			if data.outer_color == Enums.colors.glitch:
 				var tex := GLITCH_MASTER if used_color == Enums.colors.master else GLITCH_PURE
 				RenderingServer.canvas_item_add_texture_rect(door_base, rect, tex)
 			else:
@@ -373,7 +371,7 @@ func _draw_base() -> void:
 		Enums.colors.none:
 			pass
 		Enums.colors.gate:
-			rect = Rect2(Vector2(-1,-1),door_data.size + Vector2i(2, 2))
+			rect = Rect2(Vector2(-1,-1), data.size + Vector2i(2, 2))
 			RenderingServer.canvas_item_add_nine_patch(door_base, rect, Rect2(Vector2.ZERO, GATE_TEXTURE.get_size()), GATE_TEXTURE, Vector2(1,1), Vector2(1, 1), RenderingServer.NINE_PATCH_TILE, RenderingServer.NINE_PATCH_TILE)
 		_: # normal colors
 			# Draw top part, then middle, then bottom
@@ -393,15 +391,15 @@ const FRAME_BR := Vector2(4, 4)
 const GATE_TEXTURE := preload("res://level_elements/doors_locks/textures/gate_texture.png")
 func _draw_frame() -> void:
 	RenderingServer.canvas_item_clear(door_frame)
-	if not is_instance_valid(door_data): return
-	if door_data.outer_color == Enums.colors.gate: return
+	if not is_instance_valid(data): return
+	if data.outer_color == Enums.colors.gate: return
 	assert(PerfManager.start("Door:_draw_frame"))
-	var rect := Rect2(Vector2.ZERO,door_data.size)
+	var rect := Rect2(Vector2.ZERO,data.size)
 	var frame_palette: Array
 	if using_i_view_colors:
 		frame_palette = Rendering.i_view_palette
 	else:
-		frame_palette = Rendering.frame_colors[Enums.sign.positive if door_data.amount.real_part >= 0 else Enums.sign.negative]
+		frame_palette = Rendering.frame_colors[Enums.sign.positive if data.amount.real_part >= 0 else Enums.sign.negative]
 	
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_LIGHT.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false,  frame_palette[1])
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_MID.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, true, frame_palette[0])

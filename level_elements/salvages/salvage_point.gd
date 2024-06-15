@@ -60,9 +60,9 @@ func prep_output_step_1() -> void:
 func prep_output_step_2() -> void:
 	if not salvage_point_data.is_output:
 		return
-	if door != null and level.is_salvage_blocked(door.door_data.get_rect(), door):
+	if door != null and level.is_salvage_blocked(door.data.get_rect(), door):
 		door_error = true
-		door_error_size = door.door_data.size
+		door_error_size = door.data.size
 
 func prep_output_step_3() -> void:
 	if not salvage_point_data.is_output:

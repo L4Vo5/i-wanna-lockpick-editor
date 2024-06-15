@@ -339,7 +339,7 @@ func _place_ghosts() -> void:
 	
 	if gameplay.level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
 		is_valid = false
-	elif obj is Door and not obj.door_data.check_valid(gameplay.level.level_data, false):
+	elif obj is Door and not obj.data.check_valid(gameplay.level.level_data, false):
 		is_valid = false
 	obj.visible = is_valid
 	

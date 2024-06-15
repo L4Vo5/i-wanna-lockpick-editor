@@ -141,7 +141,7 @@ func apply_auras_on_door(door: Door) -> void:
 
 ## Returns true if the curse/uncurse was successful (and the animation should play), false if it wasn't.
 func apply_curse_door(door: Door, curse: Enums.curse, val: bool) -> bool:
-	var door_data := door.door_data
+	var door_data := door.data
 	if door_data.outer_color == Enums.colors.gate: return false
 	if door_data.get_curse(curse) == val: return false
 	
@@ -178,7 +178,7 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 			key._on_changed_glitch_color()
 	
 	for door: Door in level.doors.get_children():
-		var _door_data := door.door_data
+		var _door_data := door.data
 		if not _door_data.get_curse(Enums.curse.brown):
 			# If the door was previously cursed, its glitch color might not match up, so we need to keep track of that in the undo.
 			# (unless this is an undo)
@@ -191,7 +191,7 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 
 ## Tries to open a door, and communicates the result to the door so it can handle sounds and animation.
 func try_open_door(door: Door) -> void:
-	var door_data := door.door_data
+	var door_data := door.data
 	# Check if the door is currently in cooldown state
 	if door.open_cooldown > 0: return
 	# Gates have separate logic, this function doesn't concern them
@@ -370,7 +370,7 @@ func update_gates() -> void:
 		player.update_auras()
 
 func update_gate(gate: Door) -> void:
-	var door_data := gate.door_data
+	var door_data := gate.data
 	if door_data.outer_color != Enums.colors.gate:
 		if gate.ignore_collisions_gate != -1:
 			gate.ignore_collisions_gate = -1
@@ -504,7 +504,7 @@ func pick_up_key(key: Key) -> void:
 func on_salvaged_door(door: Door) -> void:
 	assert(active_salvage != null)
 	var sid = active_salvage.salvage_point_data.sid
-	var door_data = door.door_data.duplicated()
+	var door_data = door.data.duplicated()
 	level.goal.snd_win.play()
 	level.gameplay_manager.pack_state.salvage_door(sid, door_data)
 	level.gameplay_manager.transition.finished_animation.connect(level.reset)

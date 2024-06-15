@@ -2,12 +2,12 @@
 extends Control
 class_name DoorEditor
 
-@export var door_data: DoorData:
+@export var data: DoorData:
 	set(val):
-		door_data = val.duplicated()
+		data = val.duplicated()
 		if not is_node_ready(): await ready
 		# TODO: Allow editing doors in the level (currently not done so you can't resize them)
-		door.door_data = door_data
+		door.data = data
 		_set_to_door_data()
 @onready var door: Door = %Door
 
@@ -31,14 +31,14 @@ var non_standard_mode := false
 var editor_data: EditorData
 
 func _init() -> void:
-	door_data = DoorData.new()
-	door_data.outer_color = Enums.colors.white
+	data = DoorData.new()
+	data.outer_color = Enums.colors.white
 	var lock := LockData.new()
 	lock.color = Enums.colors.white
-	door_data.add_lock(lock)
+	data.add_lock(lock)
 
 func _ready() -> void:
-	door.door_data = door_data
+	door.data = data
 	width.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
 	height.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
 	real_copies.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
@@ -72,35 +72,35 @@ func _ready() -> void:
 var _setting_to_data := false
 func _set_to_door_data() -> void:
 	_setting_to_data = true
-	ice_button.button_pressed = door_data.get_curse(Enums.curse.ice)
-	erosion_button.button_pressed = door_data.get_curse(Enums.curse.erosion)
-	paint_button.button_pressed = door_data.get_curse(Enums.curse.paint)
-	width.value = door_data.size.x
-	height.value = door_data.size.y
+	ice_button.button_pressed = data.get_curse(Enums.curse.ice)
+	erosion_button.button_pressed = data.get_curse(Enums.curse.erosion)
+	paint_button.button_pressed = data.get_curse(Enums.curse.paint)
+	width.value = data.size.x
+	height.value = data.size.y
 	
-	real_copies.value = door_data.amount.real_part
-	imaginary_copies.value = door_data.amount.imaginary_part
+	real_copies.value = data.amount.real_part
+	imaginary_copies.value = data.amount.imaginary_part
 	
-	color_choice.set_to_color(door_data.outer_color) 
+	color_choice.set_to_color(data.outer_color) 
 	
 	_regen_lock_editors()
 	_setting_to_data = false
 
 func set_curse(val: bool, which: Enums.curse) -> void:
-	door_data.set_curse(which, val)
+	data.set_curse(which, val)
 
 func _update_door_size() -> void:
 	if _setting_to_data: return
-	door_data.size = Vector2i(roundi(width.value), roundi(height.value))
+	data.size = Vector2i(roundi(width.value), roundi(height.value))
 	_update_lock_editors_door_size()
 
 func _update_door_amount() -> void:
 	if _setting_to_data: return
 	if real_copies.value == 0 and imaginary_copies.value == 0:
-		if real_copies.value != door_data.amount.real_part:
-			real_copies.value = -door_data.amount.real_part
-		if imaginary_copies.value != door_data.amount.imaginary_part:
-			imaginary_copies.value = -door_data.amount.imaginary_part
+		if real_copies.value != data.amount.real_part:
+			real_copies.value = -data.amount.real_part
+		if imaginary_copies.value != data.amount.imaginary_part:
+			imaginary_copies.value = -data.amount.imaginary_part
 		return
 	# Support for infinity
 	var real := int(real_copies.value)
@@ -113,20 +113,20 @@ func _update_door_amount() -> void:
 		img = Enums.INT_MAX
 	if img == imaginary_copies.min_value:
 		img = Enums.INT_MIN
-	door_data.amount.set_to(real, img)
+	data.amount.set_to(real, img)
 
 func _update_door_color(color: Enums.colors) -> void:
 	if _setting_to_data: return
-	door_data.outer_color = color
+	data.outer_color = color
 
 func _regen_lock_editors() -> void:
 	for child in lock_editor_parent.get_children():
 		child.queue_free()
 	var i := 1
-	for lock_data in door_data.locks:
+	for lock_data in data.locks:
 		var lock_editor: LockEditor = LOCK_EDITOR.instantiate()
 		lock_editor.lock_number = i
-		lock_editor.door_size = door_data.size
+		lock_editor.door_size = data.size
 		lock_editor.lock_data = lock_data
 		lock_editor.delete.connect(_delete_lock.bind(lock_editor))
 		lock_editor_parent.add_child(lock_editor)
@@ -136,23 +136,23 @@ func _regen_lock_editors() -> void:
 func _update_lock_editors_door_size() -> void:
 	if _setting_to_data: return
 	for editor in lock_editor_parent.get_children():
-		editor.door_size = door_data.size
+		editor.door_size = data.size
 
 func _add_new_lock() -> void:
 	var new_lock := LockData.new()
-	new_lock.color = door_data.outer_color
-	if door_data.outer_color == Enums.colors.gate:
+	new_lock.color = data.outer_color
+	if data.outer_color == Enums.colors.gate:
 		if lock_editor_parent.get_child_count() != 0:
 			new_lock.color = lock_editor_parent.get_child(-1).lock.lock_data.color
 		else:
 			new_lock.color = Enums.colors.white
-	door_data.add_lock(new_lock)
+	data.add_lock(new_lock)
 	
 	var lock_editor: LockEditor = LOCK_EDITOR.instantiate()
 	lock_editor.editor_data = editor_data
 	var i := lock_editor_parent.get_child_count() + 1
 	lock_editor.lock_number = i
-	lock_editor.door_size = door_data.size
+	lock_editor.door_size = data.size
 	lock_editor.lock_data = new_lock
 	lock_editor.delete.connect(_delete_lock.bind(lock_editor))
 	lock_editor_parent.add_child(lock_editor)
@@ -161,7 +161,7 @@ func _add_new_lock() -> void:
 
 func _delete_lock(which: LockEditor) -> void:
 	var i := which.lock_number - 1
-	door_data.remove_lock_at(i)
+	data.remove_lock_at(i)
 	var lock_editors := lock_editor_parent.get_children()
 	lock_editors[i].queue_free()
 	for j in range(i+1, lock_editors.size()):

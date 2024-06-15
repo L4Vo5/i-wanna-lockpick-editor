@@ -57,7 +57,7 @@ func adapt_to(obj: Node, no_signal: bool = false) -> void:
 	_hide_all()
 	var size := Vector2i(32, 32)
 	if obj is Door:
-		var data: DoorData = obj.door_data
+		var data: DoorData = obj.data
 		assert(is_instance_valid(data))
 		size = data.size
 	line.show()
