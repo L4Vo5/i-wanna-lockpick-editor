@@ -133,8 +133,7 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_elem
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				var editor_control = editor_data.level_element_editors[type]
-				var data_name = Level.ELEMENT_TO_DATA_VAR_NAME[type]
-				editor_control.set(data_name, node.get(data_name))
+				editor_control.data = node.data
 				editor_data.side_tabs.set_current_tab_control(editor_control)
 				accept_event()
 				select_thing(node)
@@ -221,8 +220,7 @@ func place_element_on_mouse(type: Enums.level_element_types) -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
 	var coord := get_mouse_coord(LEVEL_ELEMENT_GRID_SIZE[type])
-	var data_name: StringName = Level.ELEMENT_TO_DATA_VAR_NAME[type]
-	var data = editor.level_element_editors[type].get(data_name).duplicated()
+	var data = editor.level_element_editors[type].data.duplicated()
 	data.position = coord
 	var node := gameplay.level.add_element(data, type)
 	if not is_instance_valid(node): return false
@@ -329,11 +327,10 @@ func _place_ghosts() -> void:
 	var obj: Node = ghosts[type]
 	
 	var editor_control: Control = editor_data.level_element_editors[type]
-	var data_name: StringName = Level.ELEMENT_TO_DATA_VAR_NAME[type]
-	obj.set(data_name, editor_control.get(data_name))
+	obj.data = editor_control.data
 	
 	var maybe_pos := get_mouse_coord(grid_size)
-	obj.get(data_name).position = maybe_pos
+	obj.data.position = maybe_pos
 	
 	var is_valid := true
 	
@@ -361,8 +358,7 @@ func _place_danger_obj() -> void:
 	var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[type]
 	var obj: Node = ghosts[type]
 	
-	var data_name = Level.ELEMENT_TO_DATA_VAR_NAME[type]
-	obj.set(data_name, editor_data.level_element_editors.get(data_name))
+	obj.data = editor_data.level_element_editors[type].data
 		
 	var maybe_pos := get_mouse_coord(grid_size)
 	if is_dragging:

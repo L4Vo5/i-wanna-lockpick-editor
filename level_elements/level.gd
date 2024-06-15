@@ -163,7 +163,7 @@ func reset() -> void:
 			var node := container.get_child(i)
 			var original_data = list[i]
 			node.set_meta(&"original_data", original_data)
-			node.set(ELEMENT_TO_DATA_VAR_NAME[type], original_data.duplicated())
+			node.data = original_data.duplicated()
 		# shave off the rest
 		if current > needed:
 			for _i in current - needed:
@@ -254,13 +254,6 @@ const LEVEL_ELEMENT_TO_SCENE := {
 	Enums.level_element_types.salvage_point: SALVAGE_POINT,
 };
 
-const ELEMENT_TO_DATA_VAR_NAME := {
-	Enums.level_element_types.door: &"data",
-	Enums.level_element_types.key: &"data",
-	Enums.level_element_types.entry: &"data",
-	Enums.level_element_types.salvage_point: &"data",
-};
-
 const LEVEL_ELEMENT_CONNECT := {
 	Enums.level_element_types.door: &"connect_door",
 	Enums.level_element_types.key: &"connect_key"
@@ -306,7 +299,7 @@ func _spawn_element(data, type: Enums.level_element_types) -> Node:
 	assert(PerfManager.start("Level::_spawn_element (%d)" % type))
 	var node := NodePool.pool_node(LEVEL_ELEMENT_TO_SCENE[type])
 	var dupe = data.duplicated()
-	node.set(ELEMENT_TO_DATA_VAR_NAME[type], dupe)
+	node.data = dupe
 	node.set_meta(&"original_data", data)
 	node.level = self
 	node.gui_input.connect(_on_element_gui_input.bind(node, type))
@@ -350,7 +343,7 @@ func move_element(node: Node, type: Enums.level_element_types, new_position: Vec
 	var rect := Rect2i(new_position, original_data.get_rect().size)
 	if not is_space_occupied(rect, [], [original_data]):
 		original_data.position = new_position
-		node.get(ELEMENT_TO_DATA_VAR_NAME[type]).position = new_position
+		node.data.position = new_position
 		
 		var id: int = level_data.elem_to_collision_system_id[original_data]
 		level_data.collision_system.remove_rect(id)
@@ -560,11 +553,10 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 func get_object_occupying(pos: Vector2i) -> Node:
 	for type in Enums.level_element_types.values():
 		var container: Node2D = get(LEVEL_ELEMENT_CONTAINER_NAME[type])
-		var data_name: StringName = ELEMENT_TO_DATA_VAR_NAME[type]
 		for child in container.get_children():
 			if not child.visible:
 				continue
-			var rect: Rect2i = child.get(data_name).get_rect()
+			var rect: Rect2i = child.data.get_rect()
 			if rect.has_point(pos):
 				return child
 	return null
