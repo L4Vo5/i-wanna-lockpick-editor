@@ -4,12 +4,12 @@ class_name Entry
 
 static var level_element_type := Enums.level_element_types.entry
 
-@export var entry_data: EntryData:
+@export var data: EntryData:
 	set(val):
-		if entry_data == val: return
-		_disconnect_entry_data()
-		entry_data = val
-		_connect_entry_data()
+		if data == val: return
+		_disconnect_data()
+		data = val
+		_connect_data()
 var level: Level:
 	set(val):
 		level = val
@@ -47,7 +47,7 @@ func _ready() -> void:
 # called by kid.gd
 func player_touching() -> void:
 	if not is_instance_valid(level): return
-	if entry_data.leads_to >= 0 and entry_data.leads_to < pack_data.levels.size():
+	if data.leads_to >= 0 and data.leads_to < pack_data.levels.size():
 		arrow.show()
 	level_name.show()
 	if name_tween: name_tween.kill()
@@ -72,35 +72,35 @@ func player_stopped_touching() -> void:
 # called by kid.gd
 func enter() -> void:
 	if not is_instance_valid(level): return
-	if entry_data.leads_to == -1: return
-	level.gameplay_manager.enter_level(entry_data.leads_to)
+	if data.leads_to == -1: return
+	level.gameplay_manager.enter_level(data.leads_to)
 
 func update_position() -> void:
 	if not ignore_position:
-		position = entry_data.position
+		position = data.position
 
 func update_name() -> void:
 	if not is_instance_valid(level): return
 	if not is_node_ready(): return
 	level_name.text = "\n[Invalid entry]"
-	if entry_data.leads_to >= 0 and entry_data.leads_to < pack_data.levels.size():
-		var level_data := level.gameplay_manager.pack_data.levels[entry_data.leads_to]
+	if data.leads_to >= 0 and data.leads_to < pack_data.levels.size():
+		var level_data := level.gameplay_manager.pack_data.levels[data.leads_to]
 		level_name.text = level_data.title + "\n" + level_data.name
 
 func update_status() -> void:
 	if not is_instance_valid(level): return
 	if not is_node_ready(): return
 	sprite.texture = ENTRY_OPEN
-	if entry_data.leads_to < 0 or entry_data.leads_to >= pack_data.levels.size():
+	if data.leads_to < 0 or data.leads_to >= pack_data.levels.size():
 		sprite.texture = ENTRY_ERR
 
-func _disconnect_entry_data() -> void:
-	if not is_instance_valid(entry_data): return
-	entry_data.changed.disconnect(update_position)
+func _disconnect_data() -> void:
+	if not is_instance_valid(data): return
+	data.changed.disconnect(update_position)
 
-func _connect_entry_data() -> void:
-	if not is_instance_valid(entry_data): return
-	entry_data.changed.connect(update_position)
+func _connect_data() -> void:
+	if not is_instance_valid(data): return
+	data.changed.connect(update_position)
 	update_name()
 	update_position()
 	update_status()
