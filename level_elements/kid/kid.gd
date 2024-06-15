@@ -117,8 +117,7 @@ func run() -> void:
 	shadow.flip_h = sprite.flip_h
 
 # Necessary for undo/redo
-# true to prevent jumping on first frame
-var is_pressing_jump := true
+var is_pressing_jump := Input.is_action_pressed(&"jump")
 
 func fall_jump() -> void:
 	var last_is_pressing_jump := is_pressing_jump
