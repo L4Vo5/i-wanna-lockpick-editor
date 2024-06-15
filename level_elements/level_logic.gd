@@ -187,7 +187,7 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 			
 			_door_data.glitch_color = new_glitch_color
 		# TODO/PERF: super no!!!
-		door.update_everything()
+		door.update_visuals()
 
 ## Tries to open a door, and communicates the result to the door so it can handle sounds and animation.
 func try_open_door(door: Door) -> void:
@@ -196,7 +196,7 @@ func try_open_door(door: Door) -> void:
 	if door.open_cooldown > 0: return
 	# Gates have separate logic, this function doesn't concern them
 	if door_data.outer_color == Enums.colors.gate: return
-		
+	
 	var result := try_open_door_data(door_data, false)
 	
 	var opened: bool = result.opened

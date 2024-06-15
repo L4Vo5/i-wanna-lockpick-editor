@@ -4,45 +4,23 @@ class_name DoorData
 
 ## Contains a door's logical data
 
-@export var amount := ComplexNumber.new_with(1, 0):
-	set(val):
-		if amount == val: return
-		if is_instance_valid(amount):
-			if amount.changed.is_connected(emit_changed):
-				amount.changed.disconnect(emit_changed)
-		amount = val
-		amount.changed.connect(emit_changed)
-		changed.emit()
+@export var amount := ComplexNumber.new_with(1, 0)
 
-@export var outer_color := Enums.colors.none:
-	set(val):
-		if outer_color == val: return
-		outer_color = val
-		changed.emit()
-# Please don't push_back on these or anything!! use add_lock or remove_lock
-@export var locks: Array[LockData] = []:
-	set(val):
-		if locks == val: return
-		for l in locks:
-			if is_instance_valid(l):
-				l.changed.disconnect(emit_changed)
-		locks = val
-		for l in locks:
-			if is_instance_valid(l):
-				l.changed.connect(emit_changed)
-		changed.emit()
+@export var outer_color := Enums.colors.none
 
-@export var size := Vector2i(32, 32):
-	set(val):
-		if size == val: return
-		size = val
-		changed.emit()
+@export var locks: Array[LockData] = []
+
+@export var position := Vector2i(0, 0)
+
+@export var size := Vector2i(32, 32)
+
 @export var _curses := {
 	Enums.curse.ice: false,
 	Enums.curse.erosion: false,
 	Enums.curse.paint: false,
 	Enums.curse.brown: false,
 }
+
 @export var glitch_color := Enums.colors.glitch:
 	set(val):
 		if glitch_color == val: return
@@ -50,21 +28,14 @@ class_name DoorData
 		for lock in locks:
 			lock.glitch_color = glitch_color
 		changed.emit()
-@export var position := Vector2i(0, 0):
-	set(val):
-		if position == val: return
-		position = val
-		changed.emit()
 
 @export var sid := -1
 
 func add_lock(lock: LockData) -> void:
 	locks.push_back(lock)
-	lock.changed.connect(emit_changed)
 	changed.emit()
 
 func remove_lock_at(pos: int) -> void:
-	locks[pos].changed.disconnect(emit_changed)
 	locks.remove_at(pos)
 	changed.emit()
 
@@ -80,9 +51,6 @@ func set_curse(curse: Enums.curse, val: bool) -> void:
 
 func get_curse(curse: Enums.curse) -> bool:
 	return _curses[curse]
-
-func _init() -> void:
-	amount.changed.connect(emit_changed)
 
 func duplicated() -> DoorData:
 	var dupe := DoorData.new()

@@ -328,6 +328,7 @@ func _place_ghosts() -> void:
 	obj.data = editor_control.data
 	
 	var maybe_pos := get_mouse_coord(grid_size)
+	obj.position = maybe_pos
 	obj.data.position = maybe_pos
 	
 	var is_valid := true

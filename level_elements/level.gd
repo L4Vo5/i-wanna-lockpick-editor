@@ -336,6 +336,7 @@ func move_element(node: Node, type: Enums.level_element_types, new_position: Vec
 	
 	var rect := Rect2i(new_position, original_data.get_rect().size)
 	if not is_space_occupied(rect, [], [original_data]):
+		node.position = new_position
 		original_data.position = new_position
 		node.data.position = new_position
 		
