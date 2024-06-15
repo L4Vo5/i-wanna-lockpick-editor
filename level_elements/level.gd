@@ -170,7 +170,7 @@ func reset() -> void:
 			var node := container.get_child(i)
 			var original_data = list[i]
 			node.set_meta(&"original_data", original_data)
-			node.set(LEVEL_ELEMENT_DATA[type], original_data.duplicated())
+			node.set(ELEMENT_TO_DATA_VAR_NAME[type], original_data.duplicated())
 		# shave off the rest
 		if current > needed:
 			for _i in current - needed:
@@ -247,21 +247,21 @@ const LEVEL_ELEMENT_CONTAINER_NAME := {
 	Enums.level_element_types.salvage_point: &"salvage_points",
 };
 
-const LEVEL_ELEMENT_SIGNAL := {
+const LEVEL_ELEMENT_TO_CHANGED_SIGNAL := {
 	Enums.level_element_types.door: &"changed_doors",
 	Enums.level_element_types.key: &"changed_keys",
 	Enums.level_element_types.entry: &"changed_entries",
 	Enums.level_element_types.salvage_point: &"changed_salvage_points",
 };
 
-const LEVEL_ELEMENT_SCENE := {
+const LEVEL_ELEMENT_TO_SCENE := {
 	Enums.level_element_types.door: DOOR,
 	Enums.level_element_types.key: KEY,
 	Enums.level_element_types.entry: ENTRY,
 	Enums.level_element_types.salvage_point: SALVAGE_POINT,
 };
 
-const LEVEL_ELEMENT_DATA := {
+const ELEMENT_TO_DATA_VAR_NAME := {
 	Enums.level_element_types.door: &"door_data",
 	Enums.level_element_types.key: &"key_data",
 	Enums.level_element_types.entry: &"entry_data",
@@ -301,7 +301,7 @@ func add_element(data, type: Enums.level_element_types) -> Node:
 		
 		var id := level_data.collision_system.add_rect(data.get_rect(), data)
 		level_data.elem_to_collision_system_id[data] = id
-		level_data.get(LEVEL_ELEMENT_SIGNAL[type]).emit() # changed_...
+		level_data.get(LEVEL_ELEMENT_TO_CHANGED_SIGNAL[type]).emit() # changed_...
 	return _spawn_element(data, type)
 
 var coll:
@@ -311,9 +311,9 @@ var coll:
 ## Makes *something* physically appear (doesn't check collisions)
 func _spawn_element(data, type: Enums.level_element_types) -> Node:
 	assert(PerfManager.start("Level::_spawn_element (%d)" % type))
-	var node := NodePool.pool_node(LEVEL_ELEMENT_SCENE[type])
+	var node := NodePool.pool_node(LEVEL_ELEMENT_TO_SCENE[type])
 	var dupe = data.duplicated()
-	node.set(LEVEL_ELEMENT_DATA[type], dupe)
+	node.set(ELEMENT_TO_DATA_VAR_NAME[type], dupe)
 	node.set_meta(&"original_data", data)
 	node.level = self
 	node.gui_input.connect(_on_element_gui_input.bind(node, type))
@@ -335,7 +335,7 @@ func remove_element(node: Node, type: Enums.level_element_types) -> void:
 		level_data.elem_to_collision_system_id.erase(original_data)
 		level_data.collision_system.remove_rect(id)
 	_remove_element(get(LEVEL_ELEMENT_CONTAINER_NAME[type]), node, type)
-	level_data.get(LEVEL_ELEMENT_SIGNAL[type]).emit()
+	level_data.get(LEVEL_ELEMENT_TO_CHANGED_SIGNAL[type]).emit()
 
 func _remove_element(container: Node2D, node: Node, type: Enums.level_element_types) -> void:
 	container.remove_child(node)
@@ -357,14 +357,14 @@ func move_element(node: Node, type: Enums.level_element_types, new_position: Vec
 	var rect := Rect2i(new_position, original_data.get_rect().size)
 	if not is_space_occupied(rect, [], [original_data]):
 		original_data.position = new_position
-		node.get(LEVEL_ELEMENT_TO_DATA[type]).position = new_position
+		node.get(ELEMENT_TO_DATA_VAR_NAME[type]).position = new_position
 		
 		var id: int = level_data.elem_to_collision_system_id[original_data]
 		level_data.collision_system.remove_rect(id)
 		id = level_data.collision_system.add_rect(original_data.get_rect(), original_data)
 		level_data.elem_to_collision_system_id[original_data] = id
 		
-		level_data.get(LEVEL_ELEMENT_TO_SIGNAL[type]).emit()
+		level_data.get(LEVEL_ELEMENT_TO_CHANGED_SIGNAL[type]).emit()
 		return true
 	else:
 		return false
@@ -567,7 +567,7 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 func get_object_occupying(pos: Vector2i) -> Node:
 	for type in Enums.level_element_types.values():
 		var container: Node2D = get(LEVEL_ELEMENT_CONTAINER_NAME[type])
-		var data_name: StringName = LEVEL_ELEMENT_DATA[type]
+		var data_name: StringName = ELEMENT_TO_DATA_VAR_NAME[type]
 		for child in container.get_children():
 			if not child.visible:
 				continue
