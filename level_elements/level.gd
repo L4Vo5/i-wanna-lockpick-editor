@@ -258,7 +258,7 @@ const ELEMENT_TO_DATA_VAR_NAME := {
 	Enums.level_element_types.door: &"data",
 	Enums.level_element_types.key: &"data",
 	Enums.level_element_types.entry: &"data",
-	Enums.level_element_types.salvage_point: &"salvage_point_data",
+	Enums.level_element_types.salvage_point: &"data",
 };
 
 const LEVEL_ELEMENT_CONNECT := {

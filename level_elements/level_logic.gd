@@ -503,7 +503,7 @@ func pick_up_key(key: Key) -> void:
 
 func on_salvaged_door(door: Door) -> void:
 	assert(active_salvage != null)
-	var sid = active_salvage.salvage_point_data.sid
+	var sid = active_salvage.data.sid
 	var door_data = door.data.duplicated()
 	level.goal.snd_win.play()
 	level.gameplay_manager.pack_state.salvage_door(sid, door_data)

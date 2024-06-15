@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=30 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -22,7 +22,6 @@
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
 [ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/salvage_point_editor.tscn" id="21_ieeor"]
-[ext_resource type="Script" path="res://data/salvage_point_data.gd" id="22_hbtxh"]
 
 [sub_resource type="Resource" id="Resource_k5lmb"]
 script = ExtResource("9_0kc5k")
@@ -81,12 +80,6 @@ amount = SubResource("Resource_sn6kc")
 is_infinite = false
 type = 0
 color = 1
-position = Vector2i(0, 0)
-
-[sub_resource type="Resource" id="Resource_achd1"]
-script = ExtResource("22_hbtxh")
-sid = 0
-is_output = false
 position = Vector2i(0, 0)
 
 [node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
@@ -359,7 +352,6 @@ layout_mode = 2
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-salvage_point_data = SubResource("Resource_achd1")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)

@@ -4,12 +4,12 @@ class_name SalvagePoint
 
 static var level_element_type := Enums.level_element_types.salvage_point
 
-@export var salvage_point_data: SalvagePointData:
+@export var data: SalvagePointData:
 	set(val):
-		if salvage_point_data == val: return
-		_disconnect_salvage_point_data()
-		salvage_point_data = val
-		_connect_salvage_point_data()
+		if data == val: return
+		_disconnect_data()
+		data = val
+		_connect_data()
 
 var level: Level:
 	set(val):
@@ -35,9 +35,9 @@ func _ready() -> void:
 	update_visual()
 
 func prep_output_step_1() -> void:
-	if not salvage_point_data.is_output:
+	if not data.is_output:
 		return
-	var sid := salvage_point_data.sid
+	var sid := data.sid
 	if sid < 0 or sid >= level_pack_state.salvaged_doors.size():
 		door = null
 		return
@@ -58,14 +58,14 @@ func prep_output_step_1() -> void:
 	door_error = false
 
 func prep_output_step_2() -> void:
-	if not salvage_point_data.is_output:
+	if not data.is_output:
 		return
 	if door != null and level.is_salvage_blocked(door.data.get_rect(), door):
 		door_error = true
 		door_error_size = door.data.size
 
 func prep_output_step_3() -> void:
-	if not salvage_point_data.is_output:
+	if not data.is_output:
 		return
 	if door != null and door_error:
 		level.remove_element(door, Enums.level_element_types.door)
@@ -82,8 +82,8 @@ func remove_door() -> void:
 
 func _on_touched(_who: Node2D) -> void:
 	if not is_instance_valid(level): return
-	if not is_instance_valid(salvage_point_data): return
-	if salvage_point_data.is_output: return
+	if not is_instance_valid(data): return
+	if data.is_output: return
 	if level.logic.active_salvage != self:
 		snd_salvage_prep.play()
 		level.logic.start_undo_action()
@@ -92,28 +92,28 @@ func _on_touched(_who: Node2D) -> void:
 		level.logic.active_salvage = self
 		level.logic.end_undo_action()
 
-func _connect_salvage_point_data() -> void:
-	if not is_instance_valid(salvage_point_data): return
-	salvage_point_data.changed.connect(update_visual)
+func _connect_data() -> void:
+	if not is_instance_valid(data): return
+	data.changed.connect(update_visual)
 	update_visual()
 	show()
 	if not is_node_ready(): return
 
-func _disconnect_salvage_point_data() -> void:
-	if is_instance_valid(salvage_point_data):
-		salvage_point_data.changed.disconnect(update_visual)
+func _disconnect_data() -> void:
+	if is_instance_valid(data):
+		data.changed.disconnect(update_visual)
 
 func _process(_delta) -> void:
 	update_visual()
 
 func update_visual() -> void:
 	if not is_node_ready(): return
-	if not is_instance_valid(salvage_point_data): return
+	if not is_instance_valid(data): return
 	if not ignore_position:
-		position = salvage_point_data.position
+		position = data.position
 	var mod: Color
 	outline.hide()
-	if salvage_point_data.is_output:
+	if data.is_output:
 		if door_error:
 			sprite.frame = 2
 			mod = Rendering.salvage_point_error_output_color
@@ -134,7 +134,7 @@ func update_visual() -> void:
 	sprite.modulate = mod
 	if outline.visible:
 		outline.modulate = mod
-	number.text = str(salvage_point_data.sid)
+	number.text = str(data.sid)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EDITOR_PRE_SAVE:
@@ -144,4 +144,4 @@ func _notification(what: int) -> void:
 			outline.modulate = mod
 
 func get_mouseover_text() -> String:
-	return salvage_point_data.get_mouseover_text(door_error)
+	return data.get_mouseover_text(door_error)

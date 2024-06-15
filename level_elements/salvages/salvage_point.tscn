@@ -1,16 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://ctxog6bj0oha7"]
+[gd_scene load_steps=7 format=3 uid="uid://ctxog6bj0oha7"]
 
 [ext_resource type="Script" path="res://level_elements/salvages/salvage_point.gd" id="1_1r7ot"]
 [ext_resource type="Texture2D" uid="uid://bpgcgtns783wd" path="res://level_elements/salvages/spr_salvage_point.png" id="1_vdtqo"]
 [ext_resource type="FontFile" uid="uid://b7vhvuoc174gh" path="res://fonts/ms_p_gothic.fnt" id="2_gqm85"]
-[ext_resource type="Script" path="res://data/salvage_point_data.gd" id="2_y6vdf"]
 [ext_resource type="AudioStream" uid="uid://cwtjahoobj74b" path="res://level_elements/salvages/snd_salvage_prep.wav" id="3_4b6cq"]
-
-[sub_resource type="Resource" id="Resource_wg2a6"]
-script = ExtResource("2_y6vdf")
-sid = 0
-is_output = false
-position = Vector2i(0, 0)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xgdw3"]
 
@@ -30,7 +23,6 @@ offset_right = 32.0
 offset_bottom = 32.0
 mouse_filter = 1
 script = ExtResource("1_1r7ot")
-salvage_point_data = SubResource("Resource_wg2a6")
 
 [node name="Collision" type="Area2D" parent="."]
 unique_name_in_owner = true
