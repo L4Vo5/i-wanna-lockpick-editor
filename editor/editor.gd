@@ -194,7 +194,6 @@ func save_level() -> void:
 				else:
 					Global.safe_error("Report this (saving resource).", Vector2(300, 100))
 			elif ext in ["lvl", "png"]:
-				data.level_pack_data.is_saved = true
 				data.level_pack_data.state_data.save()
 				data.level_pack_data.resource_path = ""
 				SaveLoad.save_level(data.level_pack_data)
@@ -234,7 +233,6 @@ func _on_load_from_clipboard_pressed() -> void:
 
 func finish_loading_level() -> void:
 	if is_instance_valid(new_level_pack):
-		new_level_pack.is_saved = true
 		new_level_pack.check_valid(false)
 		var fixable_problems := new_level_pack.get_fixable_invalid_reasons()
 		var unfixable_problems := new_level_pack.get_unfixable_invalid_reasons()
