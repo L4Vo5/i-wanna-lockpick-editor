@@ -21,15 +21,8 @@ class_name LockData
 		size = val
 		changed.emit()
 
-## minimum size (editor info. the editor itself should enforce this to be the actual minimum size)
-## TODO: since it's editor-only, it doesn't emit changed(), to avoid redrawing locks xd bad fix ik
-signal changed_minimum_size
-var minimum_size := Vector2i(0, 0):
-	set(val):
-		if minimum_size == val: return
-		minimum_size = val
-		changed_minimum_size.emit()
-#		changed.emit()
+## minimum size the lock could have (mainly useful for the editor)
+var minimum_size := Vector2i(0, 0)
 
 ## position in door
 @export var position := Vector2i(7, 7):
@@ -155,6 +148,40 @@ func rotor() -> LockData:
 	if value_type == Enums.value.real:
 		flip_sign()
 	return self
+
+# Minimum size depends on:
+# value, rotation, magnitude, lock_arrangement
+@warning_ignore("shadowed_variable")
+func update_minimum_size() -> void:
+	assert(PerfManager.start(&"LockData::update_minimum_size"))
+	var value_type := get_value_rot()
+	
+	var min_size: Vector2i
+	var using_arrangement := false
+	match lock_type:
+		Enums.lock_types.blast:
+			var s := "x" if value_type == Enums.value.real else "+"
+			min_size = LockCountDraw.get_min_size(s, 2)
+		Enums.lock_types.all:
+			min_size = LockCountDraw.get_min_size("=", 2)
+		Enums.lock_types.blank:
+			min_size = Vector2i(1, 1)
+		Enums.lock_types.normal:
+			# TODO: When supporting custom arrangements, level_data will have to be passed here..
+			var arrangement = Rendering.get_lock_arrangement(null, magnitude, lock_arrangement)
+			if arrangement != null:
+				min_size = arrangement[0]
+				using_arrangement = true
+			else:
+				var s := str(magnitude)
+				var type := 2 if dont_show_lock else 0 if value_type == Enums.value.real else 1 if value_type == Enums.value.imaginary else 2
+				min_size = LockCountDraw.get_min_size(s, type)
+	
+	if not using_arrangement:
+		min_size += Vector2i(4, 4) # account for the frame size
+	minimum_size = min_size
+	size = size.clamp(minimum_size, size)
+	assert(PerfManager.end(&"LockData::update_minimum_size"))
 
 func check_valid(level_data: LevelData, should_correct: bool) -> bool:
 	var is_valid := true

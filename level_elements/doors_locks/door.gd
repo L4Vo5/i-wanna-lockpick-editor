@@ -159,6 +159,7 @@ func _on_changed_i_view() -> void:
 		lock.dont_show_frame = not is_aligned
 		lock.dont_show_locks = not is_aligned
 		lock.rotation = (90 if i_view else 0) + (180 if is_flipped else 0)
+		lock.update_minimum_size()
 
 func update_textures() -> void:
 	if not is_node_ready(): return
