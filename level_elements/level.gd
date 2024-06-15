@@ -30,12 +30,6 @@ var level_data: LevelData = null:
 # makes it so the level doesn't set Global.current_level to itself
 var dont_make_current := false
 
-# echo of some of the level data's signals, since it's easier for other objects to hook into the level object which is less likely to change
-signal changed_doors
-signal changed_keys
-
-
-
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
 const ENTRY := preload("res://level_elements/entries/entry.tscn")
@@ -206,8 +200,6 @@ func _connect_level_data() -> void:
 	_update_player_spawn_position()
 	level_data.changed_goal_position.connect(_update_goal_position)
 	_update_goal_position()
-	level_data.changed_doors.connect(emit_signal.bind(&"changed_doors"))
-	level_data.changed_keys.connect(emit_signal.bind(&"changed_keys"))
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(level_data): return
@@ -238,13 +230,6 @@ const LEVEL_ELEMENT_CONTAINER_NAME := {
 	Enums.level_element_types.key: &"keys",
 	Enums.level_element_types.entry: &"entries",
 	Enums.level_element_types.salvage_point: &"salvage_points",
-};
-
-const LEVEL_ELEMENT_TO_CHANGED_SIGNAL := {
-	Enums.level_element_types.door: &"changed_doors",
-	Enums.level_element_types.key: &"changed_keys",
-	Enums.level_element_types.entry: &"changed_entries",
-	Enums.level_element_types.salvage_point: &"changed_salvage_points",
 };
 
 const LEVEL_ELEMENT_TO_SCENE := {
@@ -287,7 +272,7 @@ func add_element(data, type: Enums.level_element_types) -> Node:
 		
 		var id := level_data.collision_system.add_rect(data.get_rect(), data)
 		level_data.elem_to_collision_system_id[data] = id
-		level_data.get(LEVEL_ELEMENT_TO_CHANGED_SIGNAL[type]).emit() # changed_...
+		level_data.emit_changed()
 	return _spawn_element(data, type)
 
 var coll:
@@ -321,7 +306,7 @@ func remove_element(node: Node, type: Enums.level_element_types) -> void:
 		level_data.elem_to_collision_system_id.erase(original_data)
 		level_data.collision_system.remove_rect(id)
 	_remove_element(get(LEVEL_ELEMENT_CONTAINER_NAME[type]), node, type)
-	level_data.get(LEVEL_ELEMENT_TO_CHANGED_SIGNAL[type]).emit()
+	level_data.emit_changed()
 
 func _remove_element(container: Node2D, node: Node, type: Enums.level_element_types) -> void:
 	container.remove_child(node)
@@ -350,7 +335,7 @@ func move_element(node: Node, type: Enums.level_element_types, new_position: Vec
 		id = level_data.collision_system.add_rect(original_data.get_rect(), original_data)
 		level_data.elem_to_collision_system_id[original_data] = id
 		
-		level_data.get(LEVEL_ELEMENT_TO_CHANGED_SIGNAL[type]).emit()
+		level_data.emit_changed()
 		return true
 	else:
 		return false

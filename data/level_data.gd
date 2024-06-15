@@ -2,18 +2,12 @@ extends Resource
 class_name LevelData
 
 
-# currently only emitted by level when a door is placed or removed
-signal changed_doors
 @export var doors: Array[DoorData] = []
 
-# currently only emitted by level when a key is placed or removed
-signal changed_keys
 @export var keys: Array[KeyData] = []
 
-signal changed_entries
 @export var entries: Array[EntryData] = []
 
-signal changed_salvage_points
 @export var salvage_points: Array[SalvagePointData] = []
 
 ## This array refers to other levels in the level pack, that are required for this level to be unlocked.
@@ -48,7 +42,6 @@ signal changed_goal_position
 @export var custom_lock_arrangements := {}
 
 ## Just saves all positions for the tiles... I'll come up with something better later ok
-signal changed_tiles
 @export var tiles := {}
 
 ## Name of the level, used when standing in front of an entry that leads to it
@@ -87,10 +80,6 @@ signal changed_tiles
 var collision_system := CollisionSystem.new(16)
 
 func _init() -> void:
-	changed_doors.connect(emit_changed)
-	changed_keys.connect(emit_changed)
-	changed_entries.connect(emit_changed)
-	changed_tiles.connect(emit_changed)
 	changed_player_spawn_position.connect(emit_changed)
 	changed_goal_position.connect(emit_changed)
 

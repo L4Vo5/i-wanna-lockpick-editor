@@ -95,8 +95,6 @@ func set_editor_data(data: EditorData) -> void:
 	editor_data.hover_highlight = gameplay.level.hover_highlight
 	
 	editor_data.side_tabs.tab_changed.connect(_retry_ghosts)
-	editor_data.level.changed_doors.connect(_retry_ghosts)
-	editor_data.level.changed_keys.connect(_retry_ghosts)
 	editor_data.changed_level_data.connect(_on_changed_level_data)
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_on_changed_is_playing, CONNECT_DEFERRED)
