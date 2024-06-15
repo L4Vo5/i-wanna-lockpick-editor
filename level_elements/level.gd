@@ -239,14 +239,14 @@ const LEVEL_ELEMENT_TO_SCENE := {
 	Enums.level_element_types.salvage_point: SALVAGE_POINT,
 };
 
-const LEVEL_ELEMENT_CONNECT := {
-	Enums.level_element_types.door: &"connect_door",
-	Enums.level_element_types.key: &"connect_key"
+var LEVEL_ELEMENT_CONNECT := {
+	Enums.level_element_types.door: connect_door,
+	Enums.level_element_types.key: connect_key
 };
 
-const LEVEL_ELEMENT_DISCONNECT := {
-	Enums.level_element_types.door: &"disconnect_door",
-	Enums.level_element_types.key: &"disconnect_key"
+var LEVEL_ELEMENT_DISCONNECT := {
+	Enums.level_element_types.door: disconnect_door,
+	Enums.level_element_types.key: disconnect_key
 };
 
 func _input(event: InputEvent):
@@ -289,7 +289,7 @@ func _spawn_element(data, type: Enums.level_element_types) -> Node:
 	node.level = self
 	node.gui_input.connect(_on_element_gui_input.bind(node, type))
 	if LEVEL_ELEMENT_CONNECT.has(type):
-		call(LEVEL_ELEMENT_CONNECT[type], node)
+		LEVEL_ELEMENT_CONNECT[type].call(node)
 	get(LEVEL_ELEMENT_CONTAINER_NAME[type]).add_child(node)
 	assert(PerfManager.end("Level::_spawn_element (%d)" % type))
 	return node
@@ -313,7 +313,7 @@ func _remove_element(container: Node2D, node: Node, type: Enums.level_element_ty
 	
 	node.gui_input.disconnect(_on_element_gui_input.bind(node, type))
 	if LEVEL_ELEMENT_DISCONNECT.has(type):
-		call(LEVEL_ELEMENT_DISCONNECT[type], node)
+		LEVEL_ELEMENT_DISCONNECT[type].call(node)
 	node.level = null
 	
 	NodePool.return_node(node)
