@@ -68,6 +68,9 @@ var goal: LevelGoal
 var is_autorun_on := false
 var autorun_tween: Tween
 
+var element_to_original_data := {}
+var original_data_to_element := {}
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not Global.is_playing: return
 	if in_transition(): return
@@ -156,7 +159,8 @@ func reset() -> void:
 		for i in mini(needed, current):
 			var node := container.get_child(i)
 			var original_data = list[i]
-			node.set_meta(&"original_data", original_data)
+			element_to_original_data[node] = original_data
+			original_data_to_element[original_data] = node
 			node.data = original_data.duplicated()
 		# shave off the rest
 		if current > needed:
@@ -285,7 +289,8 @@ func _spawn_element(data, type: Enums.level_element_types) -> Node:
 	var node := NodePool.pool_node(LEVEL_ELEMENT_TO_SCENE[type])
 	var dupe = data.duplicated()
 	node.data = dupe
-	node.set_meta(&"original_data", data)
+	element_to_original_data[node] = data
+	original_data_to_element[data] = node
 	node.level = self
 	node.gui_input.connect(_on_element_gui_input.bind(node, type))
 	if LEVEL_ELEMENT_CONNECT.has(type):
@@ -296,7 +301,7 @@ func _spawn_element(data, type: Enums.level_element_types) -> Node:
 
 ## Removes *something* from the level data
 func remove_element(node: Node, type: Enums.level_element_types) -> void:
-	var original_data = node.get_meta(&"original_data")
+	var original_data = element_to_original_data[node]
 	var list: Array = level_data.get(LEVEL_ELEMENT_CONTAINER_NAME[type])
 	var i := list.find(original_data)
 	if i != -1:
@@ -311,6 +316,10 @@ func remove_element(node: Node, type: Enums.level_element_types) -> void:
 func _remove_element(container: Node2D, node: Node, type: Enums.level_element_types) -> void:
 	container.remove_child(node)
 	
+	var original_data = element_to_original_data[node]
+	element_to_original_data.erase(node)
+	original_data_to_element.erase(original_data)
+	
 	node.gui_input.disconnect(_on_element_gui_input.bind(node, type))
 	if LEVEL_ELEMENT_DISCONNECT.has(type):
 		LEVEL_ELEMENT_DISCONNECT[type].call(node)
@@ -320,7 +329,7 @@ func _remove_element(container: Node2D, node: Node, type: Enums.level_element_ty
 
 ## Moves *something*. Returns false if the move failed
 func move_element(node: Node, type: Enums.level_element_types, new_position: Vector2i) -> bool:
-	var original_data = node.get_meta(&"original_data")
+	var original_data = element_to_original_data[node]
 	var list: Array = level_data.get(LEVEL_ELEMENT_CONTAINER_NAME[type])
 	var i := list.find(original_data)
 	assert(i != -1)
@@ -536,14 +545,11 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 
 ## Returns the object at that position.
 func get_object_occupying(pos: Vector2i) -> Node:
-	for type in Enums.level_element_types.values():
-		var container: Node2D = get(LEVEL_ELEMENT_CONTAINER_NAME[type])
-		for child in container.get_children():
-			if not child.visible:
-				continue
-			var rect: Rect2i = child.data.get_rect()
-			if rect.has_point(pos):
-				return child
+	var rect_ids := level_data.collision_system.get_rects_containing_point_in_grid(pos)
+	for id in rect_ids:
+		var obj = level_data.collision_system.get_rect_data(id)
+		if original_data_to_element.has(obj):
+			return original_data_to_element[obj]
 	return null
 
 ## Returns true if there's not enough space to fit a salvage
