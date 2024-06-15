@@ -256,7 +256,7 @@ const LEVEL_ELEMENT_TO_SCENE := {
 
 const ELEMENT_TO_DATA_VAR_NAME := {
 	Enums.level_element_types.door: &"data",
-	Enums.level_element_types.key: &"key_data",
+	Enums.level_element_types.key: &"data",
 	Enums.level_element_types.entry: &"entry_data",
 	Enums.level_element_types.salvage_point: &"salvage_point_data",
 };

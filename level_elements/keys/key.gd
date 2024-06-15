@@ -6,12 +6,12 @@ class_name Key
 signal picked_up
 static var level_element_type := Enums.level_element_types.key
 
-@export var key_data: KeyData:
+@export var data: KeyData:
 	set(val):
-		if key_data == val: return
-		_disconnect_key_data()
-		key_data = val
-		_connect_key_data()
+		if data == val: return
+		_disconnect_data()
+		data = val
+		_connect_data()
 @export var hide_shadow := false
 @export var ignore_position := false
 
@@ -37,8 +37,6 @@ var level: Level = null:
 
 func _ready() -> void:
 	collision.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
-	if not Global.in_editor:
-		key_data = key_data.duplicate(true)
 	_resolve_collision_mode()
 	if hide_shadow:
 		shadow.hide()
@@ -62,32 +60,32 @@ func connect_level() -> void:
 	_on_changed_glitch_color()
 
 func _on_changed_glitch_color() -> void:
-	if not is_instance_valid(key_data): return
-	key_data.update_glitch_color(level.logic.glitch_color)
+	if not is_instance_valid(data): return
+	data.update_glitch_color(level.logic.glitch_color)
 	update_visual()
 
-func _connect_key_data() -> void:
-	if not is_instance_valid(key_data): return
-	key_data.changed.connect(update_visual)
+func _connect_data() -> void:
+	if not is_instance_valid(data): return
+	data.changed.connect(update_visual)
 	update_visual()
 	# look... ok?
 	show()
 	if not is_node_ready(): return
 	_resolve_collision_mode()
 
-func _disconnect_key_data() -> void:
-	if is_instance_valid(key_data):
-		key_data.changed.disconnect(update_visual)
+func _disconnect_data() -> void:
+	if is_instance_valid(data):
+		data.changed.disconnect(update_visual)
 
 func _process(_delta: float) -> void:
-	if key_data.color in [Enums.colors.master, Enums.colors.pure]:
+	if data.color in [Enums.colors.master, Enums.colors.pure]:
 		var frame := floori(Global.time / Rendering.SPECIAL_ANIM_DURATION) % 4
 		if frame == 3:
 			frame = 1
 		special.frame = (special.frame % 4) + frame * 4
 
 func _resolve_collision_mode() -> void:
-	if not is_instance_valid(level) or key_data.is_spent:
+	if not is_instance_valid(level) or data.is_spent:
 		collision.process_mode = Node.PROCESS_MODE_DISABLED
 	else:
 		collision.process_mode = Node.PROCESS_MODE_INHERIT
@@ -106,8 +104,8 @@ func set_special_texture(color: Enums.colors) -> void:
 
 func update_visual() -> void:
 	if not is_node_ready(): return
-	if not is_instance_valid(key_data): return
-	if not ignore_position: position = key_data.position
+	if not is_instance_valid(data): return
+	if not ignore_position: position = data.position
 	fill.hide()
 	outline.hide()
 	special.hide()
@@ -120,20 +118,20 @@ func update_visual() -> void:
 		Enums.key_types.exact: 1,
 		Enums.key_types.star: 2,
 		Enums.key_types.unstar: 3,
-	}.get(key_data.type)
+	}.get(data.type)
 	if spr_frame == null: spr_frame = 0
 	shadow.frame = spr_frame
 	fill.frame = spr_frame
 	outline.frame = spr_frame
 	special.frame = spr_frame
 	glitch.frame = spr_frame
-	symbol_inf.visible = key_data.is_infinite
-	if key_data.color == Enums.colors.master and key_data.type == Enums.key_types.add:
+	symbol_inf.visible = data.is_infinite
+	if data.color == Enums.colors.master and data.type == Enums.key_types.add:
 		shadow.frame = 4
-	if key_data.color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
+	if data.color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
 		special.show()
-		set_special_texture(key_data.color)
-	elif key_data.color == Enums.colors.glitch:
+		set_special_texture(data.color)
+	elif data.color == Enums.colors.glitch:
 		glitch.show()
 		if is_instance_valid(level) and level.logic.glitch_color != Enums.colors.glitch:
 			if level.logic.glitch_color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
@@ -147,17 +145,17 @@ func update_visual() -> void:
 	else:
 		fill.show()
 		outline.show()
-		fill.modulate = Rendering.key_colors[key_data.color]
+		fill.modulate = Rendering.key_colors[data.color]
 	
 	
 	# draw the number
-	if key_data.type == Enums.key_types.add or key_data.type == Enums.key_types.exact:
+	if data.type == Enums.key_types.add or data.type == Enums.key_types.exact:
 		number.show()
-		number.text = str(key_data.amount)
+		number.text = str(data.amount)
 		if number.text == "1":
 			number.text = ""
 		# sign color
-		var i := 1 if key_data.amount.is_negative() else 0
+		var i := 1 if data.amount.is_negative() else 0
 		number.add_theme_color_override(&"font_color", Rendering.key_number_colors[i])
 		number.add_theme_color_override(&"font_outline_color", Rendering.key_number_colors[i])
 		number.add_theme_color_override(&"font_shadow_color", Rendering.key_number_colors[1-i])
@@ -167,32 +165,32 @@ func update_visual() -> void:
 			Enums.key_types.flip: 0,
 			Enums.key_types.rotor: 1,
 			Enums.key_types.rotor_flip: 2,
-		}.get(key_data.type)
+		}.get(data.type)
 		if frame != null:
 			symbol.frame = frame
 			symbol.show()
 
 func on_collide(_who: Node2D) -> void:
-	if key_data.is_spent:
+	if data.is_spent:
 		print("is spent so nvm")
 		return
 	on_pickup()
 
 func get_mouseover_text() -> String:
-	return key_data.get_mouseover_text()
+	return data.get_mouseover_text()
 
 func undo() -> void:
 	# HACK: fix for undoing at the same time that key is picked up making the key be picked up again after undoing
 	await get_tree().physics_frame
 	show()
-	key_data.is_spent = false
+	data.is_spent = false
 	_resolve_collision_mode()
 	for area in collision.get_overlapping_areas():
 		on_collide(area)
 
 func redo() -> void:
-	if not key_data.is_infinite:
-		key_data.is_spent = true
+	if not data.is_infinite:
+		data.is_spent = true
 	_resolve_collision_mode()
 	hide()
 
@@ -203,17 +201,17 @@ func on_pickup() -> void:
 	picked_up.emit()
 	
 	snd_pickup.pitch_scale = 1
-	if key_data.color == Enums.colors.master:
+	if data.color == Enums.colors.master:
 		snd_pickup.stream = preload("res://level_elements/keys/master_pickup.wav")
-		if key_data.amount.is_negative():
+		if data.amount.is_negative():
 			snd_pickup.pitch_scale = 0.82
-	elif key_data.type in [Enums.key_types.flip, Enums.key_types.rotor, Enums.key_types.rotor_flip]:
+	elif data.type in [Enums.key_types.flip, Enums.key_types.rotor, Enums.key_types.rotor_flip]:
 		snd_pickup.stream = preload("res://level_elements/keys/signflip_pickup.wav")
-	elif key_data.type == Enums.key_types.star:
+	elif data.type == Enums.key_types.star:
 		snd_pickup.stream = preload("res://level_elements/keys/star_pickup.wav")
-	elif key_data.type == Enums.key_types.unstar:
+	elif data.type == Enums.key_types.unstar:
 		snd_pickup.stream = preload("res://level_elements/keys/unstar_pickup.wav")
-	elif key_data.amount.is_negative():
+	elif data.amount.is_negative():
 		snd_pickup.stream = preload("res://level_elements/keys/negative_pickup.wav")
 	else:
 		snd_pickup.stream = preload("res://level_elements/keys/key_pickup.wav")

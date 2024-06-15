@@ -2,12 +2,12 @@
 extends MarginContainer
 class_name KeyEditor
 
-@export var key_data: KeyData:
+@export var data: KeyData:
 	set(val):
-		key_data = val.duplicated()
+		data = val.duplicated()
 		if not is_node_ready(): await ready
 		# TODO: Allow editing keys in the level (currently not done to be consistent with door editing)
-		key.key_data = key_data
+		key.data = data
 		_set_to_key_data()
 @onready var key: Key = %key
 @onready var color_choice: ColorChoiceEditor = %ColorChoice
@@ -18,11 +18,11 @@ class_name KeyEditor
 @onready var is_infinite: CheckBox = %IsInfinite
 
 func _init() -> void:
-	key_data = KeyData.new()
-	key_data.color = Enums.colors.white
+	data = KeyData.new()
+	data.color = Enums.colors.white
 
 func _ready() -> void:
-	key.key_data = key_data
+	key.data = data
 	
 	color_choice.changed_color.connect(_update_key.unbind(1))
 	
@@ -38,16 +38,16 @@ func _ready() -> void:
 	_set_to_key_data()
 
 func _set_to_key_data() -> void:
-	color_choice.set_to_color(key_data.color)
-	type_choice.selected = type_choice.get_item_index(key_data.type)
-	real_amount.value = key_data.amount.real_part
-	imaginary_amount.value = key_data.amount.imaginary_part
-	is_infinite.button_pressed = key_data.is_infinite
-	amount.visible = key_data.type in [Enums.key_types.add, Enums.key_types.exact]
+	color_choice.set_to_color(data.color)
+	type_choice.selected = type_choice.get_item_index(data.type)
+	real_amount.value = data.amount.real_part
+	imaginary_amount.value = data.amount.imaginary_part
+	is_infinite.button_pressed = data.is_infinite
+	amount.visible = data.type in [Enums.key_types.add, Enums.key_types.exact]
 
 func _update_key() -> void:
-	key_data.color = color_choice.color
-	key_data.type = type_choice.get_item_id(type_choice.selected)
-	key_data.is_infinite = is_infinite.button_pressed
-	key_data.amount.set_to(int(real_amount.value), int(imaginary_amount.value))
-	amount.visible = key_data.type in [Enums.key_types.add, Enums.key_types.exact]
+	data.color = color_choice.color
+	data.type = type_choice.get_item_id(type_choice.selected)
+	data.is_infinite = is_infinite.button_pressed
+	data.amount.set_to(int(real_amount.value), int(imaginary_amount.value))
+	amount.visible = data.type in [Enums.key_types.add, Enums.key_types.exact]
