@@ -194,11 +194,11 @@ func reset() -> void:
 		camera.enabled = true
 		camera.make_current()
 	
-	update_mouseover()
-	
 	is_autorun_on = false
 	
 	logic.reset()
+	
+	update_mouseover()
 	
 	assert(PerfManager.end("Level::reset"))
 
@@ -267,10 +267,11 @@ func _input(event: InputEvent):
 func update_hover():
 	var pos := get_local_mouse_position()
 	var node := get_object_occupying(pos.floor())
-	if node == null:
-		hover_highlight.stop_adapting(true)
-	elif node != hovering_over:
-		hover_highlight.adapt_to(node, true)
+	if node != hovering_over:
+		if node == null:
+			hover_highlight.stop_adapting(true)
+		else:
+			hover_highlight.adapt_to(node, true)
 
 ## Adds *something* to the level data. Returns null if it wasn't added
 func add_element(data, type: Enums.level_element_types) -> Node:
@@ -295,10 +296,13 @@ func _spawn_element(data, type: Enums.level_element_types) -> Node:
 	assert(PerfManager.start("Level::_spawn_element (%d)" % type))
 	var node := NodePool.pool_node(LEVEL_ELEMENT_TO_SCENE[type])
 	var dupe = data.duplicated()
+	
+	node.level = self
 	node.data = dupe
+	
 	element_to_original_data[node] = data
 	original_data_to_element[data] = node
-	node.level = self
+	
 	node.gui_input.connect(_on_element_gui_input.bind(node, type))
 	if LEVEL_ELEMENT_CONNECT.has(type):
 		LEVEL_ELEMENT_CONNECT[type].call(node)
@@ -372,7 +376,7 @@ func place_tile(tile_coord: Vector2i) -> void:
 	var id := level_data.collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
 	level_data.elem_to_collision_system_id[tile_coord] = id
 	update_tile_and_neighbors(tile_coord)
-	level_data.changed_tiles.emit()
+	level_data.emit_changed()
 
 ## Removes a tile from the level data. Returns true if a tile was there.
 func remove_tile(tile_coord: Vector2i) -> bool:
@@ -383,7 +387,7 @@ func remove_tile(tile_coord: Vector2i) -> bool:
 	level_data.collision_system.remove_rect(id)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
-	level_data.changed_tiles.emit()
+	level_data.emit_changed()
 	update_tile_and_neighbors(tile_coord)
 	return true
 
@@ -520,7 +524,7 @@ func _spawn_goal() -> void:
 	goal_parent.add_child(goal)
 
 ## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
-func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_objects := []) -> bool:
+func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_data := []) -> bool:
 	if not is_space_inside(rect):
 		return true
 	if not &"goal" in exclusions:
@@ -531,13 +535,13 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_ob
 		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
 			return true
 	# Currently the collision system accounts for doors, keys, entries, salvages, and tiles
-	if exclusions.is_empty() and excluded_objects.is_empty():
+	if exclusions.is_empty() and excluded_data.is_empty():
 		return level_data.collision_system.rect_has_collision_in_grid(rect)
 	else:
 		var dict: Dictionary = level_data.collision_system.get_rects_intersecting_rect_in_grid(rect)
 		for id in dict.keys():
 			var obj = level_data.collision_system.get_rect_data(id)
-			if obj in excluded_objects:
+			if obj in excluded_data:
 				continue
 			if obj is Vector2i and not &"tiles" in exclusions:
 				return true
@@ -557,19 +561,22 @@ func get_object_occupying(pos: Vector2i) -> Node:
 	for id in rect_ids:
 		var obj = level_data.collision_system.get_rect_data(id)
 		if original_data_to_element.has(obj):
-			return original_data_to_element[obj]
+			var element: Node = original_data_to_element[obj]
+			if not element.visible:
+				continue;
+			return element;
 	return null
 
 ## Returns true if there's not enough space to fit a salvage
 ## this cares about doors and tiles CURRENTLY in the level, not in the level data
 # TODO: revamp
 func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
-	if is_space_occupied(rect, [], [exclude]):
+	if is_space_occupied(rect, [&"salvage_points", &"player_spawn", &"entries"], [element_to_original_data[exclude]]):
 		return true
-	for door: Door in doors.get_children():
-		if door == exclude: continue
-		if door.data.get_rect().intersects(rect):
-			return true
+	#for door: Door in doors.get_children():
+	#	if door == exclude: continue
+	#	if door.data.get_rect().intersects(rect):
+	#		return true
 	return false
 
 ## Returns true if the space is fully inside the level

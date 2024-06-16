@@ -232,7 +232,6 @@ func try_open_door(door: Door) -> void:
 	# handles animations, sounds, etc.
 	door.open(result)
 	
-	level.on_door_opened(door)
 	# TODO: refactor this too
 	if door_data.amount.is_zero():
 		if active_salvage != null:
@@ -246,6 +245,7 @@ func try_open_door(door: Door) -> void:
 		door.resolve_collision_mode()
 		assert(door.static_body.process_mode == StaticBody2D.PROCESS_MODE_DISABLED)
 		undo_redo.add_do_property(door.static_body, &"process_mode", door.static_body.process_mode)
+	level.on_door_opened(door)
 	end_undo_action()
 	door.open_cooldown = OPEN_COOLDOWN_TIME
 	update_gates()
@@ -507,8 +507,8 @@ func on_salvaged_door(door: Door) -> void:
 	var door_data = door.data.duplicated()
 	level.goal.snd_win.play()
 	level.gameplay_manager.pack_state.salvage_door(sid, door_data)
-	level.gameplay_manager.transition.finished_animation.connect(level.reset)
 	level.gameplay_manager.transition.win_animation("Door Salvaged!")
+	level.gameplay_manager.transition.finished_animation.connect(level.reset)
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
 func start_undo_action() -> void:

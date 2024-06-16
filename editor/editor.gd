@@ -24,6 +24,7 @@ class_name LockpickEditor
 @export var play_button: Button
 @export var save_button: Button
 @export var save_as_button: Button
+@export var download_button: Button
 @export var load_button: Button
 @export var load_from_clipboard_button: Button
 @export var level_path_displayer: LineEdit
@@ -47,6 +48,8 @@ class_name LockpickEditor
 
 @export var file_dialog: FileDialog
 @export var invalid_level_dialog: InvalidLevelLoad
+
+var drag_and_drop_web: DragAndDropWeb = null
 
 var data := EditorData.new()
 
@@ -129,6 +132,36 @@ func _ready() -> void:
 	
 	_update_level_path_display()
 	resolve_visibility()
+	
+	if Global.is_web:
+		# drag and drop on web version
+		drag_and_drop_web = DragAndDropWeb.new()
+		drag_and_drop_web.file_dropped.connect(_on_file_buffer_dropped)
+		download_button.show()
+		download_button.pressed.connect(_on_download_pressed)
+	else:
+		# drag and drop on desktop
+		get_window().files_dropped.connect(_on_files_dropped)
+
+func _on_files_dropped(files: PackedStringArray) -> void:
+	if files.is_empty():
+		return
+	# Load only the first
+	var file_name = files[0]
+	load_level(file_name, true) # don't want to overwrite the contents of that file
+
+func _on_file_buffer_dropped(buffer: PackedByteArray) -> void:
+	new_level_pack = SaveLoad.load_from_file_buffer(buffer, "")
+	finish_loading_level()
+
+func _on_download_pressed() -> void:
+	assert(Global.is_web)
+	var buffer := SaveLoad.get_data(data.level_pack_data)
+	var name := "Unnamed.lvl"
+	if data.level_pack_data.file_path != "":
+		name = data.level_pack_data.file_path.get_file()
+	JavaScriptBridge.download_buffer(buffer, name)
+	pass
 
 func resolve_visibility() -> void:
 	for node in hide_on_play:
@@ -200,7 +233,7 @@ func save_level() -> void:
 	_update_level_path_display()
 
 var new_level_pack: LevelPackData = null
-func load_level(path: String) -> void:
+func load_level(path: String, read_only: bool = false) -> void:
 	new_level_pack = null
 	var ext := path.get_extension()
 	if ext in ["res", "tres"]:
@@ -217,7 +250,7 @@ func load_level(path: String) -> void:
 				path = path.get_basename() + ".lvl"
 				new_level_pack.resource_path = ""
 	elif ext == "lvl" or ext == "png":
-		new_level_pack = SaveLoad.load_from(path)
+		new_level_pack = SaveLoad.load_from(path, read_only)
 	else:
 		assert(not ext in SaveLoad.LEVEL_EXTENSIONS, "Trying to load level with invalid extension")
 		assert(false, "Not all valid extensions are covered")

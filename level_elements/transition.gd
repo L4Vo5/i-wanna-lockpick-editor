@@ -46,7 +46,11 @@ func cancel() -> void:
 func set_timings(fade_in: float, fall_offset: float, fall: float, hold: float, finish_early: bool, fade_out: float) -> void:
 	if animation_stage != -1:
 		# already playing animation
-		return
+		if animation_stage == 2:
+			# just fade out
+			cancel()
+		else:
+			return
 	fade_in_length = fade_in
 	fall_start = fall_offset
 	fall_length = fall
@@ -57,7 +61,11 @@ func set_timings(fade_in: float, fall_offset: float, fall: float, hold: float, f
 func start_animation(name_str: String, title: String = "", contributor: String = "") -> void:
 	if animation_stage != -1:
 		# already playing animation
-		return
+		if animation_stage == 2:
+			# just fade out
+			cancel()
+		else:
+			return
 	animation_stage = 0
 	name_text.text = name_str
 	title_text.text = title

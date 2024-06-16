@@ -58,6 +58,15 @@ func _ready() -> void:
 		assert(not data.amount.is_zero())
 	update_visuals()
 	assert(PerfManager.end("Door::_ready"))
+	print("ready")
+
+func _enter_tree():
+	if not is_node_ready(): return
+	
+	# reset collisions
+	ignore_collisions_gate = -1
+	update_visuals() # sets position and size
+	resolve_collision_mode() # needs position and size
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
@@ -66,7 +75,12 @@ func _notification(what: int) -> void:
 func _connect_data() -> void:
 	if not is_instance_valid(data): return
 	data.changed.connect(update_visuals)
-	if not is_node_ready(): return
+	
+	print("connect data please!")
+	# reset collisions
+	ignore_collisions_gate = -1
+	
+	if not is_inside_tree(): return
 	update_visuals()
 	# look.... ok?
 	
@@ -116,6 +130,9 @@ func resolve_collision_mode() -> void:
 		static_body.process_mode = Node.PROCESS_MODE_INHERIT
 
 func update_visuals() -> void:
+	# We will run this later, when we _enter_tree
+	print("updating visuals ", is_inside_tree(), " ", data, " ", level)
+	if not is_inside_tree(): return
 	if not is_instance_valid(data): return
 	assert(PerfManager.start(&"Door::update_visuals"))
 	

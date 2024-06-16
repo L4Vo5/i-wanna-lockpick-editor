@@ -37,12 +37,12 @@ type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_wkk63"]
+[sub_resource type="Resource" id="Resource_ilhg4"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_kvdjv"]
+[sub_resource type="Resource" id="Resource_j4f0c"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -54,11 +54,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_pi1oi"]
+[sub_resource type="Resource" id="Resource_55u88"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_wkk63")
+amount = SubResource("Resource_ilhg4")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_jealp")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_j4f0c")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -70,26 +70,26 @@ _curses = {
 glitch_color = 13
 sid = -1
 
-[sub_resource type="Resource" id="Resource_av8aa"]
+[sub_resource type="Resource" id="Resource_nxp1q"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_1aafn"]
+[sub_resource type="Resource" id="Resource_asf5i"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_av8aa")
+amount = SubResource("Resource_nxp1q")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_sdjwy"]
+[sub_resource type="Resource" id="Resource_7ncx3"]
 script = ExtResource("22_djptt")
 sid = 0
 is_output = false
 position = Vector2i(0, 0)
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "save_button", "save_as_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "save_button", "save_as_button", "download_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -110,6 +110,7 @@ level_container = NodePath("HSplitContainer/LeftSide/LevelContainer")
 play_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Play")
 save_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Save")
 save_as_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/SaveAs")
+download_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Download")
 load_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Load")
 load_from_clipboard_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/LoadFromClipboard")
 level_path_displayer = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/LevelPath")
@@ -170,6 +171,11 @@ text = "Save"
 [node name="SaveAs" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "Save As..."
+
+[node name="Download" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Download"
 
 [node name="Load" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
 layout_mode = 2
@@ -327,12 +333,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-data = SubResource("Resource_pi1oi")
+data = SubResource("Resource_55u88")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_1aafn")
+data = SubResource("Resource_asf5i")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -358,7 +364,7 @@ layout_mode = 2
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_sdjwy")
+data = SubResource("Resource_7ncx3")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)
