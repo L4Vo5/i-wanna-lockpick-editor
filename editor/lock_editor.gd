@@ -6,11 +6,7 @@ signal delete
 @export var lock_data: LockData:
 	set(val):
 		if lock_data == val: return
-		if is_instance_valid(lock_data):
-			lock_data.changed_minimum_size.disconnect(_update_min_size)
 		lock_data = val
-		if is_instance_valid(lock_data):
-			lock_data.changed_minimum_size.connect(_update_min_size)
 		if not is_node_ready(): await ready
 		arrangement_chooser.lock_data = lock_data
 		lock.lock_data = val
@@ -86,6 +82,8 @@ var _setting_to_data := false
 # Sets the different controls to the lockdata's data
 func _set_to_lock_data() -> void:
 	_setting_to_data = true
+	lock_data.update_minimum_size()
+	_set_to_lock_min_size()
 	color_choice.set_to_color(lock_data.color)
 	lock_type_choice.color = lock_data.color
 	lock_type_choice.type = lock_data.lock_type
@@ -103,12 +101,9 @@ func _set_to_lock_data() -> void:
 	_setting_to_data = false
 	_update_max_pos()
 
-func _update_min_size() -> void:
-	if _setting_to_data: return
-	if not is_node_ready(): await ready
+func _set_to_lock_min_size() -> void:
 	width.min_value = lock_data.minimum_size.x
 	height.min_value = lock_data.minimum_size.y
-	
 
 func _update_lock_size() -> void:
 	if _setting_to_data: return
@@ -118,7 +113,8 @@ func _update_lock_size() -> void:
 func _update_lock_color(color: Enums.colors) -> void:
 	if _setting_to_data: return
 	lock_data.color = color_choice.color
-	lock_type_choice.color = lock_data.color
+	lock_data.emit_changed()
+	lock_type_choice.color = color
 
 func _update_lock_type() -> void:
 	if _setting_to_data: return
@@ -138,6 +134,9 @@ func _update_lock_type() -> void:
 	else:
 		arrangement_chooser.hide()
 		requirement_parent.hide()
+	lock_data.update_minimum_size()
+	_set_to_lock_min_size()
+	lock_data.emit_changed()
 
 var last_amount_value := 0
 func _update_lock_amount() -> void:
@@ -165,6 +164,10 @@ func _update_lock_amount() -> void:
 		if is_negative.button_pressed:
 			is_negative.button_pressed = false
 	last_amount_value = int(amount.value)
+	lock_data.update_minimum_size()
+	_set_to_lock_min_size()
+	lock_data.emit_changed()
+	arrangement_chooser.update_options()
 
 func _update_is_imaginary() -> void:
 	if _setting_to_data: return
@@ -172,6 +175,7 @@ func _update_is_imaginary() -> void:
 		lock_data.value_type = Enums.value.imaginary
 	else:
 		lock_data.value_type = Enums.value.real
+	lock_data.emit_changed()
 
 func _update_is_negative() -> void:
 	if _setting_to_data: return
@@ -183,9 +187,12 @@ func _update_is_negative() -> void:
 		lock_data.sign = Enums.sign.positive
 		if amount.value < 0:
 			amount.value = abs(amount.value)
+	lock_data.emit_changed()
 
 func _update_arrangement() -> void:
 	if _setting_to_data: return
+	lock_data.update_minimum_size()
+	_set_to_lock_min_size()
 	if fit.button_pressed:
 		width.value = lock_data.minimum_size.x
 		height.value = lock_data.minimum_size.y

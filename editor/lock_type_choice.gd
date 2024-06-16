@@ -44,6 +44,7 @@ var color: Enums.colors = Enums.colors.none:
 		color = val
 		for lock in locks:
 			lock.lock_data.color = color
+			lock.update_visuals()
 var type: Enums.lock_types:
 	set = set_to_type,
 	get = get_current_type

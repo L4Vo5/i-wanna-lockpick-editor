@@ -39,31 +39,28 @@ func _init() -> void:
 
 func _ready() -> void:
 	door.data = data
-	width.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
-	height.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
-	real_copies.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
-	imaginary_copies.get_line_edit().add_theme_constant_override(&"minimum_character_width", 2)
-	width.get_line_edit().expand_to_text_length = true
-	height.get_line_edit().expand_to_text_length = true
-	real_copies.get_line_edit().expand_to_text_length = true
-	imaginary_copies.get_line_edit().expand_to_text_length = true
+	for spin_box in [width, height, real_copies, imaginary_copies]:
+		var line_edit = spin_box.get_line_edit()
+		line_edit.add_theme_constant_override(&"minimum_character_width", 2)
+		line_edit.expand_to_text_length = true
 	
 	
 	ice_button.tooltip_text = "Ice curse, broken with 1 red key or more."
 	erosion_button.tooltip_text = "Erosion curse, broken with 5 green keys or more."
 	paint_button.tooltip_text = "Paint curse, broken with 3 blue keys or more."
+	
 	ice_button.toggled.connect(ice_checkbox.set_pressed_no_signal)
-	ice_button.toggled.connect(set_curse.bind(Enums.curse.ice))
+	ice_button.toggled.connect(_update_door_curse.unbind(1))
 	erosion_button.toggled.connect(erosion_checkbox.set_pressed_no_signal)
-	erosion_button.toggled.connect(set_curse.bind(Enums.curse.erosion))
+	erosion_button.toggled.connect(_update_door_curse.unbind(1))
 	paint_button.toggled.connect(paint_checkbox.set_pressed_no_signal)
-	paint_button.toggled.connect(set_curse.bind(Enums.curse.paint))
+	paint_button.toggled.connect(_update_door_curse.unbind(1))
 	
 	width.value_changed.connect(_update_door_size.unbind(1))
 	height.value_changed.connect(_update_door_size.unbind(1))
 	real_copies.value_changed.connect(_update_door_amount.unbind(1))
 	imaginary_copies.value_changed.connect(_update_door_amount.unbind(1))
-	color_choice.changed_color.connect(_update_door_color)
+	color_choice.changed_color.connect(_update_door_color.unbind(1))
 	
 	add_lock.pressed.connect(_add_new_lock)
 
@@ -86,12 +83,18 @@ func _set_to_door_data() -> void:
 	_regen_lock_editors()
 	_setting_to_data = false
 
-func set_curse(val: bool, which: Enums.curse) -> void:
-	data.set_curse(which, val)
+# Setting DoorData to the editor's values
+
+func _update_door_curse() -> void:
+	if _setting_to_data: return
+	data.set_curse(Enums.curse.ice, ice_button.button_pressed)
+	data.set_curse(Enums.curse.erosion, erosion_button.button_pressed)
+	data.set_curse(Enums.curse.paint, paint_button.button_pressed)
 
 func _update_door_size() -> void:
 	if _setting_to_data: return
 	data.size = Vector2i(roundi(width.value), roundi(height.value))
+	data.emit_changed()
 	_update_lock_editors_door_size()
 
 func _update_door_amount() -> void:
@@ -115,9 +118,12 @@ func _update_door_amount() -> void:
 		img = Enums.INT_MIN
 	data.amount.set_to(real, img)
 
-func _update_door_color(color: Enums.colors) -> void:
+func _update_door_color() -> void:
 	if _setting_to_data: return
-	data.outer_color = color
+	data.outer_color = color_choice.color
+	data.emit_changed()
+
+
 
 func _regen_lock_editors() -> void:
 	for child in lock_editor_parent.get_children():
