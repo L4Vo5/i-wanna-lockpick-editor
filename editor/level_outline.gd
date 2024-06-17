@@ -27,10 +27,10 @@ func _draw() -> void:
 	var rect := Rect2(-position, level_data.size)
 	var col := Color.WHITE
 	# Left
-	draw_rect(Rect2(rect.position - Vector2(border_size, border_size), Vector2(border_size, rect.size.y + border_size)), col)
+	draw_rect(Rect2(rect.position - Vector2(border_size, border_size), Vector2(border_size * 2, rect.size.y + border_size * 2)), col)
 	# Top
-	draw_rect(Rect2(rect.position - Vector2(border_size, border_size), Vector2(rect.size.x + border_size, border_size)), col)
+	draw_rect(Rect2(rect.position - Vector2(border_size, border_size), Vector2(rect.size.x + border_size * 2, border_size * 2)), col)
 	# Bottom
-	draw_rect(Rect2(rect.position + Vector2(-border_size, rect.size.y - border_size), Vector2(rect.size.x + border_size, border_size)), col)
+	draw_rect(Rect2(rect.position + Vector2(-border_size, rect.size.y - border_size), Vector2(rect.size.x + border_size * 2, border_size * 2)), col)
 	# Right
-	draw_rect(Rect2(rect.position + Vector2(rect.size.x - border_size, - border_size), Vector2(border_size, rect.size.y + border_size)), col)
+	draw_rect(Rect2(rect.position + Vector2(rect.size.x - border_size, - border_size), Vector2(border_size * 2, rect.size.y + border_size * 2)), col)
