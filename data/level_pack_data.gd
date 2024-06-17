@@ -18,6 +18,11 @@ signal deleted_level(level_id: int)
 ## Pack id, this SHOULD be unique.
 @export var pack_id: int = (randi() << 32) + randi()
 
+## true if the level has been saved/exported with a pack id
+## false if the level has not been saved or it has been loaded
+## from a version prior to V4
+var is_pack_id_saved: bool = false
+
 ## For simplicity, let's just say each pack data has one state associated with it. If this brings trouble I'll have to rethink some things
 var state_data: LevelPackStateData:
 	set(val):

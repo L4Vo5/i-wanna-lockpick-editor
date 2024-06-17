@@ -101,6 +101,7 @@ static func load(data: ByteAccess) -> LevelPackData:
 	level_pack.name = data.get_string()
 	level_pack.author = data.get_string()
 	level_pack.pack_id = data.get_s64()
+	level_pack.is_pack_id_saved = true
 	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
 	
 	var level_count := data.get_u32()

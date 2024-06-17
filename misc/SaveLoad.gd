@@ -54,6 +54,9 @@ static func save_level(level_pack: LevelPackData) -> void:
 		var err := image.save_png(path)
 		if err != OK:
 			print("error saving image: " + str(err))
+	if not level_pack.is_pack_id_saved:
+		level_pack.is_pack_id_saved = true
+		level_pack.state_data.save()
 
 # Similar to load_from_buffer, but loads the entire file
 static func load_from_file_buffer(buffer: PackedByteArray, path: String) -> LevelPackData:

@@ -66,12 +66,17 @@ func _on_deleted_level(level_id: int) -> void:
 	save()
 
 func save() -> void:
-	if resource_path != "":
-		var res := ResourceSaver.save(self)
-		if res != OK:
-			pr("Couldn't save! Error:" + error_string(res))
-	else:
-		pr("Couldn't save! no resource_path!")
+	if not pack_data.is_pack_id_saved:
+		return
+	if resource_path == "":
+		var i := pack_data.pack_id
+		while FileAccess.file_exists("user://level_saves/" + str(i) + ".tres"):
+			i = randi()
+		resource_path = "user://level_saves/" + str(i) + ".tres"
+		pr("Save data path: " + resource_path)
+	var res := ResourceSaver.save(self)
+	if res != OK:
+		pr("Couldn't save! Error:" + error_string(res))
 
 static func find_state_file_for_pack_or_create_new(pack: LevelPackData) -> LevelPackStateData:
 	var state: LevelPackStateData = null
@@ -84,12 +89,8 @@ static func find_state_file_for_pack_or_create_new(pack: LevelPackData) -> Level
 				state.pack_data = pack
 	if not state:
 		state = LevelPackStateData.make_from_pack_data(pack)
-		var i := pack.pack_id
-		while FileAccess.file_exists("user://level_saves/" + str(i) + ".tres"):
-			i = randi()
-		state.resource_path = "user://level_saves/" + str(i) + ".tres"
 		state.save()
-		pr("Couldn't find save data, making a new one at %s" % state.resource_path)
+		pr("Couldn't find save data, making a new one *eventually*")
 	else:
 		pr("Successfully loaded save data from %s!" % state.resource_path)
 	return state
