@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://data/salvage_point_data.gd" id="2_jrhgn"]
 [ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvages/salvage_point.tscn" id="3_ycw40"]
 
-[sub_resource type="Resource" id="Resource_txmm3"]
+[sub_resource type="Resource" id="Resource_1rneg"]
 script = ExtResource("2_jrhgn")
 sid = 0
 is_output = false
@@ -12,7 +12,7 @@ position = Vector2i(0, 0)
 
 [node name="SalvagePointEditor" type="MarginContainer"]
 script = ExtResource("1_gotpp")
-data = SubResource("Resource_txmm3")
+data = SubResource("Resource_1rneg")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -29,7 +29,7 @@ layout_mode = 2
 [node name="SalvagePoint" parent="VBoxContainer/CenterContainer" instance=ExtResource("3_ycw40")]
 unique_name_in_owner = true
 layout_mode = 2
-data = SubResource("Resource_txmm3")
+data = SubResource("Resource_1rneg")
 ignore_position = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]

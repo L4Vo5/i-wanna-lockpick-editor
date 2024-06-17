@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=34 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
 [ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/salvage_point_editor.tscn" id="21_ieeor"]
+[ext_resource type="Script" path="res://data/entry_data.gd" id="21_uoxo3"]
 [ext_resource type="Script" path="res://data/salvage_point_data.gd" id="22_djptt"]
 
 [sub_resource type="Resource" id="Resource_k5lmb"]
@@ -37,12 +38,12 @@ type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_ilhg4"]
+[sub_resource type="Resource" id="Resource_s6rud"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_j4f0c"]
+[sub_resource type="Resource" id="Resource_52af1"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -54,11 +55,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_55u88"]
+[sub_resource type="Resource" id="Resource_i8f4c"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_ilhg4")
+amount = SubResource("Resource_s6rud")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_j4f0c")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_52af1")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -70,20 +71,26 @@ _curses = {
 glitch_color = 13
 sid = -1
 
-[sub_resource type="Resource" id="Resource_nxp1q"]
+[sub_resource type="Resource" id="Resource_m3ojj"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_asf5i"]
+[sub_resource type="Resource" id="Resource_hnrvx"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_nxp1q")
+amount = SubResource("Resource_m3ojj")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_7ncx3"]
+[sub_resource type="Resource" id="Resource_x606d"]
+script = ExtResource("21_uoxo3")
+position = Vector2i(0, 0)
+leads_to = -1
+skin = 0
+
+[sub_resource type="Resource" id="Resource_5bht5"]
 script = ExtResource("22_djptt")
 sid = 0
 is_output = false
@@ -333,12 +340,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-data = SubResource("Resource_55u88")
+data = SubResource("Resource_i8f4c")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_asf5i")
+data = SubResource("Resource_hnrvx")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -360,11 +367,12 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
+data = SubResource("Resource_x606d")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_7ncx3")
+data = SubResource("Resource_5bht5")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)

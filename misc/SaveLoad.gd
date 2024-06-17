@@ -77,6 +77,7 @@ static func load_from(path: String, read_only: bool = false) -> LevelPackData:
 	var version: int = -1
 	var original_editor_version := ""
 	var buf: PackedByteArray
+	var offset: int = 0
 	
 	# first, handle version 1 which is exceptional as it requires reading a file
 	# the rest will be handled from a buffer
@@ -86,10 +87,10 @@ static func load_from(path: String, read_only: bool = false) -> LevelPackData:
 		original_editor_version = file.get_pascal_string()
 		if version == 1:
 			var lvl_data: LevelData = V1.load(file)
-			var lvl_pack_data = LevelPackData.make_from_level(lvl_data)
+			var lvl_pack_data: LevelPackData = LevelPackData.make_from_level(lvl_data)
 			finishing_touches(lvl_pack_data, path)
 			
-			return LevelPackData.make_from_level(lvl_pack_data)
+			return lvl_pack_data
 		buf = file.get_buffer(file.get_length() - file.get_position())
 	elif path.get_extension() == "png":
 		var img := Image.load_from_file(path)
@@ -97,14 +98,15 @@ static func load_from(path: String, read_only: bool = false) -> LevelPackData:
 		var byte_access := VC.make_byte_access(data)
 		version = byte_access.get_u16()
 		original_editor_version = byte_access.get_string()
-		buf = data.slice(byte_access.get_position())
+		buf = data
+		offset = byte_access.get_position()
 	
 	if read_only:
 		# is enough to prevent it from writing into it
 		path = ""
 	
 	# with the buffer and V1 out of the way, we can load in a more generic way+
-	return load_from_buffer(buf, 0, version, original_editor_version, path)
+	return load_from_buffer(buf, offset, version, original_editor_version, path)
 
 # data DOESN'T include version and original_editor_version
 static func load_from_buffer(
