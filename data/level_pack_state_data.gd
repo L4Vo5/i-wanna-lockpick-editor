@@ -25,6 +25,12 @@ var pack_data: LevelPackData:
 ## The current level that's being played in the pack.
 @export var current_level: int
 
+## The level that you reach when exiting (backspace).
+@export var exit_level: int = -1
+
+## The player position within exit_level after exiting
+@export var exit_position: Vector2i
+
 static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
 	state.completed_levels = PackedByteArray()

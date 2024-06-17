@@ -73,7 +73,7 @@ func player_stopped_touching() -> void:
 func enter() -> void:
 	if not is_instance_valid(level): return
 	if data.leads_to == -1: return
-	level.gameplay_manager.enter_level(data.leads_to)
+	level.gameplay_manager.enter_level(data.leads_to, data.position + Vector2i(14, 32))
 
 func update_position() -> void:
 	if not ignore_position:

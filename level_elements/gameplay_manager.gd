@@ -21,6 +21,11 @@ func load_level_pack(pack: LevelPackData) -> void:
 	_pack_data = pack
 	var state := LevelPackStateData.find_state_file_for_pack_or_create_new(_pack_data)
 	_pack_data.state_data = state
+	if state.current_level < 0 or state.current_level >= _pack_data.levels.size():
+		# malformed state
+		printerr("State's current level is out of range: current level = ",
+			state.current_level, " level count ", _pack_data.levels.size())
+		state.current_level = 0
 	var level_data: LevelData = _pack_data.levels[state.current_level]
 	level.level_data = level_data
 	reset()
@@ -53,13 +58,46 @@ func win() -> void:
 	if pack_state.completed_levels[pack_state.current_level] != 1:
 		pack_state.completed_levels[pack_state.current_level] = 1
 		pack_state.save()
-	transition.finished_animation.connect(level.reset)
-	transition.win_animation("Congratulations!")
+	win_animation("Congratulations!")
 
-func enter_level(id: int) -> void:
+func can_exit() -> bool:
+	var exit = pack_state.exit_level
+	if exit < 0 or exit >= _pack_data.levels.size():
+		return false
+	# levels with entries are counted as "hubs" and can't be exited using backspace
+	if level.entries.get_child_count() > 0:
+		return false
+	return true
+
+func exit_level() -> void:
+	if not can_exit():
+		return
+	transition.world_enter_animation()
+	transition.finished_animation.connect(exit_immediately)
+
+## Exits WITHOUT checking
+func exit_immediately() -> void:
+	transition_to_level(pack_state.exit_level)
+	level.player.position = pack_state.exit_position
+
+func exit_or_reset() -> void:
+	if can_exit():
+		exit_immediately()
+	else:
+		reset()
+
+func enter_level(id: int, exit_position: Vector2i) -> void:
+	# set exit parameters
+	pack_state.exit_level = pack_state.current_level
+	pack_state.exit_position = exit_position
+	
 	var _new_level_data := _pack_data.levels[id]
 	var target_level_name := _new_level_data.name
 	var target_level_title := _new_level_data.title
 	transition.level_enter_animation(target_level_name, target_level_title)
 	await transition.finished_animation
 	transition_to_level(id)
+
+func win_animation(text: String) -> void:
+	transition.win_animation(text)
+	transition.finished_animation.connect(exit_or_reset)
