@@ -217,7 +217,7 @@ func _connect_level_data() -> void:
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(level_data): return
 	var amount = Global.fully_disconnect(self, level_data)
-	assert(amount == 4)
+	assert(amount == 2)
 
 func _update_player_spawn_position() -> void:
 	if not is_node_ready(): return
