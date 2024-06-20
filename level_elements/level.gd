@@ -68,6 +68,7 @@ var goal: LevelGoal
 var is_autorun_on := false
 var autorun_tween: Tween
 
+# elements will have a duplicate of the data stored in level_data. this lets you find the original when needed.
 var element_to_original_data := {}
 var original_data_to_element := {}
 
@@ -560,6 +561,7 @@ func get_object_occupying(pos: Vector2i) -> Node:
 		var obj = level_data.collision_system.get_rect_data(id)
 		if original_data_to_element.has(obj):
 			var element: Node = original_data_to_element[obj]
+			# Invisible elements include: opened doors, picked up keys, and output points after spawning a door.
 			if not element.visible:
 				continue;
 			return element;
@@ -569,13 +571,7 @@ func get_object_occupying(pos: Vector2i) -> Node:
 ## this cares about doors and tiles CURRENTLY in the level, not in the level data
 # TODO: revamp
 func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
-	if is_space_occupied(rect, [&"salvage_points", &"player_spawn", &"entries"], [element_to_original_data[exclude]]):
-		return true
-	#for door: Door in doors.get_children():
-	#	if door == exclude: continue
-	#	if door.data.get_rect().intersects(rect):
-	#		return true
-	return false
+	return is_space_occupied(rect, [&"salvage_points"], [element_to_original_data[exclude]])
 
 ## Returns true if the space is fully inside the level
 func is_space_inside(rect: Rect2i) -> bool:
