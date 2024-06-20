@@ -269,11 +269,7 @@ func _input(event: InputEvent):
 func update_hover():
 	var pos := get_local_mouse_position()
 	var node := get_object_occupying(pos.floor())
-	if node != hovering_over:
-		if node == null:
-			hover_highlight.stop_adapting(true)
-		else:
-			hover_highlight.adapt_to(node, true)
+	hover_highlight.adapt_to(node, true)
 
 ## Adds *something* to the level data. Returns null if it wasn't added
 func add_element(data, type: Enums.level_element_types) -> Node:
