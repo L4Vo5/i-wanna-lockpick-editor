@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://level_elements/doors_locks/lock.gd" id="1_tp0hg"]
 
 [node name="Lock" type="MarginContainer"]
-custom_minimum_size = Vector2(36, 36)
 offset_left = 7.0
 offset_top = 7.0
 offset_right = 43.0

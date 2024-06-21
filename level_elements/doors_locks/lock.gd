@@ -56,8 +56,7 @@ func update_position() -> void:
 		position = lock_data.position
 
 func update_size() -> void:
-	custom_minimum_size = lock_data.size
-	size = custom_minimum_size
+	size = lock_data.size
 
 
 func update_frame_visible() -> void:
