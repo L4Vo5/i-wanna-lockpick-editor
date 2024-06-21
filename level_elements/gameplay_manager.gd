@@ -70,7 +70,7 @@ func exit_level() -> void:
 	if not can_exit():
 		return
 	transition.world_enter_animation()
-	transition.finished_animation.connect(exit_immediately)
+	transition.finished_animation.connect(exit_immediately, CONNECT_ONE_SHOT)
 
 ## Exits WITHOUT checking
 func exit_immediately() -> void:
@@ -97,4 +97,4 @@ func enter_level(id: int, exit_position: Vector2i) -> void:
 
 func win_animation(text: String) -> void:
 	transition.win_animation(text)
-	transition.finished_animation.connect(exit_or_reset)
+	transition.finished_animation.connect(exit_or_reset, CONNECT_ONE_SHOT)
