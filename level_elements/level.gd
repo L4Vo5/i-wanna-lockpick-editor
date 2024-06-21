@@ -581,7 +581,7 @@ func on_door_opened(_door: Door) -> void:
 func _on_door_changed_curse(_door: Door) -> void:
 	update_mouseover()
 
-func _on_key_picked_up(_key: Key) -> void:
+func _on_key_picked_up(_key: KeyElement) -> void:
 	update_mouseover()
 
 func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types) -> void:
@@ -612,10 +612,10 @@ func connect_door(door: Door) -> void:
 func disconnect_door(door: Door) -> void:
 	door.changed_curse.disconnect(_on_door_changed_curse.bind(door))
 
-func connect_key(key: Key) -> void:
+func connect_key(key: KeyElement) -> void:
 	key.picked_up.connect(_on_key_picked_up.bind(key))
 
-func disconnect_key(key: Key) -> void:
+func disconnect_key(key: KeyElement) -> void:
 	key.picked_up.disconnect(_on_key_picked_up.bind(key))
 
 func _notification(what: int) -> void:

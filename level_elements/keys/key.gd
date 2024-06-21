@@ -1,6 +1,7 @@
 @tool
 extends Control
-class_name Key
+# Shouldn't call it Key because there's a global enum called Key!
+class_name KeyElement
 ## Key lol
 
 signal picked_up

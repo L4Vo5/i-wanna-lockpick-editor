@@ -9,7 +9,7 @@ class_name KeyEditor
 		# TODO: Allow editing keys in the level (currently not done to be consistent with door editing)
 		key.data = data
 		_set_to_key_data()
-@onready var key: Key = %key
+@onready var key: KeyElement = %key
 @onready var color_choice: ColorChoiceEditor = %ColorChoice
 @onready var type_choice: OptionButton = %TypeChoice
 @onready var amount: MarginContainer = %Amount

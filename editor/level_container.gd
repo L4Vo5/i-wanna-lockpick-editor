@@ -22,7 +22,7 @@ var salvage_point_editor: SalvagePointEditor:
 		return editor_data.salvage_point_editor
 
 @export var ghost_door: Door
-@export var ghost_key: Key
+@export var ghost_key: KeyElement
 @export var ghost_entry: Entry
 @export var ghost_salvage_point: SalvagePoint
 

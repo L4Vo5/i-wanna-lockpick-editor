@@ -59,7 +59,7 @@ func get_used_color() -> Enums.colors:
 	else:
 		return color
 
-# Called by the actual in-level Key
+# Called by the actual in-level KeyElement
 func update_glitch_color(new_glitch_color: Enums.colors) -> void:
 	glitch_color = new_glitch_color
 
