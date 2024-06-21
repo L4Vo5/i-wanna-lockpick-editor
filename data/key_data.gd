@@ -2,6 +2,8 @@
 extends Resource
 class_name KeyData
 
+static var level_element_type := Enums.level_element_types.key
+
 @export var amount := ComplexNumber.new_with(1, 0):
 	set(val):
 		if amount == val: return

@@ -2,6 +2,8 @@
 extends Resource
 class_name SalvagePointData
 
+static var level_element_type := Enums.level_element_types.salvage_point
+
 @export var sid := 0:
 	set(val):
 		if sid == val: return

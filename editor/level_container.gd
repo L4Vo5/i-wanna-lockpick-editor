@@ -126,7 +126,7 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_elem
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
-				if remove_element(node, type):
+				if remove_element(node):
 					accept_event()
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
@@ -137,7 +137,7 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_elem
 				select_thing(node)
 	elif event is InputEventMouseMotion:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
-			if remove_element(node, type):
+			if remove_element(node):
 				accept_event()
 
 
@@ -220,14 +220,14 @@ func place_element_on_mouse(type: Enums.level_element_types) -> bool:
 	var coord := get_mouse_coord(LEVEL_ELEMENT_GRID_SIZE[type])
 	var data = editor.level_element_editors[type].data.duplicated()
 	data.position = coord
-	var node := gameplay.level.add_element(data, type)
+	var node := gameplay.level.add_element(data)
 	if not is_instance_valid(node): return false
 	select_thing(node)
 	return true
 
-func remove_element(node: Node, type: Enums.level_element_types) -> bool:
+func remove_element(node: Node) -> bool:
 	if not is_instance_valid(node): return false
-	gameplay.level.remove_element(node, type)
+	gameplay.level.remove_element(node)
 	select_thing(null)
 	_retry_ghosts()
 	return true
@@ -254,7 +254,7 @@ func relocate_selected() -> void:
 	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
 	var cond: bool = true
 	var obj_pos: Vector2i = selected_obj.position
-	gameplay.level.move_element(selected_obj, selected_obj.level_element_type, used_coord)
+	gameplay.level.move_element(selected_obj, used_coord)
 	
 	if not cond and obj_pos != used_coord:
 		_place_danger_obj()
