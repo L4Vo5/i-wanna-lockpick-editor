@@ -72,6 +72,30 @@ var autorun_tween: Tween
 var element_to_original_data := {}
 var original_data_to_element := {}
 
+const LEVEL_ELEMENT_CONTAINER_NAME := {
+	Enums.level_element_types.door: &"doors",
+	Enums.level_element_types.key: &"keys",
+	Enums.level_element_types.entry: &"entries",
+	Enums.level_element_types.salvage_point: &"salvage_points",
+};
+
+const LEVEL_ELEMENT_TO_SCENE := {
+	Enums.level_element_types.door: DOOR,
+	Enums.level_element_types.key: KEY,
+	Enums.level_element_types.entry: ENTRY,
+	Enums.level_element_types.salvage_point: SALVAGE_POINT,
+};
+
+var LEVEL_ELEMENT_CONNECT := {
+	Enums.level_element_types.door: connect_door,
+	Enums.level_element_types.key: connect_key
+};
+
+var LEVEL_ELEMENT_DISCONNECT := {
+	Enums.level_element_types.door: disconnect_door,
+	Enums.level_element_types.key: disconnect_key
+};
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not Global.is_playing: return
 	if in_transition(): return
@@ -236,30 +260,6 @@ func try_open_door(door: Door) -> void:
 # Editor functions
 
 signal element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types)
-
-const LEVEL_ELEMENT_CONTAINER_NAME := {
-	Enums.level_element_types.door: &"doors",
-	Enums.level_element_types.key: &"keys",
-	Enums.level_element_types.entry: &"entries",
-	Enums.level_element_types.salvage_point: &"salvage_points",
-};
-
-const LEVEL_ELEMENT_TO_SCENE := {
-	Enums.level_element_types.door: DOOR,
-	Enums.level_element_types.key: KEY,
-	Enums.level_element_types.entry: ENTRY,
-	Enums.level_element_types.salvage_point: SALVAGE_POINT,
-};
-
-var LEVEL_ELEMENT_CONNECT := {
-	Enums.level_element_types.door: connect_door,
-	Enums.level_element_types.key: connect_key
-};
-
-var LEVEL_ELEMENT_DISCONNECT := {
-	Enums.level_element_types.door: disconnect_door,
-	Enums.level_element_types.key: disconnect_key
-};
 
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion:
