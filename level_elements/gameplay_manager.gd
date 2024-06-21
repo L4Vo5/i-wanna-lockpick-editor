@@ -64,9 +64,6 @@ func can_exit() -> bool:
 	var exit = pack_state.exit_level
 	if exit < 0 or exit >= _pack_data.levels.size():
 		return false
-	# levels with entries are counted as "hubs" and can't be exited using backspace
-	if level.entries.get_child_count() > 0:
-		return false
 	return true
 
 func exit_level() -> void:

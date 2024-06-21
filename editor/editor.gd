@@ -157,11 +157,12 @@ func _on_file_buffer_dropped(buffer: PackedByteArray) -> void:
 func _on_download_pressed() -> void:
 	assert(Global.is_web)
 	var buffer := SaveLoad.get_data(data.level_pack_data)
-	var name := "Unnamed.lvl"
+	var name := ""
 	if data.level_pack_data.file_path != "":
-		name = data.level_pack_data.file_path.get_file()
+		name = data.level_pack_data.file_path.get_basename().get_file()
+	else:
+		name = data.level_pack_data.name + ".lvl"
 	JavaScriptBridge.download_buffer(buffer, name)
-	pass
 
 func resolve_visibility() -> void:
 	for node in hide_on_play:
@@ -311,6 +312,7 @@ func _on_save_as_pressed() -> void:
 		line_edit.caret_column = line_edit.text.length()
 	
 	file_dialog.popup_centered_ratio(0.9)
+
 
 func _on_save_pressed() -> void:
 	# Allow saving .res, .tres, and levels in res:// when testing
