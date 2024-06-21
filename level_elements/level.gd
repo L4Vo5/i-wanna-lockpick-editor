@@ -72,12 +72,15 @@ var autorun_tween: Tween
 var element_to_original_data := {}
 var original_data_to_element := {}
 
-const LEVEL_ELEMENT_CONTAINER_NAME := {
-	Enums.level_element_types.door: &"doors",
-	Enums.level_element_types.key: &"keys",
-	Enums.level_element_types.entry: &"entries",
-	Enums.level_element_types.salvage_point: &"salvage_points",
-};
+@onready var level_element_type_to_container := {
+	Enums.level_element_types.door: doors,
+	Enums.level_element_types.key: keys,
+	Enums.level_element_types.entry: entries,
+	Enums.level_element_types.salvage_point: salvage_points,
+}
+
+# Updated when connecting the level_data
+var level_element_type_to_level_data_array := {}
 
 const LEVEL_ELEMENT_TO_SCENE := {
 	Enums.level_element_types.door: DOOR,
@@ -180,10 +183,9 @@ func reset() -> void:
 	# (yes, it makes a measurable impact, specially on big levels)
 	for type in Enums.level_element_types.values():
 		assert(PerfManager.start("Level::reset (" + str(type) + ")"))
-		var cont_name: StringName = LEVEL_ELEMENT_CONTAINER_NAME[type]
 
-		var list: Array = level_data.get(cont_name)
-		var container: Node2D = get(cont_name)
+		var list: Array = level_element_type_to_level_data_array[type]
+		var container: Node2D = level_element_type_to_container[type]
 
 		var needed := list.size()
 		var current := container.get_child_count()
@@ -230,6 +232,12 @@ func reset() -> void:
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
+	level_element_type_to_level_data_array = {
+		Enums.level_element_types.door: level_data.doors,
+		Enums.level_element_types.key: level_data.keys,
+		Enums.level_element_types.entry: level_data.entries,
+		Enums.level_element_types.salvage_point: level_data.salvage_points,
+	}
 	# Must do this in case level data has no version
 	level_data.check_valid(false)
 	level_data.changed_player_spawn_position.connect(_update_player_spawn_position)
@@ -276,7 +284,7 @@ func add_element(data) -> Node:
 	if is_space_occupied(data.get_rect()): return null
 	if type == Enums.level_element_types.door:
 		if not data.check_valid(level_data, true): return null
-	var list: Array = level_data.get(LEVEL_ELEMENT_CONTAINER_NAME[type])
+	var list: Array = level_element_type_to_level_data_array[type]
 	if not data in list:
 		list.push_back(data)
 		
@@ -305,7 +313,7 @@ func _spawn_element(data) -> Node:
 	node.gui_input.connect(_on_element_gui_input.bind(node, type))
 	if LEVEL_ELEMENT_CONNECT.has(type):
 		LEVEL_ELEMENT_CONNECT[type].call(node)
-	get(LEVEL_ELEMENT_CONTAINER_NAME[type]).add_child(node)
+	level_element_type_to_container[type].add_child(node)
 	assert(PerfManager.end("Level::_spawn_element (%d)" % type))
 	return node
 
@@ -313,7 +321,7 @@ func _spawn_element(data) -> Node:
 func remove_element(node: Node) -> void:
 	var type: Enums.level_element_types = node.level_element_type
 	var original_data = element_to_original_data[node]
-	var list: Array = level_data.get(LEVEL_ELEMENT_CONTAINER_NAME[type])
+	var list: Array = level_element_type_to_level_data_array[type]
 	var i := list.find(original_data)
 	if i != -1:
 		list.remove_at(i)
@@ -343,7 +351,7 @@ func _remove_element(node: Node) -> void:
 func move_element(node: Node, new_position: Vector2i) -> bool:
 	var type: Enums.level_element_types = node.level_element_type
 	var original_data = element_to_original_data[node]
-	var list: Array = level_data.get(LEVEL_ELEMENT_CONTAINER_NAME[type])
+	var list: Array = level_element_type_to_level_data_array[type]
 	var i := list.find(original_data)
 	assert(i != -1)
 	
@@ -631,8 +639,7 @@ func _notification(what: int) -> void:
 
 func remove_all_pooled() -> void:
 	for type in Enums.level_element_types.values():
-		var cont_name: StringName = LEVEL_ELEMENT_CONTAINER_NAME[type]
-		var container: Node2D = get(cont_name)
+		var container: Node2D = level_element_type_to_container[type]
 		var c := container.get_children()
 		c.reverse()
 		for node in c:
