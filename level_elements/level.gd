@@ -128,11 +128,9 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	adjust_camera()
 	
-	var mouse_pos = get_local_mouse_position()
-	var camera_pos = camera.position
-	var camera_pos2 = camera_pos + camera.get_viewport_rect().size
-	if mouse_pos.x < camera_pos.x or mouse_pos.y < camera_pos.y \
-		or mouse_pos.x >= camera_pos2.x or mouse_pos.y >= camera_pos2.y:
+	var mouse_pos := get_local_mouse_position()
+	var camera_rect := Rect2(camera.position, camera.get_viewport_rect().size)
+	if not camera_rect.has_point(mouse_pos):
 		hover_highlight.stop_adapting()
 
 # For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
