@@ -1,6 +1,6 @@
 class_name SaveLoad
 
-const PRINT_LOAD := true
+const PRINT_LOAD := false
 const LATEST_FORMAT := 4
 const V1 := preload("res://misc/saving_versions/save_load_v1.gd")
 const V2 := preload("res://misc/saving_versions/save_load_v2.gd")
