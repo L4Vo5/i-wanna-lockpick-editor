@@ -10,9 +10,6 @@ const V4 := preload("res://misc/saving_versions/save_load_v4.gd")
 const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 
-# TODO: remove this if save load v4 is complete
-const IS_V4_STABLE := false
-
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
 	assert(PerfManager.start("SaveLoad::get_data"))
 	var data: PackedByteArray
