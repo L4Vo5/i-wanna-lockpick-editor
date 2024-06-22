@@ -194,6 +194,9 @@ func _update_mode() -> void:
 	data.level_properties = current_tab == level_properties_editor
 
 func _on_play_pressed() -> void:
+	# TODO: decide whether to keep it after save load is complete
+	if SaveLoad.IS_V4_STABLE:
+		save_level()
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
