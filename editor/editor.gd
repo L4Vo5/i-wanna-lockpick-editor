@@ -157,12 +157,12 @@ func _on_file_buffer_dropped(buffer: PackedByteArray) -> void:
 func _on_download_pressed() -> void:
 	assert(Global.is_web)
 	var buffer := SaveLoad.get_data(data.level_pack_data)
-	var name := ""
+	var file_name := ""
 	if data.level_pack_data.file_path != "":
-		name = data.level_pack_data.file_path.get_basename().get_file()
+		file_name = data.level_pack_data.file_path.get_basename().get_file()
 	else:
-		name = data.level_pack_data.name + ".lvl"
-	JavaScriptBridge.download_buffer(buffer, name)
+		file_name = data.level_pack_data.name + ".lvl"
+	JavaScriptBridge.download_buffer(buffer, file_name)
 
 func resolve_visibility() -> void:
 	for node in hide_on_play:

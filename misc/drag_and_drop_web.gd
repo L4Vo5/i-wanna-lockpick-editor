@@ -13,7 +13,7 @@ func _handle_file_dropped(_args):
 
 func _init() -> void:
 	assert(Global.is_web)
-	var obj = JavaScriptBridge.eval("""
+	var _obj = JavaScriptBridge.eval("""
 	window.addEventListener("drop", ev => {
 		ev.preventDefault();
 		for (let file of ev.dataTransfer.files) {
