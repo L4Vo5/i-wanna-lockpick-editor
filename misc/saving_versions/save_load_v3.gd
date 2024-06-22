@@ -10,8 +10,10 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	# Save all levels
 	for level in level_pack.levels:
 		_save_level(level, data)
+	data.compress()
 
 static func _save_level(level: LevelData, data: ByteAccess) -> void:
+	assert(PerfManager.start("SaveLoadV3::save_level"))
 	data.store_string(level.title + "\n" + level.name)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
@@ -38,7 +40,7 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_u32(level.entries.size())
 	for entry in level.entries:
 		_save_entry(data, entry)
-	data.compress()
+	assert(PerfManager.end("SaveLoadV3::save_level"))
 
 static func _save_key(data: ByteAccess, key: KeyData) -> void:
 	_save_complex(data, key.amount)

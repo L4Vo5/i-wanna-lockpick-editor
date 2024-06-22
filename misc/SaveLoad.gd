@@ -11,12 +11,10 @@ const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
-	assert(PerfManager.start("SaveLoad::get_data"))
 	var data: PackedByteArray
 	var byte_access := VC.make_byte_access([])
 	VC.save(level_pack, byte_access)
 	data = byte_access.data
-	assert(PerfManager.end("SaveLoad::get_data"))
 	return data
 
 static func get_image(level_pack: LevelPackData) -> Image:
@@ -119,20 +117,24 @@ static func load_from_buffer(
 	offset: int,
 	version: int,
 	original_editor_version: String, path: String) -> LevelPackData:
-	assert(PerfManager.start("SaveLoad::load_from_buffer"))
 	if original_editor_version == "":
 		original_editor_version = "Unknown (oops)"
 	var lvl_pack_data: LevelPackData
 	
 	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
-	# Shouldn't be allowed to be version 1
+
 	if version == 1:
-		var error_text := \
-"""Something terrible has happened!
-A level with saving format 1 shouldn't reach this function...
-If you're on the latest version, please report this."""
-		Global.safe_error(error_text, Vector2i(700, 100))
-		return null
+		# V1 necessary if you drag and drop levels on the web version
+		# TODO: pretty jank
+		var file := FileAccess.open("user://levels/__v1_temp__.lvl", FileAccess.READ_WRITE)
+		file.store_buffer(data.slice(offset))
+		file.seek(0)
+		
+		var lvl_data: LevelData = V1.load(file)
+		lvl_pack_data = LevelPackData.make_from_level(lvl_data)
+		
+		file.close()
+		DirAccess.remove_absolute("user://levels/__v1_temp__.lvl")
 	elif version == 2:
 		var byte_access := V2.make_byte_access(data, offset)
 		var lvl_data: LevelData = V2.load(byte_access)
@@ -154,7 +156,6 @@ Loading cancelled.""" % [original_editor_version, version, Global.game_version, 
 	
 	# Now that it's imported, it'll save with the latest version
 	finishing_touches(lvl_pack_data, path)
-	assert(PerfManager.end("SaveLoad::load_from_buffer"))
 	return lvl_pack_data
 
 static func finishing_touches(lvl_pack_data: LevelPackData, path: String) -> void:
