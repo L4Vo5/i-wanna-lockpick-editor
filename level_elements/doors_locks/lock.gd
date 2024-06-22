@@ -1,5 +1,5 @@
 @tool
-extends MarginContainer
+extends Control
 class_name Lock
 
 signal clicked(event: InputEventMouseButton)

@@ -24,6 +24,9 @@ var lock_occupied_size: int:
 ## the locks that the editor has as children
 var locks: Array[Lock] = []
 
+## Lock by Enums.colors
+var lock_by_color: Dictionary
+
 ## how many locks there'll be per row
 var locks_per_row: int
 ## free space in the row with the most locks, after placing the locks
@@ -60,6 +63,7 @@ func _ready():
 		l.ignore_position = true
 		l.lock_data = ld
 		locks.push_back(l)
+		lock_by_color[a_color] = l
 		add_child(l)
 	resized.connect(_redistribute_locks)
 	_redistribute_locks()
@@ -128,12 +132,8 @@ func _reposition_color_rect() -> void:
 		color_rect.show()
 		color_rect.position = selected_lock.position
 
-# TODO: find it faster lol?
 func set_to_color(new_color: Enums.colors) -> void:
-	for l in locks:
-		if l.lock_data.color == new_color:
-			selected_lock = l
-			return
+	selected_lock = lock_by_color[new_color]
 
 func get_current_color() -> Enums.colors:
 	return selected_lock.lock_data.color

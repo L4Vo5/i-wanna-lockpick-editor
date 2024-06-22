@@ -52,11 +52,11 @@ func _ready() -> void:
 	
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	copies.minimum_size_changed.connect(position_copies)
-	resolve_collision_mode()
 	if is_instance_valid(level):
 		assert(visible)
 		assert(not data.amount.is_zero())
 	update_visuals()
+	resolve_collision_mode()
 	assert(PerfManager.end("Door::_ready"))
 
 func _enter_tree():
@@ -64,8 +64,12 @@ func _enter_tree():
 	
 	# reset collisions
 	ignore_collisions_gate = -1
-	update_visuals() # sets position and size
-	resolve_collision_mode() # needs position and size
+	update_visuals()
+	resolve_collision_mode()
+
+func _exit_tree():
+	# in case that problem ever would appear on doors as well
+	custom_minimum_size = Vector2(0, 0)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:

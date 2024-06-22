@@ -178,7 +178,6 @@ func add_invalid_reason(reason: StringName, fixable: bool) -> void:
 	else:
 		_unfixable_invalid_reasons[reason] = fixable
 
-# WAITING4GODOT: these can't be Array[String] ...
 func get_fixable_invalid_reasons() -> Array:
 	return _fixable_invalid_reasons.keys()
 

@@ -122,14 +122,19 @@ static func load_from_buffer(
 	var lvl_pack_data: LevelPackData
 	
 	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
-	# Shouldn't be allowed to be version 1
+
 	if version == 1:
-		var error_text := \
-"""Something terrible has happened!
-A level with saving format 1 shouldn't reach this function...
-If you're on the latest version, please report this."""
-		Global.safe_error(error_text, Vector2i(700, 100))
-		return null
+		# V1 necessary if you drag and drop levels on the web version
+		# TODO: pretty jank
+		var file := FileAccess.open("user://levels/__v1_temp__.lvl", FileAccess.READ_WRITE)
+		file.store_buffer(data.slice(offset))
+		file.seek(0)
+		
+		var lvl_data: LevelData = V1.load(file)
+		lvl_pack_data = LevelPackData.make_from_level(lvl_data)
+		
+		file.close()
+		DirAccess.remove_absolute("user://levels/__v1_temp__.lvl")
 	elif version == 2:
 		var byte_access := V2.make_byte_access(data, offset)
 		var lvl_data: LevelData = V2.load(byte_access)

@@ -61,6 +61,9 @@ var hovering_over: Node:
 		return hover_highlight.current_obj
 @onready var mouseover: Node2D = %Mouseover
 
+var collision_system: CollisionSystem:
+	get:
+		return level_data.collision_system
 
 var player: Kid
 var goal: LevelGoal
@@ -288,14 +291,10 @@ func add_element(data) -> Node:
 	if not data in list:
 		list.push_back(data)
 		
-		var id := level_data.collision_system.add_rect(data.get_rect(), data)
+		var id := collision_system.add_rect(data.get_rect(), data)
 		level_data.elem_to_collision_system_id[data] = id
 		level_data.emit_changed()
 	return _spawn_element(data)
-
-var coll:
-	get:
-		return level_data.collision_system
 
 ## Makes *something* physically appear (doesn't check collisions)
 func _spawn_element(data) -> Node:
@@ -328,7 +327,7 @@ func remove_element(node: Node) -> void:
 		
 		var id: int = level_data.elem_to_collision_system_id[original_data]
 		level_data.elem_to_collision_system_id.erase(original_data)
-		level_data.collision_system.remove_rect(id)
+		collision_system.remove_rect(id)
 	_remove_element(node)
 	level_data.emit_changed()
 
@@ -362,8 +361,8 @@ func move_element(node: Node, new_position: Vector2i) -> bool:
 		node.data.position = new_position
 		
 		var id: int = level_data.elem_to_collision_system_id[original_data]
-		level_data.collision_system.remove_rect(id)
-		id = level_data.collision_system.add_rect(original_data.get_rect(), original_data)
+		collision_system.remove_rect(id)
+		id = collision_system.add_rect(original_data.get_rect(), original_data)
 		level_data.elem_to_collision_system_id[original_data] = id
 		
 		level_data.emit_changed()
@@ -383,7 +382,7 @@ func place_tile(tile_coord: Vector2i) -> void:
 	if level_data.tiles.get(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
 	level_data.tiles[tile_coord] = true
-	var id := level_data.collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
+	var id := collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
 	level_data.elem_to_collision_system_id[tile_coord] = id
 	update_tile_and_neighbors(tile_coord)
 	level_data.emit_changed()
@@ -394,7 +393,7 @@ func remove_tile(tile_coord: Vector2i) -> bool:
 	level_data.tiles.erase(tile_coord)
 	var id: int = level_data.elem_to_collision_system_id[tile_coord]
 	level_data.elem_to_collision_system_id.erase(tile_coord)
-	level_data.collision_system.remove_rect(id)
+	collision_system.remove_rect(id)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
 	level_data.emit_changed()
@@ -546,11 +545,11 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_da
 			return true
 	# Currently the collision system accounts for doors, keys, entries, salvages, and tiles
 	if exclusions.is_empty() and excluded_data.is_empty():
-		return level_data.collision_system.rect_has_collision_in_grid(rect)
+		return collision_system.rect_has_collision_in_grid(rect)
 	else:
-		var dict: Dictionary = level_data.collision_system.get_rects_intersecting_rect_in_grid(rect)
+		var dict: Dictionary = collision_system.get_rects_intersecting_rect_in_grid(rect)
 		for id in dict.keys():
-			var obj = level_data.collision_system.get_rect_data(id)
+			var obj = collision_system.get_rect_data(id)
 			if obj in excluded_data:
 				continue
 			if obj is Vector2i and not &"tiles" in exclusions:
@@ -567,9 +566,9 @@ func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_da
 
 ## Returns the object at that position.
 func get_object_occupying(pos: Vector2i) -> Node:
-	var rect_ids := level_data.collision_system.get_rects_containing_point_in_grid(pos)
+	var rect_ids := collision_system.get_rects_containing_point_in_grid(pos)
 	for id in rect_ids:
-		var obj = level_data.collision_system.get_rect_data(id)
+		var obj = collision_system.get_rect_data(id)
 		if original_data_to_element.has(obj):
 			var element: Node = original_data_to_element[obj]
 			# Invisible elements include: opened doors, picked up keys, and output points after spawning a door.

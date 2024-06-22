@@ -57,7 +57,6 @@ static func get_default_level_pack() -> LevelPackData:
 var _fixable_invalid_reasons := {}
 var _unfixable_invalid_reasons := {}
 
-# WAITING4GODOT: these can't be Array[String] ... ?
 func get_fixable_invalid_reasons() -> Array:
 	return _fixable_invalid_reasons.keys()
 

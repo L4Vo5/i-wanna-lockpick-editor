@@ -48,7 +48,6 @@ func _adjust() -> void:
 		position = new_rect.position
 	last_position = position
 
-# WAITING4GODOT: Array[Strin]
 func appear(fixable_problems: Array, unfixable_problems: Array) -> void:
 	fixable.visible = not fixable_problems.is_empty()
 	fixable_list.visible = not fixable_problems.is_empty()
