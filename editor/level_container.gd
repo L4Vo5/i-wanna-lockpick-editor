@@ -254,7 +254,7 @@ func relocate_selected() -> void:
 	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
 	var cond: bool
 	var obj_pos: Vector2i = selected_obj.position
-	cond = gameplay.level.move_element(selected_obj, selected_obj.level_element_type, used_coord)
+	cond = gameplay.level.move_element(selected_obj, used_coord)
 	
 	if not cond and obj_pos != used_coord:
 		_place_danger_obj()

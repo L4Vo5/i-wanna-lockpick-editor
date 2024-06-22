@@ -117,7 +117,7 @@ func run() -> void:
 	shadow.flip_h = sprite.flip_h
 
 # Necessary for undo/redo
-var is_pressing_jump := Input.is_action_pressed(&"jump")
+var is_pressing_jump := Global.in_editor || Input.is_action_pressed(&"jump")
 
 func fall_jump() -> void:
 	var last_is_pressing_jump := is_pressing_jump
