@@ -4,6 +4,8 @@ class_name DoorData
 
 ## Contains a door's logical data
 
+static var level_element_type := Enums.level_element_types.door
+
 @export var amount := ComplexNumber.new_with(1, 0)
 
 @export var outer_color := Enums.colors.none

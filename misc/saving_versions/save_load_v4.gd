@@ -113,7 +113,7 @@ static func load(data: ByteAccess) -> LevelPackData:
 	return level_pack
 
 static func _load_level(data: ByteAccess) -> LevelData:
-	assert(PerfManager.start("SaveLoadV2::load"))
+	assert(PerfManager.start("SaveLoadV4::load_level"))
 	var level := LevelData.new()
 	var title_name := data.get_string().split("\n")
 	assert(title_name.size() == 2)
@@ -140,10 +140,10 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	var door_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("door count is %d" % door_amount)
 	level.doors.resize(door_amount)
-	assert(PerfManager.start("SaveLoadV2::load (loading doors)"))
+	assert(PerfManager.start("SaveLoadV4::load (loading doors)"))
 	for i in door_amount:
 		level.doors[i] = _load_door(data)
-	assert(PerfManager.end("SaveLoadV2::load (loading doors)"))
+	assert(PerfManager.end("SaveLoadV4::load (loading doors)"))
 	
 	var entry_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("entry count is %d" % entry_amount)
@@ -151,7 +151,7 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	for i in entry_amount:
 		level.entries[i] = _load_entry(data)
 
-	assert(PerfManager.end("SaveLoadV2::load"))
+	assert(PerfManager.end("SaveLoadV4::load_level"))
 	return level
 
 static func _load_key(data: ByteAccess) -> KeyData:

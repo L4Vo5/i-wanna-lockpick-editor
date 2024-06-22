@@ -22,7 +22,7 @@ var salvage_point_editor: SalvagePointEditor:
 		return editor_data.salvage_point_editor
 
 @export var ghost_door: Door
-@export var ghost_key: Key
+@export var ghost_key: KeyElement
 @export var ghost_entry: Entry
 @export var ghost_salvage_point: SalvagePoint
 
@@ -126,7 +126,7 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_elem
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
-				if remove_element(node, type):
+				if remove_element(node):
 					accept_event()
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
@@ -137,7 +137,7 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_elem
 				select_thing(node)
 	elif event is InputEventMouseMotion:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
-			if remove_element(node, type):
+			if remove_element(node):
 				accept_event()
 
 
@@ -220,14 +220,14 @@ func place_element_on_mouse(type: Enums.level_element_types) -> bool:
 	var coord := get_mouse_coord(LEVEL_ELEMENT_GRID_SIZE[type])
 	var data = editor.level_element_editors[type].data.duplicated()
 	data.position = coord
-	var node := gameplay.level.add_element(data, type)
+	var node := gameplay.level.add_element(data)
 	if not is_instance_valid(node): return false
 	select_thing(node)
 	return true
 
-func remove_element(node: Node, type: Enums.level_element_types) -> bool:
+func remove_element(node: Node) -> bool:
 	if not is_instance_valid(node): return false
-	gameplay.level.remove_element(node, type)
+	gameplay.level.remove_element(node)
 	select_thing(null)
 	_retry_ghosts()
 	return true

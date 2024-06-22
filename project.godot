@@ -46,11 +46,16 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/quick_export/plugin.cfg")
+enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/quick_export/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")
 
 [filesystem]
 
 import/blender/enabled=false
+
+[gdunit4]
+
+settings/test/test_lookup_folder="tests"
+report/godot/push_error=true
 
 [gui]
 

@@ -92,7 +92,7 @@ func reset() -> void:
 	for color in star_keys.keys():
 		star_keys[color] = false
 	glitch_color = Enums.colors.glitch
-	for key: Key in level.keys.get_children():
+	for key: KeyElement in level.keys.get_children():
 		# TODO: definitely no! ... ?
 		key._on_changed_glitch_color()
 	i_view = false
@@ -173,7 +173,7 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 	# PERF: maybe the level keeps a list of all doors and keys with glitch, 
 	# so that it doesn't have to go through ALL all? 
 	
-	for key: Key in level.keys.get_children():
+	for key: KeyElement in level.keys.get_children():
 		if key.data.color == Enums.colors.glitch:
 			key._on_changed_glitch_color()
 	
@@ -455,7 +455,7 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 		player.master_equipped_sounds(last_master_equipped)
 
 # if you call this function, run _resolve_collision_mode on the key later
-func pick_up_key(key: Key) -> void:
+func pick_up_key(key: KeyElement) -> void:
 	var key_data := key.data
 	start_undo_action()
 	undo_redo.add_undo_method(key.undo)

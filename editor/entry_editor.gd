@@ -23,7 +23,6 @@ var editor_data: EditorData:
 func _set_to_data() -> void:
 	leads_to.value = data.leads_to + 1
 	_update_level_name()
-	print_debug("adjusting leads_to to %d" % leads_to.value)
 
 func _ready() -> void:
 	visibility_changed.connect(_general_update)

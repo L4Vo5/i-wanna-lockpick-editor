@@ -5,7 +5,9 @@
 [node name="Lock" type="Control"]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 43.0
+offset_bottom = 43.0
 mouse_filter = 1
 script = ExtResource("1_tp0hg")

@@ -206,7 +206,6 @@ func check_valid(should_correct: bool) -> void:
 	
 	# Make sure player spawn is aligned to the grid + inside the level
 	const PLAYER_SPAWN_OFFSET := Vector2i(14, 32)
-	print("player_spawn_position: " + str(player_spawn_position))
 	var new_pos := player_spawn_position
 	# offset so it's presumably inside the grid
 	new_pos -= PLAYER_SPAWN_OFFSET

@@ -56,7 +56,7 @@ func generate_keys() -> void:
 	for y in 7:
 		for x in 2:
 			var pos := KEY_START + KEY_DIFF * Vector2i(x, y)
-			var key: Key = KEY.instantiate()
+			var key: KeyElement = KEY.instantiate()
 			key.position = pos
 			key.data = KeyData.new()
 			key.data.color = KEY_COLORS[y * 2 + x]
