@@ -1,5 +1,5 @@
 @tool
-extends Control
+extends MarginContainer
 class_name Door
 
 signal lock_clicked(event: InputEventMouseButton, lock: Lock)

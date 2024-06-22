@@ -7,12 +7,12 @@
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_c2ium"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="6_qvekf"]
 
-[sub_resource type="Resource" id="Resource_5iioo"]
+[sub_resource type="Resource" id="Resource_i41jk"]
 script = ExtResource("2_jx360")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_70tfp"]
+[sub_resource type="Resource" id="Resource_ee64c"]
 script = ExtResource("3_3plxf")
 color = 1
 magnitude = 1
@@ -24,11 +24,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_iwwvv"]
+[sub_resource type="Resource" id="Resource_4s4l5"]
 script = ExtResource("4_1c01c")
-amount = SubResource("Resource_5iioo")
+amount = SubResource("Resource_i41jk")
 outer_color = 1
-locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_70tfp")])
+locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_ee64c")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -44,7 +44,7 @@ sid = -1
 offset_right = 299.0
 offset_bottom = 602.0
 script = ExtResource("1_66io0")
-data = SubResource("Resource_iwwvv")
+data = SubResource("Resource_4s4l5")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -71,9 +71,10 @@ layout_mode = 2
 
 [node name="Door" parent="VBoxContainer/TopStuff/TheDoor" instance=ExtResource("5_c2ium")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 ignore_position = true
-data = SubResource("Resource_iwwvv")
+data = SubResource("Resource_4s4l5")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -97,7 +98,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="VBoxContainer/ScrollContainer/Editors/BaseDoor/Color" instance=ExtResource("6_qvekf")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 450)
+custom_minimum_size = Vector2(20, 60)
 layout_mode = 2
 size_flags_horizontal = 3
 lock_size = 20

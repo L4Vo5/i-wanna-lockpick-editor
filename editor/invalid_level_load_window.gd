@@ -48,7 +48,7 @@ func _adjust() -> void:
 		position = new_rect.position
 	last_position = position
 
-func appear(fixable_problems: PackedStringArray, unfixable_problems: PackedStringArray) -> void:
+func appear(fixable_problems: Array, unfixable_problems: Array) -> void:
 	fixable.visible = not fixable_problems.is_empty()
 	fixable_list.visible = not fixable_problems.is_empty()
 	unfixable.visible = not unfixable_problems.is_empty()

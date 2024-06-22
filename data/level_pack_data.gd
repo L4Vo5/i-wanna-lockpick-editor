@@ -57,11 +57,11 @@ static func get_default_level_pack() -> LevelPackData:
 var _fixable_invalid_reasons := {}
 var _unfixable_invalid_reasons := {}
 
-func get_fixable_invalid_reasons() -> PackedStringArray:
-	return PackedStringArray(_fixable_invalid_reasons.keys())
+func get_fixable_invalid_reasons() -> Array:
+	return _fixable_invalid_reasons.keys()
 
-func get_unfixable_invalid_reasons() -> PackedStringArray:
-	return PackedStringArray(_unfixable_invalid_reasons.keys())
+func get_unfixable_invalid_reasons() -> Array:
+	return _unfixable_invalid_reasons.keys()
 
 func check_valid(should_correct: bool) -> void:
 	_fixable_invalid_reasons = {}

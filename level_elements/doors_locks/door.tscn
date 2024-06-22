@@ -11,12 +11,9 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j8eyw"]
 size = Vector2(1, 1)
 
-[node name="Door" type="Control"]
-layout_mode = 3
-anchors_preset = 0
+[node name="Door" type="MarginContainer"]
 offset_right = 32.0
 offset_bottom = 32.0
-mouse_filter = 1
 script = ExtResource("1_pj0ca")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
@@ -34,7 +31,6 @@ shape = SubResource("RectangleShape2D_j8eyw")
 [node name="LockHolder" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-anchors_preset = 0
 mouse_filter = 2
 
 [node name="Erosion" parent="." instance=ExtResource("2_t0ev5")]
@@ -47,7 +43,6 @@ mouse_filter = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-anchors_preset = 0
 mouse_filter = 2
 
 [node name="Ice" parent="." instance=ExtResource("4_cxymq")]
@@ -60,7 +55,6 @@ mouse_filter = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-anchors_preset = 0
 mouse_filter = 2
 
 [node name="Open" type="AudioStreamPlayer" parent="."]
@@ -70,7 +64,6 @@ bus = &"Sfx"
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 2
-anchors_preset = 0
 mouse_filter = 2
 
 [node name="Copies" type="Label" parent="Control"]
