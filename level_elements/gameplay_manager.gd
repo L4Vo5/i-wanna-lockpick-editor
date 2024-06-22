@@ -34,10 +34,9 @@ func load_level_pack(pack: LevelPackData) -> void:
 func get_level_pack() -> LevelPackData:
 	return _pack_data
 
-## Transitions to a different level in the pack
-# TODO: consider renaming? sicnce "transition" implies animation. this just switches the level
-func transition_to_level(id: int) -> void:
-	assert(PerfManager.start("GameplayManager::transition_to_level (%d)" % id))
+## Sets the current level to the given level id within the pack and loads it.
+func set_current_level(id: int) -> void:
+	assert(PerfManager.start("GameplayManager::set_current_level (%d)" % id))
 	if id == pack_state.current_level:
 		reset()
 	else:
@@ -46,7 +45,7 @@ func transition_to_level(id: int) -> void:
 		var level_data: LevelData = _pack_data.levels[pack_state.current_level]
 		level.level_data = level_data
 		reset()
-	assert(PerfManager.end("GameplayManager::transition_to_level (%d)" % id))
+	assert(PerfManager.end("GameplayManager::set_current_level (%d)" % id))
 
 func has_won_current_level() -> bool:
 	return pack_state.completed_levels[pack_state.current_level] == 1
@@ -74,7 +73,7 @@ func exit_level() -> void:
 
 ## Exits WITHOUT checking
 func exit_immediately() -> void:
-	transition_to_level(pack_state.exit_level)
+	set_current_level(pack_state.exit_level)
 	level.player.position = pack_state.exit_position
 
 func exit_or_reset() -> void:
@@ -93,7 +92,7 @@ func enter_level(id: int, exit_position: Vector2i) -> void:
 	var target_level_title := _new_level_data.title
 	transition.level_enter_animation(target_level_name, target_level_title)
 	await transition.finished_animation
-	transition_to_level(id)
+	set_current_level(id)
 
 func win_animation(text: String) -> void:
 	transition.win_animation(text)

@@ -252,9 +252,9 @@ func relocate_selected() -> void:
 	var type: Enums.level_element_types = selected_obj.level_element_type
 	var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[type]
 	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
-	var cond: bool = true
+	var cond: bool
 	var obj_pos: Vector2i = selected_obj.position
-	gameplay.level.move_element(selected_obj, selected_obj.level_element_type, used_coord)
+	cond = gameplay.level.move_element(selected_obj, selected_obj.level_element_type, used_coord)
 	
 	if not cond and obj_pos != used_coord:
 		_place_danger_obj()
@@ -351,8 +351,6 @@ func _place_ghosts() -> void:
 
 # places the danger obj only. this overrides the ghosts obvs
 func _place_danger_obj() -> void:
-	# TODO
-	assert(false, "This doesn't trigger! but relocating stuff doesn't show danger currently...")
 	if not editor_data.level_elements or editor_data.is_playing:
 		return
 	var type := editor_data.level_element_type

@@ -11,10 +11,12 @@ const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
+	assert(PerfManager.start("SaveLoad::get_data"))
 	var data: PackedByteArray
 	var byte_access := VC.make_byte_access([])
 	VC.save(level_pack, byte_access)
 	data = byte_access.data
+	assert(PerfManager.end("SaveLoad::get_data"))
 	return data
 
 static func get_image(level_pack: LevelPackData) -> Image:
@@ -117,6 +119,7 @@ static func load_from_buffer(
 	offset: int,
 	version: int,
 	original_editor_version: String, path: String) -> LevelPackData:
+	assert(PerfManager.start("SaveLoad::load_from_buffer"))
 	if original_editor_version == "":
 		original_editor_version = "Unknown (oops)"
 	var lvl_pack_data: LevelPackData
@@ -151,6 +154,7 @@ Loading cancelled.""" % [original_editor_version, version, Global.game_version, 
 	
 	# Now that it's imported, it'll save with the latest version
 	finishing_touches(lvl_pack_data, path)
+	assert(PerfManager.end("SaveLoad::load_from_buffer"))
 	return lvl_pack_data
 
 static func finishing_touches(lvl_pack_data: LevelPackData, path: String) -> void:

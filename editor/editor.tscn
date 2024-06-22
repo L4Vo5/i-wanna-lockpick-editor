@@ -38,12 +38,12 @@ type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_b6fqr"]
+[sub_resource type="Resource" id="Resource_ujua5"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_ytqvs"]
+[sub_resource type="Resource" id="Resource_65iqc"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -55,11 +55,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_knne6"]
+[sub_resource type="Resource" id="Resource_otg78"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_b6fqr")
+amount = SubResource("Resource_ujua5")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_ytqvs")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_65iqc")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -71,26 +71,26 @@ _curses = {
 glitch_color = 13
 sid = -1
 
-[sub_resource type="Resource" id="Resource_ssc7l"]
+[sub_resource type="Resource" id="Resource_d321k"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_wcb7r"]
+[sub_resource type="Resource" id="Resource_ef3qa"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_ssc7l")
+amount = SubResource("Resource_d321k")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_royla"]
+[sub_resource type="Resource" id="Resource_052xs"]
 script = ExtResource("21_uoxo3")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[sub_resource type="Resource" id="Resource_4s7yd"]
+[sub_resource type="Resource" id="Resource_gj5g4"]
 script = ExtResource("22_djptt")
 sid = 0
 is_output = false
@@ -299,6 +299,9 @@ self_modulate = Color(1, 1, 1, 0.498039)
 
 [node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("5_55fwv")]
 visible = false
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 3
+anchors_preset = 0
 mouse_filter = 2
 
 [node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("6_n53nq")]
@@ -340,12 +343,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-data = SubResource("Resource_knne6")
+data = SubResource("Resource_otg78")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_wcb7r")
+data = SubResource("Resource_ef3qa")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -367,12 +370,12 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_royla")
+data = SubResource("Resource_052xs")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_4s7yd")
+data = SubResource("Resource_gj5g4")
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)
@@ -385,5 +388,5 @@ show_hidden_files = true
 
 [node name="InvalidLevelLoad" parent="." instance=ExtResource("16_ayc8p")]
 position = Vector2i(10, 35)
-size = Vector2i(477, 956)
+size = Vector2i(477, 964)
 visible = false
