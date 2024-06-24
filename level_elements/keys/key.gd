@@ -79,6 +79,7 @@ func _disconnect_data() -> void:
 		data.changed.disconnect(update_visual)
 
 func _process(_delta: float) -> void:
+	if !data: return
 	if data.color in [Enums.colors.master, Enums.colors.pure]:
 		var frame := floori(Global.time / Rendering.SPECIAL_ANIM_DURATION) % 4
 		if frame == 3:
