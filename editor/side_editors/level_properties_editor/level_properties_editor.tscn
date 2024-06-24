@@ -253,6 +253,8 @@ layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("3_pu07t")
 object_size = 40
+color_rect_extend = null
+color_rect_offset = null
 
 [node name="StartPos" type="TextureRect" parent="VBoxContainer/Level/WhatToPlace/WhatToPlace"]
 unique_name_in_owner = true

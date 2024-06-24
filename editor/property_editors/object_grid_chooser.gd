@@ -16,6 +16,10 @@ signal object_selected(obj: Node)
 ## the minimum amount of rows to force
 @export var min_rows := 1:
 	set = set_min_rows
+@export var color_rect_extend := 0:
+	set = set_color_rect_extend
+@export var color_rect_offset := Vector2.ZERO:
+	set = set_color_rect_offset
 
 ## the currently selected child
 var selected_object: Control:
@@ -59,8 +63,6 @@ func _notification(what: int) -> void:
 
 func set_object_size(new_size: int) -> void:
 	object_size = new_size
-	if _color_rect:
-		_color_rect.size = Vector2(object_size, object_size)
 	queue_sort()
 
 func set_selected_color(new_color: Color) -> void:
@@ -76,6 +78,14 @@ func set_min_rows(new_min_rows: int) -> void:
 	min_rows = new_min_rows
 	if min_rows > _row_count:
 		queue_sort()
+
+func set_color_rect_extend(val: int) -> void:
+	color_rect_extend = val
+	_reposition_color_rect()
+
+func set_color_rect_offset(val: Vector2) -> void:
+	color_rect_offset = val
+	_reposition_color_rect()
 
 func clear() -> void:
 	while get_child_count() != 0:
@@ -150,15 +160,13 @@ func _is_point_inside(point: Vector2) -> bool:
 	return Rect2(Vector2.ZERO, size).has_point(point)
 
 func _reposition_color_rect() -> void:
-	_color_rect.size = Vector2.ONE * (object_size)
+	if not _color_rect: return
+	_color_rect.size = Vector2.ONE * (object_size + color_rect_extend * 2)
 	# In case it's null, sets it to the first child.
 	# (unless there are no children)
 	selected_object = selected_object
 	if not is_instance_valid(selected_object):
-		print("AW")
-		print(selected_object)
-		print(get_child_count())
 		_color_rect.hide()
 	else:
 		_color_rect.show()
-		_color_rect.position = selected_object.position
+		_color_rect.position = selected_object.position - Vector2.ONE * color_rect_extend + color_rect_offset
