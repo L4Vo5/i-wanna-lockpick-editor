@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Lockpick Editor"
 config/tags=PackedStringArray("editor", "iwbtg", "fangame")
-run/main_scene="res://editor/editor.tscn"
+run/main_scene="res://editor/main_editor/editor.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 run/max_fps=50
 boot_splash/show_image=false
@@ -59,7 +59,7 @@ report/godot/push_error=true
 
 [gui]
 
-theme/custom="res://editor/editor_theme.tres"
+theme/custom="res://editor/main_editor/editor_theme.tres"
 
 [input]
 

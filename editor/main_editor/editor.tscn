@@ -1,8 +1,8 @@
 [gd_scene load_steps=35 format=3 uid="uid://ddjn4lk6mcp3k"]
 
-[ext_resource type="Script" path="res://editor/editor.gd" id="1_n4qnf"]
-[ext_resource type="Script" path="res://editor/scroll_container_improver.gd" id="2_jw8xc"]
-[ext_resource type="Script" path="res://editor/level_container.gd" id="2_kqd34"]
+[ext_resource type="Script" path="res://editor/main_editor/editor.gd" id="1_n4qnf"]
+[ext_resource type="Script" path="res://editor/main_editor/scroll_container_improver.gd" id="2_jw8xc"]
+[ext_resource type="Script" path="res://editor/main_editor/level_container.gd" id="2_kqd34"]
 [ext_resource type="PackedScene" uid="uid://doxgx8n20sjl0" path="res://level_elements/gameplay.tscn" id="4_a2tib"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_55fwv"]
 [ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="6_n53nq"]
@@ -11,20 +11,20 @@
 [ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/side_editors/door_editor/door_editor.tscn" id="8_5qjay"]
 [ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvages/salvage_point.tscn" id="8_8di3k"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
-[ext_resource type="Script" path="res://editor/level_outline.gd" id="9_r4glf"]
+[ext_resource type="Script" path="res://editor/main_editor/level_outline.gd" id="9_r4glf"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
 [ext_resource type="Script" path="res://level_elements/camera_dragger.gd" id="10_nd33d"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="11_psli5"]
-[ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/side_editors/key_editor.tscn" id="12_cr7ft"]
+[ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/side_editors/key_editor/key_editor.tscn" id="12_cr7ft"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
-[ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/side_editors/level_properties_editor.tscn" id="14_dug7w"]
-[ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/invalid_level_load_window.tscn" id="16_ayc8p"]
-[ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/side_editors/entry_editor.tscn" id="17_ncfu0"]
+[ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/side_editors/level_properties_editor/level_properties_editor.tscn" id="14_dug7w"]
+[ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/main_editor/invalid_level_load_window.tscn" id="16_ayc8p"]
+[ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/side_editors/entry_editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
-[ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/side_editors/salvage_point_editor.tscn" id="21_ieeor"]
+[ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/side_editors/salvage_editor/salvage_point_editor.tscn" id="21_ieeor"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="21_uoxo3"]
 [ext_resource type="Script" path="res://data/salvage_point_data.gd" id="22_djptt"]
-[ext_resource type="PackedScene" uid="uid://ccum746wsrcl8" path="res://editor/side_editors/settings_editor.tscn" id="24_hjg5q"]
+[ext_resource type="PackedScene" uid="uid://ccum746wsrcl8" path="res://editor/side_editors/settings_editor/settings_editor.tscn" id="24_hjg5q"]
 
 [sub_resource type="Resource" id="Resource_k5lmb"]
 script = ExtResource("9_0kc5k")
@@ -39,12 +39,12 @@ type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_lje16"]
+[sub_resource type="Resource" id="Resource_2ssn7"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_uecd0"]
+[sub_resource type="Resource" id="Resource_fmfrb"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -56,11 +56,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_yntlk"]
+[sub_resource type="Resource" id="Resource_gb8fw"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_lje16")
+amount = SubResource("Resource_2ssn7")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_uecd0")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_fmfrb")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -72,26 +72,26 @@ _curses = {
 glitch_color = 13
 sid = -1
 
-[sub_resource type="Resource" id="Resource_wydlp"]
+[sub_resource type="Resource" id="Resource_dg6te"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_23e7c"]
+[sub_resource type="Resource" id="Resource_o2vxa"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_wydlp")
+amount = SubResource("Resource_dg6te")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_6htsi"]
+[sub_resource type="Resource" id="Resource_xi4yl"]
 script = ExtResource("21_uoxo3")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[sub_resource type="Resource" id="Resource_3qalt"]
+[sub_resource type="Resource" id="Resource_1vfi8"]
 script = ExtResource("22_djptt")
 sid = 0
 is_output = false
@@ -115,16 +115,16 @@ level_properties_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContain
 entry_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Entries")
 salvage_point_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/SalvagePoints")
 level_container = NodePath("HSplitContainer/LeftSide/LevelContainer")
-play_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Play")
-save_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Save")
-save_as_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/SaveAs")
-download_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Download")
-load_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/Load")
-load_from_clipboard_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/LoadFromClipboard")
-level_path_displayer = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/LevelPath")
-open_files_location = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/OpenFilesLocation")
-new_level_button = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/NewLevel")
-more_options = NodePath("HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer/MoreOptions")
+play_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/Play")
+save_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/Save")
+save_as_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/SaveAs")
+download_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/Download")
+load_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/Load")
+load_from_clipboard_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/LoadFromClipboard")
+level_path_displayer = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/LevelPath")
+open_files_location = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/OpenFilesLocation")
+new_level_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/NewLevel")
+more_options = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/MoreOptions")
 file_dialog = NodePath("FileDialog")
 invalid_level_dialog = NodePath("InvalidLevelLoad")
 
@@ -152,61 +152,61 @@ size_flags_horizontal = 3
 [node name="Tools" type="MarginContainer" parent="HSplitContainer/LeftSide"]
 layout_mode = 2
 
-[node name="Container" type="Container" parent="HSplitContainer/LeftSide/Tools"]
+[node name="ScrollContainerImprover" type="Container" parent="HSplitContainer/LeftSide/Tools"]
 layout_mode = 2
 script = ExtResource("2_jw8xc")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/LeftSide/Tools/Container"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover"]
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_scroll_mode = 2
 vertical_scroll_mode = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 5
 
-[node name="Play" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="Play" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "Play"
 
-[node name="Save" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="Save" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "Save"
 
-[node name="SaveAs" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="SaveAs" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "Save As..."
 
-[node name="Download" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="Download" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 visible = false
 layout_mode = 2
 text = "Download"
 
-[node name="Load" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="Load" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "Load"
 
-[node name="LoadFromClipboard" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="LoadFromClipboard" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "Load from Clipboard"
 
-[node name="NewLevel" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="NewLevel" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "New Level"
 
-[node name="OpenFilesLocation" type="Button" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="OpenFilesLocation" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "Open Level Files Location"
 
-[node name="MoreOptions" type="MenuButton" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="MoreOptions" type="MenuButton" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 visible = false
 layout_mode = 2
 text = "More..."
 
-[node name="LevelPath" type="LineEdit" parent="HSplitContainer/LeftSide/Tools/Container/ScrollContainer/HBoxContainer"]
+[node name="LevelPath" type="LineEdit" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 10
 text = "res://fgsdfgsdfgt.tres"
@@ -336,17 +336,17 @@ custom_minimum_size = Vector2(362, 0)
 layout_mode = 2
 
 [node name="BookmarkTabContainer" parent="HSplitContainer/RightDock" instance=ExtResource("20_4gm0f")]
-custom_minimum_size = Vector2(304, 0)
+custom_minimum_size = Vector2(345, 0)
 layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-data = SubResource("Resource_yntlk")
+data = SubResource("Resource_gb8fw")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_23e7c")
+data = SubResource("Resource_o2vxa")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -368,12 +368,12 @@ layout_mode = 2
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_6htsi")
+data = SubResource("Resource_xi4yl")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_3qalt")
+data = SubResource("Resource_1vfi8")
 
 [node name="Settings" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("24_hjg5q")]
 visible = false

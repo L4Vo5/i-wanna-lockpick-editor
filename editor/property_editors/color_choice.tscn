@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dioqmta8dbkbh"]
 
-[ext_resource type="Script" path="res://editor/side_editors/property_editors/color_choice.gd" id="1_fsw3j"]
+[ext_resource type="Script" path="res://editor/property_editors/color_choice.gd" id="1_fsw3j"]
 
 [node name="ColorChoice" type="Control"]
 custom_minimum_size = Vector2(14, 14)

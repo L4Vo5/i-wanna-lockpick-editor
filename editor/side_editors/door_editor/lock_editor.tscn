@@ -4,9 +4,9 @@
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_lb8xj"]
 [ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/side_editors/door_editor/door_lock_separator.tscn" id="3_3jb06"]
 [ext_resource type="PackedScene" uid="uid://ds64ntew1oani" path="res://level_elements/doors_locks/lock.tscn" id="4_iioui"]
-[ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/side_editors/property_editors/color_choice.tscn" id="5_7431d"]
-[ext_resource type="Script" path="res://editor/side_editors/property_editors/lock_type_choice.gd" id="6_o8wc6"]
-[ext_resource type="PackedScene" uid="uid://cinkniexduuij" path="res://editor/side_editors/property_editors/arrangement_chooser.tscn" id="7_wefna"]
+[ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/property_editors/color_choice.tscn" id="5_7431d"]
+[ext_resource type="Script" path="res://editor/property_editors/lock_type_choice.gd" id="6_o8wc6"]
+[ext_resource type="PackedScene" uid="uid://cinkniexduuij" path="res://editor/property_editors/arrangement_chooser.tscn" id="7_wefna"]
 
 [sub_resource type="Resource" id="Resource_sgiyv"]
 script = ExtResource("2_lb8xj")
