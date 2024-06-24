@@ -195,7 +195,7 @@ func _update_mode() -> void:
 
 func _on_play_pressed() -> void:
 	# TODO: decide whether to keep it after save load is complete
-	if not FileAccess.file_exists("user://dont_save_on_play"):
+	if SaveLoad.is_path_valid(data.level_pack_data.file_path) and not FileAccess.file_exists("user://dont_save_on_play"):
 		save_level()
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
