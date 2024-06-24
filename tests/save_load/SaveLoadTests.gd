@@ -27,5 +27,8 @@ func test_versions() -> void:
 			var level_pack := SaveLoad.load_from_path(file_path)
 			assert_object(level_pack).is_not_null()
 			assert_int(SaveLoad._last_loaded_version)\
-				.override_failure_message("Expected %d but was %d for level %s" % [dir_version, SaveLoad._last_loaded_version, file_path])\
+				.override_failure_message("Expected version %d but was %d for level %s" % [dir_version, SaveLoad._last_loaded_version, file_path])\
 				.is_equal(dir_version)
+			assert_str(level_pack.file_path)\
+				.override_failure_message("File path should be '%s' but was '%s'" % [file_path, level_pack.file_path])\
+				.is_equal(file_path)

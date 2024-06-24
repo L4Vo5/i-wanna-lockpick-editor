@@ -64,7 +64,7 @@ static func save_level(level_pack: LevelPackData) -> void:
 ## Loads a LevelPackData from a file path.
 static func load_from_path(path: String) -> LevelPackData:
 	if path.get_extension() == "png":
-		return load_from_image(Image.load_from_file(path))
+		return load_from_image(Image.load_from_file(path), path)
 	elif path.get_extension() == "lvl":
 		return load_from_buffer(FileAccess.get_file_as_bytes(path), path)
 	else:
@@ -84,10 +84,10 @@ static func load_from_file_buffer(buffer: PackedByteArray, path: String) -> Leve
 	return load_from_buffer(buffer, path)
 
 ## Loads a LevelPackData from an Image
-static func load_from_image(image: Image) -> LevelPackData:
+static func load_from_image(image: Image, path := "") -> LevelPackData:
 	image.convert(Image.FORMAT_RGB8)
 	var data := image.get_data()
-	return load_from_buffer(data, "")
+	return load_from_buffer(data, path)
 
 ## Loads a LevelPackData from a valid save buffer.
 static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackData:
