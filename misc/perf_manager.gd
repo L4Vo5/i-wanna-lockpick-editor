@@ -15,13 +15,13 @@ func _ready() -> void:
 	print("node count before: %d" % get_tree().get_node_count())
 	var l = preload("res://level_elements/level.tscn").instantiate()
 	var levels := [
-		SaveLoad.load_from("user://levels/many doors.lvl"),
-		SaveLoad.load_from("user://levels/many_counts.lvl"),
-		SaveLoad.load_from("user://levels/big_doors.lvl"),
+		SaveLoad.load_from_path("user://levels/many doors.lvl"),
+		SaveLoad.load_from_path("user://levels/many_counts.lvl"),
+		SaveLoad.load_from_path("user://levels/big_doors.lvl"),
 	]
 	l.level_data = levels[0]
-#	l.level_data = SaveLoad.load_from("user://levels/many_counts.lvl")
-#	l.level_data = SaveLoad.load_from("user://levels/big_doors.lvl")
+#	l.level_data = SaveLoad.load_from_path("user://levels/many_counts.lvl")
+#	l.level_data = SaveLoad.load_from_path("user://levels/big_doors.lvl")
 	add_child(l)
 	# by making l reset now, we can test only soft resets if we also bind false
 	l.reset()

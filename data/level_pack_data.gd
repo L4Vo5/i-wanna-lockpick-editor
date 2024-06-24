@@ -29,7 +29,7 @@ var state_data: LevelPackStateData:
 		state_data = val
 		changed.emit()
 
-## For easier saving, since resource_path probably wouldn't work with .lvl
+## If empty, the pack will have to be saved as a new file.
 var file_path := "":
 	set(val):
 		if file_path == val: return

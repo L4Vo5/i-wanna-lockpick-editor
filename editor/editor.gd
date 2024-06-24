@@ -253,7 +253,7 @@ func load_level(path: String, read_only: bool = false) -> void:
 				path = path.get_basename() + ".lvl"
 				new_level_pack.resource_path = ""
 	elif ext == "lvl" or ext == "png":
-		new_level_pack = SaveLoad.load_from(path, read_only)
+		new_level_pack = SaveLoad.load_from_path(path, read_only)
 	else:
 		assert(not ext in SaveLoad.LEVEL_EXTENSIONS, "Trying to load level with invalid extension")
 		assert(false, "Not all valid extensions are covered")

@@ -10,16 +10,15 @@ const V4 := preload("res://misc/saving_versions/save_load_v4.gd")
 const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 
+## Given a LevelPack, gets the byte data to save it as the current format version.
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
-	var data: PackedByteArray
 	var byte_access := VC.make_byte_access([])
 	VC.save(level_pack, byte_access)
-	data = byte_access.data
-	return data
+	return byte_access.data
 
+## Given a LevelPack, gets the Image to save it as the current format version.
 static func get_image(level_pack: LevelPackData) -> Image:
 	var data := get_data(level_pack)
-	if data.size() == 0: return null
 	var img := Image.new()
 	
 	# full color. alternatively, call image_to_b_w here (for some visual variety)
@@ -30,7 +29,7 @@ static func get_image(level_pack: LevelPackData) -> Image:
 	img.set_data(image_size, image_size, false, Image.FORMAT_RGB8, data)
 	return img
 
-
+## Loads a LevelPackData from an Image
 static func load_from_image(image: Image) -> LevelPackData:
 	image.convert(Image.FORMAT_RGB8)
 	var data := image.get_data()
@@ -42,6 +41,7 @@ static func load_from_image(image: Image) -> LevelPackData:
 
 static func save_level(level_pack: LevelPackData) -> void:
 	var path := level_pack.file_path
+	assert(path != "")
 	if path.get_extension() == "lvl":
 		var file := FileAccess.open(path, FileAccess.WRITE)
 		file.store_buffer(get_data(level_pack))
@@ -58,7 +58,7 @@ static func save_level(level_pack: LevelPackData) -> void:
 		level_pack.is_pack_id_saved = true
 		level_pack.state_data.save()
 
-# Similar to load_from_buffer, but loads the entire file
+## Similar to load_from_buffer, but loads the entire file
 static func load_from_file_buffer(buffer: PackedByteArray, path: String) -> LevelPackData:
 	# Check png header
 	if buffer.slice(0, 8).get_string_from_ascii() == "\u0089PNG\r\n\u001a\n":
@@ -74,9 +74,9 @@ static func load_from_file_buffer(buffer: PackedByteArray, path: String) -> Leve
 	var original_editor_version := byte_access.get_string()
 	return load_from_buffer(buffer, byte_access.get_position(), version, original_editor_version, path)
 
-# Loads a .lvl file
-# If read_only is true, only open for reading (cannot save afterwards)
-static func load_from(path: String, read_only: bool = false) -> LevelPackData:
+## Loads a LevelPackData from a file path.
+## If read_only is true, only open for reading (cannot save afterwards)
+static func load_from_path(path: String, read_only: bool = false) -> LevelPackData:
 	var version: int = -1
 	var original_editor_version := ""
 	var buf: PackedByteArray
@@ -121,7 +121,7 @@ static func load_from_buffer(
 		original_editor_version = "Unknown (oops)"
 	var lvl_pack_data: LevelPackData
 	
-	if PRINT_LOAD: print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
+	print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
 
 	if version == 1:
 		# V1 necessary if you drag and drop levels on the web version
