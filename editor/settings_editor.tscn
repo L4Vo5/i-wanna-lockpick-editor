@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ccum746wsrcl8"]
+
+[ext_resource type="Script" path="res://editor/settings_editor.gd" id="1_kbdlw"]
+
+[node name="SettingsEditor" type="MarginContainer"]
+script = ExtResource("1_kbdlw")
