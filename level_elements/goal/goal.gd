@@ -16,7 +16,7 @@ const PART := preload("res://level_elements/goal/goal_particle.tscn")
 func _ready() -> void:
 	area_entered.connect(_on_body_entered)
 	area_exited.connect(_on_body_exited)
-	if level.gameplay_manager.has_won_current_level():
+	if level and level.gameplay_manager.has_won_current_level():
 		win(true)
 	preprocess(58)
 

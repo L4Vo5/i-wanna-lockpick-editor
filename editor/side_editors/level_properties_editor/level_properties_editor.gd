@@ -12,7 +12,6 @@ var editor_data: EditorData:
 			editor_data.changed_level_data.disconnect(_update_level_data)
 		editor_data = val
 		if is_instance_valid(editor_data):
-			_on_what_to_place_changed()
 			editor_data.changed_level_pack_data.connect(_update_level_pack_data)
 			editor_data.changed_level_data.connect(_update_level_data)
 			_update_level_pack_data()
@@ -48,7 +47,10 @@ var _level_pack_data: LevelPackData:
 
 @onready var player_spawn_coord: Label = %PlayerSpawnCoord
 @onready var goal_coord: Label = %GoalCoord
-@onready var what_to_place: OptionButton = %WhatToPlace
+
+@onready var what_to_place: ObjectGridChooser = %WhatToPlace
+@onready var place_player_spawn: TextureRect = %StartPos
+@onready var place_goal: Node2DCenterContainer = %Goal
 
 
 @onready var no_image: Label = %NoImage
@@ -89,11 +91,9 @@ func _ready() -> void:
 	
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
-	what_to_place.add_item("Player Spawn")
-	what_to_place.add_item("Goal")
-	what_to_place.item_selected.connect(_on_what_to_place_changed.unbind(1))
 	visibility_changed.connect(func(): if visible: _reload_image())
-	_on_what_to_place_changed()
+	what_to_place.object_selected.connect(_on_what_to_place_changed)
+	_on_what_to_place_changed(place_player_spawn)
 	level_name.text_changed.connect(_on_set_name)
 	level_title.text_changed.connect(_on_set_title)
 	level_author.text_changed.connect(_on_set_author)
@@ -124,11 +124,11 @@ func _on_changed_goal_position() -> void:
 	if not is_instance_valid(_level_data): return
 	goal_coord.text = str(_level_data.goal_position)
 
-func _on_what_to_place_changed() -> void:
+func _on_what_to_place_changed(selected_object: Node) -> void:
 	if not is_node_ready(): return
 	if not is_instance_valid(editor_data): return
-	editor_data.player_spawn = what_to_place.selected == 0
-	editor_data.goal_position = what_to_place.selected == 1
+	editor_data.player_spawn = selected_object == place_player_spawn
+	editor_data.goal_position = selected_object == place_goal
 
 # adapts the controls to the level's data
 var _setting_to_data := false

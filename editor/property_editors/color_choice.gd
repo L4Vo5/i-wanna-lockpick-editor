@@ -66,9 +66,9 @@ func _ready():
 		lock_by_color[a_color] = l
 		add_child(l)
 	resized.connect(_redistribute_locks)
-	_redistribute_locks()
 	custom_minimum_size.x = lock_size
 	custom_minimum_size.y = lock_size
+	_redistribute_locks()
 
 func _redistribute_locks() -> void:
 	var max_locks_per_row := floori(size.x / lock_occupied_size)

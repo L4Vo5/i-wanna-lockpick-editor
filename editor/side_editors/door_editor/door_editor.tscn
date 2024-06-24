@@ -7,12 +7,12 @@
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_c2ium"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/property_editors/color_choice.tscn" id="6_qvekf"]
 
-[sub_resource type="Resource" id="Resource_5wc0g"]
+[sub_resource type="Resource" id="Resource_wt0xh"]
 script = ExtResource("2_jx360")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_5mnl8"]
+[sub_resource type="Resource" id="Resource_jya3j"]
 script = ExtResource("3_3plxf")
 color = 1
 magnitude = 1
@@ -24,11 +24,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_3j6bu"]
+[sub_resource type="Resource" id="Resource_g4di4"]
 script = ExtResource("4_1c01c")
-amount = SubResource("Resource_5wc0g")
+amount = SubResource("Resource_wt0xh")
 outer_color = 1
-locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_5mnl8")])
+locks = Array[ExtResource("3_3plxf")]([SubResource("Resource_jya3j")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -44,7 +44,7 @@ sid = -1
 offset_right = 299.0
 offset_bottom = 602.0
 script = ExtResource("1_66io0")
-data = SubResource("Resource_3j6bu")
+data = SubResource("Resource_g4di4")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -73,7 +73,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 ignore_position = true
-data = SubResource("Resource_3j6bu")
+data = SubResource("Resource_g4di4")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 layout_mode = 2
