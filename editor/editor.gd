@@ -147,9 +147,9 @@ func _on_files_dropped(files: PackedStringArray) -> void:
 	if files.is_empty():
 		return
 	# Load only the first
-	var file_name = files[0]
-	load_level(file_name, true) # don't want to overwrite the contents of that file
+	load_level(files[0])
 
+## Only applicable on web
 func _on_file_buffer_dropped(buffer: PackedByteArray) -> void:
 	new_level_pack = SaveLoad.load_from_file_buffer(buffer, "")
 	finish_loading_level()
@@ -236,7 +236,7 @@ func save_level() -> void:
 	_update_level_path_display()
 
 var new_level_pack: LevelPackData = null
-func load_level(path: String, read_only: bool = false) -> void:
+func load_level(path: String) -> void:
 	new_level_pack = null
 	var ext := path.get_extension()
 	if ext in ["res", "tres"]:
@@ -253,7 +253,7 @@ func load_level(path: String, read_only: bool = false) -> void:
 				path = path.get_basename() + ".lvl"
 				new_level_pack.resource_path = ""
 	elif ext == "lvl" or ext == "png":
-		new_level_pack = SaveLoad.load_from_path(path, read_only)
+		new_level_pack = SaveLoad.load_from_path(path)
 	else:
 		assert(not ext in SaveLoad.LEVEL_EXTENSIONS, "Trying to load level with invalid extension")
 		assert(false, "Not all valid extensions are covered")
@@ -320,10 +320,11 @@ func _on_save_pressed() -> void:
 	# Allow saving .res, .tres, and levels in res:// when testing
 	if Global.danger_override:
 		save_level()
-	elif data.level_pack_data.file_path == "":
-		_on_save_as_pressed()
-	else:
+	elif SaveLoad.is_path_valid(data.level_pack_data.file_path):
 		save_level()
+	else:
+		# "Save As" logic will assign a new path
+		_on_save_as_pressed()
 
 func _on_load_pressed() -> void:
 	file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
@@ -352,7 +353,7 @@ func _on_new_level_button_pressed() -> void:
 	_update_level_path_display()
 
 func _on_open_files_location_pressed() -> void:
-	OS.shell_open(ProjectSettings.globalize_path("user://levels/"))
+	OS.shell_open(SaveLoad.LEVELS_PATH)
 
 func _on_more_options_selected(idx: int) -> void:
 	var popup_menu := more_options.get_popup()

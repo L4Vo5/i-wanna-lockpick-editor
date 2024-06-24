@@ -39,9 +39,17 @@ static func load_from_image(image: Image) -> LevelPackData:
 	data = data.slice(byte_access.get_position())
 	return load_from_buffer(data, byte_access.get_position(), version, editor_ver, "")
 
+static var LEVELS_PATH := ProjectSettings.globalize_path("user://levels/")
+
+static func is_path_valid(path: String) -> bool:
+	if path == "": return false
+	var globalized_path := ProjectSettings.globalize_path(path)
+	return Global.danger_override or globalized_path.begins_with(LEVELS_PATH)
+
 static func save_level(level_pack: LevelPackData) -> void:
 	var path := level_pack.file_path
-	assert(path != "")
+	assert(is_path_valid(path))
+	
 	if path.get_extension() == "lvl":
 		var file := FileAccess.open(path, FileAccess.WRITE)
 		file.store_buffer(get_data(level_pack))
@@ -75,8 +83,7 @@ static func load_from_file_buffer(buffer: PackedByteArray, path: String) -> Leve
 	return load_from_buffer(buffer, byte_access.get_position(), version, original_editor_version, path)
 
 ## Loads a LevelPackData from a file path.
-## If read_only is true, only open for reading (cannot save afterwards)
-static func load_from_path(path: String, read_only: bool = false) -> LevelPackData:
+static func load_from_path(path: String) -> LevelPackData:
 	var version: int = -1
 	var original_editor_version := ""
 	var buf: PackedByteArray
@@ -103,10 +110,6 @@ static func load_from_path(path: String, read_only: bool = false) -> LevelPackDa
 		original_editor_version = byte_access.get_string()
 		buf = data
 		offset = byte_access.get_position()
-	
-	if read_only:
-		# is enough to prevent it from writing into it
-		path = ""
 	
 	# with the buffer and V1 out of the way, we can load in a more generic way+
 	return load_from_buffer(buf, offset, version, original_editor_version, path)
