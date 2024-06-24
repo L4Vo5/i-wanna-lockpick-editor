@@ -331,7 +331,7 @@ class ByteAccess:
 	# Similar to FileAccess.get_pascal_string
 	func get_string() -> String:
 		var len := get_u32()
-		var bytes = data.slice(curr, curr + len)
+		var bytes := data.slice(curr, curr + len)
 		curr += len
 		return bytes.get_string_from_utf8()
 
