@@ -77,6 +77,12 @@ func set_min_rows(new_min_rows: int) -> void:
 	if min_rows > _row_count:
 		queue_sort()
 
+func clear() -> void:
+	while get_child_count() != 0:
+		var child := get_child(-1)
+		remove_child(child)
+		child.queue_free()
+
 func _redistribute_children() -> void:
 	var max_objects_per_row := floori(size.x / _object_occupied_size)
 	if max_objects_per_row <= 0: max_objects_per_row = 1
@@ -117,6 +123,9 @@ func _gui_input(event: InputEvent) -> void:
 			else:
 				_is_clicking_inside = false
 	elif (event is InputEventMouseMotion) and _is_clicking_inside:
+		if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			_is_clicking_inside = false
+			return
 		var mouse_pos := get_local_mouse_position()
 		_detect_selected_object(mouse_pos)
 		accept_event()
