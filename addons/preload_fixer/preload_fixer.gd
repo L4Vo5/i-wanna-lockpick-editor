@@ -1,7 +1,13 @@
 @tool
-extends EditorScript
+extends EditorPlugin
 
-func _run() -> void:
+func _enter_tree() -> void:
+	add_tool_menu_item("Fix Preloads", fix_preloads)
+
+func _exit_tree() -> void:
+	remove_tool_menu_item("Fix Preloads")
+
+func fix_preloads() -> void:
 	var files := {}
 	load_files("res://", files)
 	var some_file_changed := false

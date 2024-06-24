@@ -46,7 +46,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/quick_export/plugin.cfg")
+enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/preload_fixer/plugin.cfg", "res://addons/quick_export/plugin.cfg")
 
 [filesystem]
 
