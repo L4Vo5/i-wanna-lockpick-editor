@@ -11,6 +11,9 @@ const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 static var LEVELS_PATH := ProjectSettings.globalize_path("user://levels/")
 
+## Used for testing
+static var _last_loaded_version := -1
+
 ## Given a LevelPack, gets the byte data to save it as the current format version.
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
 	var byte_access := VC.make_byte_access([])
@@ -101,6 +104,7 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	
 	print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
 	
+	_last_loaded_version = version
 	match version:
 		1:
 			# TODO: pretty jank
