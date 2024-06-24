@@ -12,7 +12,6 @@
 size = Vector2(1, 1)
 
 [node name="Door" type="MarginContainer"]
-custom_minimum_size = Vector2(32, 32)
 offset_right = 32.0
 offset_bottom = 32.0
 script = ExtResource("1_pj0ca")

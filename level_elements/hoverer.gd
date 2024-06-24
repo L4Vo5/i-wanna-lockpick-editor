@@ -48,7 +48,7 @@ func is_adapting() -> bool:
 
 func adapt_to(obj: Node, no_signal: bool = false) -> void:
 	if not is_instance_valid(obj):
-		stop_adapting()
+		stop_adapting(no_signal)
 		return
 	# we allow the same object to be passed several times, in case position needs to be adjusted
 #	if obj == current_obj:

@@ -177,7 +177,6 @@ func add_invalid_reason(reason: StringName, fixable: bool) -> void:
 	else:
 		_unfixable_invalid_reasons[reason] = fixable
 
-# WAITING4GODOT: these can't be Array[String] ...
 func get_fixable_invalid_reasons() -> Array:
 	return _fixable_invalid_reasons.keys()
 
@@ -206,7 +205,6 @@ func check_valid(should_correct: bool) -> void:
 	
 	# Make sure player spawn is aligned to the grid + inside the level
 	const PLAYER_SPAWN_OFFSET := Vector2i(14, 32)
-	print("player_spawn_position: " + str(player_spawn_position))
 	var new_pos := player_spawn_position
 	# offset so it's presumably inside the grid
 	new_pos -= PLAYER_SPAWN_OFFSET

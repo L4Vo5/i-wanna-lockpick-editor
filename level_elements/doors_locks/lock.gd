@@ -1,5 +1,5 @@
 @tool
-extends MarginContainer
+extends Control
 class_name Lock
 
 signal clicked(event: InputEventMouseButton)
@@ -8,39 +8,36 @@ signal changed_lock_data
 @export var lock_data: LockData:
 	set(val):
 		if lock_data == val: return
-		disconnect_lock_data()
+		_disconnect_lock_data()
 		lock_data = val
-		connect_lock_data()
+		_connect_lock_data()
 
 @export var ignore_position := false
 var level: Level
 
-func connect_lock_data() -> void:
+func _connect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
 	if not is_node_ready(): return
-	assert(PerfManager.start(&"Lock::connect_lock_data"))
-	# Connect all the signals
-	lock_data.changed.connect(update_everything)
-	
-	# Call the methods to update everything now
-	update_everything()
-	assert(PerfManager.end(&"Lock::connect_lock_data"))
+	lock_data.changed.connect(update_visuals)
+	lock_data.update_minimum_size()
+	update_visuals()
 
-func disconnect_lock_data() -> void:
+func _disconnect_lock_data() -> void:
 	if not is_instance_valid(lock_data): return
 	if not is_node_ready(): return
-	lock_data.changed.disconnect(update_everything)
+	lock_data.changed.disconnect(update_visuals)
 
-func update_everything() -> void:
+func update_visuals() -> void:
 	update_position()
+	
 	update_size()
-	update_lock_size()
+	
 	update_frame_visible()
 	draw_base()
 	draw_locks()
 
 func _ready() -> void:
-	connect_lock_data()
+	_connect_lock_data()
 
 func _init() -> void:
 	_create_canvas_items()
@@ -59,13 +56,7 @@ func update_position() -> void:
 		position = lock_data.position
 
 func update_size() -> void:
-	custom_minimum_size = lock_data.size
-	size = custom_minimum_size
-
-func update_lock_size() -> void:
-	lock_data.size = Vector2i(
-		maxi(lock_data.size.x, lock_data.minimum_size.x),
-		maxi(lock_data.size.y, lock_data.minimum_size.y))
+	size = lock_data.size
 
 
 func update_frame_visible() -> void:
@@ -141,11 +132,11 @@ func draw_locks() -> void:
 	if lock_data.dont_show_locks:
 		assert(PerfManager.end(&"Lock::draw_locks"))
 		return
+	
 	var sign := lock_data.get_sign_rot()
 	var value_type := lock_data.get_value_rot()
-	# magnitude is the same lol
 	var magnitude := lock_data.magnitude
-#	lock_count_number.text = ""
+	
 	match lock_data.lock_type:
 		Enums.lock_types.blast:
 			RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
@@ -153,7 +144,6 @@ func draw_locks() -> void:
 			LockCountDraw.draw_text(locks, s, 2)
 			
 			var si := LockCountDraw.get_min_size(s, 2)
-			lock_data.minimum_size = si + Vector2i(4, 4) # 4 for the frame size
 			RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (si)) / 2))
 			
 		Enums.lock_types.all:
@@ -161,16 +151,12 @@ func draw_locks() -> void:
 			LockCountDraw.draw_text(locks, "=", 2)
 			
 			var si := LockCountDraw.get_min_size("=", 2)
-			lock_data.minimum_size = si + Vector2i(4, 4) # 4 for the frame size
 			RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (si)) / 2))
 			
-		Enums.lock_types.blank:
-			lock_data.minimum_size = Vector2i(1, 1)
 		Enums.lock_types.normal:
 			var arrangement = Rendering.get_lock_arrangement(level.level_data if level else null, magnitude, lock_data.lock_arrangement)
 			if arrangement != null:
 				RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
-				lock_data.minimum_size = arrangement[0]
 				
 				RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (lock_data.minimum_size)) / 2))
 				
@@ -187,7 +173,6 @@ func draw_locks() -> void:
 				LockCountDraw.draw_text(locks, s, type)
 				
 				var si := LockCountDraw.get_min_size(s, type)
-				lock_data.minimum_size = si + Vector2i(4, 4) # 4 for the frame size
 				RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (si)) / 2))
 				
 	assert(PerfManager.end(&"Lock::draw_locks"))

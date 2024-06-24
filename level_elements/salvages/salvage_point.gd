@@ -54,7 +54,15 @@ func prep_output_step_1() -> void:
 	new_door_data.glitch_color = Enums.colors.glitch
 	new_door_data.amount.set_to(1, 0)
 	new_door_data.sid = sid
-	door = level._spawn_element(new_door_data, Enums.level_element_types.door)
+	
+	# Make sure the door has collision
+	# This is not very ideal
+	# TODO: Better solution
+	var id := level.level_data.collision_system.add_rect(new_door_data.get_rect(), new_door_data)
+	level.level_data.elem_to_collision_system_id[new_door_data] = id
+	
+	# TODO: Don't use a function starting with _, it's supposed to be "private"!
+	door = level._spawn_element(new_door_data)
 	door_error = false
 
 func prep_output_step_2() -> void:
@@ -68,14 +76,14 @@ func prep_output_step_3() -> void:
 	if not data.is_output:
 		return
 	if door != null and door_error:
-		level.remove_element(door, Enums.level_element_types.door)
+		level.remove_element(door)
 		door = null
 	if door != null:
 		hide()
 
 func remove_door() -> void:
 	if door != null:
-		level.remove_element(door, Enums.level_element_types.door)
+		level.remove_element(door)
 		door = null
 	door_error = false
 	show()

@@ -52,12 +52,24 @@ func _ready() -> void:
 	
 	static_body.disable_mode = CollisionObject2D.DISABLE_MODE_REMOVE
 	copies.minimum_size_changed.connect(position_copies)
-	resolve_collision_mode()
 	if is_instance_valid(level):
 		assert(visible)
 		assert(not data.amount.is_zero())
-	update_everything()
+	update_visuals()
+	resolve_collision_mode()
 	assert(PerfManager.end("Door::_ready"))
+
+func _enter_tree():
+	if not is_node_ready(): return
+	
+	# reset collisions
+	ignore_collisions_gate = -1
+	update_visuals()
+	resolve_collision_mode()
+
+func _exit_tree():
+	# in case that problem ever would appear on doors as well
+	custom_minimum_size = Vector2(0, 0)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
@@ -65,9 +77,13 @@ func _notification(what: int) -> void:
 
 func _connect_data() -> void:
 	if not is_instance_valid(data): return
-	data.changed.connect(update_everything)
-	if not is_node_ready(): return
-	update_everything()
+	data.changed.connect(update_visuals)
+	
+	# reset collisions
+	ignore_collisions_gate = -1
+	
+	if not is_inside_tree(): return
+	update_visuals()
 	# look.... ok?
 	
 	show()
@@ -75,7 +91,7 @@ func _connect_data() -> void:
 
 func _disconnect_data() -> void:
 	if not is_instance_valid(data): return
-	data.changed.disconnect(update_everything)
+	data.changed.disconnect(update_visuals)
 
 func connect_level() -> void:
 	if not is_instance_valid(level): return
@@ -115,9 +131,11 @@ func resolve_collision_mode() -> void:
 				return
 		static_body.process_mode = Node.PROCESS_MODE_INHERIT
 
-func update_everything() -> void:
+func update_visuals() -> void:
+	# We will run this later, when we _enter_tree
+	if not is_inside_tree(): return
 	if not is_instance_valid(data): return
-	assert(PerfManager.start(&"Door::update_everything"))
+	assert(PerfManager.start(&"Door::update_visuals"))
 	
 	_draw_base()
 	_draw_frame()
@@ -130,7 +148,7 @@ func update_everything() -> void:
 	
 	if not ignore_position:
 		position = data.position
-	assert(PerfManager.end(&"Door::update_everything"))
+	assert(PerfManager.end(&"Door::update_visuals"))
 
 func position_copies() -> void:
 	copies.size.x = size.x
@@ -159,6 +177,7 @@ func _on_changed_i_view() -> void:
 		lock.dont_show_frame = not is_aligned
 		lock.dont_show_locks = not is_aligned
 		lock.rotation = (90 if i_view else 0) + (180 if is_flipped else 0)
+		lock.update_minimum_size()
 
 func update_textures() -> void:
 	if not is_node_ready(): return
@@ -224,6 +243,7 @@ func open(result: Dictionary) -> void:
 			snd_open.stream = preload("res://level_elements/doors_locks/open.wav")
 		snd_open.play()
 		create_debris()
+	update_visuals()
 
 # this runs:
 # - every time the door data updates (it could have started or stopped being a gate)

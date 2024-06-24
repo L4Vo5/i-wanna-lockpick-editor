@@ -11,8 +11,10 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	# Save all levels
 	for level in level_pack.levels:
 		_save_level(level, data)
+	data.compress()
 
 static func _save_level(level: LevelData, data: ByteAccess) -> void:
+	assert(PerfManager.start("SaveLoadV4::save_level"))
 	data.store_string(level.title + "\n" + level.name)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
@@ -39,7 +41,11 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_u32(level.entries.size())
 	for entry in level.entries:
 		_save_entry(data, entry)
-	data.compress()
+	# Salvage Points
+	data.store_u32(level.salvage_points.size())
+	for salvage_point in level.salvage_points:
+		_save_salvage_point(data, salvage_point)
+	assert(PerfManager.end("SaveLoadV4::save_level"))
 
 static func _save_key(data: ByteAccess, key: KeyData) -> void:
 	_save_complex(data, key.amount)
@@ -92,6 +98,12 @@ static func _save_entry(data: ByteAccess, entry: EntryData) -> void:
 	data.store_u32(entry.skin)
 	data.store_u32(entry.leads_to)
 
+static func _save_salvage_point(data: ByteAccess, salvage_point: SalvagePointData) -> void:
+	data.store_u32(salvage_point.position.x)
+	data.store_u32(salvage_point.position.y)
+	data.store_u8(salvage_point.skin)
+	data.store_u32(salvage_point.sid)
+
 static func _save_complex(data: ByteAccess, n: ComplexNumber) -> void:
 	data.store_s64(n.real_part)
 	data.store_s64(n.imaginary_part)
@@ -101,6 +113,7 @@ static func load(data: ByteAccess) -> LevelPackData:
 	level_pack.name = data.get_string()
 	level_pack.author = data.get_string()
 	level_pack.pack_id = data.get_s64()
+	level_pack.is_pack_id_saved = true
 	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
 	
 	var level_count := data.get_u32()
@@ -112,7 +125,7 @@ static func load(data: ByteAccess) -> LevelPackData:
 	return level_pack
 
 static func _load_level(data: ByteAccess) -> LevelData:
-	assert(PerfManager.start("SaveLoadV2::load"))
+	assert(PerfManager.start("SaveLoadV4::load_level"))
 	var level := LevelData.new()
 	var title_name := data.get_string().split("\n")
 	assert(title_name.size() == 2)
@@ -139,18 +152,24 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	var door_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("door count is %d" % door_amount)
 	level.doors.resize(door_amount)
-	assert(PerfManager.start("SaveLoadV2::load (loading doors)"))
+	assert(PerfManager.start("SaveLoadV4::load (loading doors)"))
 	for i in door_amount:
 		level.doors[i] = _load_door(data)
-	assert(PerfManager.end("SaveLoadV2::load (loading doors)"))
+	assert(PerfManager.end("SaveLoadV4::load (loading doors)"))
 	
 	var entry_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("entry count is %d" % entry_amount)
 	level.entries.resize(entry_amount)
 	for i in entry_amount:
 		level.entries[i] = _load_entry(data)
+	
+	var salvage_point_amount := data.get_u32()
+	if SaveLoad.PRINT_LOAD: print("salvage point count is %d" % salvage_point_amount)
+	level.salvage_points.resize(salvage_point_amount)
+	for i in salvage_point_amount:
+		level.salvage_points[i] = _load_salvage_point(data)
 
-	assert(PerfManager.end("SaveLoadV2::load"))
+	assert(PerfManager.end("SaveLoadV4::load_level"))
 	return level
 
 static func _load_key(data: ByteAccess) -> KeyData:
@@ -182,15 +201,7 @@ static func _load_door(data: ByteAccess) -> DoorData:
 	door.locks.resize(lock_amount)
 	for i in lock_amount:
 		door.locks[i] = _load_lock(data)
-	door.connect_all_locks()
 	return door
-
-static func _load_entry(data: ByteAccess) -> EntryData:
-	var entry := EntryData.new()
-	entry.position = Vector2i(data.get_u32(), data.get_u32())
-	entry.skin = data.get_u32()
-	entry.leads_to = data.get_u32()
-	return entry
 
 static func _load_lock(data: ByteAccess) -> LockData:
 	var lock := LockData.new()
@@ -211,128 +222,61 @@ static func _load_lock(data: ByteAccess) -> LockData:
 	
 	return lock
 
+static func _load_entry(data: ByteAccess) -> EntryData:
+	var entry := EntryData.new()
+	entry.position = Vector2i(data.get_u32(), data.get_u32())
+	entry.skin = data.get_u32()
+	entry.leads_to = data.get_u32()
+	return entry
+
+static func _load_salvage_point(data: ByteAccess) -> SalvagePointData:
+	var salvage_point := SalvagePointData.new()
+	salvage_point.position = Vector2i(data.get_u32(), data.get_u32())
+	salvage_point.is_output = data.get_u8() != 0
+	salvage_point.sid = data.get_u32()
+	return salvage_point
+
 static func _load_complex(data: ByteAccess) -> ComplexNumber:
 	return ComplexNumber.new_with(data.get_s64(), data.get_s64())
+
+# pack state related functions
+static func save_pack_state(data: ByteAccess, state: LevelPackStateData) -> void:
+	data.store_s64(state.pack_id)
+	data.store_u16(SaveLoad.LATEST_FORMAT)
+	data.store_string(Global.game_version)
+	
+	data.store_string(state.state_name)
+	data.store_u32(state.completed_levels.size())
+	for x in state.completed_levels:
+		data.store_u8(x)
+	
+	data.store_u32(state.salvaged_doors.size())
+	for door in state.salvaged_doors:
+		if door == null:
+			data.store_u8(0)
+			continue
+		data.store_u8(1)
+		_save_door(data, door)
+	data.compress()
+
+static func load_pack_state(data: ByteAccess) -> LevelPackStateData:
+	var state := LevelPackStateData.new()
+	state.state_name = data.get_string()
+	
+	var completed_levels_amount := data.get_u32()
+	state.completed_levels.resize(completed_levels_amount)
+	for i in completed_levels_amount:
+		state.completed_levels[i] = data.get_u8()
+	
+	var salvage_count := data.get_u32()
+	state.salvaged_doors.resize(salvage_count)
+	for i in salvage_count:
+		var salvage_exists := data.get_u8()
+		if salvage_exists != 0:
+			state.salvaged_doors[i] = _load_door(data)
+	
+	return state
 
 
 static func make_byte_access(data: PackedByteArray, offset := 0) -> ByteAccess:
 	return ByteAccess.new(data, offset)
-
-class ByteAccess:
-	extends RefCounted
-	var data: PackedByteArray
-	var curr := 0
-	func _init(_data: PackedByteArray, _offset := 0) -> void:
-		data = _data
-		curr = _offset
-
-	func seek(pos: int) -> void:
-		curr = pos
-	
-	func get_position() -> int:
-		return curr
-
-	func compress() -> void:
-		data.resize(curr)
-
-	func make_space(how_much: int) -> void:
-		if data.size() < 128:
-			data.resize(128)
-		while curr + how_much > data.size():
-			data.resize(data.size() * 2)
-
-	func store_u8(v: int) -> void:
-		make_space(1)
-		data.encode_u8(curr, v)
-		curr += 1
-
-	func store_s8(v: int) -> void:
-		make_space(1)
-		data.encode_s8(curr, v)
-		curr += 1
-
-	func store_u16(v: int) -> void:
-		make_space(2)
-		data.encode_u16(curr, v)
-		curr += 2
-
-	func store_s16(v: int) -> void:
-		make_space(2)
-		data.encode_s16(curr, v)
-		curr += 2
-
-	func store_u32(v: int) -> void:
-		make_space(4)
-		data.encode_u32(curr, v)
-		curr += 4
-
-	func store_s32(v: int) -> void:
-		make_space(4)
-		data.encode_s32(curr, v)
-		curr += 4
-
-	func store_s64(v: int) -> void:
-		make_space(8)
-		data.encode_s64(curr, v)
-		curr += 8
-
-	func store_var(v: Variant) -> void:
-		#print("Storing var %s" % v)
-		# encode_var is weird. if it doesn't work, it returns -1, otherwise the used size
-		var len := data.encode_var(curr, v)
-		while len == -1:
-			make_space(data.size())
-			len = data.encode_var(curr, v)
-		#print("Encoded as %d bytes: %s" % [len, data.slice(curr, curr + len)])
-		curr += len
-	
-	# Similar to FileAccess.store_pascal_string
-	func store_string(s: String) -> void:
-		var bytes := s.to_utf8_buffer()
-		store_u32(bytes.size())
-		# TODO / WAITING4GODOT: find a better way to store buffers
-		for byte in bytes:
-			store_u8(byte)
-
-	func get_u8() -> int:
-		curr += 1
-		return data.decode_u8(curr - 1)
-
-	func get_s8() -> int:
-		curr += 1
-		return data.decode_s8(curr - 1)
-
-	func get_u16() -> int:
-		curr += 2
-		return data.decode_u16(curr - 2)
-
-	func get_s16() -> int:
-		curr += 2
-		return data.decode_s16(curr - 2)
-
-	func get_u32() -> int:
-		curr += 4
-		return data.decode_u32(curr - 4)
-
-	func get_s32() -> int:
-		curr += 4
-		return data.decode_s32(curr - 4)
-
-	func get_s64() -> int:
-		curr += 8
-		return data.decode_s64(curr - 8)
-
-	func get_var() -> Variant:
-		var len := data.decode_var_size(curr)
-		#print("Decoding variant with %d bytes" % len)
-		#print("The bytes are: %s" % data.slice(curr, curr + len))
-		curr += len
-		return data.decode_var(curr - len)
-	
-	# Similar to FileAccess.get_pascal_string
-	func get_string() -> String:
-		var len := get_u32()
-		var bytes = data.slice(curr, curr + len)
-		curr += len
-		return bytes.get_string_from_utf8()
-

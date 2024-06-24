@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Lockpick Editor"
 config/tags=PackedStringArray("editor", "iwbtg", "fangame")
-run/main_scene="res://editor/editor.tscn"
+run/main_scene="res://editor/main_editor/editor.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 run/max_fps=50
 boot_splash/show_image=false
@@ -46,15 +46,20 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/quick_export/plugin.cfg")
+enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/preload_fixer/plugin.cfg", "res://addons/quick_export/plugin.cfg")
 
 [filesystem]
 
 import/blender/enabled=false
 
+[gdunit4]
+
+settings/test/test_lookup_folder="tests"
+report/godot/push_error=true
+
 [gui]
 
-theme/custom="res://editor/editor_theme.tres"
+theme/custom="res://editor/main_editor/editor_theme.tres"
 
 [input]
 
@@ -155,6 +160,11 @@ enter_level={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":0,"key_label":4194320,"unicode":0,"echo":false,"script":null)
 , Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194320,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
+}
+exit_level={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194308,"key_label":0,"unicode":0,"echo":false,"script":null)
 ]
 }
 

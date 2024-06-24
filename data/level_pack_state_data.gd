@@ -17,6 +17,9 @@ var pack_data: LevelPackData:
 		pack_data = val
 		connect_pack_data()
 
+## State name in case of multiple save files
+@export var state_name: String = ""
+
 ## An array with the completion status of each level (0: incomplete, 1: completed)
 # A level is completed when you reach the goal.
 @export var completed_levels: PackedByteArray
@@ -26,6 +29,12 @@ var pack_data: LevelPackData:
 
 ## The current level that's being played in the pack.
 @export var current_level: int
+
+## The level that you reach when exiting (backspace).
+@export var exit_level: int = -1
+
+## The player position within exit_level after exiting
+@export var exit_position: Vector2i
 
 static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
@@ -68,113 +77,49 @@ func _on_deleted_level(level_id: int) -> void:
 	save()
 
 func save() -> void:
-	if not pack_data.is_saved:
-		# pack is not saved anywhere
-		# don't unnecessarily spam save files
+	if not pack_data.is_pack_id_saved:
 		return
-	pr("Saving data...")
 	if file_path == "":
-		var i := pack_data.pack_id
-		while FileAccess.file_exists("user://level_saves/" + String.num_uint64(i, 16) + ".lvlst"):
-			i = Global.random_int64()
-		file_path = "user://level_saves/" + String.num_uint64(i, 16) + ".lvlst"
-	var data := SaveLoad.VC.make_byte_writer()
-	data.store_64(pack_id)
-	
-	# Completed levels
-	data.store_uint(pack_state_meta_category.completed_levels)
-	data.store_uint(completed_levels.size())
-	for b in completed_levels:
-		data.store_8(b)
-	
-	# Salvaged doors
-	data.store_uint(pack_state_meta_category.salvaged_doors)
-	data.store_uint(salvaged_doors.size())
-	for door in salvaged_doors:
-		if door == null:
-			data.store_8(0)
+		var dir = "user://level_saves"
+		var original_path = dir.path_join(str(pack_id))
+		if not FileAccess.file_exists(original_path + ".lvlst"):
+			file_path = original_path + ".lvlst"
 		else:
-			data.store_8(1)
-			SaveLoad.VC._save_door(data, door)
-	
-	# Current level
-	data.store_uint(pack_state_meta_category.current_level)
-	data.store_uint(current_level)
-	
-	data.store_uint(pack_state_meta_category._end)
-	
-	var file := FileAccess.open(file_path, FileAccess.WRITE)
-	file.store_buffer(data.get_data())
-	file.close()
+			var i := 1
+			while FileAccess.file_exists(original_path + "-" + str(i) + ".lvlst"):
+				i += 1
+			file_path = original_path + "-" + str(i) + ".lvlst"
+		pr("Save data path: " + file_path)
+	SaveLoad.save_pack_state(self)
 
-enum pack_state_meta_category {
-	_end = 0,
-	completed_levels = 1,
-	salvaged_doors = 2,
-	current_level = 3,
-}
-
-static func load_state_and_test_id(path: String, pack: LevelPackData) -> LevelPackStateData:
+static func load_and_check_pack_state(path, pack) -> LevelPackStateData:
 	if path.ends_with(".tres"):
-		var possible_state = load(path)
-		if possible_state is LevelPackStateData:
-			if possible_state.pack_id == pack.pack_id:
-				possible_state.pack_data = pack
-				return possible_state
+		var state := ResourceLoader.load(path)
+		if not state or not state is LevelPackStateData or not state.pack_id == pack.pack_id:
+			return null
+		return state
+	var state := SaveLoad.load_and_check_pack_state_from_path(path, pack)
+	if state == null:
 		return null
-	if not path.ends_with(".lvlst"):
-		return null
-	var file := FileAccess.open(path, FileAccess.READ)
-	var id := file.get_64()
-	if id != pack.pack_id:
-		file.close()
-		return null
-	var state := LevelPackStateData.new()
 	state.file_path = path
-	state.pack_id = id
-	state.completed_levels = PackedByteArray()
-	state.completed_levels.resize(pack.levels.size())
-	state.pack_data = pack
-	var buffer := file.get_buffer(file.get_length() - file.get_position())
-	file.close()
-	
-	var data := SaveLoad.VC.make_byte_reader(buffer)
-	while true:
-		var category: pack_state_meta_category = data.get_uint()
-		if category == pack_state_meta_category._end:
-			break
-		elif category == pack_state_meta_category.completed_levels:
-			var amount := data.get_uint()
-			for i in amount:
-				if i < state.completed_levels.size():
-					state.completed_levels[i] = data.get_u8()
-		elif category == pack_state_meta_category.salvaged_doors:
-			var amount := data.get_uint()
-			state.salvaged_doors.resize(amount)
-			for i in amount:
-				var is_present := data.get_u8() != 0
-				if is_present:
-					state.salvaged_doors[i] = SaveLoad.VC._load_door(data)
-				else:
-					state.salvaged_doors[i] = null
-		elif category == pack_state_meta_category.current_level:
-			state.current_level = data.get_uint()
-		else:
-			assert(false, "Error, invalid category %d" % category)
 	return state
 
 static func find_state_file_for_pack_or_create_new(pack: LevelPackData) -> LevelPackStateData:
 	var state: LevelPackStateData = null
+	var prefix: String = str(pack.pack_id)
 	for file_name in DirAccess.get_files_at("user://level_saves"):
+		if not file_name.begins_with(prefix):
+			# shouldn't belong to this level pack
+			continue
+		# try reading the file
 		var path := "user://level_saves".path_join(file_name)
-		state = load_state_and_test_id(path, pack)
+		state = load_and_check_pack_state(path, pack)
 		if state != null:
 			break
 	if not state:
 		state = LevelPackStateData.make_from_pack_data(pack)
-		# Save when needed
-		#state.save()
-		pr("Couldn't find save data, creating new one")
+		state.save()
+		pr("Couldn't find save data, making a new one *eventually*")
 	else:
 		pr("Successfully loaded save data from %s!" % state.file_path)
 	return state

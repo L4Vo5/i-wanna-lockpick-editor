@@ -1,0 +1,229 @@
+[gd_scene load_steps=10 format=3 uid="uid://ci0xep67xsyqq"]
+
+[ext_resource type="Script" path="res://editor/side_editors/door_editor/lock_editor.gd" id="1_3nxqd"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="2_lb8xj"]
+[ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/side_editors/door_editor/door_lock_separator.tscn" id="3_3jb06"]
+[ext_resource type="PackedScene" uid="uid://ds64ntew1oani" path="res://level_elements/doors_locks/lock.tscn" id="4_iioui"]
+[ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/property_editors/color_choice.tscn" id="5_nb06o"]
+[ext_resource type="Script" path="res://editor/property_editors/lock_type_choice.gd" id="6_2b2ww"]
+[ext_resource type="PackedScene" uid="uid://cinkniexduuij" path="res://editor/property_editors/arrangement_chooser.tscn" id="7_8c511"]
+
+[sub_resource type="Resource" id="Resource_sgiyv"]
+script = ExtResource("2_lb8xj")
+color = 1
+magnitude = 1
+sign = 0
+value_type = 0
+lock_type = 0
+size = Vector2i(18, 18)
+position = Vector2i(7, 7)
+lock_arrangement = 0
+dont_show_lock = false
+
+[sub_resource type="Theme" id="Theme_3vag0"]
+
+[node name="LockEditor" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -496.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3nxqd")
+lock_data = SubResource("Resource_sgiyv")
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="DoorLockSeparator" parent="VBoxContainer" instance=ExtResource("3_3jb06")]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LockN" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Lock 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Delete" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Delete"
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Lock" parent="VBoxContainer/CenterContainer" instance=ExtResource("4_iioui")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+lock_data = SubResource("Resource_sgiyv")
+ignore_position = true
+
+[node name="Sep" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="Color" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Color"]
+visible = false
+layout_mode = 2
+text = "Color:"
+
+[node name="ColorChoice" parent="VBoxContainer/Color" instance=ExtResource("5_nb06o")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Type" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LockTypeChoice" parent="VBoxContainer/Type" instance=ExtResource("5_nb06o")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("6_2b2ww")
+lock_size = 18
+
+[node name="Requirement" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RequirementLabel" type="Label" parent="VBoxContainer/Requirement"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 5
+text = "Requires: "
+vertical_alignment = 1
+
+[node name="Amount" type="SpinBox" parent="VBoxContainer/Requirement"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 5
+size_flags_stretch_ratio = 0.0
+min_value = -1e+06
+max_value = 1e+06
+value = 1.0
+alignment = 1
+
+[node name="IsNegative" type="CheckBox" parent="VBoxContainer/Requirement"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 5
+text = "negative"
+
+[node name="IsImaginary" type="CheckBox" parent="VBoxContainer/Requirement"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 5
+text = "i keys"
+
+[node name="ArrangementChooser" parent="VBoxContainer" instance=ExtResource("7_8c511")]
+unique_name_in_owner = true
+layout_mode = 2
+lock_data = SubResource("Resource_sgiyv")
+
+[node name="Size" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Size"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Size/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Size:"
+vertical_alignment = 1
+
+[node name="Width" type="SpinBox" parent="VBoxContainer/Size/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+theme = SubResource("Theme_3vag0")
+min_value = 18.0
+max_value = 32.0
+value = 18.0
+alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer/Size/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "×"
+vertical_alignment = 1
+
+[node name="Height" type="SpinBox" parent="VBoxContainer/Size/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+min_value = 18.0
+max_value = 32.0
+value = 18.0
+alignment = 1
+
+[node name="Fit" type="CheckBox" parent="VBoxContainer/Size/HBoxContainer"]
+unique_name_in_owner = true
+editor_description = "Makes the lock as small as possible"
+layout_mode = 2
+text = "Fit"
+alignment = 1
+
+[node name="Position" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Position"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Position/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Position:"
+vertical_alignment = 1
+
+[node name="X" type="SpinBox" parent="VBoxContainer/Position/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+theme = SubResource("Theme_3vag0")
+max_value = 14.0
+value = 7.0
+alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer/Position/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = ","
+vertical_alignment = 1
+
+[node name="Y" type="SpinBox" parent="VBoxContainer/Position/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+max_value = 14.0
+value = 7.0
+alignment = 1

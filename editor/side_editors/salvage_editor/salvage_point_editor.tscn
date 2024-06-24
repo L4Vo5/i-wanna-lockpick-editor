@@ -1,0 +1,63 @@
+[gd_scene load_steps=5 format=3 uid="uid://bloqrx3o1b3c3"]
+
+[ext_resource type="Script" path="res://editor/side_editors/salvage_editor/salvage_editor.gd" id="1_gotpp"]
+[ext_resource type="Script" path="res://data/salvage_point_data.gd" id="2_jrhgn"]
+[ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvages/salvage_point.tscn" id="3_ycw40"]
+
+[sub_resource type="Resource" id="Resource_m4h5h"]
+script = ExtResource("2_jrhgn")
+sid = 0
+is_output = false
+position = Vector2i(0, 0)
+
+[node name="SalvagePointEditor" type="MarginContainer"]
+script = ExtResource("1_gotpp")
+data = SubResource("Resource_m4h5h")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SalvageEdit" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Salvage Point Editor"
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(32, 48)
+layout_mode = 2
+
+[node name="SalvagePoint" parent="VBoxContainer/CenterContainer" instance=ExtResource("3_ycw40")]
+unique_name_in_owner = true
+layout_mode = 2
+data = SubResource("Resource_m4h5h")
+ignore_position = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "SID: "
+
+[node name="SID" type="SpinBox" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -1.0
+max_value = 999.0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Type: "
+
+[node name="TypeChoice" type="OptionButton" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 2
+selected = 0
+popup/item_0/text = "Input Point"
+popup/item_0/id = 0
+popup/item_1/text = "Output Point"
+popup/item_1/id = 1

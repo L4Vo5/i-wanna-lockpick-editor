@@ -18,6 +18,7 @@ const name_to_icon := {
 	Level = preload("res://editor/bookmark_tab_container/icons/level.png"),
 	SalvagePoints = preload("res://editor/bookmark_tab_container/icons/salvage_point.png"),
 	Entries = preload("res://editor/bookmark_tab_container/icons/entry.png"),
+	Settings = preload("res://editor/bookmark_tab_container/icons/settings.svg"),
 }
 
 const BOOKMARK_FLAP = preload("res://editor/bookmark_tab_container/bookmark_flap.tscn")

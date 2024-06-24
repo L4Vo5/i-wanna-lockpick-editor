@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://14n0wplwrru2"]
-
-[ext_resource type="Script" path="res://fonts/gms_font_importer.gd" id="1_witeo"]
-
-[node name="FontMaker" type="Node"]
-script = ExtResource("1_witeo")
-font_name = "fMouseover"
-convert_font = true

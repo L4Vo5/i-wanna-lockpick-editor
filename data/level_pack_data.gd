@@ -18,9 +18,10 @@ signal deleted_level(level_id: int)
 ## Pack id, this SHOULD be unique.
 @export var pack_id: int = (randi() << 32) + randi()
 
-## true if loaded from file or saved in a file
-## used for save file management
-var is_saved := false
+## true if the level has been saved/exported with a pack id
+## false if the level has not been saved or it has been loaded
+## from a version prior to V4
+var is_pack_id_saved: bool = false
 
 ## For simplicity, let's just say each pack data has one state associated with it. If this brings trouble I'll have to rethink some things
 var state_data: LevelPackStateData:
@@ -28,7 +29,7 @@ var state_data: LevelPackStateData:
 		state_data = val
 		changed.emit()
 
-## For easier saving, since resource_path probably wouldn't work with .lvl
+## If empty, the pack will have to be saved as a new file.
 var file_path := "":
 	set(val):
 		if file_path == val: return
@@ -56,7 +57,6 @@ static func get_default_level_pack() -> LevelPackData:
 var _fixable_invalid_reasons := {}
 var _unfixable_invalid_reasons := {}
 
-# WAITING4GODOT: these can't be Array[String] ... ?
 func get_fixable_invalid_reasons() -> Array:
 	return _fixable_invalid_reasons.keys()
 

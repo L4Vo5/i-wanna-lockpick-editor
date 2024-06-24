@@ -119,8 +119,6 @@ func _process(delta):
 			animation_stage = 2
 			animation_timer = 0
 			finished_animation.emit()
-			for con in finished_animation.get_connections():
-				finished_animation.disconnect(con.callable)
 	elif animation_stage == 2:
 		# fade out
 		if animation_timer >= fade_out_length:

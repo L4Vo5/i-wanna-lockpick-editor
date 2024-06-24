@@ -2,6 +2,8 @@
 extends Resource
 class_name KeyData
 
+static var level_element_type := Enums.level_element_types.key
+
 @export var amount := ComplexNumber.new_with(1, 0):
 	set(val):
 		if amount == val: return
@@ -59,7 +61,7 @@ func get_used_color() -> Enums.colors:
 	else:
 		return color
 
-# Called by the actual in-level Key
+# Called by the actual in-level KeyElement
 func update_glitch_color(new_glitch_color: Enums.colors) -> void:
 	glitch_color = new_glitch_color
 

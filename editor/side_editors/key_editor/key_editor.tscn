@@ -1,0 +1,139 @@
+[gd_scene load_steps=9 format=3 uid="uid://qk8x2wvdqp7i"]
+
+[ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="1_2kdyu"]
+[ext_resource type="Script" path="res://editor/side_editors/key_editor/key_editor.gd" id="1_a031y"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="2_nbql1"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="3_a0u5f"]
+[ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/property_editors/color_choice.tscn" id="5_2af2f"]
+[ext_resource type="Script" path="res://editor/property_editors/object_grid_chooser.gd" id="6_0j4kr"]
+
+[sub_resource type="Resource" id="Resource_l2wht"]
+script = ExtResource("2_nbql1")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_h0mp6"]
+script = ExtResource("3_a0u5f")
+amount = SubResource("Resource_l2wht")
+is_infinite = false
+type = 0
+color = 1
+position = Vector2i(0, 0)
+
+[node name="KeyEditor" type="MarginContainer"]
+offset_right = 269.0
+offset_bottom = 592.0
+script = ExtResource("1_a031y")
+data = SubResource("Resource_h0mp6")
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TopStuff" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="KeyEdit" type="Label" parent="VBoxContainer/TopStuff"]
+layout_mode = 2
+text = "Key Editor"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TheKey" type="CenterContainer" parent="VBoxContainer/TopStuff"]
+layout_mode = 2
+
+[node name="KeyHolder" type="Control" parent="VBoxContainer/TopStuff/TheKey"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="key" parent="VBoxContainer/TopStuff/TheKey/KeyHolder" instance=ExtResource("1_2kdyu")]
+unique_name_in_owner = true
+data = SubResource("Resource_h0mp6")
+ignore_position = true
+metadata/_edit_vertical_guides_ = [32.0]
+metadata/_edit_horizontal_guides_ = [32.0]
+
+[node name="SpacingForKeyCount" type="Control" parent="VBoxContainer/TopStuff"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Editors" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Color" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/Color"]
+visible = false
+layout_mode = 2
+text = "Color:"
+
+[node name="ColorChoice" parent="VBoxContainer/ScrollContainer/Editors/Color" instance=ExtResource("5_2af2f")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 60)
+layout_mode = 2
+size_flags_horizontal = 3
+lock_size = 20
+
+[node name="TypeChoice" type="Container" parent="VBoxContainer/ScrollContainer/Editors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(42, 84)
+layout_mode = 2
+script = ExtResource("6_0j4kr")
+color_rect_extend = 3
+color_rect_offset = Vector2(1, 1)
+
+[node name="Amount" type="MarginContainer" parent="VBoxContainer/ScrollContainer/Editors"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScrollContainer/Editors/Amount"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/ScrollContainer/Editors/Amount/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Amount:"
+
+[node name="RealAmount" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/Amount/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+min_value = -1e+06
+max_value = 1e+06
+value = 1.0
+allow_greater = true
+allow_lesser = true
+
+[node name="Label2" type="Label" parent="VBoxContainer/ScrollContainer/Editors/Amount/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "+"
+
+[node name="ImaginaryAmount" type="SpinBox" parent="VBoxContainer/ScrollContainer/Editors/Amount/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+min_value = -1e+06
+max_value = 1e+06
+allow_greater = true
+allow_lesser = true
+suffix = "i"
+
+[node name="IsInfinite" type="CheckBox" parent="VBoxContainer/ScrollContainer/Editors"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Infinite"

@@ -2,6 +2,8 @@
 extends Resource
 class_name EntryData
 
+static var level_element_type := Enums.level_element_types.entry
+
 @export var position: Vector2i:
 	set(val):
 		if position == val: return

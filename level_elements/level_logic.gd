@@ -92,7 +92,7 @@ func reset() -> void:
 	for color in star_keys.keys():
 		star_keys[color] = false
 	glitch_color = Enums.colors.glitch
-	for key: Key in level.keys.get_children():
+	for key: KeyElement in level.keys.get_children():
 		# TODO: definitely no! ... ?
 		key._on_changed_glitch_color()
 	i_view = false
@@ -173,7 +173,7 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 	# PERF: maybe the level keeps a list of all doors and keys with glitch, 
 	# so that it doesn't have to go through ALL all? 
 	
-	for key: Key in level.keys.get_children():
+	for key: KeyElement in level.keys.get_children():
 		if key.data.color == Enums.colors.glitch:
 			key._on_changed_glitch_color()
 	
@@ -187,7 +187,7 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 			
 			_door_data.glitch_color = new_glitch_color
 		# TODO/PERF: super no!!!
-		door.update_everything()
+		door.update_visuals()
 
 ## Tries to open a door, and communicates the result to the door so it can handle sounds and animation.
 func try_open_door(door: Door) -> void:
@@ -196,7 +196,7 @@ func try_open_door(door: Door) -> void:
 	if door.open_cooldown > 0: return
 	# Gates have separate logic, this function doesn't concern them
 	if door_data.outer_color == Enums.colors.gate: return
-		
+	
 	var result := try_open_door_data(door_data, false)
 	
 	var opened: bool = result.opened
@@ -232,7 +232,6 @@ func try_open_door(door: Door) -> void:
 	# handles animations, sounds, etc.
 	door.open(result)
 	
-	level.on_door_opened(door)
 	# TODO: refactor this too
 	if door_data.amount.is_zero():
 		if active_salvage != null:
@@ -246,6 +245,7 @@ func try_open_door(door: Door) -> void:
 		door.resolve_collision_mode()
 		assert(door.static_body.process_mode == StaticBody2D.PROCESS_MODE_DISABLED)
 		undo_redo.add_do_property(door.static_body, &"process_mode", door.static_body.process_mode)
+	level.on_door_opened(door)
 	end_undo_action()
 	door.open_cooldown = OPEN_COOLDOWN_TIME
 	update_gates()
@@ -455,7 +455,7 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 		player.master_equipped_sounds(last_master_equipped)
 
 # if you call this function, run _resolve_collision_mode on the key later
-func pick_up_key(key: Key) -> void:
+func pick_up_key(key: KeyElement) -> void:
 	var key_data := key.data
 	start_undo_action()
 	undo_redo.add_undo_method(key.undo)
@@ -507,8 +507,7 @@ func on_salvaged_door(door: Door) -> void:
 	var door_data = door.data.duplicated()
 	level.goal.snd_win.play()
 	level.gameplay_manager.pack_state.salvage_door(sid, door_data)
-	level.gameplay_manager.transition.finished_animation.connect(level.reset)
-	level.gameplay_manager.transition.win_animation("Door Salvaged!")
+	level.gameplay_manager.win_animation("Door Salvaged!")
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing
 func start_undo_action() -> void:
