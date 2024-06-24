@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dioqmta8dbkbh"]
 
-[ext_resource type="Script" path="res://editor/color_choice.gd" id="1_oxd7p"]
+[ext_resource type="Script" path="res://editor/side_editors/property_editors/color_choice.gd" id="1_fsw3j"]
 
 [node name="ColorChoice" type="Control"]
 custom_minimum_size = Vector2(14, 14)
@@ -12,7 +12,7 @@ offset_right = -485.0
 offset_bottom = -584.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_oxd7p")
+script = ExtResource("1_fsw3j")
 
 [node name="SelectedOutline" type="ColorRect" parent="."]
 visible = false

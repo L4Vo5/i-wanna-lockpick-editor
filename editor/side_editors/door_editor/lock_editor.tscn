@@ -1,15 +1,15 @@
 [gd_scene load_steps=10 format=3 uid="uid://ci0xep67xsyqq"]
 
-[ext_resource type="Script" path="res://editor/lock_editor.gd" id="1_46nys"]
-[ext_resource type="PackedScene" uid="uid://ds64ntew1oani" path="res://level_elements/doors_locks/lock.tscn" id="1_iyvjm"]
-[ext_resource type="Script" path="res://data/lock_data.gd" id="3_i0t7t"]
-[ext_resource type="PackedScene" uid="uid://cinkniexduuij" path="res://editor/arrangement_chooser.tscn" id="4_cei5h"]
-[ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/door_lock_separator.tscn" id="5_c8x87"]
-[ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/color_choice.tscn" id="5_gs2y2"]
-[ext_resource type="Script" path="res://editor/lock_type_choice.gd" id="6_sq8pb"]
+[ext_resource type="Script" path="res://editor/side_editors/door_editor/lock_editor.gd" id="1_3nxqd"]
+[ext_resource type="Script" path="res://data/lock_data.gd" id="2_lb8xj"]
+[ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/side_editors/door_editor/door_lock_separator.tscn" id="3_3jb06"]
+[ext_resource type="PackedScene" uid="uid://ds64ntew1oani" path="res://level_elements/doors_locks/lock.tscn" id="4_iioui"]
+[ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/side_editors/property_editors/color_choice.tscn" id="5_7431d"]
+[ext_resource type="Script" path="res://editor/side_editors/property_editors/lock_type_choice.gd" id="6_o8wc6"]
+[ext_resource type="PackedScene" uid="uid://cinkniexduuij" path="res://editor/side_editors/property_editors/arrangement_chooser.tscn" id="7_wefna"]
 
 [sub_resource type="Resource" id="Resource_sgiyv"]
-script = ExtResource("3_i0t7t")
+script = ExtResource("2_lb8xj")
 color = 1
 magnitude = 1
 sign = 0
@@ -29,7 +29,7 @@ anchor_bottom = 1.0
 offset_right = -496.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_46nys")
+script = ExtResource("1_3nxqd")
 lock_data = SubResource("Resource_sgiyv")
 
 [node name="Panel" type="Panel" parent="."]
@@ -39,7 +39,7 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="DoorLockSeparator" parent="VBoxContainer" instance=ExtResource("5_c8x87")]
+[node name="DoorLockSeparator" parent="VBoxContainer" instance=ExtResource("3_3jb06")]
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
@@ -67,7 +67,7 @@ text = "Delete"
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Lock" parent="VBoxContainer/CenterContainer" instance=ExtResource("1_iyvjm")]
+[node name="Lock" parent="VBoxContainer/CenterContainer" instance=ExtResource("4_iioui")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
@@ -86,7 +86,7 @@ visible = false
 layout_mode = 2
 text = "Color:"
 
-[node name="ColorChoice" parent="VBoxContainer/Color" instance=ExtResource("5_gs2y2")]
+[node name="ColorChoice" parent="VBoxContainer/Color" instance=ExtResource("5_7431d")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -94,12 +94,12 @@ size_flags_horizontal = 3
 [node name="Type" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="LockTypeChoice" parent="VBoxContainer/Type" instance=ExtResource("5_gs2y2")]
+[node name="LockTypeChoice" parent="VBoxContainer/Type" instance=ExtResource("5_7431d")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(18, 112)
 layout_mode = 2
 size_flags_horizontal = 3
-script = ExtResource("6_sq8pb")
+script = ExtResource("6_o8wc6")
 lock_size = 18
 
 [node name="Requirement" type="HBoxContainer" parent="VBoxContainer"]
@@ -136,7 +136,7 @@ layout_mode = 2
 size_flags_vertical = 5
 text = "i keys"
 
-[node name="ArrangementChooser" parent="VBoxContainer" instance=ExtResource("4_cei5h")]
+[node name="ArrangementChooser" parent="VBoxContainer" instance=ExtResource("7_wefna")]
 unique_name_in_owner = true
 layout_mode = 2
 lock_data = SubResource("Resource_sgiyv")

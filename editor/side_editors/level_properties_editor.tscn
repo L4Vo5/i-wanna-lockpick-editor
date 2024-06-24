@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bq8lnotf0ys0p"]
 
-[ext_resource type="Script" path="res://editor/level_properties_editor.gd" id="1_000i2"]
+[ext_resource type="Script" path="res://editor/side_editors/level_properties_editor.gd" id="1_000i2"]
 [ext_resource type="Texture2D" uid="uid://cpnfgleds05wh" path="res://editor/icons/Remove.svg" id="2_3hvsl"]
 [ext_resource type="Script" path="res://editor/level_image_rect.gd" id="2_blkvl"]
 

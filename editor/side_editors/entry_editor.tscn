@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://hasnbvkv25y8"]
 
-[ext_resource type="Script" path="res://editor/entry_editor.gd" id="1_xmuse"]
+[ext_resource type="Script" path="res://editor/side_editors/entry_editor.gd" id="1_xmuse"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="2_bsopw"]
 [ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="2_ypxul"]
 [ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="4_7lve0"]

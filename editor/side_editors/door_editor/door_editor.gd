@@ -24,7 +24,7 @@ class_name DoorEditor
 @onready var color_choice: ColorChoiceEditor = %ColorChoice
 @onready var lock_editor_parent: VBoxContainer = %LockEditors
 @onready var add_lock: Button = %AddLock
-const LOCK_EDITOR := preload("res://editor/lock_editor.tscn")
+const LOCK_EDITOR := preload("res://editor/side_editors/door_editor/lock_editor.tscn")
 ## the idea is that non-standard-levels should be able to exist, maybe, but they must be labeled as such (for example doors with non-32-multiple sizes, or a door starting out browned or with a different glitch color. things that are valid but.. not standard)
 ## unimplemented for now tho lol
 var non_standard_mode := false

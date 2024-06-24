@@ -103,6 +103,7 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	var lvl_pack_data: LevelPackData
 	
 	print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
+	print("hash is %d" % hash(data))
 	
 	_last_loaded_version = version
 	match version:
