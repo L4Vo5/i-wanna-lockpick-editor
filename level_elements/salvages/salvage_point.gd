@@ -118,6 +118,7 @@ func _process(_delta) -> void:
 func update_visual() -> void:
 	if not is_node_ready(): return
 	if not is_instance_valid(data): return
+	assert(PerfManager.start("SalvagePoint::update_visual"))
 	if not ignore_position:
 		position = data.position
 	var mod: Color
@@ -144,6 +145,7 @@ func update_visual() -> void:
 	if outline.visible:
 		outline.modulate = mod
 	number.text = str(data.sid)
+	assert(PerfManager.end("SalvagePoint::update_visual"))
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EDITOR_PRE_SAVE:
