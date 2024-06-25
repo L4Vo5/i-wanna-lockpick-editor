@@ -7,14 +7,14 @@
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/property_editors/color_choice.tscn" id="5_2af2f"]
 [ext_resource type="Script" path="res://editor/property_editors/object_grid_chooser.gd" id="6_0j4kr"]
 
-[sub_resource type="Resource" id="Resource_eoenv"]
+[sub_resource type="Resource" id="Resource_o1cyn"]
 script = ExtResource("2_nbql1")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_4f6n6"]
+[sub_resource type="Resource" id="Resource_s1cf4"]
 script = ExtResource("3_a0u5f")
-amount = SubResource("Resource_eoenv")
+amount = SubResource("Resource_o1cyn")
 is_infinite = false
 type = 0
 color = 1
@@ -24,7 +24,7 @@ position = Vector2i(0, 0)
 offset_right = 269.0
 offset_bottom = 592.0
 script = ExtResource("1_a031y")
-data = SubResource("Resource_4f6n6")
+data = SubResource("Resource_s1cf4")
 
 [node name="Panel" type="Panel" parent="."]
 visible = false
@@ -51,7 +51,7 @@ layout_mode = 2
 
 [node name="key" parent="VBoxContainer/TopStuff/TheKey/KeyHolder" instance=ExtResource("1_2kdyu")]
 unique_name_in_owner = true
-data = SubResource("Resource_4f6n6")
+data = SubResource("Resource_s1cf4")
 ignore_position = true
 metadata/_edit_vertical_guides_ = [32.0]
 metadata/_edit_horizontal_guides_ = [32.0]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://editor/side_editors/door_editor/lock_editor.gd" id="1_3nxqd"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="2_lb8xj"]
-[ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/side_editors/door_editor/door_lock_separator.tscn" id="3_3jb06"]
+[ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/misc/horizontal_separator.tscn" id="3_a5dpo"]
 [ext_resource type="PackedScene" uid="uid://ds64ntew1oani" path="res://level_elements/doors_locks/lock.tscn" id="4_iioui"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/property_editors/color_choice.tscn" id="5_nb06o"]
 [ext_resource type="Script" path="res://editor/property_editors/lock_type_choice.gd" id="6_2b2ww"]
@@ -39,7 +39,7 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="DoorLockSeparator" parent="VBoxContainer" instance=ExtResource("3_3jb06")]
+[node name="DoorLockSeparator" parent="VBoxContainer" instance=ExtResource("3_a5dpo")]
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
@@ -88,6 +88,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="VBoxContainer/Color" instance=ExtResource("5_nb06o")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(14, 336)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -96,7 +97,7 @@ layout_mode = 2
 
 [node name="LockTypeChoice" parent="VBoxContainer/Type" instance=ExtResource("5_nb06o")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(18, 28)
+custom_minimum_size = Vector2(18, 112)
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("6_2b2ww")
