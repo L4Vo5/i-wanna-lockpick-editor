@@ -10,6 +10,9 @@ var is_exported := OS.has_feature("release")
 var is_web := OS.has_feature("web")
 var is_windows := OS.has_feature("windows")
 var is_linux := OS.has_feature("linux")
+
+var editor_settings := LockpickEditorSettings.new()
+
 signal changed_is_playing
 ## Will basically be true if there's a player moving around
 var is_playing := false:
@@ -17,7 +20,9 @@ var is_playing := false:
 		if is_playing == val: return
 		is_playing = val
 		changed_is_playing.emit()
+
 var game_version: String = ProjectSettings.get_setting("application/config/game_version")
+
 @onready var key_pad: KeyPad = %KeyPad
 @onready var fatal_error_dialog: AcceptDialog = %FatalError
 @onready var safe_error_dialog: AcceptDialog = %SafeError
