@@ -503,8 +503,10 @@ func pick_up_key(key: KeyElement) -> void:
 
 func on_salvaged_door(door: Door) -> void:
 	assert(active_salvage != null)
-	var sid = active_salvage.data.sid
-	var door_data = door.data.duplicated()
+	var sid := active_salvage.data.sid
+	var door_data := door.data.duplicated()
+	# Unnecessary... but helps in the salvage point editor
+	door_data.amount.set_to(1, 0)
 	level.goal.snd_win.play()
 	level.gameplay_manager.pack_state.salvage_door(sid, door_data)
 	level.gameplay_manager.win_animation("Door Salvaged!")

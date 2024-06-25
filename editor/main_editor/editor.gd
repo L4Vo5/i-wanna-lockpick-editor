@@ -103,6 +103,7 @@ func _ready() -> void:
 	level_container.editor_data = data
 	level_properties_editor.editor_data = data
 	entry_editor.editor_data = data
+	salvage_point_editor.editor_data = data
 	
 	side_tabs.tab_changed.connect(_update_mode)
 	play_button.pressed.connect(_on_play_pressed)
@@ -197,6 +198,8 @@ func _on_play_pressed() -> void:
 	if Global.editor_settings.should_save_on_play and not data.is_playing:
 		if SaveLoad.is_path_valid(data.level_pack_data.file_path):
 			save_level()
+	if data.is_playing:
+		data.level_pack_data.state_data.save()
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
@@ -221,6 +224,7 @@ func save_level() -> void:
 			if path == "":
 				path = data.level_pack_data.resource_path
 			var ext := path.get_extension()
+			data.level_pack_data.state_data.save()
 			if ext in ["res", "tres"]:
 				# Allow saving res and tres anywhere when testing
 				if not Global.is_exported:
@@ -230,7 +234,6 @@ func save_level() -> void:
 				else:
 					Global.safe_error("Report this (saving resource).", Vector2(300, 100))
 			elif ext in ["lvl", "png"]:
-				data.level_pack_data.state_data.save()
 				data.level_pack_data.resource_path = ""
 				SaveLoad.save_level(data.level_pack_data)
 	_update_level_path_display()

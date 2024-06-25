@@ -52,7 +52,8 @@ func prep_output_step_1() -> void:
 
 	new_door_data.position = new_position
 	new_door_data.glitch_color = Enums.colors.glitch
-	new_door_data.amount.set_to(1, 0)
+	# TODO: output points could have their own ammount?
+	#new_door_data.amount.set_to(1, 0)
 	new_door_data.sid = sid
 	
 	# Make sure the door has collision

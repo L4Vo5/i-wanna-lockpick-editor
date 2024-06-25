@@ -1,18 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://bloqrx3o1b3c3"]
+[gd_scene load_steps=6 format=3 uid="uid://bloqrx3o1b3c3"]
 
 [ext_resource type="Script" path="res://editor/side_editors/salvage_editor/salvage_editor.gd" id="1_gotpp"]
 [ext_resource type="Script" path="res://data/salvage_point_data.gd" id="2_jrhgn"]
 [ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvages/salvage_point.tscn" id="3_ycw40"]
+[ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="4_hhje5"]
 
-[sub_resource type="Resource" id="Resource_bib55"]
+[sub_resource type="Resource" id="Resource_na806"]
 script = ExtResource("2_jrhgn")
 sid = 0
 is_output = false
 position = Vector2i(0, 0)
 
 [node name="SalvagePointEditor" type="MarginContainer"]
+offset_right = 212.0
+offset_bottom = 333.0
 script = ExtResource("1_gotpp")
-data = SubResource("Resource_bib55")
+data = SubResource("Resource_na806")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -29,7 +32,7 @@ layout_mode = 2
 [node name="SalvagePoint" parent="VBoxContainer/CenterContainer" instance=ExtResource("3_ycw40")]
 unique_name_in_owner = true
 layout_mode = 2
-data = SubResource("Resource_bib55")
+data = SubResource("Resource_na806")
 ignore_position = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
@@ -61,3 +64,18 @@ popup/item_0/text = "Input Point"
 popup/item_0/id = 0
 popup/item_1/text = "Output Point"
 popup/item_1/id = 1
+
+[node name="DoorScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/DoorScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="Door" parent="VBoxContainer/DoorScrollContainer/CenterContainer" instance=ExtResource("4_hhje5")]
+unique_name_in_owner = true
+layout_mode = 2
+ignore_position = true
