@@ -42,6 +42,9 @@ func _ready() -> void:
 func _init() -> void:
 	_create_canvas_items()
 
+func _exit_tree() -> void:
+	custom_minimum_size = Vector2.ZERO
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		_destroy_canvas_items()
@@ -56,6 +59,7 @@ func update_position() -> void:
 		position = lock_data.position
 
 func update_size() -> void:
+	custom_minimum_size = lock_data.size
 	size = lock_data.size
 
 

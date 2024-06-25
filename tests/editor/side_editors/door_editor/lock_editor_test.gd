@@ -29,9 +29,11 @@ func test_lock_size_bug() -> void:
 	assert_float(lock_parent.size.x).is_greater_equal(18)
 	assert_float(lock_parent.size.y).is_greater_equal(18)
 	lock_data.size.y = 180
+	await await_idle_frame()
 	assert_float(lock_parent.size.x).is_greater_equal(18)
 	assert_float(lock_parent.size.y).is_greater_equal(180)
 	lock_data.size.x = 400
+	await await_idle_frame()
 	assert_float(lock_parent.size.x).is_greater_equal(400)
 	assert_float(lock_parent.size.y).is_greater_equal(180)
 	
