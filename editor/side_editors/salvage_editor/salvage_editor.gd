@@ -29,7 +29,7 @@ func _ready() -> void:
 	sid.value_changed.connect(_update_salvage_point.unbind(1))
 	type.item_selected.connect(_update_salvage_point.unbind(1))
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not editor_data: return
 	var salvaged_doors := editor_data.level_pack_data.state_data.salvaged_doors
 	var current_sid := data.sid

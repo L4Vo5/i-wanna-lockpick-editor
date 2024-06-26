@@ -243,8 +243,8 @@ class ByteAccess:
 		store_bytes(bytes)
 
 	# TODO / WAITING4GODOT: find a better way to store buffers
-	func store_bytes(data: PackedByteArray) -> void:
-		for byte in data:
+	func store_bytes(bytes: PackedByteArray) -> void:
+		for byte in bytes:
 			store_u8(byte)
 
 	func get_u8() -> int:

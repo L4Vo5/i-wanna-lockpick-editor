@@ -93,12 +93,13 @@ func save() -> void:
 	SaveLoad.save_pack_state(self)
 
 static func load_and_check_pack_state(path, pack) -> LevelPackStateData:
+	var state: LevelPackStateData
 	if path.ends_with(".tres"):
-		var state := ResourceLoader.load(path)
+		state = ResourceLoader.load(path)
 		if not state or not state is LevelPackStateData or not state.pack_id == pack.pack_id:
 			return null
 		return state
-	var state := SaveLoad.load_and_check_pack_state_from_path(path, pack)
+	state = SaveLoad.load_and_check_pack_state_from_path(path, pack)
 	if state == null:
 		return null
 	state.file_path = path

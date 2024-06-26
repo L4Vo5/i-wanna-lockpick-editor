@@ -25,9 +25,8 @@ var _next_rect_id := 1
 
 func _init(_tile_size: int) -> void:
 	assert(_tile_size == 16)
-	return
-	tile_size = _tile_size
-	inv_tile_size = 1.0 / tile_size
+	#tile_size = _tile_size
+	#inv_tile_size = 1.0 / tile_size
 
 func clear() -> void:
 	_tile_to_rects.clear()
