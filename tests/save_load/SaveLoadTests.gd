@@ -10,7 +10,6 @@ const __source = 'res://misc/SaveLoad.gd'
 
 func test_versions() -> void:
 	var base_path := "res://tests/save_load/levels/"
-	#assert_array(DirAccess.get_files_at(base_path)).is_empty()
 	var dirs := DirAccess.get_directories_at(base_path)
 	assert_array(dirs).is_not_empty()
 	for dir_name in dirs:
