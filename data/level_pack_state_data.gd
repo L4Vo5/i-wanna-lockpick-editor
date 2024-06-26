@@ -2,7 +2,7 @@ extends Resource
 class_name LevelPackStateData
 ## The state of a level pack. Also doubles as save data.
 
-static var SHOULD_PRINT := true
+static var SHOULD_PRINT := false
 
 var file_path: String = ""
 

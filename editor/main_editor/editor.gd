@@ -258,8 +258,8 @@ func load_level(path: String) -> void:
 	elif ext == "lvl" or ext == "png":
 		new_level_pack = SaveLoad.load_from_path(path)
 	else:
-		assert(false, "Trying to load level with invalid extension")
-		#assert(false, "Not all valid extensions are covered")
+		assert(not ext in SaveLoad.LEVEL_EXTENSIONS, "Trying to load level with invalid extension")
+		assert(false, "Not all valid extensions are covered")
 	finish_loading_level()
 
 func _on_load_from_clipboard_pressed() -> void:
