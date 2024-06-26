@@ -2,7 +2,7 @@ extends Resource
 class_name LevelPackStateData
 ## The state of a level pack. Also doubles as save data.
 
-static var SHOULD_PRINT := false
+static var SHOULD_PRINT := true
 
 var file_path: String = ""
 
@@ -113,6 +113,7 @@ static func find_state_file_for_pack_or_create_new(pack: LevelPackData) -> Level
 			continue
 		# try reading the file
 		var path := "user://level_saves".path_join(file_name)
+		pr("Trying path " + path + " for pack " + str(pack.pack_id))
 		state = load_and_check_pack_state(path, pack)
 		if state != null:
 			break

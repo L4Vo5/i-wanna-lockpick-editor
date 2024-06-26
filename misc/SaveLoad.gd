@@ -71,7 +71,7 @@ static func load_and_check_pack_state_from_path(path: String, pack: LevelPackDat
 
 static func load_and_check_pack_state_from_buffer(data: PackedByteArray, pack: LevelPackData) -> LevelPackStateData:
 	# All versions must respect this initial structure
-	var pack_id := data.decode_u64(8)
+	var pack_id := data.decode_u64(0)
 	if pack_id != pack.pack_id:
 		return null
 	var version := data.decode_u16(8)
@@ -82,12 +82,13 @@ static func load_and_check_pack_state_from_buffer(data: PackedByteArray, pack: L
 		printerr("Invalid level pack state version: %d (%s)" % [version, original_editor_version])
 		return null
 	var load_script: Script = VERSIONS[version]
-	var byte_access = load_script.make_byte_access(data)
+	var byte_access = load_script.make_byte_access(data, 14 + len)
 	if not load_script.has_method(&"load_pack_state"):
 		printerr("Version doesn't support pack states: %d (%s)" % [version, original_editor_version])
 		return null
 	var state_data: LevelPackStateData = load_script.load_pack_state(byte_access)
 	state_data.pack_id = pack_id
+	state_data.pack_data = pack
 	
 	var expected_levels = pack.levels.size()
 	var found_levels = state_data.completed_levels.size()
