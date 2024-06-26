@@ -1,3 +1,5 @@
+const ByteAccess = preload("res://misc/saving_versions/byte_access_v2.gd")
+
 static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.store_u16(SaveLoad.LATEST_FORMAT)
 	level_pack.editor_version = Global.game_version
@@ -102,7 +104,7 @@ static func _save_salvage_point(data: ByteAccess, salvage_point: SalvagePointDat
 	data.store_u32(salvage_point.position.x)
 	data.store_u32(salvage_point.position.y)
 	data.store_u8(salvage_point.skin)
-	data.store_u32(salvage_point.sid)
+	data.store_s32(salvage_point.sid)
 
 static func _save_complex(data: ByteAccess, n: ComplexNumber) -> void:
 	data.store_s64(n.real_part)

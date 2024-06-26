@@ -1,3 +1,5 @@
+const ByteAccess = preload("res://misc/saving_versions/byte_access_v2.gd")
+
 static func save(level: LevelData, data: ByteAccess) -> void:
 	data.store_u16(SaveLoad.LATEST_FORMAT)
 	data.store_string(level.editor_version)

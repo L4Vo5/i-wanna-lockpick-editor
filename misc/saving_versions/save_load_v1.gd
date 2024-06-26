@@ -1,3 +1,5 @@
+const ByteAccess = preload("res://misc/saving_versions/byte_access_v1.gd")
+
 static func load(data: ByteAccess) -> LevelPackData:
 	return LevelPackData.make_from_level(_load_level(data))
 
@@ -8,9 +10,7 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	level.author = data.get_string()
 	level.size = Vector2i(data.get_u32(), data.get_u32())
 	
-	var var_size := data.get_u32()
-	var var_bytes := data.get_bytes(var_size)
-	level.custom_lock_arrangements = bytes_to_var(var_bytes)
+	level.custom_lock_arrangements = data.get_var()
 	level.goal_position = Vector2i(data.get_u32(), data.get_u32())
 	level.player_spawn_position = Vector2i(data.get_u32(), data.get_u32())
 	if SaveLoad.PRINT_LOAD: print("loaded player pos: %s" % str(level.player_spawn_position))

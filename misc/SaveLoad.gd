@@ -97,7 +97,7 @@ static func load_and_check_pack_state_from_buffer(data: PackedByteArray, pack: L
 	return state_data
 
 static func get_pack_state_data(state: LevelPackStateData) -> PackedByteArray:
-	var byte_access := VC.make_byte_access([])
+	var byte_access = VC.make_byte_access([])
 	VC.save_pack_state(byte_access, state)
 	return byte_access.data
 

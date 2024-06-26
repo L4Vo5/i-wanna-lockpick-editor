@@ -1,3 +1,5 @@
+const ByteAccess = preload("res://misc/saving_versions/byte_access_v2.gd")
+
 static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.store_u16(SaveLoad.LATEST_FORMAT)
 	level_pack.editor_version = Global.game_version
