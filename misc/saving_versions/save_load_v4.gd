@@ -103,7 +103,7 @@ static func _save_entry(data: ByteAccess, entry: EntryData) -> void:
 static func _save_salvage_point(data: ByteAccess, salvage_point: SalvagePointData) -> void:
 	data.store_u32(salvage_point.position.x)
 	data.store_u32(salvage_point.position.y)
-	data.store_u8(salvage_point.skin)
+	data.store_u8(1 if salvage_point.is_output else 0)
 	data.store_s32(salvage_point.sid)
 
 static func _save_complex(data: ByteAccess, n: ComplexNumber) -> void:
