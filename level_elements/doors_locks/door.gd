@@ -85,7 +85,7 @@ func _connect_data() -> void:
 	if not is_inside_tree(): return
 	update_visuals()
 	# look.... ok?
-	
+	# TODO: maybe not make the door show() itself? this is the only time it happens
 	show()
 	resolve_collision_mode()
 

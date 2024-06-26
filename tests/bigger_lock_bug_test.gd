@@ -33,4 +33,3 @@ func test_bigger_lock_bug() -> void:
 	var lock_2_size := lock_2.size
 	assert_vector(lock_2_size).is_equal(Vector2(20, 20))
 	assert_vector(Vector2i(lock_2_size)).is_equal(lock_2.lock_data.size)
-	gameplay_manager.free()

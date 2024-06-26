@@ -52,7 +52,8 @@ func prep_output_step_1() -> void:
 
 	new_door_data.position = new_position
 	new_door_data.glitch_color = Enums.colors.glitch
-	new_door_data.amount.set_to(1, 0)
+	# TODO: output points could have their own ammount?
+	#new_door_data.amount.set_to(1, 0)
 	new_door_data.sid = sid
 	
 	# Make sure the door has collision
@@ -117,6 +118,7 @@ func _process(_delta) -> void:
 func update_visual() -> void:
 	if not is_node_ready(): return
 	if not is_instance_valid(data): return
+	assert(PerfManager.start("SalvagePoint::update_visual"))
 	if not ignore_position:
 		position = data.position
 	var mod: Color
@@ -143,6 +145,7 @@ func update_visual() -> void:
 	if outline.visible:
 		outline.modulate = mod
 	number.text = str(data.sid)
+	assert(PerfManager.end("SalvagePoint::update_visual"))
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EDITOR_PRE_SAVE:
