@@ -74,6 +74,7 @@ func _connect_level_data() -> void:
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
 	_set_to_level_data()
+	_on_what_to_place_changed(place_player_spawn)
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(_level_data): return
@@ -93,7 +94,6 @@ func _ready() -> void:
 	_on_changed_goal_position()
 	visibility_changed.connect(func(): if visible: _reload_image())
 	what_to_place.object_selected.connect(_on_what_to_place_changed)
-	_on_what_to_place_changed(place_player_spawn)
 	level_name.text_changed.connect(_on_set_name)
 	level_title.text_changed.connect(_on_set_title)
 	level_author.text_changed.connect(_on_set_author)
