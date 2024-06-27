@@ -17,7 +17,7 @@ class_name KeyEditor
 @onready var imaginary_amount: SpinBox = %ImaginaryAmount
 @onready var is_infinite: CheckBox = %IsInfinite
 
-var type_choice_keys := []
+var type_choice_keys := {}
 
 const KEY = preload("res://level_elements/keys/key.tscn")
 
@@ -33,8 +33,7 @@ func _ready() -> void:
 	for key_type in Enums.KEY_TYPE_NAMES.keys():
 		var new_key: KeyElement = KEY.instantiate()
 		new_key.ignore_position = true
-		#new_key.hide_shadow = true
-		type_choice_keys.push_back(new_key)
+		type_choice_keys[key_type] = new_key
 		new_key.data = KeyData.new()
 		new_key.data.type = key_type
 		type_choice.add_child(new_key)
@@ -47,15 +46,20 @@ func _ready() -> void:
 	
 	_set_to_key_data()
 
+var _setting_to_data := false
 func _set_to_key_data() -> void:
+	_setting_to_data = true
 	color_choice.set_to_color(data.color)
 	real_amount.value = data.amount.real_part
 	imaginary_amount.value = data.amount.imaginary_part
 	is_infinite.button_pressed = data.is_infinite
 	amount.visible = data.type in [Enums.key_types.add, Enums.key_types.exact]
+	type_choice.selected_object = type_choice_keys[data.type]
 	_update_type_choice_keys()
+	_setting_to_data = false
 
 func _update_key() -> void:
+	if _setting_to_data: return
 	data.color = color_choice.color
 	if type_choice.selected_object:
 		data.type = type_choice.selected_object.data.type
@@ -65,5 +69,5 @@ func _update_key() -> void:
 	_update_type_choice_keys()
 
 func _update_type_choice_keys() -> void:
-	for key_element: KeyElement in type_choice_keys:
+	for key_element: KeyElement in type_choice_keys.values():
 		key_element.data.color = key.data.color
