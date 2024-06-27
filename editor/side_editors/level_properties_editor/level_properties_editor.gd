@@ -51,7 +51,7 @@ var _level_pack_data: LevelPackData:
 @onready var what_to_place: ObjectGridChooser = %WhatToPlace
 @onready var place_player_spawn: TextureRect = %StartPos
 @onready var place_goal: Node2DCenterContainer = %Goal
-
+@onready var remove_goal: Button = %RemoveGoal
 
 @onready var no_image: Label = %NoImage
 @onready var level_image_rect: Control = %LevelImageRect
@@ -104,6 +104,7 @@ func _ready() -> void:
 	copy_to_clipboard.pressed.connect(_copy_image_to_clipboard)
 	width.value_changed.connect(_on_size_changed.unbind(1))
 	height.value_changed.connect(_on_size_changed.unbind(1))
+	remove_goal.pressed.connect(_on_remove_goal_button_pressed)
 	
 	level_number.value_changed.connect(_set_level_number)
 	delete_level.pressed.connect(_delete_current_level)
@@ -122,7 +123,10 @@ func _on_changed_player_spawn_pos() -> void:
 func _on_changed_goal_position() -> void:
 	if not is_node_ready(): return
 	if not is_instance_valid(_level_data): return
-	goal_coord.text = str(_level_data.goal_position)
+	if _level_data.has_goal:
+		goal_coord.text = str(_level_data.goal_position)
+	else:
+		goal_coord.text = "(none)"
 
 func _on_what_to_place_changed(selected_object: Node) -> void:
 	if not is_node_ready(): return
@@ -210,6 +214,10 @@ func _set_level_number(new_number: int) -> void:
 		level_number.max_value = _level_pack_data.levels.size() + 1
 		level_count_label.text = str(_level_pack_data.levels.size())
 	editor_data.gameplay.set_current_level(level_number.value as int - 1)
+
+func _on_remove_goal_button_pressed() -> void:
+	if _setting_to_data: return
+	_level_data.has_goal = false
 
 func _delete_current_level() -> void:
 	_level_pack_data.delete_level(level_number.value as int - 1)

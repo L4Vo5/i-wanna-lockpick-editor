@@ -24,13 +24,25 @@ signal object_selected(obj: Node)
 ## the currently selected child
 var selected_object: Control:
 	set(val):
-		if not val:
-			if get_child_count() != 0:
-				val = get_child(0)
-		if selected_object == val: return
-		selected_object = val
+		var pos := _visible_children.find(val)
+		# Isn't a visible child. ok. try to adapt.
+		if pos == -1:
+			selected_object_i = maxi(selected_object_i, 0)
+		else:
+			selected_object_i = pos
+	get:
+		if selected_object_i == -1:
+			return null
+		return _visible_children[selected_object_i]
+
+var selected_object_i := -1:
+	set(val):
+		val = clampi(val, -1, _visible_children.size() - 1)
+		if selected_object_i == val: return
+		selected_object_i = val
 		_reposition_color_rect()
-		object_selected.emit(selected_object)
+		if selected_object_i != -1:
+			object_selected.emit(_visible_children[selected_object_i])
 
 # the full length in pixels that a object will "occupy"
 # taking into account [member object_size] and [member object_sep]
@@ -55,7 +67,7 @@ func _ready() -> void:
 	_color_rect.size = Vector2(object_size, object_size)
 	set_object_size(object_size)
 	set_selected_color(selected_color)
-	selected_object = selected_object
+	selected_object_i = 0
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_SORT_CHILDREN:
@@ -92,8 +104,18 @@ func clear() -> void:
 		var child := get_child(-1)
 		remove_child(child)
 		child.queue_free()
+	_visible_children.clear()
+
+var _visible_children: Array[Node] = []
+func update_visible_children() -> void:
+	var previously_selected := selected_object
+	# If something was hidden or things were reordered, try to keep the same thing selected
+	# (This also makes sure it always selects something as long as there's children)
+	_visible_children = get_children().filter(func(child: Node): return child.visible)
+	selected_object = previously_selected
 
 func _redistribute_children() -> void:
+	update_visible_children()
 	var max_objects_per_row := floori(size.x / _object_occupied_size)
 	if max_objects_per_row <= 0: max_objects_per_row = 1
 	# Round up so there's always at least 1 row
@@ -105,14 +127,15 @@ func _redistribute_children() -> void:
 	_free_space = size.x - (_objects_per_row * object_size + (_objects_per_row - 1) * object_sep)
 	custom_minimum_size.y = _row_count * _object_occupied_size
 	custom_minimum_size.x = _object_occupied_size
-	for i in get_child_count():
+	for i in _visible_children.size():
 		var x := _free_space / 2.0 + (i % _objects_per_row) * _object_occupied_size
 		var y := (i / _objects_per_row) * _object_occupied_size + object_sep / 2.0
-		var object := get_child(i)
-		object.position = Vector2(x, y)
-		if object is Control:
-			object.size = Vector2(object_size, object_size)
-			object.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var child := _visible_children[i]
+		child.position = Vector2(x, y)
+		if child is Control:
+			child.size = Vector2(object_size, object_size)
+			child.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		i += 1
 	_reposition_color_rect()
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -152,8 +175,8 @@ func _detect_selected_object(mouse_pos: Vector2) -> void:
 	grid_pos.x = clampi(grid_pos.x, 0, _objects_per_row - 1)
 	grid_pos.y = clampi(grid_pos.y, 0, _row_count - 1)
 	var i := grid_pos.x + grid_pos.y * _objects_per_row
-	i = clampi(i, 0, get_child_count() - 1)
-	selected_object = get_child(i)
+	i = clampi(i, 0, _visible_children.size() - 1)
+	selected_object = _visible_children[i]
 	_reposition_color_rect()
 
 func _is_point_inside(point: Vector2) -> bool:
@@ -162,9 +185,8 @@ func _is_point_inside(point: Vector2) -> bool:
 func _reposition_color_rect() -> void:
 	if not _color_rect: return
 	_color_rect.size = Vector2.ONE * (object_size + color_rect_extend * 2)
-	# In case it's null, sets it to the first child.
-	# (unless there are no children)
-	selected_object = selected_object
+	# In case it's invalid somehow, this should call the setter and fix it
+	selected_object_i = selected_object_i
 	if not is_instance_valid(selected_object):
 		_color_rect.hide()
 	else:

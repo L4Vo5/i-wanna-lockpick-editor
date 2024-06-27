@@ -18,8 +18,8 @@ func test_key_copying_bug() -> void:
 	key_data.type = Enums.key_types.exact
 	key_data.is_infinite = true
 	key_data.color = Enums.colors.purple
-	key_editor.data = key_data
 	await await_idle_frame()
+	key_editor.data = key_data
 	assert_int(key_editor.data.amount.real_part).is_equal(9)
 	assert_int(key_editor.data.amount.imaginary_part).is_equal(9)
 	assert_int(key_editor.data.color).is_equal(Enums.colors.purple)

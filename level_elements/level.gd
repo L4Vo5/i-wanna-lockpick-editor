@@ -261,8 +261,13 @@ func _update_player_spawn_position() -> void:
 
 func _update_goal_position() -> void:
 	if not is_node_ready(): return
-	if not is_instance_valid(goal): return
-	goal.position = level_data.goal_position + Vector2i(16, 16)
+	if not is_instance_valid(goal):
+		_spawn_goal()
+	else:
+		if not level_data.has_goal:
+			goal.queue_free()
+		else:
+			goal.position = level_data.goal_position + Vector2i(16, 16)
 
 func try_open_door(door: Door) -> void:
 	logic.try_open_door(door)
@@ -527,6 +532,8 @@ func _spawn_goal() -> void:
 	if is_instance_valid(goal):
 		goal_parent.remove_child(goal)
 		goal.queue_free()
+	if not level_data.has_goal:
+		return
 	goal = GOAL.instantiate()
 	goal.position = level_data.goal_position + Vector2i(16, 16)
 	goal.level = self
@@ -536,7 +543,7 @@ func _spawn_goal() -> void:
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_data := []) -> bool:
 	if not is_space_inside(rect):
 		return true
-	if not &"goal" in exclusions:
+	if not &"goal" in exclusions and level_data.has_goal:
 		if Rect2i((level_data.goal_position), Vector2i(32, 32)).intersects(rect):
 			return true
 	if not &"player_spawn" in exclusions:

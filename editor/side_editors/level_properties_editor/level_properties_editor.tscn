@@ -215,30 +215,6 @@ size_flags_horizontal = 0
 text = "pixels"
 vertical_alignment = 1
 
-[node name="SpawnPos" type="HBoxContainer" parent="VBoxContainer/Level"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/Level/SpawnPos"]
-layout_mode = 2
-text = "Player Spawn: "
-
-[node name="PlayerSpawnCoord" type="Label" parent="VBoxContainer/Level/SpawnPos"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "(0, 0)"
-
-[node name="GoalPos" type="HBoxContainer" parent="VBoxContainer/Level"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/Level/GoalPos"]
-layout_mode = 2
-text = "Goal: "
-
-[node name="GoalCoord" type="Label" parent="VBoxContainer/Level/GoalPos"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "(0, 0)"
-
 [node name="WhatToPlace" type="HBoxContainer" parent="VBoxContainer/Level"]
 layout_mode = 2
 
@@ -269,6 +245,35 @@ script = ExtResource("5_oak3v")
 
 [node name="goal" parent="VBoxContainer/Level/WhatToPlace/WhatToPlace/Goal" instance=ExtResource("5_tmadf")]
 position = Vector2(20, 20)
+
+[node name="RemoveGoal" type="Button" parent="VBoxContainer/Level"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Remove Goal"
+
+[node name="SpawnPos" type="HBoxContainer" parent="VBoxContainer/Level"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Level/SpawnPos"]
+layout_mode = 2
+text = "Player Spawn: "
+
+[node name="PlayerSpawnCoord" type="Label" parent="VBoxContainer/Level/SpawnPos"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "(0, 0)"
+
+[node name="GoalPos" type="HBoxContainer" parent="VBoxContainer/Level"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Level/GoalPos"]
+layout_mode = 2
+text = "Goal: "
+
+[node name="GoalCoord" type="Label" parent="VBoxContainer/Level/GoalPos"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "(0, 0)"
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/Level"]
 visible = false

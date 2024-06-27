@@ -37,6 +37,13 @@ signal changed_goal_position
 		goal_position = val
 		changed_goal_position.emit()
 
+var has_goal := true:
+	set(val):
+		if not val:
+			goal_position = Vector2i(-32, -32)
+	get:
+		return goal_position.x >= 0
+
 ## If the level uses custom lock arrangements, they'll be here
 @export var custom_lock_arrangements := {}
 
@@ -221,6 +228,7 @@ func check_valid(should_correct: bool) -> void:
 			player_spawn_position = new_pos
 	for door in doors:
 		door.check_valid(self, should_correct)
+
 func get_screenshot() -> Image:
 	var viewport := SubViewport.new()
 	viewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST

@@ -71,7 +71,6 @@ layout_mode = 2
 
 [node name="Door" parent="VBoxContainer/TopStuff/TheDoor" instance=ExtResource("5_c2ium")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 ignore_position = true
 data = SubResource("Resource_qw72u")

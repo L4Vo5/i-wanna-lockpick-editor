@@ -20,8 +20,10 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
 	data.store_var(level.custom_lock_arrangements)
-	data.store_u32(level.goal_position.x)
-	data.store_u32(level.goal_position.y)
+	data.store_bool(level.has_goal)
+	if level.has_goal:
+		data.store_u32(level.goal_position.x)
+		data.store_u32(level.goal_position.y)
 	data.store_u32(level.player_spawn_position.x)
 	data.store_u32(level.player_spawn_position.y)
 	# Tiles
@@ -134,7 +136,9 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	if SaveLoad.PRINT_LOAD: print("Loading level %s" % level.name)
 	level.size = Vector2i(data.get_u32(), data.get_u32())
 	level.custom_lock_arrangements = data.get_var()
-	level.goal_position = Vector2i(data.get_u32(), data.get_u32())
+	var has_goal := data.get_bool()
+	if has_goal:
+		level.goal_position = Vector2i(data.get_u32(), data.get_u32())
 	level.player_spawn_position = Vector2i(data.get_u32(), data.get_u32())
 	if SaveLoad.PRINT_LOAD: print("loaded player pos: %s" % str(level.player_spawn_position))
 	
@@ -306,6 +310,11 @@ class ByteAccess:
 		while curr + how_much > data.size():
 			data.resize(data.size() * 2)
 
+	func store_bool(v: bool) -> void:
+		make_space(1)
+		data.encode_u8(curr, v)
+		curr += 1
+
 	func store_u8(v: int) -> void:
 		make_space(1)
 		data.encode_u8(curr, v)
@@ -361,6 +370,10 @@ class ByteAccess:
 	func store_bytes(bytes: PackedByteArray) -> void:
 		for byte in bytes:
 			store_u8(byte)
+
+	func get_bool() -> bool:
+		curr += 1
+		return data.decode_u8(curr - 1)
 
 	func get_u8() -> int:
 		curr += 1

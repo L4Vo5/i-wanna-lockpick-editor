@@ -36,7 +36,7 @@ func _ready() -> void:
 		type_choice_keys[key_type] = new_key
 		new_key.data = KeyData.new()
 		new_key.data.type = key_type
-		type_choice.add_child(new_key)
+		type_choice.add_child(new_key, true)
 	_update_type_choice_keys()
 	type_choice.object_selected.connect(_update_key.unbind(1))
 	
