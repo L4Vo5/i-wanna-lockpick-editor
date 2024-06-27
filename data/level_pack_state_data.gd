@@ -42,7 +42,6 @@ func connect_pack_data() -> void:
 	pack_data.state_data = self
 	pack_data.added_level.connect(_on_added_level)
 	pack_data.deleted_level.connect(_on_deleted_level)
-	assert(pack_data.levels.size() == completed_levels.size())
 
 func salvage_door(sid: int, door: DoorData) -> void:
 	if sid < 0 || sid > 999:

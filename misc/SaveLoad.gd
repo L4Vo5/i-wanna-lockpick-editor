@@ -66,7 +66,11 @@ static func save_level(level_pack: LevelPackData) -> void:
 	level_pack.state_data.save()
 
 static func load_pack_state_from_path(path: String) -> LevelPackStateData:
-	return load_pack_state_from_buffer(FileAccess.get_file_as_bytes(path))
+	var data := FileAccess.get_file_as_bytes(path)
+	if FileAccess.get_open_error() == OK:
+		return load_pack_state_from_buffer(data)
+	else:
+		return null
 
 static func load_pack_state_from_buffer(data: PackedByteArray) -> LevelPackStateData:
 	# All versions must respect this initial structure
@@ -137,7 +141,6 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	var offset := 6+len
 	
 	print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
-	print("hash is %d" % hash(data))
 	
 	_last_loaded_version = version
 	if not VERSIONS.has(version):
@@ -153,7 +156,12 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	var lvl_pack_data: LevelPackData = load_script.load(byte_access)
 	# V3 and earlier didn't support pack id. Calculate a consistent one to allow save data.
 	if version <= 3:
-		lvl_pack_data.pack_id = hash(data)
+		var hc := HashingContext.new()
+		hc.start(HashingContext.HASH_SHA1)
+		hc.update(data)
+		# "& ~(1<<63)" ensures it's not negative
+		var h := hc.finish().decode_s64(0) & ~(1<<63)
+		lvl_pack_data.pack_id = h
 	
 	# Now that it's imported, it'll save with the latest version
 	lvl_pack_data.editor_version = Global.game_version

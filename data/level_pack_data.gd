@@ -16,7 +16,8 @@ signal deleted_level(level_id: int)
 ## Description of the level pack, displayed in level selection
 @export var description: String
 ## Pack id, this SHOULD be unique.
-@export var pack_id: int = (randi() << 32) + randi()
+# "& ~(1<<63)" ensures it's not negative
+@export var pack_id: int = (randi() << 32) + randi() & ~(1<<63)
 
 ## For simplicity, each pack data has one state associated with it.
 var state_data: LevelPackStateData:
