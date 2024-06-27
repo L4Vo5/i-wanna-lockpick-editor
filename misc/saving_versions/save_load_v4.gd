@@ -1,7 +1,6 @@
 static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.store_u16(SaveLoad.LATEST_FORMAT)
-	level_pack.editor_version = Global.game_version
-	data.store_string(level_pack.editor_version)
+	data.store_string(Global.game_version)
 	data.store_string(level_pack.name)
 	data.store_string(level_pack.author)
 	data.store_s64(level_pack.pack_id)

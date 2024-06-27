@@ -1,6 +1,6 @@
 static func save(level: LevelData, data: ByteAccess) -> void:
 	data.store_u16(SaveLoad.LATEST_FORMAT)
-	data.store_string(level.editor_version)
+	data.store_string("")
 	data.store_string(level.name)
 	data.store_string(level.author)
 	data.store_u32(level.size.x)

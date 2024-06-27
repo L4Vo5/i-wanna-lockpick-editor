@@ -79,9 +79,6 @@ var has_goal := true:
 		if author == val: return
 		author = val
 		changed.emit()
-## DEPRECATED
-## KEPT FOR COMPATIBILITY (for now?)
-@export var editor_version: String
 
 var collision_system := CollisionSystem.new(16)
 

@@ -5,8 +5,6 @@ signal added_level
 signal deleted_level(level_id: int)
 ## All the levels in the level pack
 @export var levels: Array[LevelData]
-## Used to display a slightly more helpful error message when loading an incompatible level pack
-@export var editor_version: String
 
 # TODO: max length for these fields?
 ## Name of the level pack, important when picking what to play
@@ -38,7 +36,6 @@ static func make_from_level(level_data: LevelData) -> LevelPackData:
 	var data := LevelPackData.new()
 	data.name = level_data.name
 	data.author = level_data.author
-	data.editor_version = level_data.editor_version
 	data.levels = [level_data.duplicated()]
 	data.levels[0].resource_path = ""
 	return data

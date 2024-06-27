@@ -163,8 +163,6 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 		var h := hc.finish().decode_s64(0) & ~(1<<63)
 		lvl_pack_data.pack_id = h
 	
-	# Now that it's imported, it'll save with the latest version
-	lvl_pack_data.editor_version = Global.game_version
 	lvl_pack_data.file_path = path
 	return lvl_pack_data
 
