@@ -1,91 +1,96 @@
-static func load(data: ByteAccess) -> LevelPackData:
-	return LevelPackData.make_from_level(_load_level(data))
+## Fully converts V1 bytes into V3
+static func convert_to_newer_version(data: ByteAccess, editor_version: String) -> PackedByteArray:
+	const target_version := 3
+	var new_data := SaveLoad.V3.make_byte_access([], 0)
+	
+	# initial structure common to all .lvl files
+	new_data.store_u16(target_version)
+	new_data.store_string(editor_version)
+	
+	# actual V1 data being turned to V3
+	# level name and author saved as pack name and author
+	new_data.store_string(data.get_string())
+	new_data.store_string(data.get_string())
+	# level count = 1
+	new_data.store_u32(1)
+	# level title + name
+	new_data.store_string("\n")
+	# level size
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	# custom lock arrangements
+	new_data.store_var(data.get_var())
+	# goal pos, player spawn pos
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	
+	# tiles
+	var tile_count := data.get_u32()
+	new_data.store_u32(tile_count)
+	for i in tile_count:
+		# x and y of each tile
+		new_data.store_u32(data.get_u32())
+		new_data.store_u32(data.get_u32())
+	
+	# keys
+	var key_count := data.get_u32()
+	new_data.store_u32(key_count)
+	for _i in key_count:
+		_convert_key(data, new_data)
+	
+	# doors
+	var door_count := data.get_u32()
+	new_data.store_u32(door_count)
+	for _i in door_count:
+		_convert_door(data, new_data)
+	
+	# entries, of which there are zero
+	new_data.store_u32(0)
+	
+	new_data.compress()
+	return new_data.data
 
-static func _load_level(data: ByteAccess) -> LevelData:
-	assert(PerfManager.start("SaveLoadV1::load"))
-	var level := LevelData.new()
-	level.name = data.get_string()
-	level.author = data.get_string()
-	level.size = Vector2i(data.get_u32(), data.get_u32())
-	
-	level.custom_lock_arrangements = data.get_var()
-	level.goal_position = Vector2i(data.get_u32(), data.get_u32())
-	level.player_spawn_position = Vector2i(data.get_u32(), data.get_u32())
-	if SaveLoad.PRINT_LOAD: print("loaded player pos: %s" % str(level.player_spawn_position))
-	
-	var tile_amount := data.get_u32()
-	if SaveLoad.PRINT_LOAD: print("tile count is %d" % tile_amount)
-	for _i in tile_amount:
-		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = true
-	
-	var key_amount := data.get_u32()
-	if SaveLoad.PRINT_LOAD: print("key count is %d" % key_amount)
-	level.keys.resize(key_amount)
-	for i in key_amount:
-		level.keys[i] = _load_key(data)
-	
-	var door_amount := data.get_u32()
-	if SaveLoad.PRINT_LOAD: print("door count is %d" % door_amount)
-	level.doors.resize(door_amount)
-	assert(PerfManager.start("SaveLoadV1::load (loading doors)"))
-	for i in door_amount:
-		level.doors[i] = _load_door(data)
-	assert(PerfManager.end("SaveLoadV1::load (loading doors)"))
-	
-	assert(PerfManager.end("SaveLoadV1::load"))
-	return level
+static func _convert_key(data: ByteAccess, new_data: SaveLoad.V3.ByteAccess) -> void:
+	# key amount
+	_convert_complex(data, new_data)
+	# key position
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	# pretty sure this byte can stay as-is? is_infinite should already be 0
+	new_data.store_u8(data.get_u8())
 
-static func _load_key(data: ByteAccess) -> KeyData:
-	var key := KeyData.new()
-	key.amount = _load_complex(data)
-	key.position = Vector2i(data.get_u32(), data.get_u32())
-	var type_and_color := data.get_u8()
-	key.color = type_and_color & 0b1111
-	key.type = type_and_color >> 4
-	
-	return key
+static func _convert_door(data: ByteAccess, new_data: SaveLoad.V3.ByteAccess) -> void:
+	# door amount
+	_convert_complex(data, new_data)
+	# position and size
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	# pretty sure this byte can stay as-is? door curses
+	new_data.store_u8(data.get_u8())
+	var lock_count := data.get_u16()
+	new_data.store_u16(lock_count)
+	for _i in lock_count:
+		_convert_lock(data, new_data)
 
-static func _load_door(data: ByteAccess) -> DoorData:
-	var door := DoorData.new()
-	
-	door.amount = _load_complex(data)
-	door.position = Vector2i(data.get_u32(), data.get_u32())
-	door.size = Vector2i(data.get_u32(), data.get_u32())
-	
-	var curses_color := data.get_u8()
-	# bits are, x1234444, 1 = ice, 2 = erosion, 3 = paint, 4 = color
-	door.set_curse(Enums.curse.ice, curses_color & (1<<6) != 0)
-	door.set_curse(Enums.curse.erosion, curses_color & (1<<5) != 0)
-	door.set_curse(Enums.curse.paint, curses_color & (1<<4) != 0)
-	door.outer_color = curses_color & 0b1111
-	
-	var lock_amount := data.get_u16()
-	door.locks.resize(lock_amount)
-	for i in lock_amount:
-		door.locks[i] = _load_lock(data)
-	return door
+static func _convert_lock(data: ByteAccess, new_data: SaveLoad.V3.ByteAccess) -> void:
+	# position and size
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	new_data.store_u32(data.get_u32())
+	# lock arrangement and magnitude
+	new_data.store_u16(data.get_u16())
+	new_data.store_s64(data.get_s64())
+	# pretty sure this can stay as-is? sign, value type, dont_show_lock, color, and lock_type
+	new_data.store_u16(data.get_u16())
 
-static func _load_lock(data: ByteAccess) -> LockData:
-	var lock := LockData.new()
-	lock.position = Vector2i(data.get_u32(), data.get_u32())
-	lock.size = Vector2i(data.get_u32(), data.get_u32())
-	lock.lock_arrangement = data.get_u16()
-	lock.magnitude = data.get_s64()
-	var bit_data := data.get_u16()
-	lock.sign = bit_data & 0b1
-	bit_data >>= 1
-	lock.value_type = bit_data & 0b1
-	bit_data >>= 1
-	lock.dont_show_lock = bit_data & 0b1
-	bit_data >>= 1
-	lock.color = bit_data & 0b1111
-	bit_data >>= 4
-	lock.lock_type = bit_data
-	
-	return lock
-
-static func _load_complex(data: ByteAccess) -> ComplexNumber:
-	return ComplexNumber.new_with(data.get_s64(), data.get_s64())
+static func _convert_complex(data: ByteAccess, new_data: SaveLoad.V3.ByteAccess) -> void:
+	new_data.store_s64(data.get_s64())
+	new_data.store_s64(data.get_s64())
 
 static func make_byte_access(data: PackedByteArray, offset := 0) -> ByteAccess:
 	return ByteAccess.new(data, offset)

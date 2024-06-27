@@ -18,9 +18,6 @@ const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 static var LEVELS_PATH := ProjectSettings.globalize_path("user://levels/")
 static var SAVES_PATH := ProjectSettings.globalize_path("user://level_saves/")
 
-## Used for testing
-static var _last_loaded_version := -1
-
 ## Given a LevelPack, gets the byte data to save it as the current format version.
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
 	var byte_access := VC.make_byte_access([])
@@ -128,6 +125,19 @@ static func load_from_image(image: Image, path := "") -> LevelPackData:
 	var data := image.get_data()
 	return load_from_buffer(data, path)
 
+## Used for testing
+static func get_version_from_path(path: String) -> int:
+	if path.get_extension() == "lvl":
+		return FileAccess.get_file_as_bytes(path).decode_u16(0)
+	elif path.get_extension() == "png":
+		var image := Image.load_from_file(path)
+		image.convert(Image.FORMAT_RGB8)
+		var data := image.get_data()
+		return data.decode_u16(0)
+	else:
+		assert(false)
+		return -1
+
 ## Loads a LevelPackData from a valid save buffer.
 static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackData:
 	# All versions must respect this initial structure
@@ -142,7 +152,6 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	
 	print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
 	
-	_last_loaded_version = version
 	if not VERSIONS.has(version):
 		var error_text := \
 	"""This level was made in editor version %s and uses the saving format N°%d.
@@ -153,6 +162,12 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 		return null
 	var load_script: Script = VERSIONS[version]
 	var byte_access = load_script.make_byte_access(data, offset)
+	if not load_script.has_method("load"):
+		print("Nevermind, recursing...")
+		assert(PerfManager.start("SaveLoad -> V%d::convert_to_newer_version" % version))
+		var new_data: PackedByteArray = load_script.convert_to_newer_version(byte_access, original_editor_version)
+		assert(PerfManager.end("SaveLoad -> V%d::convert_to_newer_version" % version))
+		return load_from_buffer(new_data, path)
 	var lvl_pack_data: LevelPackData = load_script.load(byte_access)
 	# V3 and earlier didn't support pack id. Calculate a consistent one to allow save data.
 	if version <= 3:

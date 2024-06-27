@@ -23,10 +23,11 @@ func test_versions() -> void:
 		assert_array(files).is_not_empty()
 		for file_name in files:
 			var file_path := dir_path.path_join(file_name)
+			var pack_version := SaveLoad.get_version_from_path(file_path)
 			var level_pack := SaveLoad.load_from_path(file_path)
 			assert_object(level_pack).is_not_null()
-			assert_int(SaveLoad._last_loaded_version)\
-				.override_failure_message("Expected version %d but was %d for level %s" % [dir_version, SaveLoad._last_loaded_version, file_path])\
+			assert_int(pack_version)\
+				.override_failure_message("Expected version %d but was %d for level %s" % [dir_version, pack_version, file_path])\
 				.is_equal(dir_version)
 			assert_str(level_pack.file_path)\
 				.override_failure_message("File path should be '%s' but was '%s'" % [file_path, level_pack.file_path])\
