@@ -1,12 +1,15 @@
-[gd_scene load_steps=9 format=3 uid="uid://bloqrx3o1b3c3"]
+[gd_scene load_steps=14 format=3 uid="uid://bloqrx3o1b3c3"]
 
 [ext_resource type="Script" path="res://editor/side_editors/salvage_editor/salvage_editor.gd" id="1_gotpp"]
 [ext_resource type="Script" path="res://data/salvage_point_data.gd" id="2_jrhgn"]
 [ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvages/salvage_point.tscn" id="3_ycw40"]
 [ext_resource type="Script" path="res://editor/property_editors/object_grid_chooser.gd" id="4_3pjd2"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="4_hhje5"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="6_p7ch7"]
+[ext_resource type="PackedScene" uid="uid://db8xfne3exmq5" path="res://rendering/mouseover_text.tscn" id="6_sxva7"]
+[ext_resource type="Script" path="res://data/door_data.gd" id="7_kq4ii"]
 
-[sub_resource type="Resource" id="Resource_2arxy"]
+[sub_resource type="Resource" id="Resource_ko5fj"]
 script = ExtResource("2_jrhgn")
 sid = 0
 is_output = false
@@ -24,11 +27,32 @@ sid = 0
 is_output = true
 position = Vector2i(0, 0)
 
+[sub_resource type="Resource" id="Resource_aurjo"]
+script = ExtResource("6_p7ch7")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_cmio5"]
+script = ExtResource("7_kq4ii")
+amount = SubResource("Resource_aurjo")
+outer_color = 1
+locks = Array[Resource("res://data/lock_data.gd")]([])
+position = Vector2i(0, 0)
+size = Vector2i(96, 96)
+_curses = {
+0: false,
+1: false,
+2: false,
+3: false
+}
+glitch_color = 13
+sid = -1
+
 [node name="SalvagePointEditor" type="MarginContainer"]
 offset_right = 212.0
 offset_bottom = 333.0
 script = ExtResource("1_gotpp")
-data = SubResource("Resource_2arxy")
+data = SubResource("Resource_ko5fj")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -45,7 +69,7 @@ layout_mode = 2
 [node name="SalvagePoint" parent="VBoxContainer/CenterContainer" instance=ExtResource("3_ycw40")]
 unique_name_in_owner = true
 layout_mode = 2
-data = SubResource("Resource_2arxy")
+data = SubResource("Resource_ko5fj")
 ignore_position = true
 hide_number = false
 
@@ -91,21 +115,46 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Input Point"
 
-[node name="Label" type="Label" parent="VBoxContainer"]
-layout_mode = 2
-text = "Currently salvaged door:"
-
-[node name="DoorScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+[node name="CurrentDoorShow" type="VBoxContainer" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/DoorScrollContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/CurrentDoorShow"]
+layout_mode = 2
+text = "Currently salvaged door:"
+
+[node name="DoorScrollContainer" type="ScrollContainer" parent="VBoxContainer/CurrentDoorShow"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/CurrentDoorShow/DoorScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/CurrentDoorShow/DoorScrollContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 
-[node name="Door" parent="VBoxContainer/DoorScrollContainer/CenterContainer" instance=ExtResource("4_hhje5")]
+[node name="Door" parent="VBoxContainer/CurrentDoorShow/DoorScrollContainer/VBoxContainer/CenterContainer" instance=ExtResource("4_hhje5")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 ignore_position = true
+data = SubResource("Resource_cmio5")
+
+[node name="CenterContainer2" type="CenterContainer" parent="VBoxContainer/CurrentDoorShow/DoorScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="VBoxContainer/CurrentDoorShow/DoorScrollContainer/VBoxContainer/CenterContainer2"]
+custom_minimum_size = Vector2(90, 32)
+layout_mode = 2
+
+[node name="DoorDescription" parent="VBoxContainer/CurrentDoorShow/DoorScrollContainer/VBoxContainer/CenterContainer2/Control" instance=ExtResource("6_sxva7")]
+unique_name_in_owner = true
+text = "White Door
+"
+chase_mouse = false

@@ -12,9 +12,10 @@ class_name SalvagePointEditor
 @onready var salvage_point: SalvagePoint = %SalvagePoint
 @onready var sid: SpinBox = %SID
 @onready var door: Door = %Door
-@onready var door_scroll_container: ScrollContainer = %DoorScrollContainer
+@onready var current_door_show: Control = %CurrentDoorShow
 @onready var type_choice: ObjectGridChooser = %TypeChoice
 @onready var type_label: Label = %TypeLabel
+@onready var door_description: MouseoverText = %DoorDescription
 
 var editor_data: EditorData
 
@@ -32,11 +33,14 @@ func _process(_delta: float) -> void:
 	if not editor_data: return
 	var salvaged_doors := editor_data.level_pack_data.state_data.salvaged_doors
 	var current_sid := data.sid
-	door_scroll_container.hide()
+	current_door_show.hide()
 	if current_sid >= 0 and current_sid < salvaged_doors.size():
 		if salvaged_doors[current_sid]:
-			door_scroll_container.show()
+			current_door_show.show()
 			door.data = salvaged_doors[current_sid]
+			door_description.text = door.data.get_mouseover_text()
+			# TODO: maybe mouseover should be a control?
+			door_description.get_parent().custom_minimum_size = door_description.size
 			assert(door.data.amount.is_equal_to(ComplexNumber.new_with(1, 0)))
 
 var _setting_to_data := false

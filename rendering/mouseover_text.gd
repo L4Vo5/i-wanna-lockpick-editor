@@ -1,5 +1,6 @@
 @tool
 extends Node2D
+class_name MouseoverText
 
 const FONT := preload("res://fonts/fMouseover.fnt")
 const COLOR_MAIN := Color.BLACK
