@@ -57,6 +57,8 @@ var _level_pack_data: LevelPackData:
 @onready var level_image_rect: Control = %LevelImageRect
 @onready var copy_to_clipboard: Button = %CopyToClipboard
 
+@onready var erase_save_state: Button = %EraseSaveState
+
 func _connect_pack_data() -> void:
 	if not is_instance_valid(_level_pack_data): return
 	_level_pack_data.changed.connect(_set_to_level_pack_data)
@@ -108,6 +110,8 @@ func _ready() -> void:
 	
 	level_number.value_changed.connect(_set_level_number)
 	delete_level.pressed.connect(_delete_current_level)
+	
+	erase_save_state.pressed.connect(_erase_save_state)
 
 func _update_level_pack_data() -> void:
 	_level_pack_data = editor_data.level_pack_data
@@ -241,3 +245,6 @@ func _copy_image_to_clipboard() -> void:
 	_reload_image() # Just to make sure it's updated
 	if level_image_rect.texture != null:
 		Global.copy_image_to_clipboard(level_image_rect.texture.get_image())
+
+func _erase_save_state() -> void:
+	_level_pack_data.state_data.erase()

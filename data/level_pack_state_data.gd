@@ -126,6 +126,16 @@ static func get_path_from_pack(pack: LevelPackData) -> String:
 	var file_name := str(pack.pack_id) + extension
 	return SaveLoad.SAVES_PATH.path_join(file_name)
 
+func erase() -> void:
+	delete_file()
+	pack_data.state_data = make_from_pack_data(pack_data)
+	# HACK
+	Global.current_level.reset()
+
+func delete_file() -> void:
+	var file_path := get_path_from_pack(pack_data)
+	DirAccess.remove_absolute(file_path)
+
 static func pr(s: String) -> void:
 	if SHOULD_PRINT:
 		print(s)
