@@ -21,11 +21,6 @@ func load_level_pack(pack: LevelPackData) -> void:
 	_pack_data = pack
 	var state := LevelPackStateData.find_state_file_for_pack_or_create_new(_pack_data)
 	_pack_data.state_data = state
-	if state.current_level < 0 or state.current_level >= _pack_data.levels.size():
-		# malformed state
-		printerr("State's current level is out of range: current level = ",
-			state.current_level, " level count ", _pack_data.levels.size())
-		state.current_level = 0
 	var level_data: LevelData = _pack_data.levels[state.current_level]
 	level.level_data = level_data
 	reset()

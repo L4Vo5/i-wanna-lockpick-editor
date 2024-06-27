@@ -11,6 +11,7 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	# Save all levels
 	for level in level_pack.levels:
 		_save_level(level, data)
+	
 	data.compress()
 
 static func _save_level(level: LevelData, data: ByteAccess) -> void:
@@ -113,7 +114,6 @@ static func load(data: ByteAccess) -> LevelPackData:
 	level_pack.name = data.get_string()
 	level_pack.author = data.get_string()
 	level_pack.pack_id = data.get_s64()
-	level_pack.is_pack_id_saved = true
 	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
 	
 	var level_count := data.get_u32()
@@ -241,11 +241,10 @@ static func _load_complex(data: ByteAccess) -> ComplexNumber:
 
 # pack state related functions
 static func save_pack_state(data: ByteAccess, state: LevelPackStateData) -> void:
-	data.store_s64(state.pack_id)
 	data.store_u16(SaveLoad.LATEST_FORMAT)
 	data.store_string(Global.game_version)
 	
-	data.store_string(state.state_name)
+	data.store_s64(state.pack_id)
 	data.store_u32(state.completed_levels.size())
 	for x in state.completed_levels:
 		data.store_u8(x)
@@ -257,11 +256,12 @@ static func save_pack_state(data: ByteAccess, state: LevelPackStateData) -> void
 			continue
 		data.store_u8(1)
 		_save_door(data, door)
+	
 	data.compress()
 
 static func load_pack_state(data: ByteAccess) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
-	state.state_name = data.get_string()
+	state.pack_id = data.get_s64()
 	
 	var completed_levels_amount := data.get_u32()
 	state.completed_levels.resize(completed_levels_amount)

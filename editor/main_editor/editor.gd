@@ -81,11 +81,7 @@ func _ready() -> void:
 	else:
 		const p := "user://levels/testing.tres"
 		if FileAccess.file_exists(p):
-			var res = load(p)
-			if res is LevelData:
-				data.level_pack_data = LevelPackData.make_from_level(res)
-			if res is LevelPackData:
-				data.level_pack_data = res
+			load_level(p)
 		else:
 			print("Couldn't find %s. Starting on new level." % p)
 			_on_new_level_button_pressed()
@@ -252,9 +248,7 @@ func load_level(path: String) -> void:
 			res = LevelPackData.make_from_level(res)
 		if valid and res is LevelPackData:
 			new_level_pack = res
-			if not path.begins_with("res://"):
-				path = path.get_basename() + ".lvl"
-				new_level_pack.resource_path = ""
+			new_level_pack.file_path = path
 	elif ext == "lvl" or ext == "png":
 		new_level_pack = SaveLoad.load_from_path(path)
 	else:

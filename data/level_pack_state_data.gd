@@ -2,26 +2,18 @@ extends Resource
 class_name LevelPackStateData
 ## The state of a level pack. Also doubles as save data.
 
-static var SHOULD_PRINT := true
+static var SHOULD_PRINT := false
 
-var file_path: String = ""
-
-## Id of the pack this state data corresponds to (used for save data)
+## Id of the pack this state data corresponds to.
+# File path and pack id should coincide, so this seems useless.
+# But, keeping track of it is helpful to double check if the file was renamed by a user or something.
 @export var pack_id: int
 
-## The actual pack data (might be briefly null when loading save data)
-var pack_data: LevelPackData:
-	set(val):
-		if val == pack_data: return
-		disconnect_pack_data()
-		pack_data = val
-		connect_pack_data()
+## The actual pack data
+var pack_data: LevelPackData
 
-## State name in case of multiple save files
-@export var state_name: String = ""
-
-## An array with the completion status of each level (0: incomplete, 1: completed)
-# A level is completed when you reach the goal.
+## An array with the completion status of each level (0: incomplete, 1: completed).
+## A level is completed when you reach the goal.
 @export var completed_levels: PackedByteArray
 
 ## The salvaged doors. Their origin doesn't matter.
@@ -42,6 +34,7 @@ static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	state.completed_levels.resize(pack.levels.size())
 	state.pack_id = pack.pack_id
 	state.pack_data = pack
+	state.connect_pack_data()
 	return state
 
 func connect_pack_data() -> void:
@@ -50,11 +43,6 @@ func connect_pack_data() -> void:
 	pack_data.added_level.connect(_on_added_level)
 	pack_data.deleted_level.connect(_on_deleted_level)
 	assert(pack_data.levels.size() == completed_levels.size())
-
-func disconnect_pack_data() -> void:
-	if !pack_data: return
-	pack_data.added_level.disconnect(_on_added_level)
-	pack_data.deleted_level.disconnect(_on_deleted_level)
 
 func salvage_door(sid: int, door: DoorData) -> void:
 	if sid < 0 || sid > 999:
@@ -77,54 +65,66 @@ func _on_deleted_level(level_id: int) -> void:
 	save()
 
 func save() -> void:
-	if not pack_data.is_pack_id_saved:
+	assert(pack_id == pack_data.pack_id)
+	if pack_data.file_path == "":
+		# Don't save.
 		return
-	if file_path == "":
-		var dir = "user://level_saves"
-		var original_path = dir.path_join(str(pack_id))
-		if not FileAccess.file_exists(original_path + ".lvlst"):
-			file_path = original_path + ".lvlst"
-		else:
-			var i := 1
-			while FileAccess.file_exists(original_path + "-" + str(i) + ".lvlst"):
-				i += 1
-			file_path = original_path + "-" + str(i) + ".lvlst"
-		pr("Save data path: " + file_path)
-	SaveLoad.save_pack_state(self)
+	# File path is recalculated before saving, in case the user changed the pack from .lvlst to .tres or something
+	var file_path := get_path_from_pack(pack_data)
+	pr("Saving state data to %s" % file_path)
+	if file_path.get_extension() == "lvlst":
+		SaveLoad.save_pack_state_to_path(self, file_path)
+	elif file_path.get_extension() in ["tres", "res"]:
+		ResourceSaver.save(self, file_path)
 
-static func load_and_check_pack_state(path, pack) -> LevelPackStateData:
+func check_and_fix() -> void:
+	# TODO: maybe improve (what if there's extra salvages? etc)
+	var pack_level_count := pack_data.levels.size()
+	var current_level_count := completed_levels.size()
+	if current_level_count != pack_level_count:
+		printerr("state is keeping track of %d levels, but level pack has %d, resizing." % [current_level_count, pack_level_count])
+		completed_levels.resize(pack_level_count)
+	if current_level < 0 or current_level >= pack_data.levels.size():
+		printerr("State's current level is out of range: current level = ",
+			current_level, " level count ", pack_data.levels.size())
+		current_level = 0
+
+static func load_pack_state(path: String, pack: LevelPackData) -> LevelPackStateData:
 	var state: LevelPackStateData
-	if path.ends_with(".tres"):
-		state = ResourceLoader.load(path)
-		if not state or not state is LevelPackStateData or not state.pack_id == pack.pack_id:
-			return null
-		return state
-	state = SaveLoad.load_and_check_pack_state_from_path(path, pack)
-	if state == null:
+	if path.get_extension() == "lvlst":
+		state = SaveLoad.load_pack_state_from_path(path)
+	elif path.get_extension() in ["tres", "res"]:
+		if FileAccess.file_exists(path):
+			state = load(path)
+	if not state:
 		return null
-	state.file_path = path
+	assert(state.pack_id == pack.pack_id)
+	state.pack_data = pack
+	state.connect_pack_data()
+	state.check_and_fix()
 	return state
 
 static func find_state_file_for_pack_or_create_new(pack: LevelPackData) -> LevelPackStateData:
 	var state: LevelPackStateData = null
-	var prefix: String = str(pack.pack_id)
-	for file_name in DirAccess.get_files_at("user://level_saves"):
-		if not file_name.begins_with(prefix):
-			# shouldn't belong to this level pack
-			continue
-		# try reading the file
-		var path := "user://level_saves".path_join(file_name)
-		pr("Trying path " + path + " for pack " + str(pack.pack_id))
-		state = load_and_check_pack_state(path, pack)
-		if state != null:
-			break
+	var path := get_path_from_pack(pack)
+	state = load_pack_state(path, pack)
 	if not state:
-		state = LevelPackStateData.make_from_pack_data(pack)
-		state.save()
-		pr("Couldn't find save data, making a new one *eventually*")
+		state = make_from_pack_data(pack)
+		pr("Couldn't find save data, making a new one")
 	else:
-		pr("Successfully loaded save data from %s!" % state.file_path)
+		pr("Successfully loaded save data from %s!" % path)
+	assert(state.pack_id == pack.pack_id)
 	return state
+
+static func get_path_from_pack(pack: LevelPackData) -> String:
+	var pack_path := pack.file_path if not pack.file_path.is_empty() else pack.resource_path
+	if pack_path.is_empty():
+		return ""
+	var extension := "." + pack_path.get_extension()
+	if extension == ".lvl":
+		extension = ".lvlst"
+	var file_name := str(pack.pack_id) + extension
+	return SaveLoad.SAVES_PATH.path_join(file_name)
 
 static func pr(s: String) -> void:
 	if SHOULD_PRINT:

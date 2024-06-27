@@ -16,6 +16,7 @@ const VERSIONS: Dictionary = {
 const VC := V4
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 static var LEVELS_PATH := ProjectSettings.globalize_path("user://levels/")
+static var SAVES_PATH := ProjectSettings.globalize_path("user://level_saves/")
 
 ## Used for testing
 static var _last_loaded_version := -1
@@ -62,39 +63,27 @@ static func save_level(level_pack: LevelPackData) -> void:
 			print("error saving image: " + str(err))
 	else:
 		assert(false)
-	if not level_pack.is_pack_id_saved:
-		level_pack.is_pack_id_saved = true
-		level_pack.state_data.save()
+	level_pack.state_data.save()
 
-static func load_and_check_pack_state_from_path(path: String, pack: LevelPackData) -> LevelPackStateData:
-	return load_and_check_pack_state_from_buffer(FileAccess.get_file_as_bytes(path), pack)
+static func load_pack_state_from_path(path: String) -> LevelPackStateData:
+	return load_pack_state_from_buffer(FileAccess.get_file_as_bytes(path))
 
-static func load_and_check_pack_state_from_buffer(data: PackedByteArray, pack: LevelPackData) -> LevelPackStateData:
+static func load_pack_state_from_buffer(data: PackedByteArray) -> LevelPackStateData:
 	# All versions must respect this initial structure
-	var pack_id := data.decode_u64(0)
-	if pack_id != pack.pack_id:
-		return null
-	var version := data.decode_u16(8)
-	var len := data.decode_u32(10)
-	var bytes := data.slice(14, 14 + len)
+	var version := data.decode_u16(0)
+	var len := data.decode_u32(2)
+	var bytes := data.slice(6, 6 + len)
 	var original_editor_version := bytes.get_string_from_utf8()
+	
 	if not VERSIONS.has(version):
 		printerr("Invalid level pack state version: %d (%s)" % [version, original_editor_version])
 		return null
-	var load_script: Script = VERSIONS[version]
-	var byte_access = load_script.make_byte_access(data, 14 + len)
-	if not load_script.has_method(&"load_pack_state"):
+	if version <= 3:
 		printerr("Version doesn't support pack states: %d (%s)" % [version, original_editor_version])
 		return null
+	var load_script: Script = VERSIONS[version]
+	var byte_access = load_script.make_byte_access(data, 6 + len)
 	var state_data: LevelPackStateData = load_script.load_pack_state(byte_access)
-	state_data.pack_id = pack_id
-	state_data.pack_data = pack
-	
-	var expected_levels = pack.levels.size()
-	var found_levels = state_data.completed_levels.size()
-	if expected_levels != found_levels:
-		print("completed_levels.size() != %s vs levels.size() = %s, resizing." % [found_levels, expected_levels])
-		state_data.completed_levels.resize(expected_levels)
 	return state_data
 
 static func get_pack_state_data(state: LevelPackStateData) -> PackedByteArray:
@@ -102,8 +91,7 @@ static func get_pack_state_data(state: LevelPackStateData) -> PackedByteArray:
 	VC.save_pack_state(byte_access, state)
 	return byte_access.data
 
-static func save_pack_state(state: LevelPackStateData) -> void:
-	var path := state.file_path
+static func save_pack_state_to_path(state: LevelPackStateData, path: String) -> void:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	file.store_buffer(get_pack_state_data(state))
 	file.close()
@@ -163,6 +151,9 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	var load_script: Script = VERSIONS[version]
 	var byte_access = load_script.make_byte_access(data, offset)
 	var lvl_pack_data: LevelPackData = load_script.load(byte_access)
+	# V3 and earlier didn't support pack id. Calculate a consistent one to allow save data.
+	if version <= 3:
+		lvl_pack_data.pack_id = hash(data)
 	
 	# Now that it's imported, it'll save with the latest version
 	lvl_pack_data.editor_version = Global.game_version
