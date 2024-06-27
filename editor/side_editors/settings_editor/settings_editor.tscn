@@ -32,3 +32,28 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 6
 text = "Save on Play"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Sound Volume"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="SoundSlider" type="HSlider" parent="ScrollContainer/VBoxContainer/VBoxContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.0
+
+[node name="Cacophony" type="CheckButton" parent="ScrollContainer/VBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Cacophony"

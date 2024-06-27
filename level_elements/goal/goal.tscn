@@ -24,3 +24,4 @@ frame = 1
 
 [node name="Win" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_1r06c")
+bus = &"Sfx"

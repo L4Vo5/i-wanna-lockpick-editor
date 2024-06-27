@@ -46,6 +46,7 @@ unique_name_in_owner = true
 stream = ExtResource("3_4b6cq")
 volume_db = -0.46
 pitch_scale = 1.4
+bus = &"Sfx"
 
 [node name="Outline" type="Panel" parent="."]
 unique_name_in_owner = true
