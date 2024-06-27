@@ -313,6 +313,7 @@ mouse_filter = 2
 
 [node name="GhostSalvagePoint" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("8_8di3k")]
 visible = false
+hide_number = null
 
 [node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("7_8vfxp")]
 color = Color(1, 1, 1, 1)

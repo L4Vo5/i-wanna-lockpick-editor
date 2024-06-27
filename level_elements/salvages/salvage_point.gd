@@ -22,7 +22,12 @@ var door: Door = null
 var door_error = false
 var door_error_size = false
 
-@export var ignore_position = false
+@export var ignore_position := false
+@export var hide_number := false:
+	set(val):
+		hide_number = val
+		if number:
+			number.visible = not hide_number
 
 @onready var sprite: Sprite2D = %Sprite
 @onready var number: Label = %Number
@@ -33,6 +38,7 @@ var door_error_size = false
 func _ready() -> void:
 	collision.area_entered.connect(_on_touched)
 	update_visual()
+	number.visible = not hide_number
 
 func prep_output_step_1() -> void:
 	if not data.is_output:
