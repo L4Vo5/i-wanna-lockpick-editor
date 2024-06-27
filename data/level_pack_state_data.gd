@@ -52,6 +52,14 @@ func salvage_door(sid: int, door: DoorData) -> void:
 	salvaged_doors[sid] = door
 	save()
 
+func get_completed_levels_count() -> int:
+	return completed_levels.count(1)
+
+func get_salvaged_doors_count() -> int:
+	return salvaged_doors.reduce(func(accum, door):
+		return accum + (1 if door else 0)
+	, 0)
+
 func _on_added_level() -> void:
 	assert(pack_data.levels.size() == completed_levels.size() + 1)
 	completed_levels.resize(pack_data.levels.size())

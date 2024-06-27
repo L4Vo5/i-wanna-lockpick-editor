@@ -58,6 +58,8 @@ var _level_pack_data: LevelPackData:
 @onready var copy_to_clipboard: Button = %CopyToClipboard
 
 @onready var erase_save_state: Button = %EraseSaveState
+@onready var completed_levels_label: Label = %CompletedLevelsLabel
+@onready var salvaged_doors_label: Label = %SalvagedDoorsLabel
 
 func _connect_pack_data() -> void:
 	if not is_instance_valid(_level_pack_data): return
@@ -94,7 +96,11 @@ func _ready() -> void:
 	
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
-	visibility_changed.connect(func(): if visible: _reload_image())
+	visibility_changed.connect(func():
+		if visible:
+			_reload_image()
+			_set_to_level_pack_data()
+	)
 	what_to_place.object_selected.connect(_on_what_to_place_changed)
 	level_name.text_changed.connect(_on_set_name)
 	level_title.text_changed.connect(_on_set_title)
@@ -163,8 +169,11 @@ func _set_to_level_pack_data() -> void:
 	pack_author.text = _level_pack_data.author
 	pack_description.text = _level_pack_data.description
 	level_number.max_value = _level_pack_data.levels.size() + 1
-	if _level_pack_data.state_data:
-		level_number.value = _level_pack_data.state_data.current_level + 1
+	var state_data := _level_pack_data.state_data
+	if state_data:
+		level_number.value = state_data.current_level + 1
+		completed_levels_label.text = str(state_data.get_completed_levels_count())
+		salvaged_doors_label.text = str(state_data.get_salvaged_doors_count())
 	level_count_label.text = str(_level_pack_data.levels.size())
 	_setting_to_data = false
 
