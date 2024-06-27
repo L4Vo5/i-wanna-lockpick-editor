@@ -93,6 +93,8 @@ func update_status() -> void:
 	sprite.texture = ENTRY_OPEN
 	if data.leads_to < 0 or data.leads_to >= pack_data.levels.size():
 		sprite.texture = ENTRY_ERR
+	elif pack_data.state_data.completed_levels[data.leads_to]:
+		sprite.texture = ENTRY_COMPLETED
 
 func _disconnect_data() -> void:
 	if not is_instance_valid(data): return
