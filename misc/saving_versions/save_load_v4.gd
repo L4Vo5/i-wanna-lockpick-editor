@@ -237,7 +237,7 @@ static func _load_salvage_point(data: ByteAccess) -> SalvagePointData:
 	var salvage_point := SalvagePointData.new()
 	salvage_point.position = Vector2i(data.get_u32(), data.get_u32())
 	salvage_point.is_output = data.get_u8() != 0
-	salvage_point.sid = data.get_u32()
+	salvage_point.sid = data.get_s32()
 	return salvage_point
 
 static func _load_complex(data: ByteAccess) -> ComplexNumber:

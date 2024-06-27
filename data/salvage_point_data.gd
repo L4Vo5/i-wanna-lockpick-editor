@@ -43,3 +43,17 @@ func get_mouseover_text(door_error) -> String:
 
 func get_rect() -> Rect2i:
 	return Rect2i(position, Vector2i(32, 32))
+
+func check_valid(level_data: LevelData, should_correct: bool) -> bool:
+	var is_valid := true
+	if sid < -1:
+		is_valid = is_valid and should_correct
+		level_data.add_invalid_reason("SID too low (%d)" % sid, true)
+		if should_correct:
+			sid = -1
+	if sid > 999:
+		is_valid = is_valid and should_correct
+		level_data.add_invalid_reason("SID too high (%d)" % sid, true)
+		if should_correct:
+			sid = 999
+	return is_valid

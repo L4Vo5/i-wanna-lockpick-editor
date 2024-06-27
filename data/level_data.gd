@@ -228,6 +228,8 @@ func check_valid(should_correct: bool) -> void:
 			player_spawn_position = new_pos
 	for door in doors:
 		door.check_valid(self, should_correct)
+	for salvage_point in salvage_points:
+		salvage_point.check_valid(self, should_correct)
 
 func get_screenshot() -> Image:
 	var viewport := SubViewport.new()
