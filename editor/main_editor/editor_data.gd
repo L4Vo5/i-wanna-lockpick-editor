@@ -58,6 +58,7 @@ var level_element_type: Enums.level_element_types = Enums.level_element_types.do
 var level_properties := false
 var player_spawn := false
 var goal_position := false
+var editing_settings := false
 
 # object selection / dragging / highlight / etc
 # note that hover_highlight is part of the level

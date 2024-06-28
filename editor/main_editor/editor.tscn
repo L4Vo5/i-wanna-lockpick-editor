@@ -39,12 +39,12 @@ type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_snx77"]
+[sub_resource type="Resource" id="Resource_i12x6"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_4846t"]
+[sub_resource type="Resource" id="Resource_0hcsa"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -56,11 +56,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_rv84e"]
+[sub_resource type="Resource" id="Resource_qlik1"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_snx77")
+amount = SubResource("Resource_i12x6")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_4846t")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_0hcsa")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -72,26 +72,26 @@ _curses = {
 glitch_color = 13
 sid = -1
 
-[sub_resource type="Resource" id="Resource_yojgk"]
+[sub_resource type="Resource" id="Resource_1q8m0"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_14815"]
+[sub_resource type="Resource" id="Resource_vurr6"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_yojgk")
+amount = SubResource("Resource_1q8m0")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_1n2ny"]
+[sub_resource type="Resource" id="Resource_m4s7o"]
 script = ExtResource("21_uoxo3")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[sub_resource type="Resource" id="Resource_m4vcd"]
+[sub_resource type="Resource" id="Resource_dwdrt"]
 script = ExtResource("22_djptt")
 sid = 0
 is_output = false
@@ -313,7 +313,6 @@ mouse_filter = 2
 
 [node name="GhostSalvagePoint" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("8_8di3k")]
 visible = false
-hide_number = false
 
 [node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("7_8vfxp")]
 color = Color(1, 1, 1, 1)
@@ -342,12 +341,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-data = SubResource("Resource_rv84e")
+data = SubResource("Resource_qlik1")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_14815")
+data = SubResource("Resource_vurr6")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -365,12 +364,12 @@ autowrap_mode = 3
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_1n2ny")
+data = SubResource("Resource_m4s7o")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_m4vcd")
+data = SubResource("Resource_dwdrt")
 
 [node name="Level" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("14_dug7w")]
 visible = false
