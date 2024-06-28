@@ -20,7 +20,8 @@ static var SAVES_PATH := ProjectSettings.globalize_path("user://level_saves/")
 
 ## Given a LevelPack, gets the byte data to save it as the current format version.
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
-	var byte_access := VC.make_byte_access([])
+	var header := make_header(LATEST_FORMAT, Global.game_version)
+	var byte_access := VC.make_byte_access(header, header.size())
 	VC.save(level_pack, byte_access)
 	return byte_access.data
 
@@ -141,14 +142,12 @@ static func get_version_from_path(path: String) -> int:
 ## Loads a LevelPackData from a valid save buffer.
 static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackData:
 	# All versions must respect this initial structure
-	var version := data.decode_u16(0)
-	var len := data.decode_u32(2)
-	var bytes := data.slice(6, 6 + len)
-	var original_editor_version := bytes.get_string_from_utf8()
+	var header_data := get_header(data)
 	
-	if original_editor_version == "":
-		original_editor_version = "Unknown (oops)"
-	var offset := 6+len
+	var version: int = header_data.version
+	var original_editor_version: String = header_data.editor_version
+	var offset: int = header_data.offset
+	
 	
 	print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
 	
@@ -160,17 +159,26 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	Loading cancelled.""" % [original_editor_version, version, Global.game_version, LATEST_FORMAT]
 		Global.safe_error(error_text, Vector2i(700, 100))
 		return null
+	
+	var original_version := version
 	var load_script: Script = VERSIONS[version]
-	var byte_access = load_script.make_byte_access(data, offset)
-	if not load_script.has_method("load"):
-		print("Nevermind, recursing...")
+	
+	while not load_script.has_method("load"):
+		var new_version: int = load_script.conversion_version
+		print("Nevermind, first converting to V%d..." % new_version)
 		assert(PerfManager.start("SaveLoad -> V%d::convert_to_newer_version" % version))
-		var new_data: PackedByteArray = load_script.convert_to_newer_version(byte_access, original_editor_version)
+		var new_data: PackedByteArray = load_script.convert_to_newer_version(data, offset)
 		assert(PerfManager.end("SaveLoad -> V%d::convert_to_newer_version" % version))
-		return load_from_buffer(new_data, path)
-	var lvl_pack_data: LevelPackData = load_script.load(byte_access)
+		version = new_version
+		load_script = VERSIONS[version]
+		data = new_data
+		offset = 0
+	
+	assert(PerfManager.start("SaveLoad -> V%d::load" % version))
+	var lvl_pack_data: LevelPackData = load_script.load(data, offset)
+	assert(PerfManager.end("SaveLoad -> V%d::load" % version))
 	# V3 and earlier didn't support pack id. Calculate a consistent one to allow save data.
-	if version <= 3:
+	if original_version <= 3:
 		var hc := HashingContext.new()
 		hc.start(HashingContext.HASH_SHA1)
 		hc.update(data)
@@ -180,6 +188,33 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	
 	lvl_pack_data.file_path = path
 	return lvl_pack_data
+
+## Returns {version: int, editor_version: String, offset: int}
+static func get_header(data: PackedByteArray) -> Dictionary:
+	var version := data.decode_u16(0)
+	var len := data.decode_u32(2)
+	var bytes := data.slice(6, 6 + len)
+	var original_editor_version := bytes.get_string_from_utf8()
+	if original_editor_version == "":
+		original_editor_version = "Unknown (oops)"
+	var offset := 6+len
+	
+	return {
+		version = version,
+		editor_version = original_editor_version,
+		offset = offset,
+	}
+
+static func make_header(version: int, editor_version: String) -> PackedByteArray:
+	var arr := PackedByteArray()
+	arr.resize(6)
+	arr.encode_u16(version, 0)
+	# String is handled similar to FileAccess.store_pascal_string
+	var bytes := editor_version.to_utf8_buffer()
+	arr.encode_u32(bytes.size(), 2)
+	arr.append_array(bytes)
+	
+	return arr
 
 # fun
 static func image_to_b_w(img: Image, data: PackedByteArray) -> void:

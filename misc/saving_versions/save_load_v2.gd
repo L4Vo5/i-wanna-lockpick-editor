@@ -1,6 +1,4 @@
 static func save(level: LevelData, data: ByteAccess) -> void:
-	data.store_u16(SaveLoad.LATEST_FORMAT)
-	data.store_string("")
 	data.store_string(level.name)
 	data.store_string(level.author)
 	data.store_u32(level.size.x)
@@ -75,7 +73,8 @@ static func _save_complex(data: ByteAccess, n: ComplexNumber) -> void:
 	data.store_s64(n.real_part)
 	data.store_s64(n.imaginary_part)
 
-static func load(data: ByteAccess) -> LevelPackData:
+static func load(raw_data: PackedByteArray, offset: int) -> LevelPackData:
+	var data := make_byte_access(raw_data, offset)
 	return LevelPackData.make_from_level(_load_level(data))
 
 static func _load_level(data: ByteAccess) -> LevelData:

@@ -1,11 +1,10 @@
-## Fully converts V1 bytes into V3
-static func convert_to_newer_version(data: ByteAccess, editor_version: String) -> PackedByteArray:
+const conversion_version := 3
+
+## Fully converts V1 bytes into V3, not including the header
+static func convert_to_newer_version(raw_data: PackedByteArray, offset: int) -> PackedByteArray:
 	const target_version := 3
 	var new_data := SaveLoad.V3.make_byte_access([], 0)
-	
-	# initial structure common to all .lvl files
-	new_data.store_u16(target_version)
-	new_data.store_string(editor_version)
+	var data := make_byte_access(raw_data, offset)
 	
 	# actual V1 data being turned to V3
 	# level name and author saved as pack name and author
@@ -19,7 +18,8 @@ static func convert_to_newer_version(data: ByteAccess, editor_version: String) -
 	new_data.store_u32(data.get_u32())
 	new_data.store_u32(data.get_u32())
 	# custom lock arrangements
-	new_data.store_var(data.get_var())
+	var custom_lock_arranements = data.get_var()
+	new_data.store_var(custom_lock_arranements)
 	# goal pos, player spawn pos
 	new_data.store_u32(data.get_u32())
 	new_data.store_u32(data.get_u32())
