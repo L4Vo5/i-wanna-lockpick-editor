@@ -42,4 +42,3 @@ func test_stuff() -> void:
 	children[8].show()
 	await await_idle_frame()
 	assert_int(obj.selected_object.get_meta(&"i")).is_equal(6)
-	print(obj._visible_children.size())
