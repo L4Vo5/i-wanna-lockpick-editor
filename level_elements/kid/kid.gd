@@ -32,8 +32,6 @@ const JUMP_2 := -7.0
 const MAX_VSPEED := 9.0
 const JUMP_REDUCTION := 0.45
 
-signal changed_autorun
-
 var level: Level:
 	set(val):
 		_disconnect_level()
@@ -57,9 +55,9 @@ func _physics_process(_delta: float) -> void:
 	var current_speed := 3
 	if on_floor: # and velocity.y == 0:
 		if Input.is_action_pressed(&"fast"):
-			current_speed = 6 if not level.is_autorun_on else 3
+			current_speed = 6 if not Global.settings.is_autorun_on else 3
 		else:
-			current_speed = 3 if not level.is_autorun_on else 6
+			current_speed = 3 if not Global.settings.is_autorun_on else 6
 	if Input.is_action_pressed(&"slow"):
 		current_speed = 1
 	

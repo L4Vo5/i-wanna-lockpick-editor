@@ -192,7 +192,7 @@ func _update_mode() -> void:
 	data.editing_settings = current_tab.name == "Settings"
 
 func _on_play_pressed() -> void:
-	if Global.editor_settings.should_save_on_play and not data.is_playing:
+	if Global.settings.should_save_on_play and not data.is_playing:
 		if SaveLoad.is_path_valid(data.level_pack_data.file_path):
 			save_level()
 	if data.is_playing:

@@ -3,26 +3,38 @@ extends MarginContainer
 @onready var save_on_play: CheckBox = %SaveOnPlay
 @onready var sound_slider: HSlider = %SoundSlider
 @onready var cacophony: CheckButton = %Cacophony
+@onready var autorun: CheckBox = %Autorun
+
+var settings: LockpickSettings:
+	get:
+		return Global.settings
 
 var all_sounds: Array[AudioStream] = []
 func _ready() -> void:
-	set_to_current_settings()
-	save_on_play.toggled.connect(_on_save_on_play_toggled)
 	save_on_play.tooltip_text = "Save the level automatically before playing it"
+	
+	settings.changed.connect(set_to_current_settings)
+	set_to_current_settings()
+	
+	autorun.toggled.connect(_on_autorun_toggled)
+	save_on_play.toggled.connect(_on_save_on_play_toggled)
 	sound_slider.value_changed.connect(_on_sound_slider_value_changed)
 	cacophony.toggled.connect(_on_cacophony_toggled)
 
 
 func set_to_current_settings() -> void:
-	save_on_play.button_pressed = Global.editor_settings.should_save_on_play
-	sound_slider.value = Global.editor_settings.sound_volume
+	save_on_play.button_pressed = settings.should_save_on_play
+	sound_slider.value = settings.sound_volume
+	autorun.button_pressed = settings.is_autorun_on
 
 func _on_save_on_play_toggled(is_toggled: bool) -> void:
-	Global.editor_settings.should_save_on_play = is_toggled
+	settings.should_save_on_play = is_toggled
 
 func _on_sound_slider_value_changed(value: float) -> void:
-	Global.editor_settings.sound_volume = value
+	settings.sound_volume = value
 
+func _on_autorun_toggled(is_toggled: bool) -> void:
+	settings.is_autorun_on = is_toggled
 
 func _on_cacophony_toggled(toggled_on: bool) -> void:
 	if not toggled_on:

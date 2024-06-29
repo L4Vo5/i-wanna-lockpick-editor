@@ -11,7 +11,7 @@ var is_web := OS.has_feature("web")
 var is_windows := OS.has_feature("windows")
 var is_linux := OS.has_feature("linux")
 
-var editor_settings := LockpickEditorSettings.new()
+var settings := LockpickSettings.new()
 
 signal changed_is_playing
 ## Will basically be true if there's a player moving around

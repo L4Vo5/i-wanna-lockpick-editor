@@ -18,11 +18,20 @@ size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
-text = "Editor Settings"
+text = "Settings"
 horizontal_alignment = 1
 
 [node name="DoorLockSeparator" parent="ScrollContainer/VBoxContainer" instance=ExtResource("2_yvels")]
 layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Autorun" type="CheckBox" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+text = "Autorun"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2

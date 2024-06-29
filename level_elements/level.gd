@@ -68,7 +68,6 @@ var collision_system: CollisionSystem:
 var player: Kid
 var goal: LevelGoal
 
-var is_autorun_on := false
 var autorun_tween: Tween
 
 # elements will have a duplicate of the data stored in level_data. this lets you find the original when needed.
@@ -125,9 +124,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		logic.start_undo_action()
 		logic.end_undo_action()
 	elif event.is_action_pressed(&"autorun"):
-		is_autorun_on = !is_autorun_on
+		Global.settings.is_autorun_on = !Global.settings.is_autorun_on
 		var used: Sprite2D
-		if is_autorun_on:
+		if Global.settings.is_autorun_on:
 			autorun_sound.pitch_scale = 1
 			autorun_off.hide()
 			used = autorun_on
@@ -223,8 +222,6 @@ func reset() -> void:
 	else:
 		camera.enabled = true
 		camera.make_current()
-	
-	is_autorun_on = false
 	
 	logic.reset()
 	
