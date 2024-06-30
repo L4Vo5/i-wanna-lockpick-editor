@@ -208,10 +208,10 @@ static func get_header(data: PackedByteArray) -> Dictionary:
 static func make_header(version: int, editor_version: String) -> PackedByteArray:
 	var arr := PackedByteArray()
 	arr.resize(6)
-	arr.encode_u16(version, 0)
+	arr.encode_u16(0, version)
 	# String is handled similar to FileAccess.store_pascal_string
 	var bytes := editor_version.to_utf8_buffer()
-	arr.encode_u32(bytes.size(), 2)
+	arr.encode_u32(2, bytes.size())
 	arr.append_array(bytes)
 	
 	return arr
