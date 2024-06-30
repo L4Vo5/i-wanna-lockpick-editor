@@ -20,4 +20,4 @@ func get_rect() -> Rect2i:
 
 # TODO: Optimize if needed
 func duplicated() -> EntryData:
-	return duplicate(true)
+	return duplicate()

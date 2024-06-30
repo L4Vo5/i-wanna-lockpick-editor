@@ -1,8 +1,9 @@
 extends Resource
 class_name LevelPackData
 
-signal added_level
+signal added_level(level_id: int)
 signal deleted_level(level_id: int)
+signal swapped_levels(level_1_id: int, level_2_id: int)
 ## All the levels in the level pack
 @export var levels: Array[LevelData]
 
@@ -68,7 +69,8 @@ func check_valid(should_correct: bool) -> void:
 
 func add_level(level: LevelData) -> void:
 	levels.push_back(level)
-	added_level.emit()
+	added_level.emit(levels.size() - 1)
+	emit_changed()
 
 func delete_level(id: int) -> void:
 	levels.remove_at(id)
@@ -79,3 +81,28 @@ func delete_level(id: int) -> void:
 			elif entry.leads_to == id:
 				entry.leads_to = -1
 	deleted_level.emit(id)
+	emit_changed()
+
+func duplicate_level(id: int) -> void:
+	levels.insert(id + 1, levels[id].duplicated())
+	for level in levels:
+		for entry in level.entries:
+			if entry.leads_to > id:
+				entry.leads_to += 1
+	added_level.emit(id + 1)
+	emit_changed()
+
+func swap_levels(id_1: int, id_2: int) -> void:
+	# swap
+	var l := levels[id_1]
+	levels[id_1] = levels[id_2]
+	levels[id_2] = l
+	# correct the entries
+	for level in levels:
+		for entry in level.entries:
+			if entry.leads_to == id_1:
+				entry.leads_to = id_2
+			elif entry.leads_to == id_2:
+				entry.leads_to = id_1
+	swapped_levels.emit(id_1, id_2)
+	emit_changed()

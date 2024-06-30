@@ -37,7 +37,12 @@ var _level_pack_data: LevelPackData:
 
 ## Always remember this value is 1-indexed, unlike how levels are stored in the background
 @onready var level_number: SpinBox = %LevelNumber
+
 @onready var delete_level: Button = %DeleteLevel
+@onready var duplicate_level: Button = %Duplicate
+@onready var move_level_down: Button = %MoveLevelDown
+@onready var move_level_up: Button = %MoveLevelUp
+
 
 @onready var level_name: LineEdit = %LevelName
 @onready var level_title: LineEdit = %LevelTitle
@@ -115,7 +120,11 @@ func _ready() -> void:
 	remove_goal.pressed.connect(_on_remove_goal_button_pressed)
 	
 	level_number.value_changed.connect(_set_level_number)
+	
 	delete_level.pressed.connect(_delete_current_level)
+	duplicate_level.pressed.connect(_duplicate_current_level)
+	move_level_up.pressed.connect(_shift_level_id.bind(1))
+	move_level_down.pressed.connect(_shift_level_id.bind(-1))
 	
 	erase_save_state.pressed.connect(_erase_save_state)
 
@@ -237,9 +246,18 @@ func _delete_current_level() -> void:
 	level_number.value -= 1
 	if _level_pack_data.levels.size() == 0:
 		_level_pack_data.add_level(LevelData.get_default_level())
-	level_number.max_value = _level_pack_data.levels.size() + 1
-	level_count_label.text = str(_level_pack_data.levels.size())
 	editor_data.gameplay.set_current_level(level_number.value as int - 1)
+
+func _duplicate_current_level() -> void:
+	_level_pack_data.duplicate_level(level_number.value as int - 1)
+	level_number.value += 1
+
+func _shift_level_id(amount: int) -> void:
+	var num := level_number.value as int - 1
+	if num + amount < 0: return
+	if num + amount >= _level_pack_data.levels.size(): return
+	_level_pack_data.swap_levels(num, num + amount)
+	level_number.value += amount
 
 func _reload_image() -> void:
 	if not visible: return

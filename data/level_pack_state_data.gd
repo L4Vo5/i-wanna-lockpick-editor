@@ -42,6 +42,7 @@ func connect_pack_data() -> void:
 	pack_data.state_data = self
 	pack_data.added_level.connect(_on_added_level)
 	pack_data.deleted_level.connect(_on_deleted_level)
+	pack_data.swapped_levels.connect(_on_swapped_levels)
 
 func salvage_door(sid: int, door: DoorData) -> void:
 	if sid < 0 || sid > 999:
@@ -59,17 +60,21 @@ func get_salvaged_doors_count() -> int:
 		return accum + (1 if door else 0)
 	, 0)
 
-func _on_added_level() -> void:
+func _on_added_level(id: int) -> void:
 	assert(pack_data.levels.size() == completed_levels.size() + 1)
-	completed_levels.resize(pack_data.levels.size())
+	completed_levels.insert(id, 0)
 	save()
 
 func _on_deleted_level(level_id: int) -> void:
 	assert(pack_data.levels.size() == completed_levels.size() - 1)
 	completed_levels.remove_at(level_id)
 	assert(pack_data.levels.size() == completed_levels.size())
-	# TODO: also sort out salvages I guess
 	save()
+
+func _on_swapped_levels(level_1_id: int, level_2_id: int) -> void:
+	var c1 := completed_levels[level_1_id]
+	completed_levels[level_1_id] = completed_levels[level_2_id]
+	completed_levels[level_2_id] = c1
 
 func save() -> void:
 	assert(pack_id == pack_data.pack_id)
