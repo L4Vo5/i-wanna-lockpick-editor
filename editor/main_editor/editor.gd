@@ -76,8 +76,9 @@ func _ready() -> void:
 	data.level = level
 	gameplay.level.exclude_player = true
 	level.load_output_points = false
-	
-	if Global.is_exported:
+	if FileAccess.file_exists(Global.settings.current_editor_pack):
+		load_level(Global.settings.current_editor_pack)
+	elif Global.is_exported:
 		_on_new_level_button_pressed()
 	else:
 		const p := "user://levels/testing.tres"

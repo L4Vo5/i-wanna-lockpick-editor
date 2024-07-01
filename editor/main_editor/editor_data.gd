@@ -7,6 +7,7 @@ var level_pack_data: LevelPackData:
 		if level_pack_data == val: return
 		level_pack_data = val
 		gameplay.pack_data = val
+		Global.settings.current_editor_pack = level_pack_data.file_path
 		changed_level_pack_data.emit()
 
 var pack_state_data: LevelPackStateData:

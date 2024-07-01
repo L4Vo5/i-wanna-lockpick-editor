@@ -25,11 +25,17 @@ signal changed
 		queue_emit_changed()
 		queue_save()
 
+## Editor State is stuff that's always handled automatically, it doesn't show up in the settings editor. (at least, that sounds like a good idea)
 @export_group("EditorState")
 
 @export var current_editor_tab := 0:
 	set(val):
 		current_editor_tab = val
+		queue_save()
+
+@export var current_editor_pack := "":
+	set(val):
+		current_editor_pack = val
 		queue_save()
 
 const PATH := "user://settings.cfg"
