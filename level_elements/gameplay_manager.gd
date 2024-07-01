@@ -32,14 +32,11 @@ func get_level_pack() -> LevelPackData:
 ## Sets the current level to the given level id within the pack and loads it.
 func set_current_level(id: int) -> void:
 	assert(PerfManager.start("GameplayManager::set_current_level (%d)" % id))
-	if id == pack_state.current_level:
-		reset()
-	else:
-		pack_state.current_level = id
-		pack_state.save()
-		var level_data: LevelData = _pack_data.levels[pack_state.current_level]
-		level.level_data = level_data
-		reset()
+	pack_state.current_level = id
+	pack_state.save()
+	var level_data: LevelData = _pack_data.levels[pack_state.current_level]
+	level.level_data = level_data
+	reset()
 	assert(PerfManager.end("GameplayManager::set_current_level (%d)" % id))
 
 func has_won_current_level() -> bool:

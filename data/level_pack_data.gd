@@ -67,10 +67,20 @@ func check_valid(should_correct: bool) -> void:
 		for reason in level.get_unfixable_invalid_reasons():
 			_unfixable_invalid_reasons[reason] = false
 
-func add_level(level: LevelData) -> void:
-	levels.push_back(level)
-	added_level.emit(levels.size() - 1)
+func add_level(new_level: LevelData, id: int) -> void:
+	var err := levels.insert(id, new_level)
+	assert(err == OK)
+	# No need to do this if you added a level at the very end.
+	if id != levels.size():
+		for level in levels:
+			for entry in level.entries:
+				if entry.leads_to > id:
+					entry.leads_to += 1
+	added_level.emit(id)
 	emit_changed()
+
+func duplicate_level(id: int) -> void:
+	add_level(levels[id].duplicated(), id + 1)
 
 func delete_level(id: int) -> void:
 	levels.remove_at(id)
@@ -81,15 +91,6 @@ func delete_level(id: int) -> void:
 			elif entry.leads_to == id:
 				entry.leads_to = -1
 	deleted_level.emit(id)
-	emit_changed()
-
-func duplicate_level(id: int) -> void:
-	levels.insert(id + 1, levels[id].duplicated())
-	for level in levels:
-		for entry in level.entries:
-			if entry.leads_to > id:
-				entry.leads_to += 1
-	added_level.emit(id + 1)
 	emit_changed()
 
 func swap_levels(id_1: int, id_2: int) -> void:

@@ -42,6 +42,9 @@ var _level_pack_data: LevelPackData:
 @onready var duplicate_level: Button = %Duplicate
 @onready var move_level_down: Button = %MoveLevelDown
 @onready var move_level_up: Button = %MoveLevelUp
+@onready var previous_level: Button = %PreviousLevel
+@onready var next_level: Button = %NextLevel
+@onready var add_level: Button = %AddLevel
 
 
 @onready var level_name: LineEdit = %LevelName
@@ -123,8 +126,11 @@ func _ready() -> void:
 	
 	delete_level.pressed.connect(_delete_current_level)
 	duplicate_level.pressed.connect(_duplicate_current_level)
+	add_level.pressed.connect(_create_new_level)
 	move_level_up.pressed.connect(_shift_level_id.bind(1))
 	move_level_down.pressed.connect(_shift_level_id.bind(-1))
+	previous_level.pressed.connect(_select_previous_level)
+	next_level.pressed.connect(_select_next_level)
 	
 	erase_save_state.pressed.connect(_erase_save_state)
 
@@ -177,7 +183,7 @@ func _set_to_level_pack_data() -> void:
 	pack_name.text = _level_pack_data.name
 	pack_author.text = _level_pack_data.author
 	pack_description.text = _level_pack_data.description
-	level_number.max_value = _level_pack_data.levels.size() + 1
+	level_number.max_value = _level_pack_data.levels.size()
 	var state_data := _level_pack_data.state_data
 	if state_data:
 		level_number.value = state_data.current_level + 1
@@ -231,10 +237,6 @@ func _on_set_pack_description(new_description: String) -> void:
 
 func _set_level_number(new_number: int) -> void:
 	assert(new_number == level_number.value)
-	if level_number.value == level_number.max_value:
-		_level_pack_data.add_level(LevelData.get_default_level())
-		level_number.max_value = _level_pack_data.levels.size() + 1
-		level_count_label.text = str(_level_pack_data.levels.size())
 	editor_data.gameplay.set_current_level(level_number.value as int - 1)
 
 func _on_remove_goal_button_pressed() -> void:
@@ -243,10 +245,14 @@ func _on_remove_goal_button_pressed() -> void:
 
 func _delete_current_level() -> void:
 	_level_pack_data.delete_level(level_number.value as int - 1)
-	level_number.value -= 1
 	if _level_pack_data.levels.size() == 0:
-		_level_pack_data.add_level(LevelData.get_default_level())
+		_level_pack_data.add_level(LevelData.get_default_level(), 0)
 	editor_data.gameplay.set_current_level(level_number.value as int - 1)
+
+func _create_new_level() -> void:
+	var new_level := LevelData.get_default_level()
+	_level_pack_data.add_level(new_level, level_number.value as int)
+	level_number.value += 1
 
 func _duplicate_current_level() -> void:
 	_level_pack_data.duplicate_level(level_number.value as int - 1)
@@ -258,6 +264,12 @@ func _shift_level_id(amount: int) -> void:
 	if num + amount >= _level_pack_data.levels.size(): return
 	_level_pack_data.swap_levels(num, num + amount)
 	level_number.value += amount
+
+func _select_previous_level() -> void:
+	level_number.value -= 1
+
+func _select_next_level() -> void:
+	level_number.value += 1
 
 func _reload_image() -> void:
 	if not visible: return
