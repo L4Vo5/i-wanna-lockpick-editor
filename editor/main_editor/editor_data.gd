@@ -16,6 +16,7 @@ var pack_state_data: LevelPackStateData:
 
 signal changed_level_data
 func emit_changed_level_data():
+	Global.settings.current_editor_level_id = pack_state_data.current_level + 1
 	changed_level_data.emit()
 ## Read-only!
 var level_data: LevelData:

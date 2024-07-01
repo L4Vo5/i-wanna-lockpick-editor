@@ -116,7 +116,6 @@ func get_current_tab_index() -> int:
 	return current_flap.get_meta(&"_flap_index")
 
 func set_current_tab_index(index: int) -> void:
-	print("setting tab to index: %d" % index)
 	var flap := flaps_parent.get_child(index)
 	set_current_tab_control(flap_to_tab[flap])
 

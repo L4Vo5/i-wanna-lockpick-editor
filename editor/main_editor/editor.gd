@@ -77,7 +77,10 @@ func _ready() -> void:
 	gameplay.level.exclude_player = true
 	level.load_output_points = false
 	if FileAccess.file_exists(Global.settings.current_editor_pack):
+		# HACK, load_level overrides current_editor_level_id...
+		var current_editor_level_id := Global.settings.current_editor_level_id - 1
 		load_level(Global.settings.current_editor_pack)
+		gameplay.set_current_level(current_editor_level_id)
 	elif Global.is_exported:
 		_on_new_level_button_pressed()
 	else:
