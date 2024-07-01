@@ -367,6 +367,7 @@ layout_mode = 2
 text = "Paste (Import)"
 
 [node name="Image" type="VBoxContainer" parent="VBoxContainer/Level"]
+visible = false
 layout_mode = 2
 
 [node name="LevelImage" type="Label" parent="VBoxContainer/Level/Image"]
