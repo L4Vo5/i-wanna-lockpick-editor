@@ -69,6 +69,7 @@ func _ready() -> void:
 	DirAccess.make_dir_absolute("user://level_saves")
 	file_dialog.current_dir = "levels"
 	Global.set_mode(Global.Modes.EDITOR)
+	side_tabs.set_current_tab_index(Global.settings.current_editor_tab)
 	_update_mode()
 	
 	data.gameplay = gameplay
@@ -180,6 +181,7 @@ func resolve_visibility() -> void:
 	gameplay.transition.cancel()
 
 func _update_mode() -> void:
+	Global.settings.current_editor_tab = side_tabs.get_current_tab_index()
 	var current_tab := side_tabs.get_current_tab_control()
 	data.tilemap_edit = current_tab == tile_editor
 	data.level_elements = false

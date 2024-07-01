@@ -53,16 +53,19 @@ func regen_flaps() -> void:
 		flap.queue_free()
 	tab_to_flap.clear()
 	flap_to_tab.clear()
+	var i := 0
 	for child in get_children():
 		if child == flaps_parent: continue
 		var new_flap: Button = BOOKMARK_FLAP.instantiate()
 		new_flap.icon = name_to_icon[child.name]
 		new_flap.name = child.name
 		new_flap.toggled.connect(_on_flap_toggled.bind(new_flap))
+		new_flap.set_meta(&"_flap_index", i)
 		flaps_parent.add_child(new_flap)
 		flaps_size = max(flaps_size, new_flap.size.x)
 		tab_to_flap[child] = new_flap
 		flap_to_tab[new_flap] = child
+		i += 1
 	#flaps_parent.position.x = -flaps_size
 	if !flaps.is_empty():
 		_on_flap_toggled(true, flaps[0])
@@ -107,6 +110,15 @@ func _get_minimum_size() -> Vector2:
 
 func get_current_tab_control() -> Control:
 	return current_tab
+
+func get_current_tab_index() -> int:
+	var current_flap: Control = tab_to_flap[current_tab]
+	return current_flap.get_meta(&"_flap_index")
+
+func set_current_tab_index(index: int) -> void:
+	print("setting tab to index: %d" % index)
+	var flap := flaps_parent.get_child(index)
+	set_current_tab_control(flap_to_tab[flap])
 
 func _get_allowed_size_flags_horizontal() -> PackedInt32Array:
 	return []

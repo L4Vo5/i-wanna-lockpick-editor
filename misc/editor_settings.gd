@@ -25,6 +25,21 @@ signal changed
 		queue_emit_changed()
 		queue_save()
 
+@export var current_editor_tab := 0:
+	set(val):
+		current_editor_tab = val
+		queue_save()
+
+const SECTIONS := {
+	"current_editor_tab": "EditorState"
+}
+
+func get_section(var_name: String) -> String:
+	var s = SECTIONS.get(var_name)
+	if s != null:
+		return s
+	return ""
+
 const PATH := "user://settings.cfg"
 var _config_file := ConfigFile.new()
 
@@ -41,8 +56,9 @@ func _init() -> void:
 		return
 	# Set all the variables to their saved names.
 	for variable_name in saved_variables:
-		if _config_file.has_section_key("", variable_name):
-			set(variable_name, _config_file.get_value("", variable_name))
+		var section := get_section(variable_name)
+		if _config_file.has_section_key(section, variable_name):
+			set(variable_name, _config_file.get_value(section, variable_name))
 
 var is_changed_queued := false
 func queue_emit_changed() -> void:
@@ -54,15 +70,28 @@ func _emit_changed() -> void:
 	changed.emit()
 	is_changed_queued = false
 
+## Currently called by Global before the game is closed.
+func on_exit() -> void:
+	if is_save_queued:
+		_save()
+
 var is_save_queued := false
+var last_save_time := -999999
+## Save every 10 seconds at most, to not uselessly write files.
+const SAVE_EVERY := 10.0
 func queue_save() -> void:
 	if not is_save_queued:
 		is_save_queued = true
+		var time_since_last_save := (Time.get_ticks_msec() - last_save_time) / 1000.0
+		if time_since_last_save < SAVE_EVERY:
+			await Engine.get_main_loop().create_timer(SAVE_EVERY - time_since_last_save).timeout
 		_save.call_deferred()
 
 func _save() -> void:
+	last_save_time = Time.get_ticks_msec()
 	for variable_name in saved_variables:
-		_config_file.set_value("", variable_name, get(variable_name))
+		var section := get_section(variable_name)
+		_config_file.set_value(section, variable_name, get(variable_name))
 	
 	_config_file.save(PATH)
 	is_save_queued = false

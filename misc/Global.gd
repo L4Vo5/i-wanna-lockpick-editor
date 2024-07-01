@@ -94,6 +94,10 @@ func _input(event: InputEvent) -> void:
 				print("Saved screenshot")
 				
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		settings.on_exit()
+
 func search_update() -> void:
 	if is_web: return
 	var current_time := floori(Time.get_unix_time_from_system())
