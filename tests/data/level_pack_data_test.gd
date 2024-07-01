@@ -82,7 +82,7 @@ func test_duplicate_delete_swap() -> void:
 		var entry := EntryData.new()
 		entry.leads_to = leads_to
 		level.entries.push_back(entry)
-	pack_data.add_level(level)
+	pack_data.add_level(level, pack_data.levels.size())
 	set_level_data(5, "E", ["N", 0])
 	verify_levels_integrity(2)
 	verify_level_labels(["N", 1, 0, 3, 4, "E"])
@@ -159,7 +159,9 @@ func verify_levels_integrity(expected_invalid_entries := 0) -> void:
 			else:
 				var l := levels[entry.leads_to]
 				var label = l.get_meta("label")
-				assert_that(label).is_equal(leads_to_label)
+				assert_that(label)\
+				.append_failure_message("stack: " + str(get_stack()[1]))\
+				.is_equal(leads_to_label)
 	assert_int(invalid_entries)\
 		.append_failure_message(str(get_stack()[1]))\
 		.is_equal(expected_invalid_entries)

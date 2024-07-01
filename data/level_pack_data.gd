@@ -74,7 +74,7 @@ func add_level(new_level: LevelData, id: int) -> void:
 	if id != levels.size():
 		for level in levels:
 			for entry in level.entries:
-				if entry.leads_to > id:
+				if entry.leads_to >= id:
 					entry.leads_to += 1
 	added_level.emit(id)
 	emit_changed()
