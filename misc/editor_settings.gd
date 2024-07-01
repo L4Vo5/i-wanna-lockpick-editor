@@ -25,38 +25,36 @@ signal changed
 		queue_emit_changed()
 		queue_save()
 
+@export_group("EditorState")
+
 @export var current_editor_tab := 0:
 	set(val):
 		current_editor_tab = val
 		queue_save()
 
-const SECTIONS := {
-	"current_editor_tab": "EditorState"
-}
-
-func get_section(var_name: String) -> String:
-	var s = SECTIONS.get(var_name)
-	if s != null:
-		return s
-	return ""
-
 const PATH := "user://settings.cfg"
 var _config_file := ConfigFile.new()
 
-var saved_variables: PackedStringArray = []
+# [variable_name, section]
+var saved_variables := []
+
 func _init() -> void:
 	# Collect all the variables we want to save
+	var current_section := ""
 	for property in get_property_list():
 		var usage_bitmask := PROPERTY_USAGE_SCRIPT_VARIABLE | PROPERTY_USAGE_STORAGE
 		if property.usage & usage_bitmask == usage_bitmask:
-			saved_variables.push_back(property.name)
+			saved_variables.push_back([property.name, current_section])
+		elif property.usage & PROPERTY_USAGE_GROUP:
+			current_section = property.name
 	# Open the existing config file, if it exists.
 	var err := _config_file.load(PATH)
 	if err != OK:
 		return
 	# Set all the variables to their saved names.
-	for variable_name in saved_variables:
-		var section := get_section(variable_name)
+	for arr in saved_variables:
+		var variable_name = arr[0]
+		var section = arr[1]
 		if _config_file.has_section_key(section, variable_name):
 			set(variable_name, _config_file.get_value(section, variable_name))
 
@@ -89,8 +87,9 @@ func queue_save() -> void:
 
 func _save() -> void:
 	last_save_time = Time.get_ticks_msec()
-	for variable_name in saved_variables:
-		var section := get_section(variable_name)
+	for arr in saved_variables:
+		var variable_name = arr[0]
+		var section = arr[1]
 		_config_file.set_value(section, variable_name, get(variable_name))
 	
 	_config_file.save(PATH)
