@@ -11,7 +11,7 @@ var is_web := OS.has_feature("web")
 var is_windows := OS.has_feature("windows")
 var is_linux := OS.has_feature("linux")
 
-var settings := LockpickSettings.new()
+var settings: LockpickSettings
 
 signal changed_is_playing
 ## Will basically be true if there's a player moving around
@@ -57,6 +57,8 @@ enum Modes {
 func _init() -> void:
 	if ClassDB.class_exists(&"ClipboardImageCopier"):
 		image_copier = ClassDB.instantiate(&"ClipboardImageCopier")
+	if not in_editor:
+		settings = LockpickSettings.new()
 
 func _ready() -> void:
 	if in_editor:
