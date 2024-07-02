@@ -178,6 +178,8 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	var lvl_pack_data: LevelPackData = load_script.load(data, offset)
 	assert(PerfManager.end("SaveLoad -> V%d::load" % version))
 	# V3 and earlier didn't support pack id. Calculate a consistent one to allow save data.
+	if not lvl_pack_data:
+		return lvl_pack_data
 	if original_version <= 3:
 		var hc := HashingContext.new()
 		hc.start(HashingContext.HASH_SHA1)
