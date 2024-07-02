@@ -52,7 +52,7 @@ func win() -> void:
 	win_animation("Congratulations!")
 
 func can_exit() -> bool:
-	var exit = pack_state.exit_level
+	var exit: int = pack_state.exit_levels[pack_state.current_level]
 	if exit < 0 or exit >= _pack_data.levels.size():
 		return false
 	return true
@@ -65,8 +65,9 @@ func exit_level() -> void:
 
 ## Exits WITHOUT checking
 func exit_immediately() -> void:
-	set_current_level(pack_state.exit_level)
-	level.player.position = pack_state.exit_position
+	var exit_pos: Vector2i = pack_state.exit_positions[pack_state.current_level]
+	set_current_level(pack_state.exit_levels[pack_state.current_level])
+	level.player.position = exit_pos
 
 func exit_or_reset() -> void:
 	if can_exit():
@@ -76,8 +77,8 @@ func exit_or_reset() -> void:
 
 func enter_level(id: int, exit_position: Vector2i) -> void:
 	# set exit parameters
-	pack_state.exit_level = pack_state.current_level
-	pack_state.exit_position = exit_position
+	pack_state.exit_levels[id] = pack_state.current_level
+	pack_state.exit_positions[id] = exit_position
 	
 	var _new_level_data := _pack_data.levels[id]
 	var target_level_name := _new_level_data.name

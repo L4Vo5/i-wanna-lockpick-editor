@@ -247,9 +247,18 @@ static func save_pack_state(data: ByteAccess, state: LevelPackStateData) -> void
 	data.store_string(Global.game_version)
 	
 	data.store_s64(state.pack_id)
-	data.store_u32(state.completed_levels.size())
+	data.store_u32(state.current_level)
+	var level_count := state.completed_levels.size()
+	data.store_u32(level_count)
 	for x in state.completed_levels:
 		data.store_u8(x)
+	
+	for id in state.exit_levels:
+		data.store_u32(id)
+	
+	for vec in state.exit_positions:
+		data.store_u32(vec.x)
+		data.store_u32(vec.y)
 	
 	data.store_u32(state.salvaged_doors.size())
 	for door in state.salvaged_doors:
@@ -265,10 +274,20 @@ static func load_pack_state(data: ByteAccess) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
 	state.pack_id = data.get_s64()
 	
-	var completed_levels_amount := data.get_u32()
-	state.completed_levels.resize(completed_levels_amount)
-	for i in completed_levels_amount:
+	state.current_level = data.get_u32()
+	var level_count := data.get_u32()
+	state.completed_levels.resize(level_count)
+	state.exit_levels.resize(level_count)
+	state.exit_positions.resize(level_count)
+	for i in level_count:
 		state.completed_levels[i] = data.get_u8()
+	for i in level_count:
+		state.exit_levels[i] = data.get_u32()
+	for i in level_count:
+		state.exit_positions[i] = Vector2i(
+			data.get_u32(),
+			data.get_u32()
+		)
 	
 	var salvage_count := data.get_u32()
 	state.salvaged_doors.resize(salvage_count)

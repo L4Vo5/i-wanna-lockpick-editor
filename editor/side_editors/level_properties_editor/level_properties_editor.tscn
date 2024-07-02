@@ -406,11 +406,6 @@ layout_mode = 2
 text = "- Save Data -"
 horizontal_alignment = 1
 
-[node name="EraseSaveState" type="Button" parent="VBoxContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Erase Save Data"
-
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -432,3 +427,8 @@ text = "Salvaged doors: "
 [node name="SalvagedDoorsLabel" type="Label" parent="VBoxContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="EraseSaveState" type="Button" parent="VBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Erase Save Data"
