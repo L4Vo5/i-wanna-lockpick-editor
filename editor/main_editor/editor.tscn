@@ -39,12 +39,12 @@ type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_72h7r"]
+[sub_resource type="Resource" id="Resource_hj8k2"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_n0ml7"]
+[sub_resource type="Resource" id="Resource_2144t"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -56,11 +56,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_ltowg"]
+[sub_resource type="Resource" id="Resource_hrph0"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_72h7r")
+amount = SubResource("Resource_hj8k2")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_n0ml7")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_2144t")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -72,26 +72,26 @@ _curses = {
 glitch_color = 13
 sid = -1
 
-[sub_resource type="Resource" id="Resource_cem3d"]
+[sub_resource type="Resource" id="Resource_58uu5"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_6r0li"]
+[sub_resource type="Resource" id="Resource_ayxdj"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_cem3d")
+amount = SubResource("Resource_58uu5")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_1njv5"]
+[sub_resource type="Resource" id="Resource_5xjoq"]
 script = ExtResource("21_uoxo3")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[sub_resource type="Resource" id="Resource_6sbe5"]
+[sub_resource type="Resource" id="Resource_611o8"]
 script = ExtResource("22_djptt")
 sid = 0
 is_output = false
@@ -143,7 +143,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-dragger_visibility = 2
 
 [node name="LeftSide" type="VBoxContainer" parent="HSplitContainer"]
 layout_mode = 2
@@ -341,12 +340,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-data = SubResource("Resource_ltowg")
+data = SubResource("Resource_hrph0")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_6r0li")
+data = SubResource("Resource_ayxdj")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -364,12 +363,12 @@ autowrap_mode = 3
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_1njv5")
+data = SubResource("Resource_5xjoq")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_6sbe5")
+data = SubResource("Resource_611o8")
 
 [node name="Level" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("14_dug7w")]
 visible = false
