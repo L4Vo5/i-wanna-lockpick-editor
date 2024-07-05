@@ -27,6 +27,24 @@ layout_mode = 2
 text = "- Levels -"
 horizontal_alignment = 1
 
+[node name="HBoxContainer3" type="HBoxContainer" parent="Level"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Level/HBoxContainer3"]
+layout_mode = 2
+text = "Search: "
+
+[node name="Search" type="LineEdit" parent="Level/HBoxContainer3"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+expand_to_text_length = true
+context_menu_enabled = false
+
+[node name="SearchSpacing" type="Control" parent="Level"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
 [node name="CenterContainer" type="CenterContainer" parent="Level"]
 layout_mode = 2
 

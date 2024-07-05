@@ -33,6 +33,7 @@ var _level_pack_data: LevelPackData:
 ## Always remember this value is 1-indexed, unlike how levels are stored in the background
 @onready var level_number: SpinBox = %LevelNumber
 
+@onready var search: LineEdit = %Search
 @onready var list: LevelList = %LevelList
 
 @onready var delete_level: Button = %DeleteLevel
@@ -104,6 +105,7 @@ func _ready() -> void:
 	
 	level_number.value_changed.connect(_set_level_number)
 	
+	search.text_changed.connect(list.update_visibility)
 	list.selected_level.connect(_set_level_number)
 	
 	delete_level.pressed.connect(_delete_current_level)

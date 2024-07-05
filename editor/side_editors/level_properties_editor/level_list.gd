@@ -77,6 +77,16 @@ func update_selection() -> void:
 			set_selected(get_root().get_child(pack_data.state_data.current_level), 0)
 			scroll_to_item(get_selected())
 
+func update_visibility(search_term: String) -> void:
+	if search_term.is_empty():
+		for child in get_root().get_children():
+			child.visible = true
+		return
+	search_term = search_term.to_lower()
+	for child in get_root().get_children():
+		var text := child.get_text(1)
+		child.visible = text.to_lower().contains(search_term)
+
 func _update_level_numbers() -> void:
 	for child in get_root().get_children():
 		child.set_text(0, str(child.get_index() + 1))
