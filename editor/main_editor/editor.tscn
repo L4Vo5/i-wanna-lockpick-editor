@@ -40,12 +40,12 @@ type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_iggb2"]
+[sub_resource type="Resource" id="Resource_xotoh"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_rqoll"]
+[sub_resource type="Resource" id="Resource_xoebw"]
 script = ExtResource("10_f1apr")
 color = 1
 magnitude = 1
@@ -57,11 +57,11 @@ position = Vector2i(7, 7)
 lock_arrangement = 0
 dont_show_lock = false
 
-[sub_resource type="Resource" id="Resource_q2m8p"]
+[sub_resource type="Resource" id="Resource_c5qti"]
 script = ExtResource("11_psli5")
-amount = SubResource("Resource_iggb2")
+amount = SubResource("Resource_xotoh")
 outer_color = 1
-locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_rqoll")])
+locks = Array[ExtResource("10_f1apr")]([SubResource("Resource_xoebw")])
 position = Vector2i(0, 0)
 size = Vector2i(32, 32)
 _curses = {
@@ -73,26 +73,26 @@ _curses = {
 glitch_color = 13
 sid = -1
 
-[sub_resource type="Resource" id="Resource_vcin7"]
+[sub_resource type="Resource" id="Resource_d11ld"]
 script = ExtResource("9_0kc5k")
 real_part = 1
 imaginary_part = 0
 
-[sub_resource type="Resource" id="Resource_o2xqp"]
+[sub_resource type="Resource" id="Resource_ro6bf"]
 script = ExtResource("13_tk2t1")
-amount = SubResource("Resource_vcin7")
+amount = SubResource("Resource_d11ld")
 is_infinite = false
 type = 0
 color = 1
 position = Vector2i(0, 0)
 
-[sub_resource type="Resource" id="Resource_nejb5"]
+[sub_resource type="Resource" id="Resource_tahsa"]
 script = ExtResource("21_uoxo3")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
 
-[sub_resource type="Resource" id="Resource_y5mie"]
+[sub_resource type="Resource" id="Resource_14lbd"]
 script = ExtResource("22_djptt")
 sid = 0
 is_output = false
@@ -342,12 +342,12 @@ layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
 layout_mode = 2
-data = SubResource("Resource_q2m8p")
+data = SubResource("Resource_c5qti")
 
 [node name="Keys" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("12_cr7ft")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_o2xqp")
+data = SubResource("Resource_ro6bf")
 
 [node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
@@ -365,12 +365,12 @@ autowrap_mode = 3
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_nejb5")
+data = SubResource("Resource_tahsa")
 
 [node name="SalvagePoints" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("21_ieeor")]
 visible = false
 layout_mode = 2
-data = SubResource("Resource_y5mie")
+data = SubResource("Resource_14lbd")
 
 [node name="Level" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("14_dug7w")]
 visible = false
