@@ -31,7 +31,7 @@ func _disconnect_pack_data() -> void:
 	pack_data.added_level.disconnect(_handle_level_added)
 	pack_data.deleted_level.disconnect(_handle_level_deleted)
 	pack_data.moved_level.disconnect(_handle_level_moved)
-	pack_data.changed.disconnect(update_all)
+	pack_data.swapped_levels.disconnect(_handle_level_moved)
 
 func _connect_pack_data() -> void:
 	if pack_data == null: return
@@ -39,19 +39,22 @@ func _connect_pack_data() -> void:
 	pack_data.added_level.connect(_handle_level_added)
 	pack_data.deleted_level.connect(_handle_level_deleted)
 	pack_data.moved_level.connect(_handle_level_moved)
-	pack_data.changed.connect(update_all)
+	pack_data.swapped_levels.connect(_handle_level_moved)
 
-func _handle_level_added(_index: int) -> void:
-	# TODO: Better solution
-	update_all()
+func _handle_level_added(index: int) -> void:
+	get_root().create_child(index)
+	update_single(index)
+	_update_level_numbers()
 
-func _handle_level_deleted(_index: int) -> void:
-	# TODO: Better solution
-	update_all()
+func _handle_level_deleted(index: int) -> void:
+	get_root().remove_child(get_root().get_child(index))
+	_update_level_numbers()
 
-func _handle_level_moved(_from: int, _to: int) -> void:
-	# TODO: Better solution
-	update_all()
+func _handle_level_moved(from: int, to: int) -> void:
+	get_root().remove_child(get_root().get_child(from))
+	get_root().create_child(to)
+	update_single(to)
+	_update_level_numbers()
 
 func update_all() -> void:
 	clear()
@@ -60,16 +63,19 @@ func update_all() -> void:
 		var item := create_item()
 		item.set_text(1, lvl.name)
 	_update_level_numbers()
-	update_selected()
+	update_selection()
 
-func update_selected() -> void:
-	print("update")
+func update_single(index: int) -> void:
+	var item := get_root().get_child(index)
+	item.set_text(1, pack_data.levels[index].name)
+
+func update_selection() -> void:
 	if pack_data.state_data:
 		var my_selected := get_selected()
 		if my_selected == null || my_selected.get_index() != pack_data.state_data.current_level:
-			print("setting to ", pack_data.state_data.current_level)
 			deselect_all()
 			set_selected(get_root().get_child(pack_data.state_data.current_level), 0)
+			scroll_to_item(get_selected())
 
 func _update_level_numbers() -> void:
 	for child in get_root().get_children():
@@ -98,7 +104,3 @@ func _drop_data(at_position: Vector2, data) -> void:
 		target_index -= 1
 	pack_data.move_level(from_index, target_index) # will emit moved_level
 	drop_mode_flags = DROP_MODE_DISABLED
-
-func _process(delta):
-	get_local_mouse_position()
-	pass

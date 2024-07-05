@@ -193,7 +193,7 @@ func _set_level_number(new_number: int) -> void:
 	new_number -= 1
 	if _level_pack_data.state_data.current_level != new_number:
 		editor_data.gameplay.set_current_level(new_number)
-	list.update_selected()
+	list.update_selection()
 
 func _on_remove_goal_button_pressed() -> void:
 	if _setting_to_data: return

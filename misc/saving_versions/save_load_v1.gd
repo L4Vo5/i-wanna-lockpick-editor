@@ -2,7 +2,6 @@ const conversion_version := 3
 
 ## Fully converts V1 bytes into V3, not including the header
 static func convert_to_newer_version(raw_data: PackedByteArray, offset: int) -> PackedByteArray:
-	const target_version := 3
 	var new_data := SaveLoad.V3.make_byte_access([], 0)
 	var data := make_byte_access(raw_data, offset)
 	
