@@ -166,8 +166,6 @@ func _gui_input(event: InputEvent) -> void:
 				elif editor_data.goal_position:
 					place_goal_on_mouse()
 					accept_event()
-			else:
-				assert(editor_data.editing_settings)
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
 				selected_obj = null

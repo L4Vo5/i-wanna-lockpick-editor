@@ -47,6 +47,7 @@ var key_editor: KeyEditor
 var tile_editor: MarginContainer
 var side_tabs: BookmarkTabContainer
 var level_properties_editor: LevelPropertiesEditor
+var level_pack_properties_editor: LevelPackPropertiesEditor
 var entry_editor: EntryEditor
 var salvage_point_editor: SalvagePointEditor
 var level_element_editors: Dictionary = {}

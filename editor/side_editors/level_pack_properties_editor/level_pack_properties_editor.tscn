@@ -1,0 +1,141 @@
+[gd_scene load_steps=3 format=3 uid="uid://dbw3g8lfbjbru"]
+
+[ext_resource type="Script" path="res://editor/side_editors/level_pack_properties_editor/level_pack_properties_editor.gd" id="1_0060c"]
+[ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_image_rect.gd" id="14_b8fnq"]
+
+[node name="LevelPackPropertiesEditor" type="MarginContainer"]
+offset_right = 193.0
+offset_bottom = 596.0
+script = ExtResource("1_0060c")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="LevelPack" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/LevelPack"]
+layout_mode = 2
+text = "- Level Pack -"
+horizontal_alignment = 1
+
+[node name="Name" type="HBoxContainer" parent="VBoxContainer/LevelPack"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/LevelPack/Name"]
+layout_mode = 2
+text = "Name: "
+
+[node name="PackName" type="LineEdit" parent="VBoxContainer/LevelPack/Name"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "(unnamed)"
+expand_to_text_length = true
+context_menu_enabled = false
+
+[node name="Author" type="HBoxContainer" parent="VBoxContainer/LevelPack"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/LevelPack/Author"]
+layout_mode = 2
+text = "Author/s: "
+
+[node name="PackAuthor" type="LineEdit" parent="VBoxContainer/LevelPack/Author"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "(unknown)"
+expand_to_text_length = true
+context_menu_enabled = false
+
+[node name="Description" type="VBoxContainer" parent="VBoxContainer/LevelPack"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/LevelPack/Description"]
+layout_mode = 2
+text = "Description:"
+
+[node name="PackDescription" type="CodeEdit" parent="VBoxContainer/LevelPack/Description"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+context_menu_enabled = false
+gutters_draw_line_numbers = true
+
+[node name="LevelCount" type="HBoxContainer" parent="VBoxContainer/LevelPack"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/LevelPack/LevelCount"]
+layout_mode = 2
+text = "Level count: "
+
+[node name="LevelCountLabel" type="Label" parent="VBoxContainer/LevelPack/LevelCount"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Image" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LevelImage" type="Label" parent="VBoxContainer/Image"]
+layout_mode = 2
+text = "Pack Image:"
+
+[node name="NoImage" type="Label" parent="VBoxContainer/Image"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "(no image)"
+
+[node name="LevelImageRect" type="Control" parent="VBoxContainer/Image"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("14_b8fnq")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Image"]
+layout_mode = 2
+
+[node name="CopyToClipboard" type="Button" parent="VBoxContainer/Image/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Copy to Clipboard"
+
+[node name="Label" type="Label" parent="VBoxContainer/Image"]
+visible = false
+layout_mode = 2
+text = "(Save level to refresh image)"
+
+[node name="SaveData" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/SaveData"]
+layout_mode = 2
+text = "- Save Data -"
+horizontal_alignment = 1
+
+[node name="EraseSaveState" type="Button" parent="VBoxContainer/SaveData"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Erase Save Data"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/SaveData"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/SaveData/HBoxContainer"]
+layout_mode = 2
+text = "Completed levels: "
+
+[node name="CompletedLevelsLabel" type="Label" parent="VBoxContainer/SaveData/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/SaveData"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/SaveData/HBoxContainer2"]
+layout_mode = 2
+text = "Salvaged doors: "
+
+[node name="SalvagedDoorsLabel" type="Label" parent="VBoxContainer/SaveData/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2

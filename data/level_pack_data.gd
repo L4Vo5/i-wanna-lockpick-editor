@@ -4,6 +4,8 @@ class_name LevelPackData
 signal added_level(level_id: int)
 signal deleted_level(level_id: int)
 signal swapped_levels(level_1_id: int, level_2_id: int)
+signal moved_level(from: int, to: int)
+
 ## All the levels in the level pack
 @export var levels: Array[LevelData]
 
@@ -77,6 +79,8 @@ func add_level(new_level: LevelData, id: int) -> void:
 				if entry.leads_to >= id:
 					entry.leads_to += 1
 	added_level.emit(id)
+	if state_data and state_data.current_level >= id:
+		state_data.current_level += 1
 	emit_changed()
 
 func duplicate_level(id: int) -> void:
@@ -90,6 +94,11 @@ func delete_level(id: int) -> void:
 				entry.leads_to -= 1
 			elif entry.leads_to == id:
 				entry.leads_to = -1
+	if state_data:
+		if state_data.current_level > id:
+			state_data.current_level -= 1
+		if state_data.current_level > 0 and state_data.current_level >= levels.size():
+			state_data.current_level -= 1
 	deleted_level.emit(id)
 	emit_changed()
 
@@ -105,5 +114,39 @@ func swap_levels(id_1: int, id_2: int) -> void:
 				entry.leads_to = id_2
 			elif entry.leads_to == id_2:
 				entry.leads_to = id_1
+	if state_data:
+		if state_data.current_level == id_1:
+			state_data.current_level = id_2
+		elif state_data.current_level == id_2:
+			state_data.current_level = id_1
 	swapped_levels.emit(id_1, id_2)
+	emit_changed()
+
+## Moves the level at index `from` to the index `to`, shifting everything in between.
+func move_level(from: int, to: int) -> void:
+	if to == from:
+		return
+	var level_data := levels[from]
+	levels.remove_at(from)
+	levels.insert(to, level_data)
+	# correct the entries
+	for level in levels:
+		for entry in level.entries:
+			if entry.leads_to == from:
+					entry.leads_to = to
+			elif to > from:
+				# from | ... | ... | ... | ...
+				#  +3     -1    -1    -1     -1
+				#  ... | ... | ... | ... | to
+				if entry.leads_to > from and entry.leads_to <= to:
+					entry.leads_to -= 1
+			else:
+				# ... | ... | ... | ... | from
+				#        +1     +1    +1    -3
+				# ... | to  | ... | ... | ...
+				if entry.leads_to >= to and entry.leads_to < from:
+					entry.leads_to += 1
+	if state_data and state_data.current_level == from:
+		state_data.current_level = to
+	moved_level.emit(from, to)
 	emit_changed()

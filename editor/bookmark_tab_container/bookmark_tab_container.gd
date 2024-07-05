@@ -15,9 +15,10 @@ const name_to_icon := {
 	Doors = preload("res://editor/bookmark_tab_container/icons/door.png"),
 	Keys = preload("res://editor/bookmark_tab_container/icons/key.png"),
 	Tiles = preload("res://editor/bookmark_tab_container/icons/tile.png"),
-	Level = preload("res://editor/bookmark_tab_container/icons/level.png"),
 	SalvagePoints = preload("res://editor/bookmark_tab_container/icons/salvage_point.png"),
 	Entries = preload("res://editor/bookmark_tab_container/icons/entry.png"),
+	Level = preload("res://editor/bookmark_tab_container/icons/level.png"),
+	LevelPack = preload("res://editor/bookmark_tab_container/icons/level.png"), # TODO: differenciate
 	Settings = preload("res://editor/bookmark_tab_container/icons/settings.svg"),
 }
 
