@@ -22,16 +22,21 @@ var pack_data: LevelPackData
 ## The current level that's being played in the pack.
 @export var current_level: int
 
-## The level that you reach when exiting (backspace).
-@export var exit_level: int = -1
+## The level that you reach when exiting (backspace), for each other level.
+@export var exit_levels: PackedInt32Array = []
 
 ## The player position within exit_level after exiting
-@export var exit_position: Vector2i
+@export var exit_positions: Array[Vector2i] = []
 
 static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
-	state.completed_levels = PackedByteArray()
+	state.completed_levels = []
 	state.completed_levels.resize(pack.levels.size())
+	state.exit_levels = []
+	state.exit_levels.resize(pack.levels.size())
+	state.exit_levels.fill(-1)
+	state.exit_positions = []
+	state.exit_positions.resize(pack.levels.size())
 	state.pack_id = pack.pack_id
 	state.pack_data = pack
 	state.connect_pack_data()
@@ -63,18 +68,27 @@ func get_salvaged_doors_count() -> int:
 func _on_added_level(id: int) -> void:
 	assert(pack_data.levels.size() == completed_levels.size() + 1)
 	completed_levels.insert(id, 0)
+	exit_levels.insert(id, -1)
+	exit_positions.insert(id, Vector2i.ZERO)
 	save()
 
 func _on_deleted_level(level_id: int) -> void:
 	assert(pack_data.levels.size() == completed_levels.size() - 1)
 	completed_levels.remove_at(level_id)
+	exit_levels.remove_at(level_id)
+	exit_positions.remove_at(level_id)
 	assert(pack_data.levels.size() == completed_levels.size())
 	save()
 
 func _on_swapped_levels(level_1_id: int, level_2_id: int) -> void:
-	var c1 := completed_levels[level_1_id]
-	completed_levels[level_1_id] = completed_levels[level_2_id]
-	completed_levels[level_2_id] = c1
+	array_swap(completed_levels, level_1_id, level_2_id)
+	array_swap(exit_levels, level_1_id, level_2_id)
+	array_swap(exit_positions, level_1_id, level_2_id)
+
+func array_swap(array, id_1: int, id_2: int) -> void:
+	var v = array[id_1]
+	array[id_1] = array[id_2]
+	array[id_2] = v
 
 func save() -> void:
 	assert(pack_id == pack_data.pack_id)
@@ -96,6 +110,8 @@ func check_and_fix() -> void:
 	if current_level_count != pack_level_count:
 		printerr("state is keeping track of %d levels, but level pack has %d, resizing." % [current_level_count, pack_level_count])
 		completed_levels.resize(pack_level_count)
+		exit_positions.resize(pack_level_count)
+		exit_levels.resize(pack_level_count)
 	if current_level < 0 or current_level >= pack_data.levels.size():
 		printerr("State's current level is out of range: current level = ",
 			current_level, " level count ", pack_data.levels.size())

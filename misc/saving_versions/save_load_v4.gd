@@ -1,3 +1,5 @@
+const MAX_ARRAY_SIZE := 50_000_000
+
 static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.store_string(level_pack.name)
 	data.store_string(level_pack.author)
@@ -12,7 +14,6 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.compress()
 
 static func _save_level(level: LevelData, data: ByteAccess) -> void:
-	assert(PerfManager.start("SaveLoadV4::save_level"))
 	data.store_string(level.title + "\n" + level.name)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
@@ -45,7 +46,6 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_u32(level.salvage_points.size())
 	for salvage_point in level.salvage_points:
 		_save_salvage_point(data, salvage_point)
-	assert(PerfManager.end("SaveLoadV4::save_level"))
 
 static func _save_key(data: ByteAccess, key: KeyData) -> void:
 	_save_complex(data, key.amount)
@@ -120,12 +120,14 @@ static func load(raw_data: PackedByteArray, offset: int) -> LevelPackData:
 	
 	# Load all levels
 	if SaveLoad.PRINT_LOAD: print("It has %d levels" % level_count)
+	if level_count > MAX_ARRAY_SIZE: return
+	level_pack.levels.resize(level_count)
 	for i in level_count:
-		level_pack.levels.push_back(_load_level(data))
+		if data.reached_eof(): return
+		level_pack.levels[i] = _load_level(data)
 	return level_pack
 
 static func _load_level(data: ByteAccess) -> LevelData:
-	assert(PerfManager.start("SaveLoadV4::load_level"))
 	var level := LevelData.new()
 	var title_name := data.get_string().split("\n")
 	assert(title_name.size() == 2)
@@ -143,35 +145,41 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	var tile_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("tile count is %d" % tile_amount)
 	for _i in tile_amount:
+		if data.reached_eof(): return
 		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = true
 	
 	var key_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("key count is %d" % key_amount)
+	if key_amount > MAX_ARRAY_SIZE: return
 	level.keys.resize(key_amount)
 	for i in key_amount:
+		if data.reached_eof(): return
 		level.keys[i] = _load_key(data)
 	
 	var door_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("door count is %d" % door_amount)
+	if door_amount > MAX_ARRAY_SIZE: return
 	level.doors.resize(door_amount)
-	assert(PerfManager.start("SaveLoadV4::load (loading doors)"))
 	for i in door_amount:
+		if data.reached_eof(): return
 		level.doors[i] = _load_door(data)
-	assert(PerfManager.end("SaveLoadV4::load (loading doors)"))
 	
 	var entry_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("entry count is %d" % entry_amount)
+	if entry_amount > MAX_ARRAY_SIZE: return
 	level.entries.resize(entry_amount)
 	for i in entry_amount:
+		if data.reached_eof(): return
 		level.entries[i] = _load_entry(data)
 	
 	var salvage_point_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("salvage point count is %d" % salvage_point_amount)
+	if salvage_point_amount > MAX_ARRAY_SIZE: return
 	level.salvage_points.resize(salvage_point_amount)
 	for i in salvage_point_amount:
+		if data.reached_eof(): return
 		level.salvage_points[i] = _load_salvage_point(data)
 
-	assert(PerfManager.end("SaveLoadV4::load_level"))
 	return level
 
 static func _load_key(data: ByteAccess) -> KeyData:
@@ -200,8 +208,10 @@ static func _load_door(data: ByteAccess) -> DoorData:
 	door.outer_color = curses_color & 0b1111
 	
 	var lock_amount := data.get_u16()
+	if lock_amount > MAX_ARRAY_SIZE: return
 	door.locks.resize(lock_amount)
 	for i in lock_amount:
+		if data.reached_eof(): return
 		door.locks[i] = _load_lock(data)
 	return door
 
@@ -247,9 +257,18 @@ static func save_pack_state(data: ByteAccess, state: LevelPackStateData) -> void
 	data.store_string(Global.game_version)
 	
 	data.store_s64(state.pack_id)
-	data.store_u32(state.completed_levels.size())
+	data.store_u32(state.current_level)
+	var level_count := state.completed_levels.size()
+	data.store_u32(level_count)
 	for x in state.completed_levels:
 		data.store_u8(x)
+	
+	for id in state.exit_levels:
+		data.store_u32(id)
+	
+	for vec in state.exit_positions:
+		data.store_u32(vec.x)
+		data.store_u32(vec.y)
 	
 	data.store_u32(state.salvaged_doors.size())
 	for door in state.salvaged_doors:
@@ -265,14 +284,30 @@ static func load_pack_state(data: ByteAccess) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
 	state.pack_id = data.get_s64()
 	
-	var completed_levels_amount := data.get_u32()
-	state.completed_levels.resize(completed_levels_amount)
-	for i in completed_levels_amount:
+	state.current_level = data.get_u32()
+	var level_count := data.get_u32()
+	if level_count > MAX_ARRAY_SIZE: return
+	state.completed_levels.resize(level_count)
+	state.exit_levels.resize(level_count)
+	state.exit_positions.resize(level_count)
+	for i in level_count:
+		if data.reached_eof(): return
 		state.completed_levels[i] = data.get_u8()
+	for i in level_count:
+		if data.reached_eof(): return
+		state.exit_levels[i] = data.get_u32()
+	for i in level_count:
+		if data.reached_eof(): return
+		state.exit_positions[i] = Vector2i(
+			data.get_u32(),
+			data.get_u32()
+		)
 	
 	var salvage_count := data.get_u32()
+	if salvage_count > MAX_ARRAY_SIZE: return
 	state.salvaged_doors.resize(salvage_count)
 	for i in salvage_count:
+		if data.reached_eof(): return
 		var salvage_exists := data.get_u8()
 		if salvage_exists != 0:
 			state.salvaged_doors[i] = _load_door(data)
@@ -369,6 +404,9 @@ class ByteAccess:
 		for byte in bytes:
 			store_u8(byte)
 
+	func reached_eof() -> bool:
+		return curr >= data.size()
+	
 	func get_bool() -> bool:
 		curr += 1
 		return data.decode_u8(curr - 1)
