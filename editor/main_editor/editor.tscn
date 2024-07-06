@@ -21,7 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/main_editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/side_editors/entry_editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
-[ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/side_editors/salvage_editor/salvage_point_editor.tscn" id="21_ieeor"]
+[ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/side_editors/salvage_point_editor/salvage_point_editor.tscn" id="21_ieeor"]
 [ext_resource type="Script" path="res://data/entry_data.gd" id="21_uoxo3"]
 [ext_resource type="Script" path="res://data/salvage_point_data.gd" id="22_djptt"]
 [ext_resource type="PackedScene" uid="uid://dbw3g8lfbjbru" path="res://editor/side_editors/level_pack_properties_editor/level_pack_properties_editor.tscn" id="24_ff8pk"]
