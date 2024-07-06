@@ -89,6 +89,7 @@ text = "(no image)"
 
 [node name="LevelImageRect" type="Control" parent="VBoxContainer/Image"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 script = ExtResource("14_b8fnq")
 

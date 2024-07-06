@@ -99,7 +99,7 @@ func _on_set_pack_description(new_description: String) -> void:
 	if DEBUG: print_debug("Pack description: " + new_description)
 
 func _reload_image() -> void:
-	if not visible: return
+	if not level_image_rect.is_visible_in_tree(): return
 	if not _level_pack_data: return
 	var img := SaveLoad.get_image(_level_pack_data)
 	if img != null:
