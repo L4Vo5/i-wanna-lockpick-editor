@@ -4,7 +4,7 @@ class_name KeyEditor
 
 @export var data: KeyData:
 	set(val):
-		data = val.duplicated()
+		data = val
 		if not is_node_ready(): await ready
 		# TODO: Allow editing keys in the level (currently not done to be consistent with door editing)
 		key.data = data

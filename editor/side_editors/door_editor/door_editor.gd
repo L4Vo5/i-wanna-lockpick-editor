@@ -4,7 +4,7 @@ class_name DoorEditor
 
 @export var data: DoorData:
 	set(val):
-		data = val.duplicated()
+		data = val
 		if not is_node_ready(): await ready
 		# TODO: Allow editing doors in the level (currently not done so you can't resize them)
 		door.data = data

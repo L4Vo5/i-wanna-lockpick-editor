@@ -4,7 +4,7 @@ class_name SalvagePointEditor
 
 @export var data: SalvagePointData:
 	set(val):
-		data = val.duplicated()
+		data = val
 		if not is_node_ready(): return
 		salvage_point.data = data
 		_set_to_data()

@@ -131,7 +131,7 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_elem
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				var editor_control = editor_data.level_element_editors[type]
-				editor_control.data = node.data
+				editor_control.data = node.data.duplicated()
 				editor_data.side_tabs.set_current_tab_control(editor_control)
 				accept_event()
 				select_thing(node)
