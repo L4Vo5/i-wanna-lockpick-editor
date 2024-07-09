@@ -106,7 +106,8 @@ func save() -> void:
 func check_and_fix() -> void:
 	# TODO: maybe improve (what if there's extra salvages? etc)
 	var pack_level_count := pack_data.levels.size()
-	var current_level_count := completed_levels.size()
+	# hack but this is the easiest way to make sure they all have the appropiate size i guess
+	var current_level_count := mini(mini(completed_levels.size(), exit_positions.size()), exit_levels.size())
 	if current_level_count != pack_level_count:
 		printerr("state is keeping track of %d levels, but level pack has %d, resizing." % [current_level_count, pack_level_count])
 		completed_levels.resize(pack_level_count)
