@@ -82,7 +82,6 @@ size_flags_vertical = 10
 
 [node name="Lock" parent="VBoxContainer/GrowContainer/ScrollContainer/TheLock" instance=ExtResource("4_iioui")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
 lock_data = SubResource("Resource_sgiyv")
 ignore_position = true

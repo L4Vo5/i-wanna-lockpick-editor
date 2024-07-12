@@ -18,12 +18,11 @@ func _ready() -> void:
 	select_mode = Tree.SELECT_ROW
 	scroll_horizontal_enabled = false
 	scroll_vertical_enabled = true
-	columns = 2
-	set_column_expand(0, false)
-	set_column_expand(1, true)
-	item_selected.connect(_selected_item)
+	columns = 1
+	set_column_expand(0, true)
+	item_selected.connect(_on_item_selected)
 
-func _selected_item() -> void:
+func _on_item_selected() -> void:
 	selected_level.emit(get_selected().get_index() + 1)
 
 func _disconnect_pack_data() -> void:
@@ -44,30 +43,27 @@ func _connect_pack_data() -> void:
 func _handle_level_added(index: int) -> void:
 	get_root().create_child(index)
 	update_single(index)
-	_update_level_numbers()
 
 func _handle_level_deleted(index: int) -> void:
 	get_root().remove_child(get_root().get_child(index))
-	_update_level_numbers()
 
 func _handle_level_moved(from: int, to: int) -> void:
 	get_root().remove_child(get_root().get_child(from))
 	get_root().create_child(to)
 	update_single(to)
-	_update_level_numbers()
 
 func update_all() -> void:
 	clear()
 	create_item() # create root
 	for lvl in pack_data.levels:
 		var item := create_item()
-		item.set_text(1, lvl.name)
-	_update_level_numbers()
+		item.set_text(0, get_level_string(lvl))
 	update_selection()
 
 func update_single(index: int) -> void:
 	var item := get_root().get_child(index)
-	item.set_text(1, pack_data.levels[index].name)
+	var lvl := pack_data.levels[index]
+	item.set_text(0, get_level_string(lvl))
 
 func update_selection() -> void:
 	if pack_data.state_data:
@@ -84,12 +80,20 @@ func update_visibility(search_term: String) -> void:
 		return
 	search_term = search_term.to_lower()
 	for child in get_root().get_children():
-		var text := child.get_text(1)
+		var text := child.get_text(0)
 		child.visible = text.to_lower().contains(search_term)
 
-func _update_level_numbers() -> void:
-	for child in get_root().get_children():
-		child.set_text(0, str(child.get_index() + 1))
+func get_level_string(lvl: LevelData) -> String:
+	var s := "Untitled"
+	if lvl.name and lvl.title:
+		s = "%s - %s" % [lvl.name, lvl.title]
+	elif lvl.name:
+		s = lvl.name
+	elif lvl.title:
+		s = lvl.tile
+	if lvl.author:
+		s += " (by %s)" % lvl.author
+	return s
 
 func _get_drag_data(at_position: Vector2) -> TreeItem:
 	return get_item_at_position(at_position)

@@ -42,10 +42,12 @@ expand_to_text_length = true
 context_menu_enabled = false
 
 [node name="SearchSpacing" type="Control" parent="Level"]
+visible = false
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
 [node name="CenterContainer" type="CenterContainer" parent="Level"]
+visible = false
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Level/CenterContainer"]
@@ -127,6 +129,7 @@ icon = ExtResource("2_3hvsl")
 
 [node name="MoveLevelDown" type="Button" parent="Level/HBoxContainer2"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Decrease this level's id by 1."
@@ -134,6 +137,7 @@ icon = ExtResource("6_boetw")
 
 [node name="MoveLevelUp" type="Button" parent="Level/HBoxContainer2"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Increase this level's ID by 1."
