@@ -38,13 +38,6 @@ signal changed
 		current_editor_pack = val
 		queue_save()
 
-# TODO: instead, store the level by level pack in a huge dict?
-## Since this is a potentially user-facing setting, it's 1-indexed.
-@export var current_editor_level_id := 1:
-	set(val):
-		current_editor_level_id = val
-		queue_save()
-
 const PATH := "user://settings.cfg"
 var _config_file := ConfigFile.new()
 
