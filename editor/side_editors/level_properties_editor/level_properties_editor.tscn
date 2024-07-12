@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bq8lnotf0ys0p"]
+[gd_scene load_steps=15 format=3 uid="uid://bq8lnotf0ys0p"]
 
 [ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_properties_editor.gd" id="1_000i2"]
 [ext_resource type="Texture2D" uid="uid://cpnfgleds05wh" path="res://editor/icons/Remove.svg" id="2_3hvsl"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://editor/property_editors/object_grid_chooser.gd" id="3_pu07t"]
 [ext_resource type="Texture2D" uid="uid://iipbm25h7da7" path="res://editor/icons/Add.svg" id="4_bvcps"]
 [ext_resource type="Texture2D" uid="uid://btuot74j1fbp4" path="res://editor/icons/player_spawnpoint.png" id="4_fvmj3"]
+[ext_resource type="Script" path="res://editor/misc/grow_container.gd" id="4_whsrq"]
 [ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_list.gd" id="4_wyuvq"]
 [ext_resource type="Script" path="res://editor/misc/node2d_center_container.gd" id="5_oak3v"]
 [ext_resource type="PackedScene" uid="uid://co8kt44378qlq" path="res://level_elements/goal/goal.tscn" id="5_tmadf"]
@@ -19,55 +20,61 @@ offset_right = 193.0
 offset_bottom = 596.0
 script = ExtResource("1_000i2")
 
-[node name="Level" type="VBoxContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 2
+horizontal_scroll_mode = 0
 
-[node name="Label" type="Label" parent="Level"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 text = "- Levels -"
 horizontal_alignment = 1
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="Level"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/HBoxContainer3"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 text = "Search: "
 
-[node name="Search" type="LineEdit" parent="Level/HBoxContainer3"]
+[node name="Search" type="LineEdit" parent="ScrollContainer/VBoxContainer/HBoxContainer3"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="SearchSpacing" type="Control" parent="Level"]
+[node name="SearchSpacing" type="Control" parent="ScrollContainer/VBoxContainer"]
 visible = false
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="Level"]
+[node name="CenterContainer" type="CenterContainer" parent="ScrollContainer/VBoxContainer"]
 visible = false
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Level/CenterContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/CenterContainer"]
 layout_mode = 2
 theme_override_constants/separation = 15
 
-[node name="PreviousLevel" type="Button" parent="Level/CenterContainer/HBoxContainer"]
+[node name="PreviousLevel" type="Button" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Switch to the previous level."
 icon = ExtResource("2_hki0o")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Level/CenterContainer/HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/CenterContainer/HBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Level "
 
-[node name="LevelNumber" type="SpinBox" parent="Level/CenterContainer/HBoxContainer/HBoxContainer"]
+[node name="LevelNumber" type="SpinBox" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 min_value = 1.0
@@ -75,59 +82,65 @@ max_value = 3.0
 value = 1.0
 alignment = 1
 
-[node name="Label2" type="Label" parent="Level/CenterContainer/HBoxContainer/HBoxContainer"]
+[node name="Label2" type="Label" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer/HBoxContainer"]
 visible = false
 layout_mode = 2
 text = "-"
 
-[node name="NextLevel" type="Button" parent="Level/CenterContainer/HBoxContainer"]
+[node name="NextLevel" type="Button" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Switch to the next level."
 icon = ExtResource("3_oqr5p")
 
-[node name="ListSpacing" type="Control" parent="Level"]
-custom_minimum_size = Vector2(0, 10)
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_constants/margin_top = 6
 
-[node name="LevelList" type="Tree" parent="Level"]
+[node name="GrowContainer" type="Container" parent="ScrollContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(0, 163)
+layout_mode = 2
+script = ExtResource("4_whsrq")
+
+[node name="LevelList" type="Tree" parent="ScrollContainer/VBoxContainer/MarginContainer/GrowContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_wyuvq")
 
-[node name="ListSpacing2" type="Control" parent="Level"]
+[node name="ListSpacing2" type="Control" parent="ScrollContainer/VBoxContainer"]
+visible = false
 custom_minimum_size = Vector2(0, 5)
 layout_mode = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Level"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 5
 
-[node name="AddLevel" type="Button" parent="Level/HBoxContainer2"]
+[node name="AddLevel" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Create a new level after this one."
 icon = ExtResource("4_bvcps")
 
-[node name="Duplicate" type="Button" parent="Level/HBoxContainer2"]
+[node name="Duplicate" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Duplicate this level."
 icon = ExtResource("2_s1ihu")
 
-[node name="DeleteLevel" type="Button" parent="Level/HBoxContainer2"]
+[node name="DeleteLevel" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Delete this level."
 icon = ExtResource("2_3hvsl")
 
-[node name="MoveLevelDown" type="Button" parent="Level/HBoxContainer2"]
+[node name="MoveLevelDown" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -135,7 +148,7 @@ size_flags_horizontal = 4
 tooltip_text = "Decrease this level's id by 1."
 icon = ExtResource("6_boetw")
 
-[node name="MoveLevelUp" type="Button" parent="Level/HBoxContainer2"]
+[node name="MoveLevelUp" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -143,71 +156,65 @@ size_flags_horizontal = 4
 tooltip_text = "Increase this level's ID by 1."
 icon = ExtResource("7_3nud6")
 
-[node name="ListSpacing3" type="Control" parent="Level"]
+[node name="ListSpacing3" type="Control" parent="ScrollContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
-[node name="Name" type="HBoxContainer" parent="Level"]
+[node name="Name" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/Name"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Name"]
 layout_mode = 2
 text = "Name: "
 
-[node name="LevelName" type="LineEdit" parent="Level/Name"]
+[node name="LevelName" type="LineEdit" parent="ScrollContainer/VBoxContainer/Name"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unnamed)"
-expand_to_text_length = true
-context_menu_enabled = false
 
-[node name="Title" type="HBoxContainer" parent="Level"]
+[node name="Title" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/Title"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Title"]
 layout_mode = 2
 text = "Title: "
 
-[node name="LevelTitle" type="LineEdit" parent="Level/Title"]
+[node name="LevelTitle" type="LineEdit" parent="ScrollContainer/VBoxContainer/Title"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(no title)"
-expand_to_text_length = true
-context_menu_enabled = false
 
-[node name="Author" type="HBoxContainer" parent="Level"]
+[node name="Author" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/Author"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Author"]
 layout_mode = 2
 text = "Author/s: "
 
-[node name="LevelAuthor" type="LineEdit" parent="Level/Author"]
+[node name="LevelAuthor" type="LineEdit" parent="ScrollContainer/VBoxContainer/Author"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unknown)"
-expand_to_text_length = true
-context_menu_enabled = false
 
-[node name="Size" type="HBoxContainer" parent="Level"]
+[node name="Size" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Size" type="MarginContainer" parent="Level/Size"]
+[node name="Size" type="MarginContainer" parent="ScrollContainer/VBoxContainer/Size"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Level/Size/Size"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/Size/Size"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/Size/Size/HBoxContainer"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Size:"
 vertical_alignment = 1
 
-[node name="Width" type="SpinBox" parent="Level/Size/Size/HBoxContainer"]
+[node name="Width" type="SpinBox" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -219,13 +226,13 @@ step = 32.0
 value = 800.0
 alignment = 1
 
-[node name="Label2" type="Label" parent="Level/Size/Size/HBoxContainer"]
+[node name="Label2" type="Label" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "×"
 vertical_alignment = 1
 
-[node name="Height" type="SpinBox" parent="Level/Size/Size/HBoxContainer"]
+[node name="Height" type="SpinBox" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -237,20 +244,20 @@ step = 32.0
 value = 608.0
 alignment = 1
 
-[node name="Label3" type="Label" parent="Level/Size/Size/HBoxContainer"]
+[node name="Label3" type="Label" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "pixels"
 vertical_alignment = 1
 
-[node name="WhatToPlace" type="HBoxContainer" parent="Level"]
+[node name="WhatToPlace" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/WhatToPlace"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/WhatToPlace"]
 layout_mode = 2
 text = "Reposition:"
 
-[node name="WhatToPlace" type="Container" parent="Level/WhatToPlace"]
+[node name="WhatToPlace" type="Container" parent="ScrollContainer/VBoxContainer/WhatToPlace"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
@@ -258,47 +265,47 @@ size_flags_horizontal = 3
 script = ExtResource("3_pu07t")
 object_size = 40
 
-[node name="StartPos" type="TextureRect" parent="Level/WhatToPlace/WhatToPlace"]
+[node name="StartPos" type="TextureRect" parent="ScrollContainer/VBoxContainer/WhatToPlace/WhatToPlace"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("4_fvmj3")
 stretch_mode = 3
 
-[node name="Goal" type="Container" parent="Level/WhatToPlace/WhatToPlace"]
+[node name="Goal" type="Container" parent="ScrollContainer/VBoxContainer/WhatToPlace/WhatToPlace"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("5_oak3v")
 
-[node name="goal" parent="Level/WhatToPlace/WhatToPlace/Goal" instance=ExtResource("5_tmadf")]
+[node name="goal" parent="ScrollContainer/VBoxContainer/WhatToPlace/WhatToPlace/Goal" instance=ExtResource("5_tmadf")]
 position = Vector2(20, 20)
 
-[node name="RemoveGoal" type="Button" parent="Level"]
+[node name="RemoveGoal" type="Button" parent="ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Remove Goal"
 
-[node name="SpawnPos" type="HBoxContainer" parent="Level"]
+[node name="SpawnPos" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/SpawnPos"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/SpawnPos"]
 layout_mode = 2
 text = "Player Spawn: "
 
-[node name="PlayerSpawnCoord" type="Label" parent="Level/SpawnPos"]
+[node name="PlayerSpawnCoord" type="Label" parent="ScrollContainer/VBoxContainer/SpawnPos"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "(0, 0)"
 
-[node name="GoalPos" type="HBoxContainer" parent="Level"]
+[node name="GoalPos" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Level/GoalPos"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/GoalPos"]
 layout_mode = 2
 text = "Goal: "
 
-[node name="GoalCoord" type="Label" parent="Level/GoalPos"]
+[node name="GoalCoord" type="Label" parent="ScrollContainer/VBoxContainer/GoalPos"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "(0, 0)"

@@ -1,6 +1,8 @@
 extends Tree
 class_name LevelList
 
+var can_rearrange := true
+
 var pack_data: LevelPackData:
 	set(value):
 		if pack_data == value: return
@@ -16,7 +18,7 @@ func _ready() -> void:
 	hide_root = true
 	hide_folding = true
 	select_mode = Tree.SELECT_ROW
-	scroll_horizontal_enabled = false
+	scroll_horizontal_enabled = true
 	scroll_vertical_enabled = true
 	columns = 1
 	set_column_expand(0, true)
@@ -99,6 +101,8 @@ func _get_drag_data(at_position: Vector2) -> TreeItem:
 	return get_item_at_position(at_position)
 
 func _can_drop_data(at_position: Vector2, data) -> bool:
+	if not can_rearrange:
+		return false
 	if not data is TreeItem or data.get_tree() != self:
 		drop_mode_flags = DROP_MODE_DISABLED
 		return false
