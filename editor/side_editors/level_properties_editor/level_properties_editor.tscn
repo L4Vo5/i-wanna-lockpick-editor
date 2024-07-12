@@ -18,6 +18,8 @@
 [node name="LevelPropertiesEditor" type="MarginContainer"]
 offset_right = 193.0
 offset_bottom = 596.0
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_right = 6
 script = ExtResource("1_000i2")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]

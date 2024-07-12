@@ -18,6 +18,8 @@ font = ExtResource("4_7lve0")
 [node name="Entries" type="MarginContainer"]
 offset_right = 305.0
 offset_bottom = 602.0
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_right = 6
 script = ExtResource("1_xmuse")
 data = SubResource("Resource_ekiph")
 

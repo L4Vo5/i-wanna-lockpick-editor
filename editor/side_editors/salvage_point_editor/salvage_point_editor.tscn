@@ -51,6 +51,8 @@ sid = -1
 [node name="SalvagePointEditor" type="MarginContainer"]
 offset_right = 212.0
 offset_bottom = 333.0
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_right = 6
 script = ExtResource("1_gotpp")
 data = SubResource("Resource_v8gcj")
 
@@ -142,6 +144,7 @@ size_flags_vertical = 0
 
 [node name="Door" parent="VBoxContainer/CurrentDoorShow/DoorScrollContainer/VBoxContainer/CenterContainer" instance=ExtResource("4_hhje5")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 ignore_position = true
 data = SubResource("Resource_cmio5")
