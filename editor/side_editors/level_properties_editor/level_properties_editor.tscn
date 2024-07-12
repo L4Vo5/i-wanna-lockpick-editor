@@ -1,10 +1,8 @@
-[gd_scene load_steps=15 format=3 uid="uid://bq8lnotf0ys0p"]
+[gd_scene load_steps=11 format=3 uid="uid://bq8lnotf0ys0p"]
 
 [ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_properties_editor.gd" id="1_000i2"]
 [ext_resource type="Texture2D" uid="uid://cpnfgleds05wh" path="res://editor/icons/Remove.svg" id="2_3hvsl"]
-[ext_resource type="Texture2D" uid="uid://gk7cnlv0o0rr" path="res://editor/icons/PagePrevious.svg" id="2_hki0o"]
 [ext_resource type="Texture2D" uid="uid://b6gthxo13fw6u" path="res://editor/icons/Duplicate.svg" id="2_s1ihu"]
-[ext_resource type="Texture2D" uid="uid://nirb6chd327u" path="res://editor/icons/PageNext.svg" id="3_oqr5p"]
 [ext_resource type="Script" path="res://editor/property_editors/object_grid_chooser.gd" id="3_pu07t"]
 [ext_resource type="Texture2D" uid="uid://iipbm25h7da7" path="res://editor/icons/Add.svg" id="4_bvcps"]
 [ext_resource type="Texture2D" uid="uid://btuot74j1fbp4" path="res://editor/icons/player_spawnpoint.png" id="4_fvmj3"]
@@ -12,8 +10,6 @@
 [ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_list.gd" id="4_wyuvq"]
 [ext_resource type="Script" path="res://editor/misc/node2d_center_container.gd" id="5_oak3v"]
 [ext_resource type="PackedScene" uid="uid://co8kt44378qlq" path="res://level_elements/goal/goal.tscn" id="5_tmadf"]
-[ext_resource type="Texture2D" uid="uid://72lqajxyw8j2" path="res://editor/icons/move left.svg" id="6_boetw"]
-[ext_resource type="Texture2D" uid="uid://dbyreaad6g2y4" path="res://editor/icons/move right.svg" id="7_3nud6"]
 
 [node name="LevelPropertiesEditor" type="MarginContainer"]
 offset_right = 193.0
@@ -49,51 +45,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 context_menu_enabled = false
 
-[node name="SearchSpacing" type="Control" parent="ScrollContainer/VBoxContainer"]
-visible = false
-custom_minimum_size = Vector2(0, 10)
-layout_mode = 2
-
-[node name="CenterContainer" type="CenterContainer" parent="ScrollContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/CenterContainer"]
-layout_mode = 2
-theme_override_constants/separation = 15
-
-[node name="PreviousLevel" type="Button" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-tooltip_text = "Switch to the previous level."
-icon = ExtResource("2_hki0o")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "Level "
-
-[node name="LevelNumber" type="SpinBox" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-min_value = 1.0
-max_value = 3.0
-value = 1.0
-alignment = 1
-
-[node name="Label2" type="Label" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer/HBoxContainer"]
-visible = false
-layout_mode = 2
-text = "-"
-
-[node name="NextLevel" type="Button" parent="ScrollContainer/VBoxContainer/CenterContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-tooltip_text = "Switch to the next level."
-icon = ExtResource("3_oqr5p")
-
 [node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 6
@@ -109,11 +60,6 @@ custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_wyuvq")
-
-[node name="ListSpacing2" type="Control" parent="ScrollContainer/VBoxContainer"]
-visible = false
-custom_minimum_size = Vector2(0, 5)
-layout_mode = 2
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -140,22 +86,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Delete this level."
 icon = ExtResource("2_3hvsl")
-
-[node name="MoveLevelDown" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 4
-tooltip_text = "Decrease this level's id by 1."
-icon = ExtResource("6_boetw")
-
-[node name="MoveLevelUp" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 4
-tooltip_text = "Increase this level's ID by 1."
-icon = ExtResource("7_3nud6")
 
 [node name="ListSpacing3" type="Control" parent="ScrollContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 10)

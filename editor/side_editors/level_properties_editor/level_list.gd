@@ -60,21 +60,11 @@ func update_all() -> void:
 	for lvl in pack_data.levels:
 		var item := create_item()
 		item.set_text(0, get_level_string(lvl))
-	update_selection()
 
 func update_single(index: int) -> void:
 	var item := get_root().get_child(index)
 	var lvl := pack_data.levels[index]
 	item.set_text(0, get_level_string(lvl))
-
-func update_selection() -> void:
-	return
-	if not pack_data.state_data: return
-	var my_selected := get_selected()
-	if not my_selected:
-		deselect_all()
-		set_selected_to(pack_data.state_data.current_level)
-		scroll_to_item(get_selected())
 
 func set_selected_to(index: int) -> void:
 	var item: TreeItem = get_root().get_child(index)
