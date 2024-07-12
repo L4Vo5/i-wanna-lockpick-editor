@@ -34,7 +34,7 @@ var _level_pack_data: LevelPackData:
 @onready var level_number: SpinBox = %LevelNumber
 
 @onready var search: LineEdit = %Search
-@onready var list: LevelList = %LevelList
+@onready var level_list: LevelList = %LevelList
 
 @onready var delete_level: Button = %DeleteLevel
 @onready var duplicate_level: Button = %Duplicate
@@ -105,8 +105,8 @@ func _ready() -> void:
 	
 	level_number.value_changed.connect(_set_level_number)
 	
-	search.text_changed.connect(list.update_visibility)
-	list.selected_level.connect(_set_level_number)
+	search.text_changed.connect(level_list.update_visibility)
+	level_list.selected_level.connect(_set_level_number)
 	
 	delete_level.pressed.connect(_delete_current_level)
 	duplicate_level.pressed.connect(_duplicate_current_level)
@@ -163,9 +163,10 @@ func _set_to_level_pack_data() -> void:
 	_setting_to_data = true
 	level_number.max_value = _level_pack_data.levels.size()
 	var state_data := _level_pack_data.state_data
+	level_list.pack_data = _level_pack_data
 	if state_data:
 		level_number.value = state_data.current_level + 1
-	list.pack_data = _level_pack_data
+		level_list.set_selected_to(state_data.current_level)
 	_setting_to_data = false
 
 func _on_size_changed() -> void:
@@ -195,7 +196,7 @@ func _set_level_number(new_number: int) -> void:
 	new_number -= 1
 	if _level_pack_data.state_data.current_level != new_number:
 		editor_data.gameplay.set_current_level(new_number)
-	list.update_selection()
+	level_list.update_selection()
 
 func _on_remove_goal_button_pressed() -> void:
 	if _setting_to_data: return

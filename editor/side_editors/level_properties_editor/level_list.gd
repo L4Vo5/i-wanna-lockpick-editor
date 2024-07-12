@@ -68,12 +68,22 @@ func update_single(index: int) -> void:
 	item.set_text(0, get_level_string(lvl))
 
 func update_selection() -> void:
-	if pack_data.state_data:
-		var my_selected := get_selected()
-		if my_selected == null || my_selected.get_index() != pack_data.state_data.current_level:
-			deselect_all()
-			set_selected(get_root().get_child(pack_data.state_data.current_level), 0)
-			scroll_to_item(get_selected())
+	return
+	if not pack_data.state_data: return
+	var my_selected := get_selected()
+	if not my_selected:
+		deselect_all()
+		set_selected_to(pack_data.state_data.current_level)
+		scroll_to_item(get_selected())
+
+func set_selected_to(index: int) -> void:
+	var item: TreeItem = get_root().get_child(index)
+	if not item:
+		breakpoint
+	set_selected(item, 0)
+	scroll_to_item(item)
+	# fsr it doesn't update instantly if you don't tell it to
+	queue_redraw()
 
 func update_visibility(search_term: String) -> void:
 	if search_term.is_empty():
