@@ -86,6 +86,8 @@ func update_name() -> void:
 	if data.leads_to >= 0 and data.leads_to < pack_data.levels.size():
 		var level_data := level.gameplay_manager.pack_data.levels[data.leads_to]
 		level_name.text = level_data.title + "\n" + level_data.name
+		if not level_data.name and not level_data.title:
+			level_name.text = "\nUntitled"
 
 func update_status() -> void:
 	if not is_instance_valid(level): return
@@ -116,5 +118,6 @@ func get_mouseover_text() -> String:
 	if sprite.texture == ENTRY_OPEN:
 		s += "Open "
 	s += "Entry\n"
-	s += "Leads to:\n" + level_name.text
+	s += "Leads to:\n"
+	s += level_name.text.trim_prefix("\n")
 	return s

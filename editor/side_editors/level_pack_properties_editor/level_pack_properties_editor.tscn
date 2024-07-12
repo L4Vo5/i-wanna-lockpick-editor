@@ -75,6 +75,7 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Image" type="VBoxContainer" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="LevelImage" type="Label" parent="VBoxContainer/Image"]
