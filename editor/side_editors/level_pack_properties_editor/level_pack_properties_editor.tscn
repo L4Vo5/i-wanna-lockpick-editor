@@ -31,7 +31,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unnamed)"
-expand_to_text_length = true
 context_menu_enabled = false
 
 [node name="Author" type="HBoxContainer" parent="VBoxContainer/LevelPack"]
@@ -46,7 +45,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unknown)"
-expand_to_text_length = true
 context_menu_enabled = false
 
 [node name="Description" type="VBoxContainer" parent="VBoxContainer/LevelPack"]

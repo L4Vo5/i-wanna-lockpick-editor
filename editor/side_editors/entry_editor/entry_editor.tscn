@@ -38,6 +38,7 @@ unique_name_in_owner = true
 layout_mode = 2
 label_settings = SubResource("LabelSettings_gyhd0")
 horizontal_alignment = 1
+clip_text = true
 
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
 layout_mode = 2

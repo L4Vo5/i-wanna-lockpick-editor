@@ -104,7 +104,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="ScrollContainer/VBoxContainer/BaseDoor/Color" instance=ExtResource("6_qvekf")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 450)
+custom_minimum_size = Vector2(20, 60)
 layout_mode = 2
 size_flags_horizontal = 3
 lock_size = 20

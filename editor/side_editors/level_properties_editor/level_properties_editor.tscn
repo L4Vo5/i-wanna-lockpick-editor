@@ -45,7 +45,6 @@ text = "Search: "
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-expand_to_text_length = true
 context_menu_enabled = false
 
 [node name="SearchSpacing" type="Control" parent="ScrollContainer/VBoxContainer"]
@@ -172,6 +171,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unnamed)"
+context_menu_enabled = false
 
 [node name="Title" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -185,6 +185,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(no title)"
+context_menu_enabled = false
 
 [node name="Author" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -198,6 +199,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unknown)"
+context_menu_enabled = false
 
 [node name="Size" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
