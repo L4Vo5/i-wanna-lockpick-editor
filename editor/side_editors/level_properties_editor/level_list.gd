@@ -43,8 +43,8 @@ func _connect_pack_data() -> void:
 	pack_data.swapped_levels.connect(_handle_level_moved)
 
 func _handle_level_added(index: int) -> void:
-	get_root().create_child(index)
-	update_single(index)
+	var item := get_root().create_child(index)
+	connect_item_to_lvl(item, pack_data.levels[index])
 
 func _handle_level_deleted(index: int) -> void:
 	get_root().remove_child(get_root().get_child(index))
@@ -52,19 +52,21 @@ func _handle_level_deleted(index: int) -> void:
 func _handle_level_moved(from: int, to: int) -> void:
 	get_root().remove_child(get_root().get_child(from))
 	get_root().create_child(to)
-	update_single(to)
 
 func update_all() -> void:
 	clear()
 	create_item() # create root
-	for lvl in pack_data.levels:
+	for i in pack_data.levels.size():
+		var lvl := pack_data.levels[i]
 		var item := create_item()
-		item.set_text(0, get_level_string(lvl))
+		connect_item_to_lvl(item, lvl)
 
-func update_single(index: int) -> void:
-	var item := get_root().get_child(index)
-	var lvl := pack_data.levels[index]
-	item.set_text(0, get_level_string(lvl))
+func connect_item_to_lvl(item: TreeItem, level: LevelData) -> void:
+	level.changed.connect(_update_item.bind(item, level))
+	_update_item(item, level)
+
+func _update_item(item: TreeItem, level: LevelData) -> void:
+	item.set_text(0, get_level_string(level))
 
 func set_selected_to(index: int) -> void:
 	var item: TreeItem = get_root().get_child(index)
