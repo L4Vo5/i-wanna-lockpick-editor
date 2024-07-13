@@ -77,8 +77,6 @@ var danger_obj: Node:
 
 const OBJ_SIZE := Vector2(800, 608)
 
-const SelectionSystem := preload("res://misc/selection_system.gd")
-
 var selection_system := SelectionSystem.new()
 
 func _adjust_inner_container_dimensions() -> void:
@@ -101,6 +99,7 @@ func set_editor_data(data: EditorData) -> void:
 	editor_data.danger_highlight = danger_highlight
 	editor_data.hover_highlight = gameplay.level.hover_highlight
 	
+	editor_data.side_tabs.tab_changed.connect(reset_multiple_selection)
 	editor_data.side_tabs.tab_changed.connect(_retry_ghosts)
 	editor_data.changed_level_data.connect(_on_changed_level_data)
 	_on_changed_level_data()
@@ -255,6 +254,11 @@ func _multiple_selection_grid_size() -> Vector2i:
 	# additional selection doesn't have any limited grid size currently
 	return max_grid_size
 
+func reset_multiple_selection() -> void:
+	selection_system.reset_selection()
+	selection_outline.reset()
+	additional_selection.clear()
+
 func _gui_input_multiple_selection(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -318,9 +322,7 @@ func _gui_input_multiple_selection(event: InputEvent) -> void:
 						# clicked on selection
 						multi_drag = true
 						return
-			selection_system.reset_selection()
-			selection_outline.reset()
-			additional_selection.clear()
+			reset_multiple_selection()
 	elif event is InputEventMouseMotion:
 		if event.button_mask & MOUSE_BUTTON_LEFT and not did_toggle_selection:
 			if not multi_drag:

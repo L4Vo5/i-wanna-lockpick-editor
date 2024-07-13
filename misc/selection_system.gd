@@ -1,4 +1,5 @@
 extends RefCounted
+class_name SelectionSystem
 
 var collision_system: CollisionSystem
 var level_container: LevelContainer

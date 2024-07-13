@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://cwtjahoobj74b"
-path="res://.godot/imported/snd_salvage_prep.wav-cca1118aae3ea7717c7df3c562a44fa9.sample"
+path="res://.godot/imported/snd_salvage_prep.wav-dff2dfabf3f6c11819d5ea6f32658134.sample"
 
 [deps]
 
-source_file="res://level_elements/salvages/snd_salvage_prep.wav"
-dest_files=["res://.godot/imported/snd_salvage_prep.wav-cca1118aae3ea7717c7df3c562a44fa9.sample"]
+source_file="res://level_elements/salvage_points/snd_salvage_prep.wav"
+dest_files=["res://.godot/imported/snd_salvage_prep.wav-dff2dfabf3f6c11819d5ea6f32658134.sample"]
 
 [params]
 

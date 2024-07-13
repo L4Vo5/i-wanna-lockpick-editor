@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bpgcgtns783wd"
-path="res://.godot/imported/spr_salvage_point.png-06c12876e088d1be516fe19efed1e7eb.ctex"
+path="res://.godot/imported/spr_salvage_point.png-5ad34a7377f55ab5021b33eb9e1246a3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/salvages/spr_salvage_point.png"
-dest_files=["res://.godot/imported/spr_salvage_point.png-06c12876e088d1be516fe19efed1e7eb.ctex"]
+source_file="res://level_elements/salvage_points/spr_salvage_point.png"
+dest_files=["res://.godot/imported/spr_salvage_point.png-5ad34a7377f55ab5021b33eb9e1246a3.ctex"]
 
 [params]
 

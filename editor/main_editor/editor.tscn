@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="7_8vfxp"]
 [ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="7_46nwx"]
 [ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/side_editors/door_editor/door_editor.tscn" id="8_5qjay"]
-[ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvages/salvage_point.tscn" id="8_8di3k"]
+[ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvage_points/salvage_point.tscn" id="8_8di3k"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
 [ext_resource type="Script" path="res://editor/main_editor/level_outline.gd" id="9_r4glf"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
