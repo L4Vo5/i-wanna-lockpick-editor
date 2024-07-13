@@ -71,9 +71,6 @@ func update_all() -> void:
 		_connect_item_to_lvl(item, lvl)
 
 func _connect_item_to_lvl(item: TreeItem, level: LevelData) -> void:
-	if level.changed.is_connected(_update_item.bind(item, level)):
-		print(level.changed.get_connections())
-		breakpoint
 	level.changed.connect(_update_item.bind(item, level))
 	_update_item(item, level)
 
