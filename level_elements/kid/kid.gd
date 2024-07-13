@@ -25,6 +25,7 @@ class_name Kid
 @onready var spr_white_aura: Sprite2D = %SprWhiteAura
 @onready var door_detect: ShapeCast2D = %DoorDetect
 @onready var entry_detect: Area2D = %EntryDetect
+@onready var collision_shape: CollisionShape2D = %CollisionShape2D
 
 const GRAVITY := 0.4
 const JUMP_1 := -8.5
@@ -71,7 +72,22 @@ func _physics_process(_delta: float) -> void:
 	anim()
 	master_anim()
 	
-	move_and_collide(velocity * Vector2(current_speed, 0))
+	# special case to avoid jumping over tiles at the very top
+	if position.y < 0:
+		var old_y := position.y
+		position.y = 0
+		move_and_collide(velocity * Vector2(current_speed, 0))
+		position.y = old_y
+	else:
+		move_and_collide(velocity * Vector2(current_speed, 0))
+	# another special case: collide with level edges
+	if level:
+		var left: float = collision_shape.global_position.x - collision_shape.shape.extents.x
+		var right: float = collision_shape.global_position.x + collision_shape.shape.extents.x
+		if left <= 0:
+			position.x += -left+1
+		if right >= level.level_data.size.x:
+			position.x += level.level_data.size.x - right - 1
 	move_and_collide(velocity * Vector2(0, 1))
 	# needs to stay updated for the level to know if it's save to save undo state
 	update_on_floor()
