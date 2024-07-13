@@ -50,13 +50,13 @@ layout_mode = 2
 theme_override_constants/margin_top = 6
 
 [node name="GrowContainer" type="Container" parent="ScrollContainer/VBoxContainer/MarginContainer"]
-custom_minimum_size = Vector2(0, 163)
+custom_minimum_size = Vector2(0, 313)
 layout_mode = 2
 script = ExtResource("4_whsrq")
 
 [node name="LevelList" type="Tree" parent="ScrollContainer/VBoxContainer/MarginContainer/GrowContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_wyuvq")

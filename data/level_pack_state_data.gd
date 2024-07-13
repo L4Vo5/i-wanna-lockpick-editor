@@ -51,7 +51,7 @@ func connect_pack_data() -> void:
 	pack_data.moved_level.connect(_on_moved_levels)
 
 func salvage_door(sid: int, door: DoorData) -> void:
-	if sid < 0 || sid > 999:
+	if sid < 0 or sid > 999:
 		return
 	if salvaged_doors.size() < sid + 1:
 		salvaged_doors.resize(sid + 1)

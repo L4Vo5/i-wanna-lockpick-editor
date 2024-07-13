@@ -5,7 +5,7 @@ class_name EntryEditor
 # set externally
 var editor_data: EditorData:
 	set(val):
-		assert(!editor_data)
+		assert(not editor_data)
 		editor_data = val
 		editor_data.changed_level_pack_data.connect(_on_changed_level_pack_data)
 		_on_changed_level_pack_data()
@@ -27,12 +27,11 @@ func _set_to_data() -> void:
 
 func _ready() -> void:
 	visibility_changed.connect(_general_update)
-	level_list.can_rearrange = false
 	level_list.selected_level.connect(_update_leads_to)
 
 func _general_update() -> void:
-	if !visible: return
-	if !editor_data: return
+	if not visible: return
+	if not editor_data: return
 	_update_level_name()
 
 func _update_leads_to(id: int) -> void:
@@ -40,7 +39,7 @@ func _update_leads_to(id: int) -> void:
 	_update_level_name()
 
 func _update_level_name() -> void:
-	if !editor_data: return
+	if not editor_data: return
 	var level := editor_data.level_pack_data.levels[data.leads_to]
 	level_name.text = level.title + "\n" + level.name
 
