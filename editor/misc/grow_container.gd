@@ -66,6 +66,14 @@ func _sort_children() -> void:
 	else:
 		_grabber_bottom.hidden_alpha = 0.5
 
+func _get_minimum_size() -> Vector2:
+	var s := Vector2.ZERO
+	for child in get_children():
+		var s2 = child.get_combined_minimum_size()
+		s.x = maxf(s.x, s2.x)
+		s.y = maxf(s.y, s2.y)
+	return s
+
 class GrowContainerGrabber:
 	extends Control
 	var texture: Texture2D
@@ -83,17 +91,20 @@ class GrowContainerGrabber:
 		hidden_alpha = hidden_alpha
 	
 	var is_clicked := false
+	var clicked_offset := Vector2.ZERO
 	var mouse_inside := false
 	func _gui_input(event: InputEvent) -> void:
 		if event is InputEventMouseMotion:
 			if not event.button_mask & MOUSE_BUTTON_MASK_LEFT:
 				is_clicked = false
 			if is_clicked:
-				var rel: Vector2 = event.relative * moved_mult
+				var rel := get_local_mouse_position() - clicked_offset
+				rel *= moved_mult
 				if not rel.is_zero_approx():
 					moved.emit(rel)
 		elif event is InputEventMouseButton:
 			if event.button_index == MOUSE_BUTTON_LEFT:
+				clicked_offset = get_local_mouse_position()
 				is_clicked = event.pressed
 				accept_event()
 	
