@@ -199,6 +199,7 @@ func _update_mode() -> void:
 			break
 	data.level_properties = current_tab == level_properties_editor
 	data.editing_settings = current_tab.name == "Settings"
+	data.multiple_selection = current_tab.name == "MultipleSelection"
 
 func _on_play_pressed() -> void:
 	if Global.settings.should_save_on_play and not data.is_playing:

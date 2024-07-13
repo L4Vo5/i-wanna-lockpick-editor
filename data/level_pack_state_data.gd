@@ -48,6 +48,7 @@ func connect_pack_data() -> void:
 	pack_data.added_level.connect(_on_added_level)
 	pack_data.deleted_level.connect(_on_deleted_level)
 	pack_data.swapped_levels.connect(_on_swapped_levels)
+	pack_data.moved_level.connect(_on_moved_levels)
 
 func salvage_door(sid: int, door: DoorData) -> void:
 	if sid < 0 || sid > 999:
@@ -84,11 +85,23 @@ func _on_swapped_levels(level_1_id: int, level_2_id: int) -> void:
 	array_swap(completed_levels, level_1_id, level_2_id)
 	array_swap(exit_levels, level_1_id, level_2_id)
 	array_swap(exit_positions, level_1_id, level_2_id)
+	save()
 
-func array_swap(array, id_1: int, id_2: int) -> void:
+func _on_moved_levels(from_id: int, to_id: int) -> void:
+	array_move(completed_levels, from_id, to_id)
+	array_move(exit_levels, from_id, to_id)
+	array_move(exit_positions, from_id, to_id)
+	save()
+
+func array_swap(array: Array, id_1: int, id_2: int) -> void:
 	var v = array[id_1]
 	array[id_1] = array[id_2]
 	array[id_2] = v
+
+func array_move(array: Array, from: int, to: int) -> void:
+	var v = array[from]
+	array.remove_at(from)
+	array.insert(to, v)
 
 func save() -> void:
 	assert(pack_id == pack_data.pack_id)

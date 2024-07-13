@@ -27,14 +27,14 @@ func _selected_item() -> void:
 	selected_level.emit(get_selected().get_index() + 1)
 
 func _disconnect_pack_data() -> void:
-	if pack_data == null: return
+	if not is_instance_valid(pack_data): return
 	pack_data.added_level.disconnect(_handle_level_added)
 	pack_data.deleted_level.disconnect(_handle_level_deleted)
 	pack_data.moved_level.disconnect(_handle_level_moved)
 	pack_data.swapped_levels.disconnect(_handle_level_moved)
 
 func _connect_pack_data() -> void:
-	if pack_data == null: return
+	if not is_instance_valid(pack_data): return
 	update_all()
 	pack_data.added_level.connect(_handle_level_added)
 	pack_data.deleted_level.connect(_handle_level_deleted)

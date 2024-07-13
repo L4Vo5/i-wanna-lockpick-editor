@@ -69,8 +69,14 @@ func remove_rect(id: int) -> void:
 			if arr.size() == 0:
 				_tile_to_rects.erase(Vector2i(x, y))
 
+func get_rect(id: int) -> Rect2i:
+	return _rects[id]
+
 func get_rect_data(id: int) -> Variant:
 	return _rects_data[id]
+
+func set_rect_data(id: int, value) -> void:
+	_rects_data[id] = value
 
 func is_rect_valid(id: int) -> bool:
 	return _rects.has(id)
