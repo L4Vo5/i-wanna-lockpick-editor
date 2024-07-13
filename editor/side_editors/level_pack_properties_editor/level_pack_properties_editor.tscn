@@ -6,6 +6,8 @@
 [node name="LevelPackPropertiesEditor" type="MarginContainer"]
 offset_right = 193.0
 offset_bottom = 596.0
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_right = 6
 script = ExtResource("1_0060c")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -31,7 +33,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unnamed)"
-expand_to_text_length = true
 context_menu_enabled = false
 
 [node name="Author" type="HBoxContainer" parent="VBoxContainer/LevelPack"]
@@ -46,7 +47,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unknown)"
-expand_to_text_length = true
 context_menu_enabled = false
 
 [node name="Description" type="VBoxContainer" parent="VBoxContainer/LevelPack"]
@@ -75,6 +75,7 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Image" type="VBoxContainer" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="LevelImage" type="Label" parent="VBoxContainer/Image"]

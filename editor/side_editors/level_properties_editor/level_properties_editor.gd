@@ -30,18 +30,11 @@ var _level_pack_data: LevelPackData:
 		_level_pack_data = val
 		_connect_pack_data()
 
-## Always remember this value is 1-indexed, unlike how levels are stored in the background
-@onready var level_number: SpinBox = %LevelNumber
-
 @onready var search: LineEdit = %Search
-@onready var list: LevelList = %LevelList
+@onready var level_list: LevelList = %LevelList
 
 @onready var delete_level: Button = %DeleteLevel
 @onready var duplicate_level: Button = %Duplicate
-@onready var move_level_down: Button = %MoveLevelDown
-@onready var move_level_up: Button = %MoveLevelUp
-@onready var previous_level: Button = %PreviousLevel
-@onready var next_level: Button = %NextLevel
 @onready var add_level: Button = %AddLevel
 
 
@@ -103,18 +96,12 @@ func _ready() -> void:
 	height.value_changed.connect(_on_size_changed.unbind(1))
 	remove_goal.pressed.connect(_on_remove_goal_button_pressed)
 	
-	level_number.value_changed.connect(_set_level_number)
-	
-	search.text_changed.connect(list.update_visibility)
-	list.selected_level.connect(_set_level_number)
+	search.text_changed.connect(level_list.update_visibility)
+	level_list.selected_level.connect(_set_level_number)
 	
 	delete_level.pressed.connect(_delete_current_level)
 	duplicate_level.pressed.connect(_duplicate_current_level)
 	add_level.pressed.connect(_create_new_level)
-	move_level_up.pressed.connect(_shift_level_id.bind(1))
-	move_level_down.pressed.connect(_shift_level_id.bind(-1))
-	previous_level.pressed.connect(_select_previous_level)
-	next_level.pressed.connect(_select_next_level)
 
 func _update_level_pack_data() -> void:
 	_level_pack_data = editor_data.level_pack_data
@@ -161,11 +148,10 @@ func _set_to_level_data() -> void:
 func _set_to_level_pack_data() -> void:
 	if _setting_to_data: return
 	_setting_to_data = true
-	level_number.max_value = _level_pack_data.levels.size()
 	var state_data := _level_pack_data.state_data
+	level_list.pack_data = _level_pack_data
 	if state_data:
-		level_number.value = state_data.current_level + 1
-	list.pack_data = _level_pack_data
+		level_list.set_selected_to(state_data.current_level)
 	_setting_to_data = false
 
 func _on_size_changed() -> void:
@@ -191,36 +177,22 @@ func _on_set_author(new_author: String) -> void:
 	if DEBUG: print_debug("Level author: " + new_author)
 
 func _set_level_number(new_number: int) -> void:
-	level_number.set_value_no_signal(new_number)
 	new_number -= 1
 	if _level_pack_data.state_data.current_level != new_number:
 		editor_data.gameplay.set_current_level(new_number)
-	list.update_selection()
 
 func _on_remove_goal_button_pressed() -> void:
 	if _setting_to_data: return
 	_level_data.has_goal = false
 
 func _delete_current_level() -> void:
-	_level_pack_data.delete_level(level_number.value as int - 1)
+	_level_pack_data.delete_level(_level_pack_data.state_data.current_level)
 	if _level_pack_data.levels.size() == 0:
 		_level_pack_data.add_level(LevelData.get_default_level(), 0)
 
 func _create_new_level() -> void:
 	var new_level := LevelData.get_default_level()
-	_level_pack_data.add_level(new_level, level_number.value as int)
+	_level_pack_data.add_level(new_level, _level_pack_data.state_data.current_level + 1)
 
 func _duplicate_current_level() -> void:
-	_level_pack_data.duplicate_level(level_number.value as int - 1)
-
-func _shift_level_id(amount: int) -> void:
-	var num := level_number.value as int - 1
-	if num + amount < 0: return
-	if num + amount >= _level_pack_data.levels.size(): return
-	_level_pack_data.swap_levels(num, num + amount)
-
-func _select_previous_level() -> void:
-	level_number.value -= 1
-
-func _select_next_level() -> void:
-	level_number.value += 1
+	_level_pack_data.duplicate_level(_level_pack_data.state_data.current_level)

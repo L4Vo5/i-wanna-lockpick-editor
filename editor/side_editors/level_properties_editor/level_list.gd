@@ -1,6 +1,8 @@
 extends Tree
 class_name LevelList
 
+var can_rearrange := true
+
 var pack_data: LevelPackData:
 	set(value):
 		if pack_data == value: return
@@ -16,14 +18,13 @@ func _ready() -> void:
 	hide_root = true
 	hide_folding = true
 	select_mode = Tree.SELECT_ROW
-	scroll_horizontal_enabled = false
+	scroll_horizontal_enabled = true
 	scroll_vertical_enabled = true
-	columns = 2
-	set_column_expand(0, false)
-	set_column_expand(1, true)
-	item_selected.connect(_selected_item)
+	columns = 1
+	set_column_expand(0, true)
+	item_selected.connect(_on_item_selected)
 
-func _selected_item() -> void:
+func _on_item_selected() -> void:
 	selected_level.emit(get_selected().get_index() + 1)
 
 func _disconnect_pack_data() -> void:
@@ -42,40 +43,39 @@ func _connect_pack_data() -> void:
 	pack_data.swapped_levels.connect(_handle_level_moved)
 
 func _handle_level_added(index: int) -> void:
-	get_root().create_child(index)
-	update_single(index)
-	_update_level_numbers()
+	var item := get_root().create_child(index)
+	connect_item_to_lvl(item, pack_data.levels[index])
 
 func _handle_level_deleted(index: int) -> void:
 	get_root().remove_child(get_root().get_child(index))
-	_update_level_numbers()
 
 func _handle_level_moved(from: int, to: int) -> void:
 	get_root().remove_child(get_root().get_child(from))
 	get_root().create_child(to)
-	update_single(to)
-	_update_level_numbers()
 
 func update_all() -> void:
 	clear()
 	create_item() # create root
-	for lvl in pack_data.levels:
+	for i in pack_data.levels.size():
+		var lvl := pack_data.levels[i]
 		var item := create_item()
-		item.set_text(1, lvl.name)
-	_update_level_numbers()
-	update_selection()
+		connect_item_to_lvl(item, lvl)
 
-func update_single(index: int) -> void:
-	var item := get_root().get_child(index)
-	item.set_text(1, pack_data.levels[index].name)
+func connect_item_to_lvl(item: TreeItem, level: LevelData) -> void:
+	level.changed.connect(_update_item.bind(item, level))
+	_update_item(item, level)
 
-func update_selection() -> void:
-	if pack_data.state_data:
-		var my_selected := get_selected()
-		if my_selected == null || my_selected.get_index() != pack_data.state_data.current_level:
-			deselect_all()
-			set_selected(get_root().get_child(pack_data.state_data.current_level), 0)
-			scroll_to_item(get_selected())
+func _update_item(item: TreeItem, level: LevelData) -> void:
+	item.set_text(0, get_level_string(level))
+
+func set_selected_to(index: int) -> void:
+	var item: TreeItem = get_root().get_child(index)
+	if not item:
+		breakpoint
+	set_selected(item, 0)
+	scroll_to_item(item)
+	# fsr it doesn't update instantly if you don't tell it to
+	queue_redraw()
 
 func update_visibility(search_term: String) -> void:
 	if search_term.is_empty():
@@ -84,17 +84,27 @@ func update_visibility(search_term: String) -> void:
 		return
 	search_term = search_term.to_lower()
 	for child in get_root().get_children():
-		var text := child.get_text(1)
+		var text := child.get_text(0)
 		child.visible = text.to_lower().contains(search_term)
 
-func _update_level_numbers() -> void:
-	for child in get_root().get_children():
-		child.set_text(0, str(child.get_index() + 1))
+func get_level_string(lvl: LevelData) -> String:
+	var s := "Untitled"
+	if lvl.name and lvl.title:
+		s = "%s - %s" % [lvl.name, lvl.title]
+	elif lvl.name:
+		s = lvl.name
+	elif lvl.title:
+		s = lvl.tile
+	if lvl.author:
+		s += " (by %s)" % lvl.author
+	return s
 
 func _get_drag_data(at_position: Vector2) -> TreeItem:
 	return get_item_at_position(at_position)
 
 func _can_drop_data(at_position: Vector2, data) -> bool:
+	if not can_rearrange:
+		return false
 	if not data is TreeItem or data.get_tree() != self:
 		drop_mode_flags = DROP_MODE_DISABLED
 		return false
