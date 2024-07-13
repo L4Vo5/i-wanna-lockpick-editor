@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://bq8lnotf0ys0p"]
+[gd_scene load_steps=12 format=3 uid="uid://bq8lnotf0ys0p"]
 
 [ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_properties_editor.gd" id="1_000i2"]
 [ext_resource type="Texture2D" uid="uid://cpnfgleds05wh" path="res://editor/icons/Remove.svg" id="2_3hvsl"]
+[ext_resource type="Script" path="res://editor/misc/minimum_size_container.gd" id="2_lvu58"]
 [ext_resource type="Texture2D" uid="uid://b6gthxo13fw6u" path="res://editor/icons/Duplicate.svg" id="2_s1ihu"]
 [ext_resource type="Script" path="res://editor/property_editors/object_grid_chooser.gd" id="3_pu07t"]
 [ext_resource type="Texture2D" uid="uid://iipbm25h7da7" path="res://editor/icons/Add.svg" id="4_bvcps"]
@@ -49,12 +50,17 @@ context_menu_enabled = false
 layout_mode = 2
 theme_override_constants/margin_top = 6
 
-[node name="GrowContainer" type="Container" parent="ScrollContainer/VBoxContainer/MarginContainer"]
-custom_minimum_size = Vector2(0, 163)
+[node name="MinimumSizeContainer" type="Container" parent="ScrollContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+script = ExtResource("2_lvu58")
+vertical = true
+
+[node name="GrowContainer" type="Container" parent="ScrollContainer/VBoxContainer/MarginContainer/MinimumSizeContainer"]
+custom_minimum_size = Vector2(280, 163)
 layout_mode = 2
 script = ExtResource("4_whsrq")
 
-[node name="LevelList" type="Tree" parent="ScrollContainer/VBoxContainer/MarginContainer/GrowContainer"]
+[node name="LevelList" type="Tree" parent="ScrollContainer/VBoxContainer/MarginContainer/MinimumSizeContainer/GrowContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2

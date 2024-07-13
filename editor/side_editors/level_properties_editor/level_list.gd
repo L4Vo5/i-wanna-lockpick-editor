@@ -1,7 +1,7 @@
 extends Tree
 class_name LevelList
 
-var can_rearrange := true
+@export var can_rearrange := true
 
 var pack_data: LevelPackData:
 	set(value):
