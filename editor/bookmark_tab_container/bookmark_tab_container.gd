@@ -18,7 +18,7 @@ const name_to_icon := {
 	SalvagePoints = preload("res://editor/bookmark_tab_container/icons/salvage_point.png"),
 	Entries = preload("res://editor/bookmark_tab_container/icons/entry.png"),
 	Level = preload("res://editor/bookmark_tab_container/icons/level.png"),
-	LevelPack = preload("res://editor/bookmark_tab_container/icons/level.png"), # TODO: differenciate
+	LevelPack = preload("res://editor/bookmark_tab_container/icons/level_pack.png"),
 	Settings = preload("res://editor/bookmark_tab_container/icons/settings.svg"),
 	MultipleSelection = preload("res://editor/bookmark_tab_container/icons/multi_selection.svg"),
 }
