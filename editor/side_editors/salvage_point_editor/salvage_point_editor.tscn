@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://editor/side_editors/salvage_point_editor/salvage_point_editor.gd" id="1_gotpp"]
 [ext_resource type="Script" path="res://data/salvage_point_data.gd" id="2_jrhgn"]
-[ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvages/salvage_point.tscn" id="3_ycw40"]
+[ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvage_points/salvage_point.tscn" id="3_ycw40"]
 [ext_resource type="Script" path="res://editor/property_editors/object_grid_chooser.gd" id="4_3pjd2"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="4_hhje5"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="6_p7ch7"]
@@ -144,6 +144,7 @@ size_flags_vertical = 0
 
 [node name="Door" parent="VBoxContainer/CurrentDoorShow/DoorScrollContainer/VBoxContainer/CenterContainer" instance=ExtResource("4_hhje5")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 ignore_position = true
 data = SubResource("Resource_cmio5")

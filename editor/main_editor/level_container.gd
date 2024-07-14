@@ -246,7 +246,7 @@ func _multiple_selection_grid_size() -> Vector2i:
 			return Vector2i(32, 32) # maximum grid size
 		else:
 			# assume level element
-			var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[data.level_element_type]
+			var grid_size: Vector2i = GRID_SIZE
 			max_grid_size.x = maxi(max_grid_size.x, grid_size.x)
 			max_grid_size.y = maxi(max_grid_size.y, grid_size.y)
 			if max_grid_size == Vector2i(32, 32):
