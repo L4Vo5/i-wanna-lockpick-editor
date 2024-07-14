@@ -20,15 +20,16 @@ var pack_data: LevelPackData
 @export var ignore_position := false
 
 @onready var sprite: Sprite2D = %Sprite
+@onready var completion: Sprite2D = %Completion
 @onready var arrow: AnimatedSprite2D = %Arrow
 @onready var level_name: Node2D = %Name
 
 const ENTRY_CLOSED = preload("res://level_elements/entries/textures/simple/entry_closed.png")
-const ENTRY_COMPLETED = preload("res://level_elements/entries/textures/simple/entry_completed.png")
 const ENTRY_ERR = preload("res://level_elements/entries/textures/simple/entry_err.png")
 const ENTRY_OPEN = preload("res://level_elements/entries/textures/simple/entry_open.png")
-const ENTRY_STAR_2 = preload("res://level_elements/entries/textures/simple/entry_star2.png")
-const ENTRY_STAR = preload("res://level_elements/entries/textures/simple/entry_star.png")
+const ENTRY_WORLD = preload("res://level_elements/entries/textures/world/entry_world.png")
+const COMPLETED = preload("res://level_elements/entries/textures/completion/completed.png")
+const STAR = preload("res://level_elements/entries/textures/completion/star.png")
 
 var name_tween: Tween
 @onready var name_start_y := level_name.position.y
@@ -92,11 +93,20 @@ func update_name() -> void:
 func update_status() -> void:
 	if not is_instance_valid(level): return
 	if not is_node_ready(): return
-	sprite.texture = ENTRY_OPEN
 	if data.leads_to < 0 or data.leads_to >= pack_data.levels.size():
 		sprite.texture = ENTRY_ERR
-	elif pack_data.state_data.completed_levels[data.leads_to]:
-		sprite.texture = ENTRY_COMPLETED
+		return
+	if pack_data.levels[data.leads_to].exitable:
+		sprite.texture = ENTRY_OPEN
+		sprite.position.y = -4
+	else:
+		sprite.texture = ENTRY_WORLD
+		sprite.position.y = -36
+	if pack_data.state_data.completed_levels[data.leads_to]:
+		completion.texture = COMPLETED
+		completion.visible = true
+	else:
+		completion.visible = false
 
 func _disconnect_data() -> void:
 	if not is_instance_valid(data): return

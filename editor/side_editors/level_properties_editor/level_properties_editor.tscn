@@ -249,3 +249,8 @@ text = "Goal: "
 unique_name_in_owner = true
 layout_mode = 2
 text = "(0, 0)"
+
+[node name="Exitable" type="CheckBox" parent="ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Can exit"

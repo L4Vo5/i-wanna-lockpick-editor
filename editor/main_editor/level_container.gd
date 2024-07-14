@@ -443,7 +443,6 @@ func relocate_selected() -> void:
 	if is_mouse_out_of_bounds(): return
 	if not is_dragging: return
 	if not is_instance_valid(selected_obj): return
-	var type: Enums.level_element_types = selected_obj.level_element_type
 	var used_coord := get_mouse_coord(GRID_SIZE) - round_coord(drag_offset, GRID_SIZE)
 	var cond: bool
 	var obj_pos: Vector2i = selected_obj.position
