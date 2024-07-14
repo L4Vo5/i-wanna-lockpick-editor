@@ -216,23 +216,12 @@ func _move_additional_selection(_delta: Vector2i) -> void:
 		pass
 
 func _multiple_selection_grid_size() -> Vector2i:
-	var max_grid_size := Vector2i(16, 16)
+	var max_grid_size := GRID_SIZE
 	for id in selection_system.selection:
 		var data = editor_data.level_data.collision_system.get_rect_data(id)
 		if data is Vector2i:
 			return Vector2i(32, 32) # maximum grid size
-		elif data is RefCounted:
-			# assume level element
-			var grid_size: Vector2i = GRID_SIZE
-			max_grid_size.x = maxi(max_grid_size.x, grid_size.x)
-			max_grid_size.y = maxi(max_grid_size.y, grid_size.y)
-			if max_grid_size == Vector2i(32, 32):
-				return max_grid_size
-		elif data == &"player_spawn":
-			max_grid_size.y = 32
-			if max_grid_size.x == 32:
-				return max_grid_size
-		# goal doesn't need to be handled since it has minimum grid size
+		# goal, player spawn and level elements don't need to be handled since they have minimum grid size
 	return max_grid_size
 
 func reset_multiple_selection() -> void:
@@ -440,13 +429,13 @@ func remove_element(node: Node) -> bool:
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_coord(Vector2i(16, 32))
+	var coord := get_mouse_coord(GRID_SIZE)
 	gameplay.level.place_player_spawn(coord)
 
 func place_goal_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_coord(Vector2i(16, 16))
+	var coord := get_mouse_coord(GRID_SIZE)
 	gameplay.level.place_goal(coord)
 
 func relocate_selected() -> void:
