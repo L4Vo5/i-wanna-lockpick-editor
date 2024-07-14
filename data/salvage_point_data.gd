@@ -37,7 +37,7 @@ func get_mouseover_text(door_error) -> String:
 		s += "Input Point"
 	s += "\n\n"
 	s += "SID: " + str(sid)
-	if is_output && door_error:
+	if is_output and door_error:
 		s += "\n!!! Not Enough Space !!!"
 	return s
 

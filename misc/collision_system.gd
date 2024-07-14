@@ -45,7 +45,7 @@ func add_rect(rect: Rect2i, associated_data: Variant = null) -> int:
 	
 	for x in range(tile_iter.position.x, tile_iter.end.x):
 		for y in range(tile_iter.position.y, tile_iter.end.y):
-			if !(_tile_to_rects.has(Vector2i(x, y))):
+			if not _tile_to_rects.has(Vector2i(x, y)):
 				_tile_to_rects[Vector2i(x,y)] = PackedInt64Array()
 			_tile_to_rects[Vector2i(x,y)].push_back(id)
 	
@@ -69,8 +69,14 @@ func remove_rect(id: int) -> void:
 			if arr.size() == 0:
 				_tile_to_rects.erase(Vector2i(x, y))
 
+func get_rect(id: int) -> Rect2i:
+	return _rects[id]
+
 func get_rect_data(id: int) -> Variant:
 	return _rects_data[id]
+
+func set_rect_data(id: int, value) -> void:
+	_rects_data[id] = value
 
 func is_rect_valid(id: int) -> bool:
 	return _rects.has(id)

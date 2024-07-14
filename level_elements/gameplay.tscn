@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://doxgx8n20sjl0"]
+[gd_scene load_steps=5 format=3 uid="uid://doxgx8n20sjl0"]
 
 [ext_resource type="Script" path="res://level_elements/gameplay_manager.gd" id="1_3up8c"]
 [ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="2_8pnk0"]
 [ext_resource type="PackedScene" uid="uid://dfdbfek8pb1n6" path="res://level_elements/transition.tscn" id="3_pbvyh"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_2xn2e"]
 
 [node name="Gameplay" type="Node2D"]
 script = ExtResource("1_3up8c")
@@ -14,3 +16,10 @@ unique_name_in_owner = true
 
 [node name="Transition" parent="CanvasLayer" instance=ExtResource("3_pbvyh")]
 unique_name_in_owner = true
+
+[node name="DebugCollisionDiagram" type="TextureRect" parent="."]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.25)
+scale = Vector2(32, 32)
+texture = SubResource("ImageTexture_2xn2e")

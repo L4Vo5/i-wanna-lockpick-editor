@@ -33,7 +33,7 @@ var dont_make_current := false
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
 const ENTRY := preload("res://level_elements/entries/entry.tscn")
-const SALVAGE_POINT := preload("res://level_elements/salvages/salvage_point.tscn")
+const SALVAGE_POINT := preload("res://level_elements/salvage_points/salvage_point.tscn")
 const PLAYER := preload("res://level_elements/kid/kid.tscn")
 const GOAL := preload("res://level_elements/goal/goal.tscn")
 

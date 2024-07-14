@@ -97,7 +97,7 @@ func _input(event: InputEvent) -> void:
 				
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and is_instance_valid(settings):
 		settings.on_exit()
 
 func search_update() -> void:

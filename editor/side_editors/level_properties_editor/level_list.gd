@@ -28,14 +28,18 @@ func _on_item_selected() -> void:
 	selected_level.emit(get_selected().get_index() + 1)
 
 func _disconnect_pack_data() -> void:
-	if pack_data == null: return
+	if not is_instance_valid(pack_data): return
 	pack_data.added_level.disconnect(_handle_level_added)
 	pack_data.deleted_level.disconnect(_handle_level_deleted)
 	pack_data.moved_level.disconnect(_handle_level_moved)
 	pack_data.swapped_levels.disconnect(_handle_level_moved)
+	for i in get_root().get_child_count():
+		var item := get_root().get_child(i)
+		var lvl := pack_data.levels[i]
+		_disconnect_item_from_lvl(item, lvl)
 
 func _connect_pack_data() -> void:
-	if pack_data == null: return
+	if not is_instance_valid(pack_data): return
 	update_all()
 	pack_data.added_level.connect(_handle_level_added)
 	pack_data.deleted_level.connect(_handle_level_deleted)
@@ -44,14 +48,19 @@ func _connect_pack_data() -> void:
 
 func _handle_level_added(index: int) -> void:
 	var item := get_root().create_child(index)
-	connect_item_to_lvl(item, pack_data.levels[index])
+	_connect_item_to_lvl(item, pack_data.levels[index])
 
 func _handle_level_deleted(index: int) -> void:
-	get_root().remove_child(get_root().get_child(index))
+	var item := get_root().get_child(index)
+	get_root().remove_child(item)
+	_disconnect_item_from_lvl(item, pack_data.levels[index])
 
 func _handle_level_moved(from: int, to: int) -> void:
-	get_root().remove_child(get_root().get_child(from))
-	get_root().create_child(to)
+	var old_item := get_root().get_child(from)
+	get_root().remove_child(old_item)
+	_disconnect_item_from_lvl(old_item, pack_data.levels[to])
+	var new_item := get_root().create_child(to)
+	_connect_item_to_lvl(new_item, pack_data.levels[to])
 
 func update_all() -> void:
 	clear()
@@ -59,11 +68,14 @@ func update_all() -> void:
 	for i in pack_data.levels.size():
 		var lvl := pack_data.levels[i]
 		var item := create_item()
-		connect_item_to_lvl(item, lvl)
+		_connect_item_to_lvl(item, lvl)
 
-func connect_item_to_lvl(item: TreeItem, level: LevelData) -> void:
+func _connect_item_to_lvl(item: TreeItem, level: LevelData) -> void:
 	level.changed.connect(_update_item.bind(item, level))
 	_update_item(item, level)
+
+func _disconnect_item_from_lvl(item: TreeItem, level: LevelData) -> void:
+	level.changed.disconnect(_update_item.bind(item, level))
 
 func _update_item(item: TreeItem, level: LevelData) -> void:
 	item.set_text(0, get_level_string(level))
@@ -109,7 +121,7 @@ func _can_drop_data(at_position: Vector2, data) -> bool:
 		drop_mode_flags = DROP_MODE_DISABLED
 		return false
 	var section := get_drop_section_at_position(at_position)
-	if section == 1 || section == -1:
+	if section == 1 or section == -1:
 		drop_mode_flags = DROP_MODE_INBETWEEN
 		return true
 	return false

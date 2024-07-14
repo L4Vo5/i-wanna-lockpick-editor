@@ -56,7 +56,7 @@ func _draw() -> void:
 	var f := font
 	#if !f:
 		#f = get_theme_font("")
-	if !f:
+	if not f:
 		push_error("Can't draw text. No font.")
 		return
 	var lines := text.split("\n")
