@@ -17,8 +17,9 @@ var moving_state: bool
 func add_multiple_to_selection(ids: Dictionary, outline: SelectionOutline) -> void:
 	assert(not moving_state, "Tried to modify selection during moving state")
 	for id in ids:
+		if selection.has(id):
+			continue
 		selection[id] = true
-	for id in ids:
 		var iter := collision_system._get_rect_tile_iter(collision_system.get_rect(id))
 		outline.add_rectangle(iter, 1)
 	outline.queue_redraw()
@@ -36,6 +37,16 @@ func add_to_selection(id: int, outline: SelectionOutline) -> void:
 func reset_selection() -> void:
 	assert(not moving_state, "Tried to modify selection during moving state")
 	selection.clear()
+
+func remove_multiple_from_selection(ids: Dictionary, outline: SelectionOutline) -> void:
+	assert(not moving_state, "Tried to modify selection during moving state")
+	for id in ids:
+		if not selection.has(id):
+			continue
+		selection.erase(id)
+		var iter := collision_system._get_rect_tile_iter(collision_system.get_rect(id))
+		outline.add_rectangle(iter, -1)
+	outline.queue_redraw()
 
 func remove_from_selection(id: int, outline: SelectionOutline) -> void:
 	if not selection.has(id):

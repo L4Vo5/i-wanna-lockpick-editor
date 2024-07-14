@@ -117,6 +117,11 @@ func regen_collision_system() -> void:
 	elem_to_collision_system_id.clear()
 	var id: int
 	assert(PerfManager.start("LevelData::regen_collision_system"))
+	id = collision_system.add_rect(Rect2i(player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)), &"player_spawn")
+	elem_to_collision_system_id[&"player_spawn"] = id
+	if has_goal:
+		id = collision_system.add_rect(Rect2i(goal_position, Vector2i(32, 32)), &"goal")
+		elem_to_collision_system_id[&"goal"] = id
 	for door in doors:
 		id = collision_system.add_rect(door.get_rect(), door)
 		elem_to_collision_system_id[door] = id
