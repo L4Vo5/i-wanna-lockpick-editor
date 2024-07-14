@@ -157,6 +157,7 @@ collision_mask = 6
 collide_with_areas = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+unique_name_in_owner = true
 position = Vector2(0.5, -10.5)
 shape = SubResource("RectangleShape2D_k1m2g")
 

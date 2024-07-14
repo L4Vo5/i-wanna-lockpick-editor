@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dqsf6y71ncn36"]
+[gd_scene load_steps=12 format=3 uid="uid://dqsf6y71ncn36"]
 
 [ext_resource type="Script" path="res://editor/side_editors/door_editor/door_editor.gd" id="1_66io0"]
 [ext_resource type="Script" path="res://data/complex_number.gd" id="2_jx360"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://data/door_data.gd" id="4_1c01c"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="5_c2ium"]
 [ext_resource type="Script" path="res://editor/misc/grow_container.gd" id="5_h57sv"]
+[ext_resource type="Script" path="res://editor/misc/minimum_size_container.gd" id="5_oyob4"]
 [ext_resource type="PackedScene" uid="uid://dioqmta8dbkbh" path="res://editor/property_editors/color_choice.tscn" id="6_qvekf"]
 
 [sub_resource type="Resource" id="Resource_vum5c"]
@@ -68,27 +69,34 @@ text = "Door Editor"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="GrowContainer" type="Container" parent="ScrollContainer/VBoxContainer"]
+[node name="MinimumSizeContainer" type="Container" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("5_oyob4")
+vertical = true
+
+[node name="GrowContainer" type="Container" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer"]
 custom_minimum_size = Vector2(0, 73)
 layout_mode = 2
 script = ExtResource("5_h57sv")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ScrollContainer/VBoxContainer/GrowContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer"]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_horizontal = 3
+horizontal_scroll_mode = 0
 
-[node name="TheDoor" type="CenterContainer" parent="ScrollContainer/VBoxContainer/GrowContainer/ScrollContainer"]
+[node name="TheDoor" type="CenterContainer" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 10
 
-[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/GrowContainer/ScrollContainer/TheDoor"]
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer/TheDoor"]
 layout_mode = 2
 theme_override_constants/margin_top = 16
 
-[node name="Door" parent="ScrollContainer/VBoxContainer/GrowContainer/ScrollContainer/TheDoor/MarginContainer" instance=ExtResource("5_c2ium")]
+[node name="Door" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer/TheDoor/MarginContainer" instance=ExtResource("5_c2ium")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 ignore_position = true
 data = SubResource("Resource_ip43t")
@@ -106,7 +114,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="ScrollContainer/VBoxContainer/BaseDoor/Color" instance=ExtResource("6_qvekf")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 450)
+custom_minimum_size = Vector2(20, 60)
 layout_mode = 2
 size_flags_horizontal = 3
 lock_size = 20

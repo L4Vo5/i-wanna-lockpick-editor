@@ -223,7 +223,7 @@ func _multiple_selection_grid_size() -> Vector2i:
 			return Vector2i(32, 32) # maximum grid size
 		elif data is RefCounted:
 			# assume level element
-			var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[data.level_element_type]
+			var grid_size: Vector2i = GRID_SIZE
 			max_grid_size.x = maxi(max_grid_size.x, grid_size.x)
 			max_grid_size.y = maxi(max_grid_size.y, grid_size.y)
 			if max_grid_size == Vector2i(32, 32):
@@ -422,7 +422,7 @@ func remove_tile_on_mouse() -> bool:
 func place_element_on_mouse(type: Enums.level_element_types) -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_coord(LEVEL_ELEMENT_GRID_SIZE[type])
+	var coord := get_mouse_coord(GRID_SIZE)
 	var data = editor.level_element_editors[type].data.duplicated()
 	data.position = coord
 	var node := gameplay.level.add_element(data)
@@ -455,8 +455,7 @@ func relocate_selected() -> void:
 	if not is_dragging: return
 	if not is_instance_valid(selected_obj): return
 	var type: Enums.level_element_types = selected_obj.level_element_type
-	var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[type]
-	var used_coord := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
+	var used_coord := get_mouse_coord(GRID_SIZE) - round_coord(drag_offset, GRID_SIZE)
 	var cond: bool
 	var obj_pos: Vector2i = selected_obj.position
 	cond = gameplay.level.move_element(selected_obj, used_coord)
@@ -514,19 +513,14 @@ func _retry_ghosts() -> void:
 	if not is_dragging:
 		_place_ghosts()
 
-const LEVEL_ELEMENT_GRID_SIZE := {
-	Enums.level_element_types.door: Vector2i(32, 32),
-	Enums.level_element_types.key: Vector2i(16, 16),
-	Enums.level_element_types.entry: Vector2i(32, 32),
-	Enums.level_element_types.salvage_point: Vector2i(16, 32),
-}
+const GRID_SIZE := Vector2i(16, 16)
 
 func _place_ghosts() -> void:
 	assert(not is_dragging)
 	if not editor_data.level_elements or editor_data.is_playing:
 		return
 	var type := editor_data.level_element_type
-	var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[type]
+	var grid_size: Vector2i = GRID_SIZE
 	var obj: Node = ghosts[type]
 	
 	var editor_control: Control = editor_data.level_element_editors[type]
@@ -559,14 +553,13 @@ func _place_danger_obj() -> void:
 	if not editor_data.level_elements or editor_data.is_playing:
 		return
 	var type := editor_data.level_element_type
-	var grid_size: Vector2i = LEVEL_ELEMENT_GRID_SIZE[type]
 	var obj: Node = ghosts[type]
 	
 	obj.data = editor_data.level_element_editors[type].data
 		
-	var maybe_pos := get_mouse_coord(grid_size)
+	var maybe_pos := get_mouse_coord(GRID_SIZE)
 	if is_dragging:
-		maybe_pos -= round_coord(drag_offset, grid_size)
+		maybe_pos -= round_coord(drag_offset, GRID_SIZE)
 	obj.position = maybe_pos
 	danger_obj = obj
 

@@ -24,6 +24,7 @@ var _h_grabber_texture: Texture2D
 func _init() -> void:
 	theme_changed.connect(_update_theme)
 	sort_children.connect(_sort_children)
+	_update_theme()
 
 func _ready() -> void:
 	_grabber_bottom = GrowContainerGrabber.new()
@@ -44,27 +45,50 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 func _on_grabber_moved(relative: Vector2) -> void:
 	if get_child_count() == 0: return
-	var child: Control = get_child(0)
-	var new_size := child.size + relative
+	var new_size := size + relative
 	if max_child_size != -1:
 		new_size.y = min(max_child_size, new_size.y)
-	child.size = new_size 
+	size = new_size
 	queue_sort()
 
 func _sort_children() -> void:
 	if get_child_count() == 0: return
-	var child := get_child(0)
-	child.size.x = size.x
-	custom_minimum_size.y = child.size.y
-	if grow_bottom:
-		custom_minimum_size.y += grabber_offset + _v_grabber_texture.get_size().y
-	_grabber_bottom.position.y = child.size.y
+	var new_child_size := size - _extra_size_cache
+	_grabber_bottom.position.y = new_child_size.y
 	_grabber_bottom.size.x = size.x
 	_grabber_bottom.size.y = grabber_offset + _v_grabber_texture.get_size().y
-	if child.size.y >= max_child_size:
+	if new_child_size.y >= max_child_size:
 		_grabber_bottom.hidden_alpha = 0
 	else:
 		_grabber_bottom.hidden_alpha = 0.5
+	for child in get_children():
+		child.size = new_child_size
+	update_minimum_size()
+	update_configuration_warnings()
+
+func _get_minimum_size() -> Vector2:
+	var s := Vector2.ZERO
+	for child: Control in get_children():
+		var s2 := child.get_combined_minimum_size()
+		s.x = maxf(s.x, s2.x)
+		s.y = maxf(s.y, s2.y)
+	s += _update_extra_size()
+	return s
+
+#var _update_extra_size_queued := false
+var _extra_size_cache := Vector2.ZERO
+func _update_extra_size() -> Vector2:
+	var s := Vector2.ZERO
+	if grow_bottom:
+		s.y += grabber_offset + _v_grabber_texture.get_size().y
+	_extra_size_cache = s
+	return s
+
+func _get_allowed_size_flags_horizontal() -> PackedInt32Array:
+	return []
+
+func _get_allowed_size_flags_vertical() -> PackedInt32Array:
+	return []
 
 class GrowContainerGrabber:
 	extends Control
@@ -83,17 +107,20 @@ class GrowContainerGrabber:
 		hidden_alpha = hidden_alpha
 	
 	var is_clicked := false
+	var clicked_offset := Vector2.ZERO
 	var mouse_inside := false
 	func _gui_input(event: InputEvent) -> void:
 		if event is InputEventMouseMotion:
 			if not event.button_mask & MOUSE_BUTTON_MASK_LEFT:
 				is_clicked = false
 			if is_clicked:
-				var rel: Vector2 = event.relative * moved_mult
+				var rel := get_local_mouse_position() - clicked_offset
+				rel *= moved_mult
 				if not rel.is_zero_approx():
 					moved.emit(rel)
 		elif event is InputEventMouseButton:
 			if event.button_index == MOUSE_BUTTON_LEFT:
+				clicked_offset = get_local_mouse_position()
 				is_clicked = event.pressed
 				accept_event()
 	
