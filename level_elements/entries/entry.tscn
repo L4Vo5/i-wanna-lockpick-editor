@@ -81,7 +81,7 @@ unique_name_in_owner = true
 visible = false
 position = Vector2(18, -32)
 script = ExtResource("6_divql")
-text = "Level 1-1
-CKeys and Doors"
+text = "Level B-U-G
+If you're seeing this, it's a bug"
 font = ExtResource("5_t633j")
 line_sep = 23

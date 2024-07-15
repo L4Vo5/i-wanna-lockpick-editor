@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://c14d7y5nj1gaa"
-path="res://.godot/imported/keypad_sound.wav-ec3ed0c82f58fd446bf0bfbf0c89a11f.sample"
+path="res://.godot/imported/keypad_sound.wav-95d00af74833e2b90025ca6dbdb845f8.sample"
 
 [deps]
 
-source_file="res://level_elements/keys/keypad/keypad_sound.wav"
-dest_files=["res://.godot/imported/keypad_sound.wav-ec3ed0c82f58fd446bf0bfbf0c89a11f.sample"]
+source_file="res://level_elements/ui/keypad/keypad_sound.wav"
+dest_files=["res://.godot/imported/keypad_sound.wav-95d00af74833e2b90025ca6dbdb845f8.sample"]
 
 [params]
 

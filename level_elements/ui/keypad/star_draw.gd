@@ -1,7 +1,7 @@
 @tool
 extends Node2D
 
-const STAR := preload("res://level_elements/keys/keypad/spr_star.png")
+const STAR := preload("res://level_elements/ui/keypad/spr_star.png")
 
 # PERF: simply do not do this every frame :)
 func _process(_delta: float) -> void:

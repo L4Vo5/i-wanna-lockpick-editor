@@ -398,10 +398,6 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="Settings" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("24_hjg5q")]
-visible = false
-layout_mode = 2
-
 [node name="MultipleSelection" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
 visible = false
 layout_mode = 2
@@ -414,6 +410,10 @@ layout_mode = 2
 text = "Nothing here (yet?), but you still need to select this tab to select multiple things."
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="Settings" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("24_hjg5q")]
+visible = false
+layout_mode = 2
 
 [node name="FileDialog" type="FileDialog" parent="."]
 size = Vector2i(356, 154)

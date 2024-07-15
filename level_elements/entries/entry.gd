@@ -40,6 +40,7 @@ func _ready() -> void:
 	if not is_instance_valid(level): return
 	level_name.position.y += tween_y_offset
 	level_name.modulate.a = 0
+	update_name()
 	update_status()
 
 # called by kid.gd
