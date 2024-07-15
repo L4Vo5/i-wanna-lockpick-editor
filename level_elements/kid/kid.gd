@@ -91,6 +91,10 @@ func _physics_process(_delta: float) -> void:
 	move_and_collide(velocity * Vector2(0, 1))
 	# needs to stay updated for the level to know if it's save to save undo state
 	update_on_floor()
+	
+	# another special case
+	if position.y > level.level_data.size.y + 128:
+		level.undo()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if !level: return
