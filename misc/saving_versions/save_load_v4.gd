@@ -17,7 +17,6 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_string(level.title + "\n" + level.name)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
-	data.store_var(level.custom_lock_arrangements)
 	data.store_bool(level.has_goal)
 	if level.has_goal:
 		data.store_u32(level.goal_position.x)
@@ -135,7 +134,6 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	level.name = title_name[1]
 	if SaveLoad.PRINT_LOAD: print("Loading level %s" % level.name)
 	level.size = Vector2i(data.get_u32(), data.get_u32())
-	level.custom_lock_arrangements = data.get_var()
 	var has_goal := data.get_bool()
 	if has_goal:
 		level.goal_position = Vector2i(data.get_u32(), data.get_u32())
