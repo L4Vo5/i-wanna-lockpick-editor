@@ -71,8 +71,8 @@ func exit_level() -> void:
 
 ## Exits WITHOUT checking
 func exit_immediately() -> void:
-	print(pack_state.exit_levels, pack_state.exit_positions)
 	var exit_pos: Vector2i = pack_state.exit_positions.pop_back()
+	# WAITING4GODOT: pop_back() in packed arrays?
 	var exit_lvl: int = pack_state.exit_levels[-1]
 	pack_state.exit_levels.remove_at(pack_state.exit_levels.size() - 1)
 	set_current_level(exit_lvl)

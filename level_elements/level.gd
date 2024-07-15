@@ -268,13 +268,13 @@ func _update_player_spawn_position() -> void:
 
 func _update_goal_position() -> void:
 	if not is_node_ready(): return
-	if not level_data.has_goal:
-		if is_instance_valid(goal):
-			goal.queue_free()
-	else:
+	if level_data.has_goal:
 		if not is_instance_valid(goal):
 			_spawn_goal()
 		goal.position = level_data.goal_position + Vector2i(16, 16)
+	else:
+		if is_instance_valid(goal):
+			goal.queue_free()
 	if not dont_update_collision_system:
 		var id: int
 		if level_data.elem_to_collision_system_id.has(&"goal"):

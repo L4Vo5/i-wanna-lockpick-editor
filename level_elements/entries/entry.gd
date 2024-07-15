@@ -40,7 +40,6 @@ func _ready() -> void:
 	if not is_instance_valid(level): return
 	level_name.position.y += tween_y_offset
 	level_name.modulate.a = 0
-	update_name()
 	update_status()
 
 # called by kid.gd
@@ -112,7 +111,6 @@ func _disconnect_data() -> void:
 func _connect_data() -> void:
 	if not is_instance_valid(data): return
 	data.changed.connect(update_position)
-	update_name()
 	update_position()
 	update_status()
 
