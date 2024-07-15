@@ -17,7 +17,11 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_string(level.title + "\n" + level.name)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
-	data.store_bool(level.has_goal)
+	
+	var flags := 0
+	flags |= level.has_goal as int
+	flags |= (level.exitable as int) << 1
+	data.store_u8(flags)
 	if level.has_goal:
 		data.store_u32(level.goal_position.x)
 		data.store_u32(level.goal_position.y)
@@ -134,9 +138,10 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	level.name = title_name[1]
 	if SaveLoad.PRINT_LOAD: print("Loading level %s" % level.name)
 	level.size = Vector2i(data.get_u32(), data.get_u32())
-	var has_goal := data.get_bool()
-	if has_goal:
+	var flags := data.get_u8()
+	if flags & 1:
 		level.goal_position = Vector2i(data.get_u32(), data.get_u32())
+	level.exitable = (flags & 2) as bool
 	level.player_spawn_position = Vector2i(data.get_u32(), data.get_u32())
 	if SaveLoad.PRINT_LOAD: print("loaded player pos: %s" % str(level.player_spawn_position))
 	
@@ -294,8 +299,8 @@ static func load_pack_state(data: ByteAccess) -> LevelPackStateData:
 		state.completed_levels[i] = data.get_u8()
 	
 	var exit_count := data.get_u32()
-	state.exit_levels.resize(level_count)
-	state.exit_positions.resize(level_count)
+	state.exit_levels.resize(exit_count)
+	state.exit_positions.resize(exit_count)
 	for i in exit_count:
 		if data.reached_eof(): return
 		state.exit_levels[i] = data.get_u32()

@@ -15,6 +15,9 @@ class_name LevelData
 ## How many levels from required_levels need to be completed for this level to be unlocked.
 @export var min_required_level_count := 0
 
+## Whether you can exit this level.
+@export var exitable := true
+
 const SMALLEST_SIZE := Vector2i(800, 608)
 signal changed_size
 @export var size := SMALLEST_SIZE:
@@ -97,8 +100,8 @@ func duplicated() -> LevelData:
 		dupe.keys.push_back(key.duplicated())
 	for entry in entries:
 		dupe.entries.push_back(entry.duplicated())
-	for salvage in salvage_points:
-		dupe.salvage_points.push_back(salvage.duplicated())
+	for salvage_point in salvage_points:
+		dupe.salvage_points.push_back(salvage_point.duplicated())
 	dupe.regen_collision_system()
 	return dupe
 
@@ -113,6 +116,11 @@ func regen_collision_system() -> void:
 	elem_to_collision_system_id.clear()
 	var id: int
 	assert(PerfManager.start("LevelData::regen_collision_system"))
+	id = collision_system.add_rect(Rect2i(player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)), &"player_spawn")
+	elem_to_collision_system_id[&"player_spawn"] = id
+	if has_goal:
+		id = collision_system.add_rect(Rect2i(goal_position, Vector2i(32, 32)), &"goal")
+		elem_to_collision_system_id[&"goal"] = id
 	for door in doors:
 		id = collision_system.add_rect(door.get_rect(), door)
 		elem_to_collision_system_id[door] = id
@@ -122,9 +130,9 @@ func regen_collision_system() -> void:
 	for entry in entries:
 		id = collision_system.add_rect(entry.get_rect(), entry)
 		elem_to_collision_system_id[entry] = id
-	for salvage in salvage_points:
-		id = collision_system.add_rect(salvage.get_rect(), salvage)
-		elem_to_collision_system_id[salvage] = id
+	for salvage_point in salvage_points:
+		id = collision_system.add_rect(salvage_point.get_rect(), salvage_point)
+		elem_to_collision_system_id[salvage_point] = id
 	for tile_coord in tiles.keys():
 		# Bad idea to store just a Vector2i without identifying it as a tile, perhaps?
 		id = collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)

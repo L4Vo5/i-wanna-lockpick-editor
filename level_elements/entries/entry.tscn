@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://d4bjx48o6bjgf"]
+[gd_scene load_steps=10 format=3 uid="uid://d4bjx48o6bjgf"]
 
 [ext_resource type="Script" path="res://level_elements/entries/entry.gd" id="1_eb5iw"]
 [ext_resource type="Texture2D" uid="uid://h1t82rry4rig" path="res://level_elements/entries/textures/simple/entry_open.png" id="2_q4eyv"]
+[ext_resource type="Texture2D" uid="uid://b3ff8gvydqur0" path="res://level_elements/entries/textures/completion/completed.png" id="3_a8oc7"]
 [ext_resource type="Texture2D" uid="uid://fl1344qlbm2" path="res://level_elements/entries/sprUpArrowDoor/sprUpArrowDoor_0.png" id="3_hm1df"]
 [ext_resource type="Texture2D" uid="uid://cr66yiiqovk0u" path="res://level_elements/entries/sprUpArrowDoor/sprUpArrowDoor_1.png" id="4_8krdv"]
 [ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="5_t633j"]
@@ -50,6 +51,13 @@ unique_name_in_owner = true
 position = Vector2(-4, -4)
 texture = ExtResource("2_q4eyv")
 centered = false
+
+[node name="Completion" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("3_a8oc7")
+centered = false
+offset = Vector2(-4, -36)
 
 [node name="Arrow" type="AnimatedSprite2D" parent="."]
 unique_name_in_owner = true

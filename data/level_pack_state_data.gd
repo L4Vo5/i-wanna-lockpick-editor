@@ -33,10 +33,7 @@ static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	state.completed_levels = []
 	state.completed_levels.resize(pack.levels.size())
 	state.exit_levels = []
-	state.exit_levels.resize(pack.levels.size())
-	state.exit_levels.fill(-1)
 	state.exit_positions = []
-	state.exit_positions.resize(pack.levels.size())
 	state.pack_id = pack.pack_id
 	state.pack_data = pack
 	state.connect_pack_data()
@@ -69,28 +66,44 @@ func get_salvaged_doors_count() -> int:
 func _on_added_level(id: int) -> void:
 	assert(pack_data.levels.size() == completed_levels.size() + 1)
 	completed_levels.insert(id, 0)
-	exit_levels.insert(id, -1)
-	exit_positions.insert(id, Vector2i.ZERO)
+	for i in exit_levels.size():
+		if exit_levels[i] >= id:
+			exit_levels[i] += 1
 	save()
 
 func _on_deleted_level(level_id: int) -> void:
 	assert(pack_data.levels.size() == completed_levels.size() - 1)
 	completed_levels.remove_at(level_id)
-	exit_levels.remove_at(level_id)
-	exit_positions.remove_at(level_id)
+	for i in exit_levels.size():
+		if exit_levels[i] == level_id:
+			exit_levels.remove_at(i)
+			exit_positions.remove_at(i)
+			i -= 1
+		elif exit_levels[i] >= level_id:
+			exit_levels[i] -= 1
 	assert(pack_data.levels.size() == completed_levels.size())
 	save()
 
 func _on_swapped_levels(level_1_id: int, level_2_id: int) -> void:
 	array_swap(completed_levels, level_1_id, level_2_id)
-	array_swap(exit_levels, level_1_id, level_2_id)
-	array_swap(exit_positions, level_1_id, level_2_id)
+	for i in exit_levels.size():
+		if exit_levels[i] == level_1_id:
+			exit_levels[i] = level_2_id
+		elif exit_levels[i] == level_2_id:
+			exit_levels[i] = level_1_id
 	save()
 
 func _on_moved_levels(from_id: int, to_id: int) -> void:
 	array_move(completed_levels, from_id, to_id)
-	array_move(exit_levels, from_id, to_id)
-	array_move(exit_positions, from_id, to_id)
+	for i in exit_levels.size():
+		if exit_levels[i] == from_id:
+			exit_levels[i] = to_id
+		elif to_id > from_id:
+			if exit_levels[i] > from_id and exit_levels[i] <= to_id:
+				exit_levels[i] -= 1
+		else:
+			if exit_levels[i] >= to_id and exit_levels[i] < from_id:
+				exit_levels[i] += 1
 	save()
 
 func array_swap(array: Array, id_1: int, id_2: int) -> void:
@@ -120,12 +133,10 @@ func check_and_fix() -> void:
 	# TODO: maybe improve (what if there's extra salvages? etc)
 	var pack_level_count := pack_data.levels.size()
 	# hack but this is the easiest way to make sure they all have the appropiate size i guess
-	var current_level_count := mini(mini(completed_levels.size(), exit_positions.size()), exit_levels.size())
+	var current_level_count := completed_levels.size()
 	if current_level_count != pack_level_count:
 		printerr("state is keeping track of %d levels, but level pack has %d, resizing." % [current_level_count, pack_level_count])
 		completed_levels.resize(pack_level_count)
-		exit_positions.resize(pack_level_count)
-		exit_levels.resize(pack_level_count)
 	if current_level < 0 or current_level >= pack_data.levels.size():
 		printerr("State's current level is out of range: current level = ",
 			current_level, " level count ", pack_data.levels.size())

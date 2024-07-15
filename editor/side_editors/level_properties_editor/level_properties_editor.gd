@@ -52,6 +52,8 @@ var _level_pack_data: LevelPackData:
 @onready var place_goal: Node2DCenterContainer = %Goal
 @onready var remove_goal: Button = %RemoveGoal
 
+@onready var exitable: CheckBox = %Exitable
+
 func _connect_pack_data() -> void:
 	if not is_instance_valid(_level_pack_data): return
 	_level_pack_data.changed.connect(_set_to_level_pack_data)
@@ -95,6 +97,8 @@ func _ready() -> void:
 	width.value_changed.connect(_on_size_changed.unbind(1))
 	height.value_changed.connect(_on_size_changed.unbind(1))
 	remove_goal.pressed.connect(_on_remove_goal_button_pressed)
+	
+	exitable.pressed.connect(_on_changed_exitable)
 	
 	search.text_changed.connect(level_list.update_visibility)
 	level_list.selected_level.connect(_set_level_number)
@@ -143,6 +147,7 @@ func _set_to_level_data() -> void:
 		level_title.text = _level_data.title
 	if level_author.text != _level_data.author:
 		level_author.text = _level_data.author
+	exitable.button_pressed = _level_data.exitable
 	_setting_to_data = false
 
 func _set_to_level_pack_data() -> void:
@@ -184,6 +189,12 @@ func _set_level_number(new_number: int) -> void:
 func _on_remove_goal_button_pressed() -> void:
 	if _setting_to_data: return
 	_level_data.has_goal = false
+
+func _on_changed_exitable() -> void:
+	if _setting_to_data: return
+	_level_data.exitable = exitable.button_pressed
+	for entry: Entry in editor_data.level.entries.get_children():
+		entry.update_status()
 
 func _delete_current_level() -> void:
 	_level_pack_data.delete_level(_level_pack_data.state_data.current_level)

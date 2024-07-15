@@ -101,6 +101,9 @@ var LEVEL_ELEMENT_DISCONNECT := {
 	Enums.level_element_types.key: disconnect_key
 };
 
+## For selection system
+var dont_update_collision_system: bool = false
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not Global.is_playing: return
 	if in_transition(): return
@@ -255,16 +258,33 @@ func _update_player_spawn_position() -> void:
 	if not level_data: return
 	player_spawn_point.visible = Global.in_level_editor
 	player_spawn_point.position = level_data.player_spawn_position
+	if not dont_update_collision_system:
+		var id: int
+		if level_data.elem_to_collision_system_id.has(&"player_spawn"):
+			id = level_data.elem_to_collision_system_id[&"player_spawn"]
+			collision_system.remove_rect(id)
+		id = collision_system.add_rect(Rect2i(level_data.player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)), &"player_spawn")
+		level_data.elem_to_collision_system_id[&"player_spawn"] = id
 
 func _update_goal_position() -> void:
 	if not is_node_ready(): return
-	if not is_instance_valid(goal):
-		_spawn_goal()
+	if level_data.has_goal:
+		if not is_instance_valid(goal):
+			_spawn_goal()
+		goal.position = level_data.goal_position + Vector2i(16, 16)
 	else:
-		if not level_data.has_goal:
+		if is_instance_valid(goal):
 			goal.queue_free()
+	if not dont_update_collision_system:
+		var id: int
+		if level_data.elem_to_collision_system_id.has(&"goal"):
+			id = level_data.elem_to_collision_system_id[&"goal"]
+			collision_system.remove_rect(id)
+		if level_data.has_goal:
+			id = collision_system.add_rect(Rect2i(level_data.goal_position, Vector2i(32, 32)), &"goal")
+			level_data.elem_to_collision_system_id[&"goal"] = id
 		else:
-			goal.position = level_data.goal_position + Vector2i(16, 16)
+			level_data.elem_to_collision_system_id.erase(&"goal")
 
 func try_open_door(door: Door) -> void:
 	logic.try_open_door(door)
@@ -349,7 +369,7 @@ func _remove_element(node: Node) -> void:
 	NodePool.return_node(node)
 
 ## Moves *something*. Returns false if the move failed
-func move_element(node: Node, new_position: Vector2i) -> bool:
+func move_element(node: Node, new_position: Vector2i, update_collision_system: bool = true) -> bool:
 	var type: Enums.level_element_types = node.level_element_type
 	var original_data = element_to_original_data[node]
 	var list: Array = level_element_type_to_level_data_array[type]
@@ -362,40 +382,42 @@ func move_element(node: Node, new_position: Vector2i) -> bool:
 		original_data.position = new_position
 		node.data.position = new_position
 		
-		var id: int = level_data.elem_to_collision_system_id[original_data]
-		collision_system.remove_rect(id)
-		id = collision_system.add_rect(original_data.get_rect(), original_data)
-		level_data.elem_to_collision_system_id[original_data] = id
-		
-		level_data.emit_changed()
+		if update_collision_system:
+			var id: int = level_data.elem_to_collision_system_id[original_data]
+			collision_system.remove_rect(id)
+			id = collision_system.add_rect(original_data.get_rect(), original_data)
+			level_data.elem_to_collision_system_id[original_data] = id
+			level_data.emit_changed()
 		return true
 	else:
 		return false
 
 func place_player_spawn(coord: Vector2i) -> void:
-	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"player_spawn"]): return
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [], [&"player_spawn"]): return
 	level_data.player_spawn_position = coord + Vector2i(14, 32)
 
 func place_goal(coord: Vector2i) -> void:
-	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [&"goal"]): return
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [], [&"goal"]): return
 	level_data.goal_position = coord
 
-func place_tile(tile_coord: Vector2i) -> void:
+func place_tile(tile_coord: Vector2i, update_collision_system: bool = true) -> void:
 	if level_data.tiles.get(tile_coord): return
 	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
-	level_data.tiles[tile_coord] = true
-	var id := collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
-	level_data.elem_to_collision_system_id[tile_coord] = id
+	level_data.tiles[tile_coord] = 1
 	update_tile_and_neighbors(tile_coord)
-	level_data.emit_changed()
+	if update_collision_system:
+		var id := collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
+		level_data.elem_to_collision_system_id[tile_coord] = id
+		level_data.emit_changed()
 
 ## Removes a tile from the level data. Returns true if a tile was there.
-func remove_tile(tile_coord: Vector2i) -> bool:
+func remove_tile(tile_coord: Vector2i, update_collision_system: bool = true) -> bool:
 	if not level_data.tiles.has(tile_coord): return false
 	level_data.tiles.erase(tile_coord)
-	var id: int = level_data.elem_to_collision_system_id[tile_coord]
-	level_data.elem_to_collision_system_id.erase(tile_coord)
-	collision_system.remove_rect(id)
+	if update_collision_system:
+		var id: int = level_data.elem_to_collision_system_id[tile_coord]
+		level_data.elem_to_collision_system_id.erase(tile_coord)
+		collision_system.remove_rect(id)
 	var layer := 0
 	tile_map.erase_cell(layer, tile_coord)
 	level_data.emit_changed()
@@ -525,14 +547,7 @@ func _spawn_goal() -> void:
 func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_data := []) -> bool:
 	if not is_space_inside(rect):
 		return true
-	if not &"goal" in exclusions and level_data.has_goal:
-		if Rect2i((level_data.goal_position), Vector2i(32, 32)).intersects(rect):
-			return true
-	if not &"player_spawn" in exclusions:
-		var spawn_pos := (level_data.player_spawn_position - Vector2i(14, 32))
-		if Rect2i(spawn_pos, Vector2i(32, 32)).intersects(rect):
-			return true
-	# Currently the collision system accounts for doors, keys, entries, salvages, and tiles
+	# Currently the collision system accounts for doors, keys, entries, salvages, tiles, goal and player spawn
 	if exclusions.is_empty() and excluded_data.is_empty():
 		return collision_system.rect_has_collision_in_grid(rect)
 	else:

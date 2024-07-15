@@ -54,8 +54,12 @@ func win() -> void:
 	win_animation("Congratulations!")
 
 func can_exit() -> bool:
-	var exit: int = pack_state.exit_levels[pack_state.current_level]
+	if pack_state.exit_levels.is_empty():
+		return false
+	var exit: int = pack_state.exit_levels[-1]
 	if exit < 0 or exit >= _pack_data.levels.size():
+		pack_state.exit_levels.clear()
+		pack_state.exit_positions.clear()
 		return false
 	return true
 
@@ -67,8 +71,11 @@ func exit_level() -> void:
 
 ## Exits WITHOUT checking
 func exit_immediately() -> void:
-	var exit_pos: Vector2i = pack_state.exit_positions[pack_state.current_level]
-	set_current_level(pack_state.exit_levels[pack_state.current_level])
+	var exit_pos: Vector2i = pack_state.exit_positions.pop_back()
+	# WAITING4GODOT: pop_back() in packed arrays?
+	var exit_lvl: int = pack_state.exit_levels[-1]
+	pack_state.exit_levels.remove_at(pack_state.exit_levels.size() - 1)
+	set_current_level(exit_lvl)
 	level.player.position = exit_pos
 
 func exit_or_reset() -> void:
@@ -78,9 +85,13 @@ func exit_or_reset() -> void:
 		reset()
 
 func enter_level(id: int, exit_position: Vector2i) -> void:
-	# set exit parameters
-	pack_state.exit_levels[id] = pack_state.current_level
-	pack_state.exit_positions[id] = exit_position
+	# push onto exit stack
+	if _pack_data.levels[id].exitable:
+		pack_state.exit_levels.push_back(pack_state.current_level)
+		pack_state.exit_positions.push_back(exit_position)
+	else:
+		pack_state.exit_levels.clear()
+		pack_state.exit_positions.clear()
 	
 	var _new_level_data := _pack_data.levels[id]
 	var target_level_name := _new_level_data.name

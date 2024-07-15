@@ -194,64 +194,16 @@ func _gui_input(event: InputEvent) -> void:
 
 var additional_selection: Dictionary = {}
 var did_toggle_selection: bool = false
+var toggle_selection_remove: bool = false
 var multi_drag: bool = false
 
-func _get_additional_selectables() -> Array:
-	var result := []
-	result.push_back(&"player_spawn")
-	if editor_data.level_data.has_goal:
-		result.push_back(&"goal")
-	return result
-
-func _get_additional_selection_rect(data) -> Rect2i:
-	if data == &"player_spawn":
-		return Rect2i(editor_data.level_data.player_spawn_position - Vector2i(14, 32), Vector2i(32, 32))
-	if data == &"goal":
-		if editor_data.level_data.has_goal:
-			return Rect2i(editor_data.level_data.goal_position, Vector2i(32, 32))
-	assert(false, "Invalid additional selection")
-	return Rect2i()
-
-func _can_move_additional_selection(delta: Vector2i) -> bool:
-	var exclusions: Array[String] = []
-	if additional_selection.has(&"player_spawn"):
-		exclusions.push_back(&"player_spawn")
-	if additional_selection.has(&"goal"):
-		exclusions.push_back(&"goal")
-	for data in additional_selection:
-		if data == &"player_spawn":
-			var new_pos := editor_data.level_data.player_spawn_position + delta
-			if gameplay.level.is_space_occupied(Rect2i(new_pos - Vector2i(14, 32), Vector2i(32, 32)), exclusions):
-				return false
-		if data == &"goal":
-			if editor_data.level_data.has_goal:
-				var new_pos := editor_data.level_data.goal_position + delta
-				if gameplay.level.is_space_occupied(Rect2i(new_pos, Vector2i(32, 32)), exclusions):
-					return false
-	return true
-
-func _move_additional_selection(delta: Vector2i) -> void:
-	for data in additional_selection:
-		if data == &"player_spawn":
-			editor_data.level_data.player_spawn_position += delta
-		if data == &"goal":
-			if editor_data.level_data.has_goal:
-				editor_data.level_data.goal_position += delta
-
 func _multiple_selection_grid_size() -> Vector2i:
-	var max_grid_size := Vector2i(16, 16)
+	var max_grid_size := GRID_SIZE
 	for id in selection_system.selection:
 		var data = editor_data.level_data.collision_system.get_rect_data(id)
+		# if there's any tiles in the selection, grid size is 32,32
 		if data is Vector2i:
-			return Vector2i(32, 32) # maximum grid size
-		else:
-			# assume level element
-			var grid_size: Vector2i = GRID_SIZE
-			max_grid_size.x = maxi(max_grid_size.x, grid_size.x)
-			max_grid_size.y = maxi(max_grid_size.y, grid_size.y)
-			if max_grid_size == Vector2i(32, 32):
-				return max_grid_size
-	# additional selection doesn't have any limited grid size currently
+			return Vector2i(32, 32)
 	return max_grid_size
 
 func reset_multiple_selection() -> void:
@@ -267,16 +219,19 @@ func _gui_input_multiple_selection(event: InputEvent) -> void:
 				if multi_drag:
 					selection_outline.position += Vector2(selection_system.last_valid_offset - selection_system.offset)
 				selection_system.stop_moving()
-				if not multi_drag and not did_toggle_selection:
+				if not multi_drag:
 					var collision_system := editor_data.level_data.collision_system
 					var rect := selection_box.get_rect()
 					var rects := collision_system.get_rects_intersecting_rect_in_grid(rect)
-					selection_system.add_multiple_to_selection(rects, selection_outline)
-					for data in _get_additional_selectables():
-						var other_rect := _get_additional_selection_rect(data)
-						if other_rect.intersects(rect) and not additional_selection.has(data):
-							additional_selection[data] = true
-							selection_outline.add_rectangle_no_grid(other_rect, 1)
+					if did_toggle_selection and toggle_selection_remove:
+						selection_system.remove_multiple_from_selection(rects, selection_outline)
+					else:
+						selection_system.add_multiple_to_selection(rects, selection_outline)
+					#for data in _get_additional_selectables():
+						#var other_rect := _get_additional_selection_rect(data)
+						#if other_rect.intersects(rect) and not additional_selection.has(data):
+							#additional_selection[data] = true
+							#selection_outline.add_rectangle_no_grid(other_rect, 1)
 				multi_drag = false
 				did_toggle_selection = false
 				selection_box.visible = false
@@ -288,33 +243,45 @@ func _gui_input_multiple_selection(event: InputEvent) -> void:
 			selection_box.position = pos_in_level
 			selection_box.visible = false
 			selection_box.size = Vector2i.ZERO
-			if Input.is_key_pressed(KEY_CTRL):
+			if Input.is_key_pressed(KEY_SHIFT):
 				# toggle selection
 				var collision_system := editor_data.level_data.collision_system
 				var rects := collision_system.get_rects_containing_point_in_grid(pos_in_level)
+				var action := 0
 				for id in rects:
 					if selection_system.selection.has(id):
-						selection_system.remove_from_selection(id, selection_outline)
+						if action == 0:
+							action = 1
+						if action == 1:
+							selection_system.remove_from_selection(id, selection_outline)
 					else:
-						selection_system.add_to_selection(id, selection_outline)
-				for data in _get_additional_selectables():
-					var other_rect := _get_additional_selection_rect(data)
-					if other_rect.has_point(pos_in_level):
-						if additional_selection.has(data):
-							additional_selection.erase(data)
-							selection_outline.add_rectangle_no_grid(other_rect, -1)
-						else:
-							additional_selection[data] = true
-							selection_outline.add_rectangle_no_grid(other_rect, 1)
-				did_toggle_selection = true
+						if action == 0:
+							action = 2
+						if action == 2:
+							selection_system.add_to_selection(id, selection_outline)
+				#for data in _get_additional_selectables():
+					#var other_rect := _get_additional_selection_rect(data)
+					#if other_rect.has_point(pos_in_level):
+						#if additional_selection.has(data):
+							#additional_selection.erase(data)
+							#selection_outline.add_rectangle_no_grid(other_rect, -1)
+						#else:
+							#additional_selection[data] = true
+							#selection_outline.add_rectangle_no_grid(other_rect, 1)
+				if action == 1:
+					did_toggle_selection = true
+					toggle_selection_remove = true
+				elif action == 2:
+					did_toggle_selection = true
+					toggle_selection_remove = false
 				return
 			elif not selection_system.selection.is_empty() or not additional_selection.is_empty():
 				# Try to see whether we clicked on a selected item
-				for data in additional_selection:
-					var other_rect := _get_additional_selection_rect(data)
-					if other_rect.has_point(pos_in_level):
-						multi_drag = true
-						return
+				#for data in additional_selection:
+					#var other_rect := _get_additional_selection_rect(data)
+					#if other_rect.has_point(pos_in_level):
+						#multi_drag = true
+						#return
 				var collision_system := editor_data.level_data.collision_system
 				var rects := collision_system.get_rects_containing_point_in_grid(pos_in_level)
 				for id in rects:
@@ -324,7 +291,7 @@ func _gui_input_multiple_selection(event: InputEvent) -> void:
 						return
 			reset_multiple_selection()
 	elif event is InputEventMouseMotion:
-		if event.button_mask & MOUSE_BUTTON_LEFT and not did_toggle_selection:
+		if event.button_mask & MOUSE_BUTTON_LEFT:
 			if not multi_drag:
 				var rect := Rect2i()
 				rect.position = drag_offset
@@ -340,16 +307,19 @@ func _gui_input_multiple_selection(event: InputEvent) -> void:
 				if delta == Vector2i.ZERO:
 					return
 				var act_delta := new_offset - selection_system.last_valid_offset
-				var valid := _can_move_additional_selection(act_delta)
+				#var valid := _can_move_additional_selection(act_delta)
+				var valid := true
 				if selection_system.move_selection(delta, valid):
 					_move_selection(act_delta)
-					_move_additional_selection(act_delta)
+					#_move_additional_selection(act_delta)
 					selection_outline.color = Color.WHITE
 				else:
 					selection_outline.color = Color.RED
 				selection_outline.position += Vector2(delta)
 
 func _move_selection(delta: Vector2i) -> void:
+	gameplay.level.dont_update_collision_system = true
+	
 	var new_tile_id: Array[int] = []
 	var new_tile_pos: Array[Vector2i] = []
 	var new_tiles: Array[int] = []
@@ -358,18 +328,18 @@ func _move_selection(delta: Vector2i) -> void:
 		if data is Vector2i:
 			# remove tile
 			var tile: int = editor_data.level_data.tiles[data]
-			editor_data.level_data.tiles.erase(data)
-			gameplay.level.tile_map.erase_cell(0, data)
-			gameplay.level.update_tile_and_neighbors(data)
+			gameplay.level.remove_tile(data, false)
 			new_tile_id.push_back(id)
 			new_tile_pos.push_back(data + delta / 32)
 			new_tiles.push_back(tile)
-		else:
+		elif data is RefCounted:
 			# assume level element
-			data.position += delta
 			var element: Control = gameplay.level.original_data_to_element[data]
-			element.position = data.position
-			element.data.position = data.position
+			gameplay.level.move_element(element, data.position + delta, false)
+		elif data == &"player_spawn":
+			editor_data.level_data.player_spawn_position += delta
+		elif data == &"goal":
+			editor_data.level_data.goal_position += delta
 	for tile_index in new_tile_pos.size():
 		# add tile
 		var tile := new_tiles[tile_index]
@@ -378,6 +348,7 @@ func _move_selection(delta: Vector2i) -> void:
 		gameplay.level.update_tile_and_neighbors(new_pos)
 		editor_data.level_data.collision_system.set_rect_data(new_tile_id[tile_index], new_pos)
 		tile_index += 1
+	gameplay.level.dont_update_collision_system = false
 	editor_data.level_data.emit_changed()
 
 func _on_place_event() -> void:
@@ -440,13 +411,13 @@ func remove_element(node: Node) -> bool:
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_coord(Vector2i(16, 16))
+	var coord := get_mouse_coord(GRID_SIZE)
 	gameplay.level.place_player_spawn(coord)
 
 func place_goal_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_coord(Vector2i(16, 16))
+	var coord := get_mouse_coord(GRID_SIZE)
 	gameplay.level.place_goal(coord)
 
 func relocate_selected() -> void:
@@ -454,7 +425,6 @@ func relocate_selected() -> void:
 	if is_mouse_out_of_bounds(): return
 	if not is_dragging: return
 	if not is_instance_valid(selected_obj): return
-	var type: Enums.level_element_types = selected_obj.level_element_type
 	var used_coord := get_mouse_coord(GRID_SIZE) - round_coord(drag_offset, GRID_SIZE)
 	var cond: bool
 	var obj_pos: Vector2i = selected_obj.position

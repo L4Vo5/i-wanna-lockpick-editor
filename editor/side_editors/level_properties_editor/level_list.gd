@@ -102,11 +102,11 @@ func update_visibility(search_term: String) -> void:
 func get_level_string(lvl: LevelData) -> String:
 	var s := "Untitled"
 	if lvl.name and lvl.title:
-		s = "%s - %s" % [lvl.name, lvl.title]
+		s = "%s - %s" % [lvl.title, lvl.name]
 	elif lvl.name:
 		s = lvl.name
 	elif lvl.title:
-		s = lvl.tile
+		s = lvl.title
 	if lvl.author:
 		s += " (by %s)" % lvl.author
 	return s
