@@ -78,6 +78,12 @@ func _physics_process(_delta: float) -> void:
 		position.y = 0
 		move_and_collide(velocity * Vector2(current_speed, 0))
 		position.y = old_y
+	# same for the bottom
+	elif position.y > level.level_data.size.y + 10:
+		var old_y := position.y
+		position.y = level.level_data.size.y + 10
+		move_and_collide(velocity * Vector2(current_speed, 0))
+		position.y = old_y
 	else:
 		move_and_collide(velocity * Vector2(current_speed, 0))
 	# another special case: collide with level edges
@@ -91,6 +97,10 @@ func _physics_process(_delta: float) -> void:
 	move_and_collide(velocity * Vector2(0, 1))
 	# needs to stay updated for the level to know if it's save to save undo state
 	update_on_floor()
+	
+	# another special case
+	if position.y > level.level_data.size.y + 128:
+		level.undo()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if !level: return
