@@ -28,8 +28,6 @@ const ENTRY_CLOSED = preload("res://level_elements/entries/textures/simple/entry
 const ENTRY_ERR = preload("res://level_elements/entries/textures/simple/entry_err.png")
 const ENTRY_OPEN = preload("res://level_elements/entries/textures/simple/entry_open.png")
 const ENTRY_WORLD = preload("res://level_elements/entries/textures/world/entry_world.png")
-const COMPLETED = preload("res://level_elements/entries/textures/completion/completed.png")
-const STAR = preload("res://level_elements/entries/textures/completion/star.png")
 
 var name_tween: Tween
 @onready var name_start_y := level_name.position.y
@@ -103,7 +101,6 @@ func update_status() -> void:
 		sprite.texture = ENTRY_WORLD
 		sprite.position.y = -36
 	if pack_data.state_data.completed_levels[data.leads_to]:
-		completion.texture = COMPLETED
 		completion.visible = true
 	else:
 		completion.visible = false
