@@ -78,6 +78,12 @@ func _physics_process(_delta: float) -> void:
 		position.y = 0
 		move_and_collide(velocity * Vector2(current_speed, 0))
 		position.y = old_y
+	# same for the bottom
+	if position.y > level.level_data.size.y + 10:
+		var old_y := position.y
+		position.y = level.level_data.size.y + 10
+		move_and_collide(velocity * Vector2(current_speed, 0))
+		position.y = old_y
 	else:
 		move_and_collide(velocity * Vector2(current_speed, 0))
 	# another special case: collide with level edges

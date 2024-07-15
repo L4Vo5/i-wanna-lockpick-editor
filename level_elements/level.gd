@@ -479,12 +479,13 @@ func update_tile(tile_coord: Vector2i) -> void:
 	var layer := 0
 	var id := 1
 	var level_width: int = level_data.size.x / 32
+	var level_height: int = level_data.size.y / 32
 	
 	var bits := 0
 	var vec: Vector2i
 	for i in TILE_LOOKUP_ORDER.size():
 		vec = TILE_LOOKUP_ORDER[i] + tile_coord
-		if level_data.tiles.get(vec) or vec.x < 0 or vec.y < 0 or vec.x >= level_width:
+		if level_data.tiles.get(vec) or vec.x < 0 or vec.y < 0 or vec.x >= level_width or vec.y >= level_height:
 			bits |= 1 << i
 	var what_tile := tiling_lookup[bits]
 	tile_map.set_cell(layer, tile_coord, id, Vector2i(what_tile >> 16, what_tile & 0xFFFF))
