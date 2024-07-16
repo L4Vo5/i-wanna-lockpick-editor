@@ -17,21 +17,19 @@ const KEY_COLORS := [
 @onready var sound: AudioStreamPlayer = %Sound
 @onready var nine_patch_rect: NinePatchRect = %NinePatchRect
 
-var base_offset: Vector2
 func _ready() -> void:
-	base_offset = nine_patch_rect.position
 	generate_keys()
 	Global.changed_is_playing.connect(func():
 		if not Global.is_playing:
 			hide_keypad()
-		elif Input.is_action_pressed("keypad"):
+		elif Input.is_action_pressed(&"keypad"):
 			show_keypad()
 		)
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not Global.is_playing:
 		return
-	if event.is_action("keypad") and not event.is_echo():
+	if event.is_action(&"keypad") and not event.is_echo():
 		if event.is_pressed():
 			show_keypad()
 		else:
@@ -65,10 +63,3 @@ func generate_keys() -> void:
 			key.hide_shadow = true
 			key.ignore_position = true
 			keys.add_child(key)
-
-
-func update_pos() -> void:
-		if is_instance_valid(Global.current_level):
-			nine_patch_rect.global_position = Global.current_level.global_position + base_offset
-			if Global.in_level_editor:
-				nine_patch_rect.global_position += Global.current_level.get_viewport().get_parent().global_position
