@@ -16,7 +16,6 @@ const KEY_COLORS := [
 ]
 @onready var keys: Node2D = %Keys
 @onready var sound: AudioStreamPlayer = %Sound
-@onready var nine_patch_rect: NinePatchRect = %NinePatchRect
 var level: Level
 
 func _ready() -> void:

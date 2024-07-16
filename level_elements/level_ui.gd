@@ -6,7 +6,11 @@ extends CanvasLayer
 @onready var autorun_sound: AudioStreamPlayer = %Autorun
 @onready var autorun_off: Sprite2D = %AutorunOff
 @onready var autorun_on: Sprite2D = %AutorunOn
-var currently_shown: CanvasItem
+@onready var darken_background: ColorRect = %DarkenBackground
+var currently_shown: CanvasItem:
+	set(val):
+		currently_shown = val
+		darken_background.visible = is_instance_valid(currently_shown)
 
 func _init() -> void:
 	visibility_changed.connect(_on_visibility_changed)

@@ -1,38 +1,20 @@
 [gd_scene load_steps=4 format=3 uid="uid://co2cgujysw6ei"]
 
-[ext_resource type="Texture2D" uid="uid://cxg0mv4k2jhsc" path="res://level_elements/ui/warp_rod/spr_warp_rod_ninepatch.png" id="1_b8etg"]
 [ext_resource type="Script" path="res://level_elements/ui/warp_rod/warp_rod.gd" id="1_ipkf8"]
+[ext_resource type="Texture2D" uid="uid://cxg0mv4k2jhsc" path="res://level_elements/ui/warp_rod/warp_rod_ninepatch.png" id="2_0f83x"]
 [ext_resource type="AudioStream" uid="uid://c14d7y5nj1gaa" path="res://level_elements/ui/keypad/keypad_sound.wav" id="3_loyjj"]
 
-[node name="WarpRod" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("1_ipkf8")
-
-[node name="DarkenBackground" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.478431)
-
-[node name="NinePatchRect" type="NinePatchRect" parent="."]
-layout_mode = 0
+[node name="WarpRod" type="NinePatchRect"]
 offset_left = 115.0
 offset_top = 91.0
 offset_right = 685.0
 offset_bottom = 517.0
-texture = ExtResource("1_b8etg")
+texture = ExtResource("2_0f83x")
 patch_margin_left = 20
 patch_margin_top = 20
 patch_margin_right = 20
 patch_margin_bottom = 20
+script = ExtResource("1_ipkf8")
 
 [node name="Sound" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true

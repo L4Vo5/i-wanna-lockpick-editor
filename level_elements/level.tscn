@@ -86,6 +86,16 @@ position = Vector2(4, 3)
 texture = ExtResource("8_n158d")
 centered = false
 
+[node name="DarkenBackground" type="ColorRect" parent="UI"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.478431)
+
 [node name="KeyPad" parent="UI" instance=ExtResource("10_hapwe")]
 visible = false
 
