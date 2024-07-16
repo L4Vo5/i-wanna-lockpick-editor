@@ -26,16 +26,6 @@ func _ready() -> void:
 			show_keypad()
 		)
 
-func _unhandled_key_input(event: InputEvent) -> void:
-	if not Global.is_playing:
-		return
-	if event.is_action(&"keypad") and not event.is_echo():
-		if event.is_pressed():
-			show_keypad()
-		else:
-			hide_keypad()
-		get_tree().root.set_input_as_handled()
-
 func show_keypad() -> void:
 	if visible: return
 	show()
