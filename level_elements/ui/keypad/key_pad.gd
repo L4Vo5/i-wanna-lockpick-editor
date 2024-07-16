@@ -1,3 +1,4 @@
+@tool
 extends Control
 class_name KeyPad
 
@@ -16,15 +17,10 @@ const KEY_COLORS := [
 @onready var keys: Node2D = %Keys
 @onready var sound: AudioStreamPlayer = %Sound
 @onready var nine_patch_rect: NinePatchRect = %NinePatchRect
+var level: Level
 
 func _ready() -> void:
 	generate_keys()
-	Global.changed_is_playing.connect(func():
-		if not Global.is_playing:
-			hide_keypad()
-		elif Input.is_action_pressed(&"keypad"):
-			show_keypad()
-		)
 
 func show_keypad() -> void:
 	if visible: return
