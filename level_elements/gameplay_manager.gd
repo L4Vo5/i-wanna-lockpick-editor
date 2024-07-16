@@ -123,6 +123,7 @@ func exit_level() -> void:
 func exit_immediately() -> void:
 	assert(mode != PlayMode.EDITOR)
 	var exit_pos: Vector2i = active_state.exit_positions.pop_back()
+	# WAITING4GODOT: pop_back() in packed arrays?
 	var exit_lvl: int = active_state.exit_levels[-1]
 	active_state.exit_levels.remove_at(active_state.exit_levels.size() - 1)
 	set_current_level_unique_id(exit_lvl)

@@ -47,9 +47,6 @@ var has_goal := true:
 	get:
 		return goal_position.x >= 0
 
-## If the level uses custom lock arrangements, they'll be here
-@export var custom_lock_arrangements := {}
-
 ## Just saves all positions for the tiles... I'll come up with something better later ok
 @export var tiles := {}
 
@@ -97,7 +94,6 @@ func duplicated() -> LevelData:
 	dupe.size = size
 	dupe.player_spawn_position = player_spawn_position
 	dupe.goal_position = goal_position
-	dupe.custom_lock_arrangements = custom_lock_arrangements.duplicate(true)
 	dupe.tiles = tiles.duplicate(true)
 	dupe.name = name
 	dupe.title = title

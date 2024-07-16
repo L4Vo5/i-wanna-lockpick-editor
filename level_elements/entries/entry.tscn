@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://level_elements/entries/entry.gd" id="1_eb5iw"]
 [ext_resource type="Texture2D" uid="uid://h1t82rry4rig" path="res://level_elements/entries/textures/simple/entry_open.png" id="2_q4eyv"]
+[ext_resource type="Texture2D" uid="uid://b3ff8gvydqur0" path="res://level_elements/entries/textures/completion/completed.png" id="3_a8oc7"]
 [ext_resource type="Texture2D" uid="uid://fl1344qlbm2" path="res://level_elements/entries/sprUpArrowDoor/sprUpArrowDoor_0.png" id="3_hm1df"]
-[ext_resource type="Texture2D" uid="uid://cnhc8lm8qewmv" path="res://level_elements/entries/textures/completion/completed.png" id="3_sg4k4"]
 [ext_resource type="Texture2D" uid="uid://cr66yiiqovk0u" path="res://level_elements/entries/sprUpArrowDoor/sprUpArrowDoor_1.png" id="4_8krdv"]
 [ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="5_t633j"]
 [ext_resource type="Script" path="res://rendering/outline_text.gd" id="6_divql"]
@@ -55,7 +55,7 @@ centered = false
 [node name="Completion" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 visible = false
-texture = ExtResource("3_sg4k4")
+texture = ExtResource("3_a8oc7")
 centered = false
 offset = Vector2(-4, -36)
 
@@ -81,7 +81,7 @@ unique_name_in_owner = true
 visible = false
 position = Vector2(18, -32)
 script = ExtResource("6_divql")
-text = "Level 1-1
-CKeys and Doors"
+text = "Level B-U-G
+If you're seeing this, it's a bug"
 font = ExtResource("5_t633j")
 line_sep = 23

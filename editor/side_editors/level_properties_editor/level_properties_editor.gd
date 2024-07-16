@@ -168,26 +168,17 @@ func _on_set_name(new_name: String) -> void:
 	if _level_data.name == new_name: return
 	_level_data.name = new_name
 	if DEBUG: print_debug("Level name: " + new_name)
-	
-	for entry: Entry in editor_data.level.entries.get_children():
-		entry.update_name()
 
 func _on_set_title(new_title: String) -> void:
 	if _setting_to_data: return
 	if _level_data.title == new_title: return
 	_level_data.title = new_title
-	
-	for entry: Entry in editor_data.level.entries.get_children():
-		entry.update_name()
 
 func _on_set_author(new_author: String) -> void:
 	if _setting_to_data: return
 	if _level_data.author == new_author: return
 	_level_data.author = new_author
 	if DEBUG: print_debug("Level author: " + new_author)
-	
-	for entry: Entry in editor_data.level.entries.get_children():
-		entry.update_name()
 
 func _set_level_number(new_number: int) -> void:
 	new_number -= 1

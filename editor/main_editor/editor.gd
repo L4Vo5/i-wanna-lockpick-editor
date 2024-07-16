@@ -77,7 +77,8 @@ func _ready() -> void:
 	
 	data.gameplay = gameplay
 	data.level = level
-	gameplay.level.exclude_player = true
+	level.exclude_player = true
+	level.allow_ui = false
 	level.load_output_points = false
 	if FileAccess.file_exists(Global.settings.current_editor_pack):
 		load_level(Global.settings.current_editor_pack)
@@ -210,6 +211,7 @@ func _on_play_pressed(mode: GameplayManager.PlayMode) -> void:
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
+	level.allow_ui = data.is_playing
 	level.load_output_points = data.is_playing
 	right_dock.visible = not data.disable_editing
 	data.danger_highlight.stop_adapting()

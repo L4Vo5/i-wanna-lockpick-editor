@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b5uagksbmtn6r"
-path="res://.godot/imported/spr_keypad_bottom_1.png-e98ee625d604117a536be0be00096bcd.ctex"
+uid="uid://cxg0mv4k2jhsc"
+path="res://.godot/imported/warp_rod_ninepatch.png-33dcd25bdf3af252f5bc92c1013106da.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/keys/keypad/spr_keypad_bottom_1.png"
-dest_files=["res://.godot/imported/spr_keypad_bottom_1.png-e98ee625d604117a536be0be00096bcd.ctex"]
+source_file="res://level_elements/ui/warp_rod/warp_rod_ninepatch.png"
+dest_files=["res://.godot/imported/warp_rod_ninepatch.png-33dcd25bdf3af252f5bc92c1013106da.ctex"]
 
 [params]
 

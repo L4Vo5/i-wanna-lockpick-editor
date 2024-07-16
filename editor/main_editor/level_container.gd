@@ -45,8 +45,8 @@ var hover_highlight: HoverHighlight:
 @export var selection_outline: SelectionOutline
 @export var selection_box: Control
 
-@export var camera_dragger: CameraDragger
-@export var editor_camera: Camera2D
+@onready var camera_dragger: NodeDragger = %CameraDragger
+@onready var editor_camera: Camera2D = %EditorCamera
 
 # Ghosts shouldn't be seen when something's being dragged
 
@@ -197,31 +197,13 @@ var did_toggle_selection: bool = false
 var toggle_selection_remove: bool = false
 var multi_drag: bool = false
 
-func _get_additional_selectables() -> Array:
-	var result := []
-	return result
-
-func _get_additional_selection_rect(_data) -> Rect2i:
-	assert(false, "Invalid additional selection")
-	return Rect2i()
-
-func _can_move_additional_selection(_delta: Vector2i) -> bool:
-	var _exclusions: Array[String] = []
-	for _data in additional_selection:
-		pass
-	return true
-
-func _move_additional_selection(_delta: Vector2i) -> void:
-	for data in additional_selection:
-		pass
-
 func _multiple_selection_grid_size() -> Vector2i:
 	var max_grid_size := GRID_SIZE
 	for id in selection_system.selection:
 		var data = editor_data.level_data.collision_system.get_rect_data(id)
+		# if there's any tiles in the selection, grid size is 32,32
 		if data is Vector2i:
-			return Vector2i(32, 32) # maximum grid size
-		# goal, player spawn and level elements don't need to be handled since they have minimum grid size
+			return Vector2i(32, 32)
 	return max_grid_size
 
 func reset_multiple_selection() -> void:

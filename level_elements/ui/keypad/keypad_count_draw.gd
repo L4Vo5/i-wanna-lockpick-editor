@@ -16,6 +16,10 @@ const CHAR_SIZE := Vector2i(10, 14)
 	"x0", "x0",
 ]
 
+var level: Level:
+	get:
+		return owner.level
+
 # PERF: simply do not do this every frame :)
 func _process(_delta: float) -> void:
 	queue_redraw()
@@ -29,8 +33,8 @@ func _draw() -> void:
 			var str := strings[y * 2 + x]
 			var color: Enums.colors = KeyPad.KEY_COLORS[y * 2 + x]
 			var key_count := ComplexNumber.new()
-			if is_instance_valid(Global.current_level):
-				key_count = Global.current_level.logic.key_counts[color]
+			if is_instance_valid(level):
+				key_count = level.logic.key_counts[color]
 			str = "x" + str(key_count)
 			
 			draw_str(KeyPad.KEY_START + KeyPad.KEY_DIFF * Vector2i(x, y) + Vector2i(36, 13), str)

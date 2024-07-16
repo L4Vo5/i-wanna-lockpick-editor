@@ -23,7 +23,6 @@ var is_playing := false:
 
 var game_version: String = ProjectSettings.get_setting("application/config/game_version")
 
-@onready var key_pad: KeyPad = %KeyPad
 @onready var fatal_error_dialog: AcceptDialog = %FatalError
 @onready var safe_error_dialog: AcceptDialog = %SafeError
 @onready var http_request: HTTPRequest = $HTTPRequest
@@ -61,8 +60,6 @@ func _init() -> void:
 		settings = LockpickSettings.new()
 
 func _ready() -> void:
-	if in_editor:
-		key_pad.hide()
 	set_mode(_current_mode)
 	
 	
@@ -184,8 +181,6 @@ func _physics_process(delta: float) -> void:
 	RenderingServer.global_shader_parameter_set(&"FPS_TIME", physics_time)
 	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
 	if not in_editor:
-		# PERF: No real need to do this every frame
-		key_pad.update_pos()
 		assert(PerfManager.check_balances())
 
 # sets the viewport according to gameplay settings

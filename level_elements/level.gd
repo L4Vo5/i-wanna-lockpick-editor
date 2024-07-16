@@ -27,6 +27,12 @@ var level_data: LevelData = null:
 ## If true, output points' doors will be loaded, if available.
 @export var load_output_points := true
 
+@export var allow_ui := true:
+	set(val):
+		if allow_ui == val: return
+		allow_ui = val
+		ui.visible = allow_ui
+
 # makes it so the level doesn't set Global.current_level to itself
 var dont_make_current := false
 
@@ -49,11 +55,9 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var i_view_sound_1: AudioStreamPlayer = %IView1
 @onready var i_view_sound_2: AudioStreamPlayer = %IView2
 @onready var undo_sound: AudioStreamPlayer = %Undo
-@onready var autorun_sound: AudioStreamPlayer = %Autorun
-@onready var autorun_off: Sprite2D = %AutorunOff
-@onready var autorun_on: Sprite2D = %AutorunOn
 @onready var camera: Camera2D = %LevelCamera
-#@onready var camera_dragger: Node2D = $CameraDragger
+@onready var ui: CanvasLayer = %UI
+
 
 @onready var hover_highlight: HoverHighlight = %HoverHighlight
 var hovering_over: Node:
@@ -67,8 +71,6 @@ var collision_system: CollisionSystem:
 
 var player: Kid
 var goal: LevelGoal
-
-var autorun_tween: Tween
 
 # elements will have a duplicate of the data stored in level_data. this lets you find the original when needed.
 var element_to_original_data := {}
@@ -128,25 +130,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		logic.end_undo_action()
 	elif event.is_action_pressed(&"autorun"):
 		Global.settings.is_autorun_on = !Global.settings.is_autorun_on
-		var used: Sprite2D
-		if Global.settings.is_autorun_on:
-			autorun_sound.pitch_scale = 1
-			autorun_off.hide()
-			used = autorun_on
-		else:
-			autorun_sound.pitch_scale = 0.7
-			autorun_on.hide()
-			used = autorun_off
-		autorun_sound.play()
-		if is_instance_valid(autorun_tween):
-			autorun_tween.kill()
-		autorun_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-		used.show()
-		used.modulate.a = 0
-		
-		autorun_tween.tween_property(used, "modulate:a", 1, 0.1)
-		autorun_tween.tween_interval(0.5)
-		autorun_tween.tween_property(used, "modulate:a", 0, 0.5)
+		ui.show_autorun_animation(Global.settings.is_autorun_on)
 
 func _ready() -> void:
 	if not dont_make_current:
@@ -271,13 +255,13 @@ func _update_player_spawn_position() -> void:
 
 func _update_goal_position() -> void:
 	if not is_node_ready(): return
-	if not level_data.has_goal:
-		if is_instance_valid(goal):
-			goal.queue_free()
-	else:
+	if level_data.has_goal:
 		if not is_instance_valid(goal):
 			_spawn_goal()
 		goal.position = level_data.goal_position + Vector2i(16, 16)
+	else:
+		if is_instance_valid(goal):
+			goal.queue_free()
 	if not dont_update_collision_system:
 		var id: int
 		if level_data.elem_to_collision_system_id.has(&"goal"):
