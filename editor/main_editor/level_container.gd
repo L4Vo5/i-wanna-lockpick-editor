@@ -45,8 +45,8 @@ var hover_highlight: HoverHighlight:
 @export var selection_outline: SelectionOutline
 @export var selection_box: Control
 
-@export var camera_dragger: CameraDragger
-@export var editor_camera: Camera2D
+@onready var camera_dragger: NodeDragger = %CameraDragger
+@onready var editor_camera: Camera2D = %EditorCamera
 
 # Ghosts shouldn't be seen when something's being dragged
 

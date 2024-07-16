@@ -13,7 +13,7 @@
 [ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
 [ext_resource type="Script" path="res://editor/main_editor/level_outline.gd" id="9_r4glf"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
-[ext_resource type="Script" path="res://level_elements/camera_dragger.gd" id="10_nd33d"]
+[ext_resource type="Script" path="res://misc/node_dragger.gd" id="10_nd33d"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="11_psli5"]
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/side_editors/key_editor/key_editor.tscn" id="12_cr7ft"]
 [ext_resource type="Script" path="res://editor/misc/selection_outline.gd" id="13_621va"]
@@ -224,7 +224,7 @@ editable = false
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "gameplay", "level_viewport", "ghost_door", "ghost_key", "ghost_entry", "ghost_salvage_point", "editor", "danger_highlight", "selected_highlight", "selection_outline", "selection_box", "camera_dragger", "editor_camera")]
+[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "gameplay", "level_viewport", "ghost_door", "ghost_key", "ghost_entry", "ghost_salvage_point", "editor", "danger_highlight", "selected_highlight", "selection_outline", "selection_box")]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -242,8 +242,6 @@ danger_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewpor
 selected_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/SelectedHighlight")
 selection_outline = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/SelectionOutline")
 selection_box = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/SelectionBox")
-camera_dragger = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger")
-editor_camera = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/EditorCamera")
 
 [node name="Panel" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer"]
 layout_mode = 1
@@ -343,11 +341,14 @@ visible = false
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vegpn")
 
-[node name="CameraDragger" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("camera")]
+[node name="CameraDragger" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("node")]
+unique_name_in_owner = true
 script = ExtResource("10_nd33d")
-camera = NodePath("../EditorCamera")
+node = NodePath("../EditorCamera")
+move_opposite_to_mouse = true
 
 [node name="EditorCamera" type="Camera2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]
+unique_name_in_owner = true
 anchor_mode = 0
 
 [node name="RightDock" type="MarginContainer" parent="HSplitContainer"]
