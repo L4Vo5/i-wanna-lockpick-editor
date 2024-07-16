@@ -1,8 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://co2cgujysw6ei"]
+[gd_scene load_steps=10 format=3 uid="uid://co2cgujysw6ei"]
 
 [ext_resource type="Script" path="res://level_elements/ui/warp_rod/warp_rod.gd" id="1_ipkf8"]
 [ext_resource type="Texture2D" uid="uid://cxg0mv4k2jhsc" path="res://level_elements/ui/warp_rod/warp_rod_ninepatch.png" id="2_0f83x"]
 [ext_resource type="AudioStream" uid="uid://c14d7y5nj1gaa" path="res://level_elements/ui/keypad/keypad_sound.wav" id="3_loyjj"]
+[ext_resource type="Script" path="res://level_elements/ui/warp_rod/warp_rod_screen.gd" id="4_5l1i2"]
+[ext_resource type="Script" path="res://misc/node_dragger.gd" id="4_5p2ky"]
+[ext_resource type="AudioStream" uid="uid://c5yw36qvx5ons" path="res://level_elements/ui/warp_rod/snd_select_beep.wav" id="4_ra311"]
+[ext_resource type="PackedScene" uid="uid://sn7s10qp37vo" path="res://level_elements/ui/warp_rod/warp_rod_node.tscn" id="4_usv4t"]
+[ext_resource type="Texture2D" uid="uid://dp2hq5c0cfjpm" path="res://level_elements/ui/warp_rod/node_current.png" id="5_166cn"]
+[ext_resource type="Texture2D" uid="uid://yyhvwt8q4ae0" path="res://level_elements/ui/warp_rod/node_available.png" id="6_eynso"]
 
 [node name="WarpRod" type="NinePatchRect"]
 offset_left = 115.0
@@ -21,3 +27,83 @@ unique_name_in_owner = true
 stream = ExtResource("3_loyjj")
 volume_db = -8.432
 bus = &"Sfx"
+
+[node name="Beep" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("4_ra311")
+pitch_scale = 0.8
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="ScreenDragger" type="Node" parent="MarginContainer" node_paths=PackedStringArray("node")]
+script = ExtResource("4_5p2ky")
+input_action = &"drag_warp_rod"
+node = NodePath("../ScreenContainer/WarpRodScreen")
+
+[node name="ScreenContainer" type="Control" parent="MarginContainer"]
+clip_contents = true
+layout_mode = 2
+
+[node name="WarpRodScreen" type="Control" parent="MarginContainer/ScreenContainer"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_5l1i2")
+
+[node name="WarpRodNode" parent="MarginContainer/ScreenContainer/WarpRodScreen" instance=ExtResource("4_usv4t")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 80.0
+offset_top = 65.0
+offset_right = -424.0
+offset_bottom = -295.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="WarpRodNode2" parent="MarginContainer/ScreenContainer/WarpRodScreen" instance=ExtResource("4_usv4t")]
+layout_mode = 1
+offset_left = 188.0
+offset_top = 165.0
+offset_right = -316.0
+offset_bottom = -195.0
+texture = ExtResource("5_166cn")
+state = 2
+
+[node name="WarpRodNode3" parent="MarginContainer/ScreenContainer/WarpRodScreen" instance=ExtResource("4_usv4t")]
+layout_mode = 1
+offset_left = 407.0
+offset_top = 98.0
+offset_right = -97.0
+offset_bottom = -262.0
+texture = ExtResource("6_eynso")
+state = 1
+
+[node name="WarpRodNode4" parent="MarginContainer/ScreenContainer/WarpRodScreen" instance=ExtResource("4_usv4t")]
+layout_mode = 1
+offset_left = 618.0
+offset_top = 252.0
+offset_right = 114.0
+offset_bottom = -108.0
+texture = ExtResource("6_eynso")
+state = 1
+
+[node name="WarpNodeDragger" type="Node" parent="MarginContainer"]
+unique_name_in_owner = true
+script = ExtResource("4_5p2ky")
+input_action = &"drag_warp_node"

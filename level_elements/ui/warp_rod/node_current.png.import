@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cxg0mv4k2jhsc"
-path="res://.godot/imported/spr_warp_rod_ninepatch.png-0e4e2f35aeb3e685c6610a3d53dbaf5f.ctex"
+uid="uid://dp2hq5c0cfjpm"
+path="res://.godot/imported/node_current.png-f00eac85a83dcb2673502272677da00b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/ui/warp_rod/spr_warp_rod_ninepatch.png"
-dest_files=["res://.godot/imported/spr_warp_rod_ninepatch.png-0e4e2f35aeb3e685c6610a3d53dbaf5f.ctex"]
+source_file="res://level_elements/ui/warp_rod/node_current.png"
+dest_files=["res://.godot/imported/node_current.png-f00eac85a83dcb2673502272677da00b.ctex"]
 
 [params]
 

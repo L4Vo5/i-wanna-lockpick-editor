@@ -341,7 +341,7 @@ visible = false
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vegpn")
 
-[node name="CameraDragger" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("node")]
+[node name="CameraDragger" type="Node" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("node")]
 unique_name_in_owner = true
 script = ExtResource("10_nd33d")
 node = NodePath("../EditorCamera")
