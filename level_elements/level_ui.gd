@@ -18,6 +18,9 @@ func _init() -> void:
 func _ready() -> void:
 	assert(level)
 	key_pad.level = level
+	(func():
+		warp_rod.pack_data = level.gameplay_manager.pack_data
+	).call_deferred()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not Global.is_playing:

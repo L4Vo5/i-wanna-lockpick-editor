@@ -18,13 +18,6 @@ func _init() -> void:
 	child_entered_tree.connect(_on_node_added)
 	child_exiting_tree.connect(_on_node_removed)
 
-func _ready() -> void:
-	# Debug
-	for child in get_children():
-		for other_child in get_children():
-			if child != other_child:
-				child.connects_to.push_back(other_child)
-
 func _on_node_added(node: WarpRodNode) -> void:
 	node.hovered.connect(_on_node_hovered.bind(node))
 	node.unhovered.connect(_on_node_unhovered.bind(node))
