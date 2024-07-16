@@ -63,8 +63,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("4_5l1i2")
+can_drag_nodes = false
 
 [node name="WarpRodNode" parent="MarginContainer/ScreenContainer/WarpRodScreen" instance=ExtResource("4_usv4t")]
+custom_minimum_size = Vector2(37, 32)
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
@@ -75,8 +77,10 @@ offset_right = -424.0
 offset_bottom = -295.0
 grow_horizontal = 1
 grow_vertical = 1
+text = "EX"
 
 [node name="WarpRodNode2" parent="MarginContainer/ScreenContainer/WarpRodScreen" instance=ExtResource("4_usv4t")]
+custom_minimum_size = Vector2(35, 32)
 layout_mode = 1
 offset_left = 188.0
 offset_top = 165.0
@@ -84,8 +88,10 @@ offset_right = -316.0
 offset_bottom = -195.0
 texture = ExtResource("5_166cn")
 state = 2
+text = "T2"
 
 [node name="WarpRodNode3" parent="MarginContainer/ScreenContainer/WarpRodScreen" instance=ExtResource("4_usv4t")]
+custom_minimum_size = Vector2(45, 32)
 layout_mode = 1
 offset_left = 407.0
 offset_top = 98.0
@@ -93,8 +99,10 @@ offset_right = -97.0
 offset_bottom = -262.0
 texture = ExtResource("6_eynso")
 state = 1
+text = "Hub"
 
 [node name="WarpRodNode4" parent="MarginContainer/ScreenContainer/WarpRodScreen" instance=ExtResource("4_usv4t")]
+custom_minimum_size = Vector2(43, 32)
 layout_mode = 1
 offset_left = 618.0
 offset_top = 252.0
@@ -102,6 +110,7 @@ offset_right = 114.0
 offset_bottom = -108.0
 texture = ExtResource("6_eynso")
 state = 1
+text = "3-2"
 
 [node name="WarpNodeDragger" type="Node" parent="MarginContainer"]
 unique_name_in_owner = true
