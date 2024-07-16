@@ -508,7 +508,7 @@ func on_salvaged_door(door: Door) -> void:
 	# Unnecessary... but helps in the salvage point editor
 	door_data.amount.set_to(1, 0)
 	level.goal.snd_win.play()
-	level.gameplay_manager.pack_state.salvage_door(sid, door_data)
+	level.gameplay_manager.active_state.salvage_door(sid, door_data)
 	level.gameplay_manager.win_animation("Door Salvaged!")
 
 ## A key, door, or anything else can call these functions to ensure that the undo_redo object is ready for writing

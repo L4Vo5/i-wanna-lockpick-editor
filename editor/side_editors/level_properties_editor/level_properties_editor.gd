@@ -153,10 +153,9 @@ func _set_to_level_data() -> void:
 func _set_to_level_pack_data() -> void:
 	if _setting_to_data: return
 	_setting_to_data = true
-	var state_data := _level_pack_data.state_data
 	level_list.pack_data = _level_pack_data
-	if state_data:
-		level_list.set_selected_to(state_data.current_level)
+	if editor_data:
+		level_list.set_selected_to(editor_data.current_level)
 	_setting_to_data = false
 
 func _on_size_changed() -> void:
@@ -206,13 +205,13 @@ func _on_changed_exitable() -> void:
 		entry.update_status()
 
 func _delete_current_level() -> void:
-	_level_pack_data.delete_level(_level_pack_data.state_data.current_level)
+	_level_pack_data.delete_level(editor_data.current_level)
 	if _level_pack_data.levels.size() == 0:
 		_level_pack_data.add_level(LevelData.get_default_level(), 0)
 
 func _create_new_level() -> void:
 	var new_level := LevelData.get_default_level()
-	_level_pack_data.add_level(new_level, _level_pack_data.state_data.current_level + 1)
+	_level_pack_data.add_level(new_level, editor_data.current_level + 1)
 
 func _duplicate_current_level() -> void:
-	_level_pack_data.duplicate_level(_level_pack_data.state_data.current_level)
+	_level_pack_data.duplicate_level(editor_data.current_level)

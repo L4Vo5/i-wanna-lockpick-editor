@@ -185,8 +185,17 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 		hc.start(HashingContext.HASH_SHA1)
 		hc.update(data)
 		# "& ~(1<<63)" ensures it's not negative
-		var h := hc.finish().decode_s64(0) & ~(1<<63)
+		var hash := hc.finish()
+		var h := hash.decode_s64(0) & ~(1<<63)
 		lvl_pack_data.pack_id = h
+		lvl_pack_data.levels_by_id.clear()
+		for lvl in lvl_pack_data.levels:
+			hc.start(HashingContext.HASH_SHA256)
+			hc.update(hash)
+			hc.update(PackedByteArray([1]))
+			hash = hc.finish()
+			lvl.unique_id = hash.decode_s64(0)
+			lvl_pack_data.levels_by_id[lvl.unique_id] = lvl
 	
 	lvl_pack_data.file_path = path
 	return lvl_pack_data

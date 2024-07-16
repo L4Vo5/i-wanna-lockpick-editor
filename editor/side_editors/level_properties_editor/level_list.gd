@@ -83,6 +83,7 @@ func _update_item(item: TreeItem, level: LevelData) -> void:
 func set_selected_to(index: int) -> void:
 	var item: TreeItem = get_root().get_child(index)
 	if not item:
+		var children := get_root().get_children()
 		breakpoint
 	set_selected(item, 0)
 	scroll_to_item(item)

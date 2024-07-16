@@ -8,24 +8,56 @@ var _pack_data: LevelPackData
 var pack_state: LevelPackStateData:
 	get:
 		return _pack_data.state_data
+var test_state: LevelPackStateData
+var active_state: LevelPackStateData:
+	get:
+		return test_state if mode == PlayMode.TESTING else pack_state
+
+var current_level: int
+## For EDITOR no state is modified, for TESTING test_state is modified, for PLAYING pack_state is modified
+var mode := PlayMode.EDITOR
+
+enum PlayMode {
+	EDITOR,
+	TESTING,
+	PLAYING
+}
 
 @onready var level: Level = %Level
 
 @onready var transition: Transition = %Transition
 
-@onready var debug_collision_diagram: TextureRect = %DebugCollisionDiagram
-
 func _ready() -> void:
 	level.gameplay_manager = self
+
+func set_play_mode(play_mode: PlayMode) -> void:
+	print("Transitioning to ", PlayMode.find_key(play_mode))
+	mode = play_mode
+	match play_mode:
+		PlayMode.EDITOR:
+			# delete test state if it exists
+			test_state = null
+			reset()
+		PlayMode.TESTING:
+			# new test state
+			test_state = LevelPackStateData.make_from_pack_data(_pack_data)
+			test_state.current_level = _pack_data.levels[current_level].unique_id
+			reset()
+		PlayMode.PLAYING:
+			# synchronize with pack state
+			if Global.danger_override and Input.is_key_pressed(KEY_CTRL):
+				# allow entering to anywhere for editor / pack state testing idk
+				pack_state.current_level = _pack_data.levels[current_level].unique_id
+				reset()
+			else:
+				set_current_level_unique_id(pack_state.current_level)
 
 func load_level_pack(pack: LevelPackData) -> void:
 	assert(PerfManager.start("GameplayManager::load_level_pack"))
 	_pack_data = pack
 	var state := LevelPackStateData.find_state_file_for_pack_or_create_new(_pack_data)
 	_pack_data.state_data = state
-	var level_data: LevelData = _pack_data.levels[state.current_level]
-	level.level_data = level_data
-	reset()
+	set_current_level_unique_id(state.current_level)
 	assert(PerfManager.end("GameplayManager::load_level_pack"))
 
 func get_level_pack() -> LevelPackData:
@@ -34,34 +66,52 @@ func get_level_pack() -> LevelPackData:
 ## Sets the current level to the given level id within the pack and loads it.
 func set_current_level(id: int) -> void:
 	assert(PerfManager.start("GameplayManager::set_current_level (%d)" % id))
-	pack_state.current_level = id
-	pack_state.save()
-	var level_data: LevelData = _pack_data.levels[pack_state.current_level]
+	current_level = id
+	var level_data: LevelData = _pack_data.levels[current_level]
+	if mode == PlayMode.TESTING:
+		test_state.current_level = level_data.unique_id
+	elif mode == PlayMode.PLAYING:
+		pack_state.current_level = level_data.unique_id
+		pack_state.save()
+	assert(_pack_data.levels_by_id[level_data.unique_id] == level_data)
 	level.level_data = level_data
 	reset()
 	assert(PerfManager.end("GameplayManager::set_current_level (%d)" % id))
 
+func set_current_level_unique_id(unique_id: int) -> void:
+	# I don't think there's something much better ... well find doesn't take too long though
+	var lvl: LevelData = _pack_data.levels_by_id.get(unique_id)
+	if lvl == null:
+		printerr("Invalid unique id ", String.num_uint64(unique_id, 16))
+		return set_current_level(0)
+	set_current_level(_pack_data.levels.find(lvl))
+
 func has_won_current_level() -> bool:
-	return pack_state.completed_levels[pack_state.current_level] == 1
+	return active_state.completed_levels.has(_pack_data.levels[current_level].unique_id)
 
 func reset() -> void:
 	level.reset()
 
 func win() -> void:
-	if pack_state.completed_levels[pack_state.current_level] != 1:
-		pack_state.completed_levels[pack_state.current_level] = 1
-		pack_state.save()
+	if not has_won_current_level():
+		active_state.completed_levels[_pack_data.levels[current_level].unique_id] = 1
+		if mode == PlayMode.PLAYING:
+			pack_state.save()
 	win_animation("Congratulations!")
 
 func can_exit() -> bool:
-	if pack_state.exit_levels.is_empty():
-		return false
-	var exit: int = pack_state.exit_levels[-1]
-	if exit < 0 or exit >= _pack_data.levels.size():
-		pack_state.exit_levels.clear()
-		pack_state.exit_positions.clear()
-		return false
-	return true
+	var state := active_state
+	while not state.exit_levels.is_empty():
+		var exit: int = state.exit_levels[-1]
+		if _pack_data.levels_by_id.has(exit):
+			if _pack_data.levels_by_id[exit].exitable:
+				return true
+			state.exit_levels.clear()
+			state.exit_positions.clear()
+			return false
+		state.exit_levels.remove_at(state.exit_levels.size() - 1)
+		state.exit_positions.pop_back()
+	return false
 
 func exit_level() -> void:
 	if not can_exit():
@@ -71,11 +121,11 @@ func exit_level() -> void:
 
 ## Exits WITHOUT checking
 func exit_immediately() -> void:
-	print(pack_state.exit_levels, pack_state.exit_positions)
-	var exit_pos: Vector2i = pack_state.exit_positions.pop_back()
-	var exit_lvl: int = pack_state.exit_levels[-1]
-	pack_state.exit_levels.remove_at(pack_state.exit_levels.size() - 1)
-	set_current_level(exit_lvl)
+	assert(mode != PlayMode.EDITOR)
+	var exit_pos: Vector2i = active_state.exit_positions.pop_back()
+	var exit_lvl: int = active_state.exit_levels[-1]
+	active_state.exit_levels.remove_at(active_state.exit_levels.size() - 1)
+	set_current_level_unique_id(exit_lvl)
 	level.player.position = exit_pos
 
 func exit_or_reset() -> void:
@@ -85,13 +135,15 @@ func exit_or_reset() -> void:
 		reset()
 
 func enter_level(id: int, exit_position: Vector2i) -> void:
+	assert(mode != PlayMode.EDITOR)
 	# push onto exit stack
+	var state := active_state
 	if _pack_data.levels[id].exitable:
-		pack_state.exit_levels.push_back(pack_state.current_level)
-		pack_state.exit_positions.push_back(exit_position)
+		state.exit_levels.push_back(state.current_level)
+		state.exit_positions.push_back(exit_position)
 	else:
-		pack_state.exit_levels.clear()
-		pack_state.exit_positions.clear()
+		state.exit_levels.clear()
+		state.exit_positions.clear()
 	
 	var _new_level_data := _pack_data.levels[id]
 	var target_level_name := _new_level_data.name

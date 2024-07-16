@@ -11,12 +11,10 @@ static var level_element_type := Enums.level_element_types.salvage_point
 		data = val
 		_connect_data()
 
-var level: Level:
-	set(val):
-		level = val
-		if not is_instance_valid(val): return
-		level_pack_state = val.gameplay_manager.pack_state
-var level_pack_state: LevelPackStateData
+var level: Level
+var level_pack_state: LevelPackStateData:
+	get:
+		return level.gameplay_manager.active_state
 
 var door: Door = null
 var door_error = false

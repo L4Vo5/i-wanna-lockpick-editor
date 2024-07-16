@@ -198,6 +198,9 @@ func reset() -> void:
 		for i in mini(needed, current):
 			var node := container.get_child(i)
 			var original_data = list[i]
+			# cleanup
+			original_data_to_element.erase(element_to_original_data[node])
+			
 			element_to_original_data[node] = original_data
 			original_data_to_element[original_data] = node
 			node.data = original_data.duplicated()
@@ -497,7 +500,8 @@ static func get_autotiling_tile(bits: int) -> Vector2i:
 
 ## Autotiling!
 func update_tile(tile_coord: Vector2i) -> void:
-	if not level_data.tiles.get(tile_coord): return
+	if not level_data.tiles.has(tile_coord): return
+	var tile: int = level_data.tiles.get(tile_coord)
 	var layer := 0
 	var id := 1
 	var level_width: int = level_data.size.x / 32
@@ -507,7 +511,7 @@ func update_tile(tile_coord: Vector2i) -> void:
 	var vec: Vector2i
 	for i in TILE_LOOKUP_ORDER.size():
 		vec = TILE_LOOKUP_ORDER[i] + tile_coord
-		if level_data.tiles.get(vec) or vec.x < 0 or vec.y < 0 or vec.x >= level_width or vec.y >= level_height:
+		if level_data.tiles.get(vec) == tile or vec.x < 0 or vec.y < 0 or vec.x >= level_width or vec.y >= level_height:
 			bits |= 1 << i
 	var what_tile := tiling_lookup[bits]
 	tile_map.set_cell(layer, tile_coord, id, Vector2i(what_tile >> 16, what_tile & 0xFFFF))

@@ -9,6 +9,9 @@ signal moved_level(from: int, to: int)
 ## All the levels in the level pack
 @export var levels: Array[LevelData]
 
+## Dictionary from unique id to level data
+@export var levels_by_id: Dictionary
+
 # TODO: max length for these fields?
 ## Name of the level pack, important when picking what to play
 @export var name: String
@@ -41,12 +44,14 @@ static func make_from_level(level_data: LevelData) -> LevelPackData:
 	data.author = level_data.author
 	data.levels = [level_data.duplicated()]
 	data.levels[0].resource_path = ""
+	data.levels_by_id[data.levels[0].unique_id] = data.levels[0]
 	return data
 
 static func get_default_level_pack() -> LevelPackData:
 	var level := LevelData.get_default_level()
 	var pack := LevelPackData.new()
 	pack.levels.push_back(level)
+	pack.levels_by_id[level.unique_id] = level
 	return pack
 
 # Only the keys are used. values are true for fixable and false for unfixable
@@ -72,6 +77,10 @@ func check_valid(should_correct: bool) -> void:
 func add_level(new_level: LevelData, id: int) -> void:
 	var err := levels.insert(id, new_level)
 	assert(err == OK)
+	# Will probably never happen, but just to be safe
+	while levels_by_id.has(new_level.unique_id):
+		new_level.unique_id = randi() + (randi() << 32)
+	levels_by_id[new_level.unique_id] = new_level
 	# No need to do this if you added a level at the very end.
 	if id != levels.size():
 		for level in levels:
@@ -79,14 +88,13 @@ func add_level(new_level: LevelData, id: int) -> void:
 				if entry.leads_to >= id:
 					entry.leads_to += 1
 	added_level.emit(id)
-	if state_data and state_data.current_level >= id:
-		state_data.current_level += 1
 	emit_changed()
 
 func duplicate_level(id: int) -> void:
 	add_level(levels[id].duplicated(), id + 1)
 
 func delete_level(id: int) -> void:
+	levels_by_id.erase(levels[id].unique_id)
 	levels.remove_at(id)
 	for level in levels:
 		for entry in level.entries:
@@ -94,11 +102,6 @@ func delete_level(id: int) -> void:
 				entry.leads_to -= 1
 			elif entry.leads_to == id:
 				entry.leads_to = -1
-	if state_data:
-		if state_data.current_level > id:
-			state_data.current_level -= 1
-		if state_data.current_level > 0 and state_data.current_level >= levels.size():
-			state_data.current_level -= 1
 	deleted_level.emit(id)
 	emit_changed()
 
@@ -114,11 +117,6 @@ func swap_levels(id_1: int, id_2: int) -> void:
 				entry.leads_to = id_2
 			elif entry.leads_to == id_2:
 				entry.leads_to = id_1
-	if state_data:
-		if state_data.current_level == id_1:
-			state_data.current_level = id_2
-		elif state_data.current_level == id_2:
-			state_data.current_level = id_1
 	swapped_levels.emit(id_1, id_2)
 	emit_changed()
 
@@ -134,19 +132,15 @@ func move_level(from: int, to: int) -> void:
 		for entry in level.entries:
 			if entry.leads_to == from:
 					entry.leads_to = to
-			elif to > from:
-				# from | ... | ... | ... | ...
-				#  +3     -1    -1    -1     -1
-				#  ... | ... | ... | ... | to
-				if entry.leads_to > from and entry.leads_to <= to:
-					entry.leads_to -= 1
-			else:
-				# ... | ... | ... | ... | from
-				#        +1     +1    +1    -3
-				# ... | to  | ... | ... | ...
-				if entry.leads_to >= to and entry.leads_to < from:
-					entry.leads_to += 1
-	if state_data and state_data.current_level == from:
-		state_data.current_level = to
+			# from | ... | ... | ... | ...
+			#  +3     -1    -1    -1     -1
+			#  ... | ... | ... | ... | to
+			elif entry.leads_to > from and entry.leads_to <= to:
+				entry.leads_to -= 1
+			# ... | ... | ... | ... | from
+			#        +1     +1    +1    -3
+			# ... | to  | ... | ... | ...
+			elif entry.leads_to >= to and entry.leads_to < from:
+				entry.leads_to += 1
 	moved_level.emit(from, to)
 	emit_changed()

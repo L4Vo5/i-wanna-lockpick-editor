@@ -14,6 +14,7 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.compress()
 
 static func _save_level(level: LevelData, data: ByteAccess) -> void:
+	data.store_s64(level.unique_id)
 	data.store_string(level.title + "\n" + level.name)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
@@ -128,11 +129,14 @@ static func load(raw_data: PackedByteArray, offset: int) -> LevelPackData:
 	level_pack.levels.resize(level_count)
 	for i in level_count:
 		if data.reached_eof(): return
-		level_pack.levels[i] = _load_level(data)
+		var lvl := _load_level(data)
+		level_pack.levels[i] = lvl
+		level_pack.levels_by_id[lvl.unique_id] = lvl
 	return level_pack
 
 static func _load_level(data: ByteAccess) -> LevelData:
 	var level := LevelData.new()
+	level.unique_id = data.get_s64()
 	var title_name := data.get_string().split("\n")
 	assert(title_name.size() == 2)
 	level.title = title_name[0]
@@ -151,7 +155,7 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	if SaveLoad.PRINT_LOAD: print("tile count is %d" % tile_amount)
 	for _i in tile_amount:
 		if data.reached_eof(): return
-		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = true
+		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = 1
 	
 	var key_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("key count is %d" % key_amount)
@@ -262,16 +266,16 @@ static func save_pack_state(data: ByteAccess, state: LevelPackStateData) -> void
 	data.store_string(Global.game_version)
 	
 	data.store_s64(state.pack_id)
-	data.store_u32(state.current_level)
+	data.store_s64(state.current_level)
 	var level_count := state.completed_levels.size()
 	data.store_u32(level_count)
 	for x in state.completed_levels:
-		data.store_u8(x)
+		data.store_s64(x)
 	
 	data.store_u32(state.exit_levels.size())
 	assert(state.exit_levels.size() == state.exit_positions.size())
 	for id in state.exit_levels:
-		data.store_u32(id)
+		data.store_s64(id)
 	
 	for vec in state.exit_positions:
 		data.store_u32(vec.x)
@@ -291,21 +295,20 @@ static func load_pack_state(data: ByteAccess) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
 	state.pack_id = data.get_s64()
 	
-	state.current_level = data.get_u32()
+	state.current_level = data.get_s64()
 	var level_count := data.get_u32()
 	if level_count > MAX_ARRAY_SIZE: return
-	state.completed_levels.resize(level_count)
 	
 	for i in level_count:
 		if data.reached_eof(): return
-		state.completed_levels[i] = data.get_u8()
+		state.completed_levels[data.get_s64()] = 1
 	
 	var exit_count := data.get_u32()
 	state.exit_levels.resize(exit_count)
 	state.exit_positions.resize(exit_count)
 	for i in exit_count:
 		if data.reached_eof(): return
-		state.exit_levels[i] = data.get_u32()
+		state.exit_levels[i] = data.get_s64()
 	for i in exit_count:
 		if data.reached_eof(): return
 		state.exit_positions[i] = Vector2i(
