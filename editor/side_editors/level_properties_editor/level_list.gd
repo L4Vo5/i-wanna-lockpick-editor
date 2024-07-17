@@ -25,7 +25,7 @@ func _ready() -> void:
 	item_selected.connect(_on_item_selected)
 
 func _on_item_selected() -> void:
-	selected_level.emit(get_selected().get_index() + 1)
+	selected_level.emit(get_selected().get_index())
 
 func _disconnect_pack_data() -> void:
 	if not is_instance_valid(pack_data): return

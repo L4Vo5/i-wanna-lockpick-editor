@@ -41,12 +41,14 @@ static func make_from_level(level_data: LevelData) -> LevelPackData:
 	data.author = level_data.author
 	data.levels = [level_data.duplicated()]
 	data.levels[0].resource_path = ""
+	data.state_data = LevelPackStateData.make_from_pack_data(data)
 	return data
 
 static func get_default_level_pack() -> LevelPackData:
 	var level := LevelData.get_default_level()
 	var pack := LevelPackData.new()
 	pack.levels.push_back(level)
+	pack.state_data = LevelPackStateData.make_from_pack_data(pack)
 	return pack
 
 # Only the keys are used. values are true for fixable and false for unfixable
@@ -87,6 +89,7 @@ func duplicate_level(id: int) -> void:
 	add_level(levels[id].duplicated(), id + 1)
 
 func delete_level(id: int) -> void:
+	assert(id >= 0)
 	levels.remove_at(id)
 	for level in levels:
 		for entry in level.entries:

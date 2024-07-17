@@ -81,8 +81,8 @@ func _disconnect_level_data() -> void:
 
 func _ready() -> void:
 	# These are just so the scene works in isolation
-	_level_data = LevelData.new()
-	_level_pack_data = LevelPackData.new()
+	_level_pack_data = LevelPackData.get_default_level_pack()
+	_level_data = _level_pack_data.levels[0]
 	
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
@@ -182,9 +182,10 @@ func _on_set_author(new_author: String) -> void:
 	if DEBUG: print_debug("Level author: " + new_author)
 
 func _set_level_number(new_number: int) -> void:
-	new_number -= 1
 	if _level_pack_data.state_data.current_level != new_number:
-		editor_data.gameplay.set_current_level(new_number)
+		_level_pack_data.state_data.current_level = new_number
+		if editor_data:
+			editor_data.gameplay.set_current_level(new_number)
 
 func _on_remove_goal_button_pressed() -> void:
 	if _setting_to_data: return
