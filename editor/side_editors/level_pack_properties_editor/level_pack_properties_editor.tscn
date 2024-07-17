@@ -1,143 +1,161 @@
-[gd_scene load_steps=3 format=3 uid="uid://dbw3g8lfbjbru"]
+[gd_scene load_steps=4 format=3 uid="uid://dbw3g8lfbjbru"]
 
 [ext_resource type="Script" path="res://editor/side_editors/level_pack_properties_editor/level_pack_properties_editor.gd" id="1_0060c"]
+[ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/side_editors/level_properties_editor/level_properties_editor.tscn" id="3_jpvfh"]
 [ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_image_rect.gd" id="14_b8fnq"]
 
 [node name="LevelPackPropertiesEditor" type="MarginContainer"]
-offset_right = 193.0
+offset_right = 398.0
 offset_bottom = 596.0
-theme_override_constants/margin_left = 6
-theme_override_constants/margin_right = 6
 script = ExtResource("1_0060c")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_right = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="LevelPack" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="LevelPack" type="VBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/LevelPack"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack"]
 layout_mode = 2
 text = "- Level Pack -"
 horizontal_alignment = 1
 
-[node name="Name" type="HBoxContainer" parent="VBoxContainer/LevelPack"]
+[node name="Name" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/LevelPack/Name"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack/Name"]
 layout_mode = 2
 text = "Name: "
 
-[node name="PackName" type="LineEdit" parent="VBoxContainer/LevelPack/Name"]
+[node name="PackName" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack/Name"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unnamed)"
 context_menu_enabled = false
 
-[node name="Author" type="HBoxContainer" parent="VBoxContainer/LevelPack"]
+[node name="Author" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/LevelPack/Author"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack/Author"]
 layout_mode = 2
 text = "Author/s: "
 
-[node name="PackAuthor" type="LineEdit" parent="VBoxContainer/LevelPack/Author"]
+[node name="PackAuthor" type="LineEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack/Author"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unknown)"
 context_menu_enabled = false
 
-[node name="Description" type="VBoxContainer" parent="VBoxContainer/LevelPack"]
+[node name="Description" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/LevelPack/Description"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack/Description"]
 layout_mode = 2
 text = "Description:"
 
-[node name="PackDescription" type="CodeEdit" parent="VBoxContainer/LevelPack/Description"]
+[node name="PackDescription" type="CodeEdit" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack/Description"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 context_menu_enabled = false
+wrap_mode = 1
 gutters_draw_line_numbers = true
 
-[node name="LevelCount" type="HBoxContainer" parent="VBoxContainer/LevelPack"]
+[node name="LevelCount" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/LevelPack/LevelCount"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack/LevelCount"]
 layout_mode = 2
 text = "Level count: "
 
-[node name="LevelCountLabel" type="Label" parent="VBoxContainer/LevelPack/LevelCount"]
+[node name="LevelCountLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/LevelPack/LevelCount"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Image" type="VBoxContainer" parent="VBoxContainer"]
+[node name="Image" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 visible = false
 layout_mode = 2
 
-[node name="LevelImage" type="Label" parent="VBoxContainer/Image"]
+[node name="LevelImage" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Image"]
 layout_mode = 2
 text = "Pack Image:"
 
-[node name="NoImage" type="Label" parent="VBoxContainer/Image"]
+[node name="NoImage" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Image"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "(no image)"
 
-[node name="LevelImageRect" type="Control" parent="VBoxContainer/Image"]
+[node name="LevelImageRect" type="Control" parent="ScrollContainer/MarginContainer/VBoxContainer/Image"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 script = ExtResource("14_b8fnq")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Image"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/Image"]
 layout_mode = 2
 
-[node name="CopyToClipboard" type="Button" parent="VBoxContainer/Image/HBoxContainer"]
+[node name="CopyToClipboard" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/Image/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Copy to Clipboard"
 
-[node name="Label" type="Label" parent="VBoxContainer/Image"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/Image"]
 visible = false
 layout_mode = 2
 text = "(Save level to refresh image)"
 
-[node name="SaveData" type="VBoxContainer" parent="VBoxContainer"]
+[node name="LevelPropertiesEditor" parent="ScrollContainer/MarginContainer/VBoxContainer" instance=ExtResource("3_jpvfh")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SaveData" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/SaveData"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/SaveData"]
 layout_mode = 2
 text = "- Save Data -"
 horizontal_alignment = 1
 
-[node name="EraseSaveState" type="Button" parent="VBoxContainer/SaveData"]
+[node name="EraseSaveState" type="Button" parent="ScrollContainer/MarginContainer/VBoxContainer/SaveData"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Erase Save Data"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/SaveData"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/SaveData"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/SaveData/HBoxContainer"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/SaveData/HBoxContainer"]
 layout_mode = 2
 text = "Completed levels: "
 
-[node name="CompletedLevelsLabel" type="Label" parent="VBoxContainer/SaveData/HBoxContainer"]
+[node name="CompletedLevelsLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/SaveData/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/SaveData"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer/SaveData"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/SaveData/HBoxContainer2"]
+[node name="Label" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/SaveData/HBoxContainer2"]
 layout_mode = 2
 text = "Salvaged doors: "
 
-[node name="SalvagedDoorsLabel" type="Label" parent="VBoxContainer/SaveData/HBoxContainer2"]
+[node name="SalvagedDoorsLabel" type="Label" parent="ScrollContainer/MarginContainer/VBoxContainer/SaveData/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2

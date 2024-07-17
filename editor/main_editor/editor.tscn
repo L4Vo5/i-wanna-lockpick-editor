@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=37 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/main_editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/main_editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -18,7 +18,6 @@
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/side_editors/key_editor/key_editor.tscn" id="12_cr7ft"]
 [ext_resource type="Script" path="res://editor/misc/selection_outline.gd" id="13_621va"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
-[ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/side_editors/level_properties_editor/level_properties_editor.tscn" id="14_dug7w"]
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/main_editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/side_editors/entry_editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
@@ -106,7 +105,7 @@ sid = 0
 is_output = false
 position = Vector2i(0, 0)
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_pack_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "save_button", "save_as_button", "download_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_pack_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "save_button", "save_as_button", "download_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -120,7 +119,6 @@ side_tabs = NodePath("HSplitContainer/RightDock/BookmarkTabContainer")
 door_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Doors")
 key_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Keys")
 tile_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Tiles")
-level_properties_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Level")
 level_pack_properties_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/LevelPack")
 entry_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Entries")
 salvage_point_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/SalvagePoints")
@@ -403,10 +401,6 @@ data = SubResource("Resource_rjs50")
 visible = false
 layout_mode = 2
 data = SubResource("Resource_sx8pd")
-
-[node name="Level" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("14_dug7w")]
-visible = false
-layout_mode = 2
 
 [node name="LevelPack" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("24_ff8pk")]
 visible = false

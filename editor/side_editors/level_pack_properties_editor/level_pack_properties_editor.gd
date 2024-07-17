@@ -6,13 +6,15 @@ static var DEBUG := false
 # set externally
 var editor_data: EditorData:
 	set(val):
-		if editor_data == val: return
-		if is_instance_valid(editor_data):
-			editor_data.changed_level_pack_data.disconnect(_update_level_pack_data)
+		assert(editor_data == null)
+		assert(val)
+		assert(level_properties_editor)
 		editor_data = val
-		if is_instance_valid(editor_data):
-			editor_data.changed_level_pack_data.connect(_update_level_pack_data)
-			_update_level_pack_data()
+		val.level_properties_editor = level_properties_editor
+		level_properties_editor.editor_data = val
+		editor_data.changed_level_pack_data \
+			.connect(_update_level_pack_data)
+		_update_level_pack_data()
 
 var _level_pack_data: LevelPackData:
 	set(val):
@@ -33,6 +35,8 @@ var _level_pack_data: LevelPackData:
 @onready var erase_save_state: Button = %EraseSaveState
 @onready var completed_levels_label: Label = %CompletedLevelsLabel
 @onready var salvaged_doors_label: Label = %SalvagedDoorsLabel
+
+@onready var level_properties_editor: LevelPropertiesEditor = %LevelPropertiesEditor
 
 func _connect_pack_data() -> void:
 	if not is_instance_valid(_level_pack_data): return

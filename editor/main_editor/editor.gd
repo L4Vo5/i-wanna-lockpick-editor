@@ -8,7 +8,6 @@ class_name LockpickEditor
 @export var door_editor: DoorEditor
 @export var key_editor: KeyEditor
 @export var tile_editor: Control
-@export var level_properties_editor: LevelPropertiesEditor
 @export var level_pack_properties_editor: LevelPackPropertiesEditor
 @export var entry_editor: EntryEditor
 @export var salvage_point_editor: SalvagePointEditor
@@ -94,7 +93,6 @@ func _ready() -> void:
 	door_editor.editor_data = data
 	data.key_editor = key_editor
 	data.tile_editor = tile_editor
-	data.level_properties_editor = level_properties_editor
 	data.level_pack_properties_editor = level_pack_properties_editor
 	data.entry_editor = entry_editor
 	data.salvage_point_editor = salvage_point_editor
@@ -102,7 +100,6 @@ func _ready() -> void:
 	data.level_element_editors = level_element_editors
 	
 	level_container.editor_data = data
-	level_properties_editor.editor_data = data
 	level_pack_properties_editor.editor_data = data
 	entry_editor.editor_data = data
 	salvage_point_editor.editor_data = data
@@ -195,7 +192,7 @@ func _update_mode() -> void:
 			data.level_elements = true
 			data.level_element_type = type
 			break
-	data.level_properties = current_tab == level_properties_editor
+	data.level_properties = current_tab == level_pack_properties_editor
 	data.editing_settings = current_tab.name == "Settings"
 	data.multiple_selection = current_tab.name == "MultipleSelection"
 
