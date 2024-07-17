@@ -96,8 +96,9 @@ func _on_set_pack_author(new_author: String) -> void:
 	_level_pack_data.author = new_author
 	if DEBUG: print_debug("Pack author: " + new_author)
 
-func _on_set_pack_description(new_description: String) -> void:
+func _on_set_pack_description() -> void:
 	if _setting_to_data: return
+	var new_description: String = pack_description.text
 	if _level_pack_data.description == new_description: return
 	_level_pack_data.description = new_description
 	if DEBUG: print_debug("Pack description: " + new_description)
