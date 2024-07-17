@@ -160,10 +160,8 @@ func verify_levels_integrity(expected_invalid_entries := 0) -> void:
 				var l := levels[entry.leads_to]
 				var label = l.get_meta("label")
 				assert_that(label)\
-				.append_failure_message("stack: " + str(get_stack()[1]))\
 				.is_equal(leads_to_label)
 	assert_int(invalid_entries)\
-		.append_failure_message(str(get_stack()[1]))\
 		.is_equal(expected_invalid_entries)
 
 func verify_level_labels(labels: Array) -> void:
@@ -172,5 +170,4 @@ func verify_level_labels(labels: Array) -> void:
 		var level := levels[i]
 		assert_bool(level.has_meta("label")).is_true()
 		assert_that(level.get_meta("label"))\
-			.append_failure_message("i: %d. stack: " % i + str(get_stack()[1]))\
 			.is_equal(labels[i])
