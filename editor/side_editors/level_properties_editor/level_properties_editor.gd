@@ -6,16 +6,13 @@ static var DEBUG := false
 # set externally
 var editor_data: EditorData:
 	set(val):
-		if editor_data == val: return
-		if is_instance_valid(editor_data):
-			editor_data.changed_level_pack_data.disconnect(_update_level_pack_data)
-			editor_data.changed_level_data.disconnect(_update_level_data)
+		assert(editor_data == null)
 		editor_data = val
-		if is_instance_valid(editor_data):
-			editor_data.changed_level_pack_data.connect(_update_level_pack_data)
-			editor_data.changed_level_data.connect(_update_level_data)
-			_update_level_pack_data()
-			_update_level_data()
+		editor_data.level_properties_editor = self
+		editor_data.changed_level_pack_data.connect(_update_level_pack_data)
+		editor_data.changed_level_data.connect(_update_level_data)
+		_update_level_pack_data()
+		_update_level_data()
 
 var _level_data: LevelData:
 	set(val):
@@ -80,10 +77,6 @@ func _disconnect_level_data() -> void:
 	_level_data.changed.disconnect(_set_to_level_data)
 
 func _ready() -> void:
-	# These are just so the scene works in isolation
-	_level_pack_data = LevelPackData.get_default_level_pack()
-	_level_data = _level_pack_data.levels[0]
-	
 	_on_changed_player_spawn_pos()
 	_on_changed_goal_position()
 	visibility_changed.connect(func():
@@ -106,6 +99,15 @@ func _ready() -> void:
 	delete_level.pressed.connect(_delete_current_level)
 	duplicate_level.pressed.connect(_duplicate_current_level)
 	add_level.pressed.connect(_create_new_level)
+	
+	_standalone_setup.call_deferred()
+
+# If the scene has to work in isolation
+func _standalone_setup() -> void:
+	if editor_data: return
+	var _editor_data := EditorData.new()
+	_editor_data.level_pack_data = LevelPackData.get_default_level_pack()
+	editor_data = _editor_data
 
 func _update_level_pack_data() -> void:
 	_level_pack_data = editor_data.level_pack_data
@@ -184,8 +186,9 @@ func _on_set_author(new_author: String) -> void:
 func _set_level_number(new_number: int) -> void:
 	if _level_pack_data.state_data.current_level != new_number:
 		_level_pack_data.state_data.current_level = new_number
-		if editor_data:
+		if editor_data.gameplay:
 			editor_data.gameplay.set_current_level(new_number)
+		_update_level_data()
 
 func _on_remove_goal_button_pressed() -> void:
 	if _setting_to_data: return
@@ -194,8 +197,9 @@ func _on_remove_goal_button_pressed() -> void:
 func _on_changed_exitable() -> void:
 	if _setting_to_data: return
 	_level_data.exitable = exitable.button_pressed
-	for entry: Entry in editor_data.level.entries.get_children():
-		entry.update_status()
+	if editor_data.level:
+		for entry: Entry in editor_data.level.entries.get_children():
+			entry.update_status()
 
 func _delete_current_level() -> void:
 	_level_pack_data.delete_level(_level_pack_data.state_data.current_level)

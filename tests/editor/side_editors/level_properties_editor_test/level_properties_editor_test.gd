@@ -14,6 +14,7 @@ var level_pack: LevelPackData
 func before_test() -> void:
 	editor = LEVEL_PROPERTIES_EDITOR.instantiate()
 	add_child(editor)
+	await await_idle_frame()
 
 func test_add_level() -> void:
 	editor._create_new_level()

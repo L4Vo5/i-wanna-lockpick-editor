@@ -10,7 +10,6 @@ var editor_data: EditorData:
 		assert(val)
 		assert(level_properties_editor)
 		editor_data = val
-		val.level_properties_editor = level_properties_editor
 		level_properties_editor.editor_data = val
 		editor_data.changed_level_pack_data \
 			.connect(_update_level_pack_data)

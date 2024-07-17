@@ -6,13 +6,14 @@ var level_pack_data: LevelPackData:
 	set(val):
 		if level_pack_data == val: return
 		level_pack_data = val
-		gameplay.pack_data = val
+		if gameplay:
+			gameplay.pack_data = val
 		Global.settings.current_editor_pack = level_pack_data.file_path
 		changed_level_pack_data.emit()
 
 var pack_state_data: LevelPackStateData:
 	get:
-		return gameplay.pack_state if gameplay else null
+		return level_pack_data.state_data if level_pack_data else null
 
 signal changed_level_data
 func emit_changed_level_data():
@@ -20,7 +21,7 @@ func emit_changed_level_data():
 ## Read-only!
 var level_data: LevelData:
 	get:
-		return level.level_data
+		return level_pack_data.levels[level_pack_data.state_data.current_level]
 	set(val):
 		assert(false)
 

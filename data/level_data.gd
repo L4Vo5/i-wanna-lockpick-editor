@@ -64,7 +64,7 @@ var has_goal := true:
 		title = val
 		changed.emit()
 
-## Short label for the level, used for the warp rod. [br]
+## Short (if you want) label for the level, used for the warp rod. [br]
 ## If it's empty, it won't be included in the warp rod
 @export var label := "":
 	set(val):
