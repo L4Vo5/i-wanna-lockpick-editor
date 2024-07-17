@@ -1,18 +1,13 @@
 @tool
 extends Control
 
-@export var can_drag_nodes := true
-
-var node_dragger: NodeDragger:
+@export var can_drag_nodes := true:
 	set(val):
-		assert(not node_dragger)
-		node_dragger = val
-		node_dragger.moved_node.connect(queue_redraw)
-@onready var beep: AudioStreamPlayer = %Beep
+		can_drag_nodes = val
+		for node in get_children():
+			node.can_be_dragged = can_drag_nodes
 
-var _current_hover: WarpRodNode:
-	set = _set_current_hover
-var _cancel_hover := false
+@onready var beep: AudioStreamPlayer = %Beep
 
 func _init() -> void:
 	child_entered_tree.connect(_on_node_added)
@@ -20,44 +15,15 @@ func _init() -> void:
 
 func _on_node_added(node: WarpRodNode) -> void:
 	node.hovered.connect(_on_node_hovered.bind(node))
-	node.unhovered.connect(_on_node_unhovered.bind(node))
+	node.can_be_dragged = can_drag_nodes
 
 func _on_node_removed(node: WarpRodNode) -> void:
 	node.hovered.disconnect(_on_node_hovered.bind(node))
-	node.unhovered.disconnect(_on_node_unhovered.bind(node))
-	if _current_hover == node:
-		_current_hover = null
-
-func _process(delta: float) -> void:
-	# maybe replace with a dragger release event?
-	if _cancel_hover and not node_dragger.action_is_pressed:
-		_current_hover = null
 
 func _on_node_hovered(node: WarpRodNode) -> void:
-	if _current_hover == null:
-		_current_hover = node
-	if _current_hover == node:
-		_cancel_hover = false
-
-func _on_node_unhovered(node: WarpRodNode) -> void:
-	if _current_hover == node:
-		if not node_dragger.action_is_pressed:
-			_current_hover = null
-		else:
-			_cancel_hover = true
-
-func _set_current_hover(node: WarpRodNode) -> void:
-	if _current_hover == node: return
-	if node:
-		if not can_drag_nodes:
-			if node.state != node.State.Unavailable:
-				node.outline.show()
-				beep.play()
-		else:
-			node.outline.show()
-	_current_hover = node
-	if can_drag_nodes:
-		node_dragger.node = node
+	if not can_drag_nodes:
+		if node.state != node.State.Unavailable:
+			beep.play()
 
 func _draw() -> void:
 	for node: WarpRodNode in get_children():

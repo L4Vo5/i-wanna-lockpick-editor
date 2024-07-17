@@ -1,16 +1,10 @@
 @tool
-extends Node
+extends Control
 class_name NodeDragger
 
 @export var input_action := &"drag_camera"
 @export var node: Node:
 	set = _set_node
-@export var enabled := true:
-	set(val):
-		enabled = val
-		if not enabled:
-			action_is_pressed = 0
-		set_process_input(enabled)
 ## This should be true when moving a camera.
 @export var move_opposite_to_mouse := false
 
@@ -20,7 +14,13 @@ var action_is_pressed := false
 var last_mouse_pos := Vector2i.ZERO
 
 func _ready() -> void:
-	enabled = enabled # call setter
+	visibility_changed.connect(_on_visibility_changed)
+	_on_visibility_changed()
+
+func _on_visibility_changed() -> void:
+	if not visible:
+		action_is_pressed = 0
+	set_process_input(visible)
 
 func _set_node(val: Node) -> void:
 	if node == val: return
@@ -29,15 +29,19 @@ func _set_node(val: Node) -> void:
 		assert(node is Node2D or node is Control)
 	action_is_pressed = false
 
-func _input(event: InputEvent) -> void:
+func _gui_input(event: InputEvent) -> void:
 	if not node: return
 	if event.is_action_pressed(input_action):
 		last_mouse_pos = DisplayServer.mouse_get_position()
 		action_is_pressed = true
-		get_viewport().set_input_as_handled()
+		accept_event()
 	elif event.is_action_released(input_action):
 		action_is_pressed = Input.is_action_pressed(input_action)
-		get_viewport().set_input_as_handled()
+		accept_event()
+
+# unlike gui input, this should work even if the mouse is outside
+func _input(event: InputEvent) -> void:
+	assert(visible)
 	if event is InputEventMouseMotion:
 		if action_is_pressed:
 			var new_mouse_pos := DisplayServer.mouse_get_position()

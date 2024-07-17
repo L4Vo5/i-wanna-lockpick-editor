@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://sn7s10qp37vo"]
+[gd_scene load_steps=5 format=3 uid="uid://sn7s10qp37vo"]
 
 [ext_resource type="Script" path="res://level_elements/ui/warp_rod/warp_rod_node.gd" id="2_hsq32"]
 [ext_resource type="Texture2D" uid="uid://c8sbdkggwyf4u" path="res://level_elements/ui/warp_rod/node_outline.png" id="3_s6pn7"]
 [ext_resource type="Texture2D" uid="uid://caddvps13c2g0" path="res://level_elements/ui/warp_rod/node_unavailable.png" id="4_ngjbv"]
+[ext_resource type="Script" path="res://misc/node_dragger.gd" id="4_nngty"]
 
 [node name="WarpRodNode" type="NinePatchRect"]
 anchors_preset = 15
@@ -19,6 +20,7 @@ patch_margin_top = 12
 patch_margin_right = 12
 patch_margin_bottom = 13
 script = ExtResource("2_hsq32")
+can_be_dragged = null
 
 [node name="Outline" type="NinePatchRect" parent="."]
 unique_name_in_owner = true
@@ -34,3 +36,16 @@ patch_margin_left = 12
 patch_margin_top = 12
 patch_margin_right = 12
 patch_margin_bottom = 12
+
+[node name="NodeDragger" type="Control" parent="." node_paths=PackedStringArray("node")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("4_nngty")
+input_action = &"drag_warp_node"
+node = NodePath("..")

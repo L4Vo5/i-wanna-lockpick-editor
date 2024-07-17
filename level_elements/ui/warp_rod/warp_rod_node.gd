@@ -16,6 +16,11 @@ enum State {
 		text = val
 		custom_minimum_size = FONT.get_string_size(text) + Vector2(16, 16)
 		queue_redraw()
+@export var can_be_dragged := true:
+	set(val):
+		can_be_dragged = val
+		if node_dragger:
+			node_dragger.visible = can_be_dragged
 
 const NODE_UNAVAILABLE = preload("res://level_elements/ui/warp_rod/node_unavailable.png")
 const NODE_AVAILABLE = preload("res://level_elements/ui/warp_rod/node_available.png")
@@ -23,6 +28,7 @@ const NODE_CURRENT = preload("res://level_elements/ui/warp_rod/node_current.png"
 const FONT = preload("res://fonts/ms_ui_gothic.fnt")
 
 @onready var outline: NinePatchRect = %Outline
+@onready var node_dragger: NodeDragger = %NodeDragger
 
 var connects_to: Array[WarpRodNode] = []
 
@@ -30,7 +36,13 @@ func _init() -> void:
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 
+func _ready() -> void:
+	# trigger setter
+	can_be_dragged = can_be_dragged
+
 func _on_mouse_entered() -> void:
+	if state != State.Unavailable:
+		outline.show()
 	hovered.emit()
 
 func _on_mouse_exited() -> void:
