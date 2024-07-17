@@ -6,7 +6,7 @@
 
 [node name="LevelPackPropertiesEditor" type="MarginContainer"]
 offset_right = 398.0
-offset_bottom = 596.0
+offset_bottom = 1038.0
 script = ExtResource("1_0060c")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
@@ -123,7 +123,6 @@ text = "(Save level to refresh image)"
 [node name="LevelPropertiesEditor" parent="ScrollContainer/MarginContainer/VBoxContainer" instance=ExtResource("3_jpvfh")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="SaveData" type="VBoxContainer" parent="ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
