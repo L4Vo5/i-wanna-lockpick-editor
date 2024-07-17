@@ -115,7 +115,7 @@ func _on_changed_is_playing() -> void:
 	_adjust_inner_container_dimensions()
 	if not editor_data.is_playing:
 		editor_camera.make_current()
-	camera_dragger.enabled = not editor_data.is_playing
+	camera_dragger.visible = not editor_data.is_playing
 	_retry_ghosts()
 
 # could be more sophisticated now that bigger level sizes are supported.

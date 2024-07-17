@@ -346,10 +346,23 @@ visible = false
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vegpn")
 
-[node name="CameraDragger" type="Node" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("node")]
+[node name="CanvasLayer" type="CanvasLayer" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]
+
+[node name="CameraDragger" type="Control" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CanvasLayer" node_paths=PackedStringArray("node")]
 unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -150.0
+offset_right = 148.0
+offset_bottom = 148.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
 script = ExtResource("10_nd33d")
-node = NodePath("../EditorCamera")
+node = NodePath("../../EditorCamera")
 move_opposite_to_mouse = true
 
 [node name="EditorCamera" type="Camera2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]

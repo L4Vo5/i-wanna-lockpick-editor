@@ -43,7 +43,10 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="ScreenDragger" type="Node" parent="MarginContainer" node_paths=PackedStringArray("node")]
+[node name="ScreenDragger" type="Control" parent="MarginContainer" node_paths=PackedStringArray("node")]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
 script = ExtResource("4_5p2ky")
 input_action = &"drag_warp_rod"
 node = NodePath("../ScreenContainer/WarpRodScreen")
@@ -51,6 +54,7 @@ node = NodePath("../ScreenContainer/WarpRodScreen")
 [node name="ScreenContainer" type="Control" parent="MarginContainer"]
 clip_contents = true
 layout_mode = 2
+mouse_filter = 2
 
 [node name="WarpRodScreen" type="Control" parent="MarginContainer/ScreenContainer"]
 unique_name_in_owner = true
@@ -60,10 +64,5 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("4_5l1i2")
-can_drag_nodes = false
-
-[node name="WarpNodeDragger" type="Node" parent="MarginContainer"]
-unique_name_in_owner = true
-script = ExtResource("4_5p2ky")
-input_action = &"drag_warp_node"
