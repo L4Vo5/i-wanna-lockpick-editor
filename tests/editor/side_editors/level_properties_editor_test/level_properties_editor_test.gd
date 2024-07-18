@@ -137,15 +137,16 @@ func test_delete_last_level() -> void:
 	assert_array(levels).has_size(2)
 	var first_level := levels[0]
 	var second_level := levels[1]
-	assert_object(editor._level_data).is_equal(second_level)
-	assert_object(editor._level_data).is_not_equal(first_level)
+	assert_object(first_level).is_not_same(second_level)
+	assert_object(editor._level_data).is_same(second_level)
+	assert_object(editor._level_data).is_not_same(first_level)
+	
 	editor._delete_current_level()
-	await await_idle_frame()
-	assert_object(editor._level_data).is_equal(first_level)
-	assert_object(editor._level_data).is_not_equal(second_level)
+	assert_object(editor._level_data).is_same(first_level)
+	assert_object(editor._level_data).is_not_same(second_level)
 	levels = editor._level_pack_data.levels
 	assert_array(levels).has_size(1)
-	assert_object(levels[0]).is_equal(first_level)
+	assert_object(levels[0]).is_same(first_level)
 
 func test_delete_only_level() -> void:
 	assert_array(editor._level_pack_data.levels).has_size(1)
