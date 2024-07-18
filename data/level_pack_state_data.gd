@@ -40,8 +40,7 @@ static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	return state
 
 func connect_pack_data() -> void:
-	if !pack_data: return
-	pack_data.state_data = self
+	if not pack_data: return
 	pack_data.added_level.connect(_on_added_level)
 	pack_data.deleted_level.connect(_on_deleted_level)
 	pack_data.swapped_levels.connect(_on_swapped_levels)
@@ -178,12 +177,6 @@ static func get_path_from_pack(pack: LevelPackData) -> String:
 		extension = ".lvlst"
 	var file_name := str(pack.pack_id) + extension
 	return SaveLoad.SAVES_PATH.path_join(file_name)
-
-func erase() -> void:
-	delete_file()
-	pack_data.state_data = make_from_pack_data(pack_data)
-	# HACK
-	Global.current_level.reset()
 
 func delete_file() -> void:
 	var file_path := get_path_from_pack(pack_data)

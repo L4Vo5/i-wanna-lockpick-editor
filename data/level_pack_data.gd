@@ -20,12 +20,6 @@ signal moved_level(from: int, to: int)
 # "& ~(1<<63)" ensures it's not negative
 @export var pack_id: int = (randi() << 32) + randi() & ~(1<<63)
 
-## For simplicity, each pack data has one state associated with it.
-var state_data: LevelPackStateData:
-	set(val):
-		state_data = val
-		changed.emit()
-
 ## If empty, the pack will have to be saved as a new file.
 var file_path := "":
 	set(val):
@@ -41,14 +35,12 @@ static func make_from_level(level_data: LevelData) -> LevelPackData:
 	data.author = level_data.author
 	data.levels = [level_data.duplicated()]
 	data.levels[0].resource_path = ""
-	data.state_data = LevelPackStateData.make_from_pack_data(data)
 	return data
 
 static func get_default_level_pack() -> LevelPackData:
 	var level := LevelData.get_default_level()
 	var pack := LevelPackData.new()
 	pack.levels.push_back(level)
-	pack.state_data = LevelPackStateData.make_from_pack_data(pack)
 	return pack
 
 # Only the keys are used. values are true for fixable and false for unfixable
@@ -81,8 +73,6 @@ func add_level(new_level: LevelData, id: int) -> void:
 				if entry.leads_to >= id:
 					entry.leads_to += 1
 	added_level.emit(id)
-	if state_data and state_data.current_level >= id:
-		state_data.current_level += 1
 	emit_changed()
 
 func duplicate_level(id: int) -> void:
@@ -97,11 +87,6 @@ func delete_level(id: int) -> void:
 				entry.leads_to -= 1
 			elif entry.leads_to == id:
 				entry.leads_to = -1
-	if state_data:
-		if state_data.current_level > id:
-			state_data.current_level -= 1
-		if state_data.current_level > 0 and state_data.current_level >= levels.size():
-			state_data.current_level -= 1
 	deleted_level.emit(id)
 	emit_changed()
 
@@ -117,11 +102,6 @@ func swap_levels(id_1: int, id_2: int) -> void:
 				entry.leads_to = id_2
 			elif entry.leads_to == id_2:
 				entry.leads_to = id_1
-	if state_data:
-		if state_data.current_level == id_1:
-			state_data.current_level = id_2
-		elif state_data.current_level == id_2:
-			state_data.current_level = id_1
 	swapped_levels.emit(id_1, id_2)
 	emit_changed()
 
@@ -149,7 +129,5 @@ func move_level(from: int, to: int) -> void:
 				# ... | to  | ... | ... | ...
 				if entry.leads_to >= to and entry.leads_to < from:
 					entry.leads_to += 1
-	if state_data and state_data.current_level == from:
-		state_data.current_level = to
 	moved_level.emit(from, to)
 	emit_changed()

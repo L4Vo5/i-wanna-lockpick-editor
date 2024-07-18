@@ -10,12 +10,17 @@ static var level_element_type := Enums.level_element_types.entry
 		_disconnect_data()
 		data = val
 		_connect_data()
+# HACK HACK HACK
 var level: Level:
 	set(val):
-		level = val
-		if not is_instance_valid(val): return
-		pack_data = val.gameplay_manager.pack_data
-var pack_data: LevelPackData
+		if val:
+			gameplay_manager = val.gameplay_manager
+		else:
+			gameplay_manager = null
+var gameplay_manager: GameplayManager
+var pack_data: LevelPackData:
+	get:
+		return gameplay_manager.pack_data
 
 @export var ignore_position := false
 
@@ -37,7 +42,6 @@ const tween_y_offset := 20
 
 func _ready() -> void:
 	if Global.in_editor: return
-	if not is_instance_valid(level): return
 	level_name.position.y += tween_y_offset
 	level_name.modulate.a = 0
 	update_name()
@@ -45,7 +49,7 @@ func _ready() -> void:
 
 # called by kid.gd
 func player_touching() -> void:
-	if not is_instance_valid(level): return
+	assert(is_instance_valid(gameplay_manager))
 	if data.leads_to >= 0 and data.leads_to < pack_data.levels.size():
 		arrow.show()
 	level_name.show()
@@ -58,7 +62,7 @@ func player_touching() -> void:
 
 # called by kid.gd
 func player_stopped_touching() -> void:
-	if not is_instance_valid(level): return
+	assert(is_instance_valid(gameplay_manager))
 	arrow.hide()
 	#level_name.hide()
 	if name_tween: name_tween.kill()
@@ -70,26 +74,26 @@ func player_stopped_touching() -> void:
 
 # called by kid.gd
 func enter() -> void:
-	if not is_instance_valid(level): return
+	assert(is_instance_valid(gameplay_manager))
 	if data.leads_to == -1: return
-	level.gameplay_manager.enter_level(data.leads_to, data.position + Vector2i(14, 32))
+	gameplay_manager.enter_level(data.leads_to, data.position + Vector2i(14, 32))
 
 func update_position() -> void:
 	if not ignore_position:
 		position = data.position
 
 func update_name() -> void:
-	if not is_instance_valid(level): return
+	if not is_instance_valid(gameplay_manager): return
 	if not is_node_ready(): return
 	level_name.text = "\n[Invalid entry]"
 	if data.leads_to >= 0 and data.leads_to < pack_data.levels.size():
-		var level_data := level.gameplay_manager.pack_data.levels[data.leads_to]
+		var level_data := pack_data.levels[data.leads_to]
 		level_name.text = level_data.title + "\n" + level_data.name
 		if not level_data.name and not level_data.title:
 			level_name.text = "\nUntitled"
 
 func update_status() -> void:
-	if not is_instance_valid(level): return
+	if not is_instance_valid(gameplay_manager): return
 	if not is_node_ready(): return
 	if data.leads_to < 0 or data.leads_to >= pack_data.levels.size():
 		sprite.texture = ENTRY_ERR
@@ -100,7 +104,7 @@ func update_status() -> void:
 	else:
 		sprite.texture = ENTRY_WORLD
 		sprite.position.y = -36
-	if pack_data.state_data.completed_levels[data.leads_to]:
+	if gameplay_manager.pack_state.completed_levels[data.leads_to]:
 		completion.visible = true
 	else:
 		completion.visible = false

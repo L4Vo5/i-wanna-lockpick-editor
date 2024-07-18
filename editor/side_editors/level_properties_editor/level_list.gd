@@ -33,10 +33,8 @@ func _disconnect_pack_data() -> void:
 	pack_data.deleted_level.disconnect(_handle_level_deleted)
 	pack_data.moved_level.disconnect(_handle_level_moved)
 	pack_data.swapped_levels.disconnect(_handle_level_moved)
-	for i in get_root().get_child_count():
-		var item := get_root().get_child(i)
-		var lvl := pack_data.levels[i]
-		_disconnect_item_from_lvl(item, lvl)
+	for item in get_root().get_children():
+		_disconnect_item_from_lvl(item)
 
 func _connect_pack_data() -> void:
 	if not is_instance_valid(pack_data): return
@@ -53,12 +51,12 @@ func _handle_level_added(index: int) -> void:
 func _handle_level_deleted(index: int) -> void:
 	var item := get_root().get_child(index)
 	get_root().remove_child(item)
-	_disconnect_item_from_lvl(item, pack_data.levels[index])
+	_disconnect_item_from_lvl(item)
 
 func _handle_level_moved(from: int, to: int) -> void:
 	var old_item := get_root().get_child(from)
 	get_root().remove_child(old_item)
-	_disconnect_item_from_lvl(old_item, pack_data.levels[to])
+	_disconnect_item_from_lvl(old_item)
 	var new_item := get_root().create_child(to)
 	_connect_item_to_lvl(new_item, pack_data.levels[to])
 
@@ -71,11 +69,15 @@ func update_all() -> void:
 		_connect_item_to_lvl(item, lvl)
 
 func _connect_item_to_lvl(item: TreeItem, level: LevelData) -> void:
+	assert(item.get_metadata(0) == null)
+	item.set_metadata(0, level)
 	level.changed.connect(_update_item.bind(item, level))
 	_update_item(item, level)
 
-func _disconnect_item_from_lvl(item: TreeItem, level: LevelData) -> void:
+func _disconnect_item_from_lvl(item: TreeItem) -> void:
+	var level: LevelData = item.get_metadata(0)
 	level.changed.disconnect(_update_item.bind(item, level))
+	item.set_metadata(0, null)
 
 func _update_item(item: TreeItem, level: LevelData) -> void:
 	item.set_text(0, get_level_string(level))

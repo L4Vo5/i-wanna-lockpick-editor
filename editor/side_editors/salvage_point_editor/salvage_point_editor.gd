@@ -31,7 +31,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if not editor_data: return
-	var salvaged_doors := editor_data.level_pack_data.state_data.salvaged_doors
+	var salvaged_doors := editor_data.pack_state.salvaged_doors
 	var current_sid := data.sid
 	current_door_show.hide()
 	if current_sid >= 0 and current_sid < salvaged_doors.size():

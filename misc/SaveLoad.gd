@@ -61,7 +61,6 @@ static func save_level(level_pack: LevelPackData) -> void:
 			print("error saving image: " + str(err))
 	else:
 		assert(false)
-	level_pack.state_data.save()
 
 static func load_pack_state_from_path(path: String) -> LevelPackStateData:
 	var data := FileAccess.get_file_as_bytes(path)

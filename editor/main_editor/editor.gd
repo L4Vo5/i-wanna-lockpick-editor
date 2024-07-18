@@ -69,8 +69,6 @@ func _ready() -> void:
 	DirAccess.make_dir_absolute("user://level_saves")
 	file_dialog.current_dir = "levels"
 	Global.set_mode(Global.Modes.EDITOR)
-	side_tabs.set_current_tab_index(Global.settings.current_editor_tab)
-	_update_mode()
 	
 	data.gameplay = gameplay
 	data.level = level
@@ -142,6 +140,9 @@ func _ready() -> void:
 	else:
 		# drag and drop on desktop
 		get_window().files_dropped.connect(_on_files_dropped)
+	
+	side_tabs.set_current_tab_index(Global.settings.current_editor_tab)
+	_update_mode()
 
 func _on_files_dropped(files: PackedStringArray) -> void:
 	if files.is_empty():
@@ -201,7 +202,7 @@ func _on_play_pressed() -> void:
 		if SaveLoad.is_path_valid(data.level_pack_data.file_path):
 			save_level()
 	if data.is_playing:
-		data.level_pack_data.state_data.save()
+		data.pack_state.save()
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
@@ -227,7 +228,7 @@ func save_level() -> void:
 			if path == "":
 				path = data.level_pack_data.resource_path
 			var ext := path.get_extension()
-			data.level_pack_data.state_data.save()
+			data.pack_state.save()
 			if ext in ["res", "tres"]:
 				# Allow saving res and tres anywhere when testing
 				if not Global.is_exported:
@@ -277,18 +278,20 @@ func finish_loading_level() -> void:
 		var fixable_problems := new_level_pack.get_fixable_invalid_reasons()
 		var unfixable_problems := new_level_pack.get_unfixable_invalid_reasons()
 		if fixable_problems.is_empty() and unfixable_problems.is_empty():
-			data.level_pack_data = new_level_pack
-			_update_level_path_display()
+			_actually_finish_loading_level()
 		else:
 			invalid_level_dialog.appear(fixable_problems, unfixable_problems)
 
 func _on_load_fixed() -> void:
 	new_level_pack.check_valid(true)
-	data.level_pack_data = new_level_pack
-	_update_level_path_display()
+	_actually_finish_loading_level()
 
 func _on_load_unfixed() -> void:
-	data.level_pack_data = new_level_pack
+	_actually_finish_loading_level()
+
+func _actually_finish_loading_level() -> void:
+	var new_pack_state := LevelPackStateData.find_state_file_for_pack_or_create_new(new_level_pack)
+	data.set_pack_and_state(new_level_pack, new_pack_state)
 	_update_level_path_display()
 
 func _update_level_path_display() -> void:

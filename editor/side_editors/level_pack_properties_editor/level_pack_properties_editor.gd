@@ -47,9 +47,6 @@ func _disconnect_pack_data() -> void:
 	_level_pack_data.changed.disconnect(_set_to_level_pack_data)
 
 func _ready() -> void:
-	# These are just so the scene works in isolation
-	_level_pack_data = LevelPackData.new()
-	
 	if not Global.image_copier_exists:
 		copy_to_clipboard.text = "Force Refresh"
 	
@@ -67,6 +64,7 @@ func _ready() -> void:
 
 func _update_level_pack_data() -> void:
 	_level_pack_data = editor_data.level_pack_data
+	assert(_level_pack_data)
 
 var _setting_to_data := false
 
@@ -76,7 +74,7 @@ func _set_to_level_pack_data() -> void:
 	pack_name.text = _level_pack_data.name
 	pack_author.text = _level_pack_data.author
 	pack_description.text = _level_pack_data.description
-	var state_data := _level_pack_data.state_data
+	var state_data := editor_data.pack_state
 	if state_data:
 		completed_levels_label.text = str(state_data.get_completed_levels_count())
 		salvaged_doors_label.text = str(state_data.get_salvaged_doors_count())
@@ -117,4 +115,5 @@ func _copy_image_to_clipboard() -> void:
 		Global.copy_image_to_clipboard(level_image_rect.texture.get_image())
 
 func _erase_save_state() -> void:
-	_level_pack_data.state_data.erase()
+	# TODO: this probably no longer works (gameplay manager should reset)
+	editor_data.pack_state.delete_file()

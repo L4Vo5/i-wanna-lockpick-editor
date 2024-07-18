@@ -3,28 +3,20 @@ class_name EditorData
 
 signal changed_level_pack_data
 var level_pack_data: LevelPackData:
-	set(val):
-		if level_pack_data == val: return
-		level_pack_data = val
-		if gameplay:
-			gameplay.pack_data = val
-		Global.settings.current_editor_pack = level_pack_data.file_path
-		changed_level_pack_data.emit()
+	set = set_level_pack_data
 
-var pack_state_data: LevelPackStateData:
-	get:
-		return level_pack_data.state_data if level_pack_data else null
+var pack_state: LevelPackStateData:
+	set = set_pack_state
 
 signal changed_level_data
 func emit_changed_level_data():
 	changed_level_data.emit()
-## Read-only!
+
 var level_data: LevelData:
 	get:
-		return level_pack_data.levels[level_pack_data.state_data.current_level]
+		return level_pack_data.levels[pack_state.current_level]
 	set(val):
 		assert(false)
-
 
 signal changed_is_playing
 var is_playing := false:
@@ -70,3 +62,43 @@ var multiple_selection := false
 var hover_highlight: HoverHighlight
 var danger_highlight: HoverHighlight
 var selected_highlight: HoverHighlight
+
+var _setting_pack_and_state := false
+func set_pack_and_state(pack: LevelPackData, state: LevelPackStateData) -> void:
+	assert(state.pack_data == pack)
+	_setting_pack_and_state = true
+	level_pack_data = pack
+	pack_state = state
+	_setting_pack_and_state = false
+	if gameplay:
+		gameplay.load_level_pack(level_pack_data, pack_state)
+	changed_level_pack_data.emit()
+
+func set_level_pack_data(pack: LevelPackData) -> void:
+	if level_pack_data == pack: return
+	level_pack_data = pack
+	Global.settings.current_editor_pack = level_pack_data.file_path
+	if not _setting_pack_and_state:
+		assert(pack_state.pack_data == level_pack_data)
+		changed_level_pack_data.emit()
+
+func set_pack_state(state: LevelPackStateData) -> void:
+	if state == pack_state: return
+	if pack_state:
+		pass
+	pack_state = state
+	if pack_state:
+		pass
+	if not _setting_pack_and_state:
+		changed_level_pack_data.emit()
+
+func _update_current_level_data() -> void:
+	
+	pass
+
+static func new_with_defaults() -> EditorData:
+	var data := EditorData.new()
+	var pack := LevelPackData.get_default_level_pack()
+	var state := LevelPackStateData.make_from_pack_data(pack)
+	data.set_pack_and_state(pack, state)
+	return data

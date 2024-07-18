@@ -2,12 +2,8 @@ extends Node2D
 class_name GameplayManager
 ## Manages a Level, and handles the progression and transition between levels in a LevelPack
 
-var pack_data: LevelPackData:
-	set = load_level_pack, get = get_level_pack
-var _pack_data: LevelPackData
-var pack_state: LevelPackStateData:
-	get:
-		return _pack_data.state_data
+var pack_data: LevelPackData
+var pack_state: LevelPackStateData
 
 @onready var level: Level = %Level
 
@@ -18,25 +14,21 @@ var pack_state: LevelPackStateData:
 func _ready() -> void:
 	level.gameplay_manager = self
 
-func load_level_pack(pack: LevelPackData) -> void:
+func load_level_pack(pack: LevelPackData, state: LevelPackStateData) -> void:
 	assert(PerfManager.start("GameplayManager::load_level_pack"))
-	_pack_data = pack
-	var state := LevelPackStateData.find_state_file_for_pack_or_create_new(_pack_data)
-	_pack_data.state_data = state
-	var level_data: LevelData = _pack_data.levels[state.current_level]
+	pack_data = pack
+	pack_state = state
+	var level_data: LevelData = pack_data.levels[state.current_level]
 	level.level_data = level_data
 	reset()
 	assert(PerfManager.end("GameplayManager::load_level_pack"))
-
-func get_level_pack() -> LevelPackData:
-	return _pack_data
 
 ## Sets the current level to the given level id within the pack and loads it.
 func set_current_level(id: int) -> void:
 	assert(PerfManager.start("GameplayManager::set_current_level (%d)" % id))
 	pack_state.current_level = id
 	pack_state.save()
-	var level_data: LevelData = _pack_data.levels[pack_state.current_level]
+	var level_data: LevelData = pack_data.levels[pack_state.current_level]
 	level.level_data = level_data
 	reset()
 	assert(PerfManager.end("GameplayManager::set_current_level (%d)" % id))
@@ -57,7 +49,7 @@ func can_exit() -> bool:
 	if pack_state.exit_levels.is_empty():
 		return false
 	var exit: int = pack_state.exit_levels[-1]
-	if exit < 0 or exit >= _pack_data.levels.size():
+	if exit < 0 or exit >= pack_data.levels.size():
 		pack_state.exit_levels.clear()
 		pack_state.exit_positions.clear()
 		return false
@@ -86,14 +78,14 @@ func exit_or_reset() -> void:
 
 func enter_level(id: int, exit_position: Vector2i) -> void:
 	# push onto exit stack
-	if _pack_data.levels[id].exitable:
+	if pack_data.levels[id].exitable:
 		pack_state.exit_levels.push_back(pack_state.current_level)
 		pack_state.exit_positions.push_back(exit_position)
 	else:
 		pack_state.exit_levels.clear()
 		pack_state.exit_positions.clear()
 	
-	var _new_level_data := _pack_data.levels[id]
+	var _new_level_data := pack_data.levels[id]
 	var target_level_name := _new_level_data.name
 	var target_level_title := _new_level_data.title
 	transition.level_enter_animation(target_level_name, target_level_title)
