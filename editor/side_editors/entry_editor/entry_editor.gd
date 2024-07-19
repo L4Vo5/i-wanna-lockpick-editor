@@ -35,12 +35,12 @@ func _general_update() -> void:
 	_update_level_name()
 
 func _update_leads_to(id: int) -> void:
-	data.leads_to = id - 1
+	data.leads_to = id
 	_update_level_name()
 
 func _update_level_name() -> void:
 	if not editor_data: return
-	var level := editor_data.level_pack_data.levels[data.leads_to]
+	var level: LevelData = editor_data.level_pack_data.levels[data.leads_to]
 	level_name.text = level.title + "\n" + level.name
 
 func _on_changed_level_pack_data() -> void:

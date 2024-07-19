@@ -18,7 +18,7 @@ func before_test() -> void:
 		[3, [1, 4, 4]],
 		[4, [4, 0]],
 	]
-	pack_data.levels = make_levels_from_data(levels_data)
+	make_levels_from_data(levels_data)
 	verify_levels_integrity()
 
 func test_duplicate_level() -> void:
@@ -82,7 +82,7 @@ func test_duplicate_delete_swap() -> void:
 		var entry := EntryData.new()
 		entry.leads_to = leads_to
 		level.entries.push_back(entry)
-	pack_data.add_level(level, pack_data.levels.size())
+	pack_data.add_level(level)
 	set_level_data(5, "E", ["N", 0])
 	verify_levels_integrity(2)
 	verify_level_labels(["N", 1, 0, 3, 4, "E"])
@@ -103,8 +103,7 @@ func test_duplicate_delete_swap() -> void:
 # where "level data" is [label, entries]
 # label can be anything. entries is an array of labels it leads to
 # this is used to initialize the array, so labels are integers and correspond to level id (i'm lazy to make a super complicated perfect system lol)
-func make_levels_from_data(levels_data: Array) -> Array[LevelData]:
-	var arr: Array[LevelData] = []
+func make_levels_from_data(levels_data: Array) -> void:
 	for level_data in levels_data:
 		var level := LevelData.new()
 		level.set_meta("label", level_data[0])
@@ -115,12 +114,11 @@ func make_levels_from_data(levels_data: Array) -> Array[LevelData]:
 			entry.set_meta("leads_to_label", entry_goal)
 			entry.set_meta("self", entry)
 			level.entries.push_back(entry)
-		arr.push_back(level)
-	return arr
+		pack_data.add_level(level)
 
 # sets level label, and points entries to the indicated labels (without modifying leads_to).
 func set_level_data(level_id: int, label: Variant, leads_to: Array) -> void:
-	var level := pack_data.levels[level_id]
+	var level := pack_data.get_level_by_position(level_id)
 	# in case duplicating levels keeps their meta (currently, it doesn't)
 	if level.has_meta("self"):
 		assert_object(level.get_meta("self")).is_not_same(level)
@@ -137,7 +135,7 @@ func set_level_data(level_id: int, label: Variant, leads_to: Array) -> void:
 		entry.set_meta("self", entry)
 
 func verify_levels_integrity(expected_invalid_entries := 0) -> void:
-	var levels := pack_data.levels
+	var levels := pack_data.get_levels_ordered()
 	# check that there are no repeated labels
 	var labels := {}
 	for level in levels:
@@ -165,7 +163,7 @@ func verify_levels_integrity(expected_invalid_entries := 0) -> void:
 		.is_equal(expected_invalid_entries)
 
 func verify_level_labels(labels: Array) -> void:
-	var levels := pack_data.levels
+	var levels := pack_data.get_levels_ordered()
 	for i in levels.size():
 		var level := levels[i]
 		assert_bool(level.has_meta("label")).is_true()

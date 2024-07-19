@@ -49,8 +49,8 @@ func regen_nodes() -> void:
 		level_to_node.clear()
 		node_to_level.clear()
 	
-	var i := 0
-	for level in pack_data.levels:
+	for level_id in pack_data.levels:
+		var level: LevelData = pack_data.levels[level_id]
 		var warp_title := level.name if level.name else level.title if level.title else "Untitled"
 		var pos := Vector2.ZERO
 		pos.x = floorf(randf() * warp_rod_screen.size.x)
@@ -62,9 +62,8 @@ func regen_nodes() -> void:
 		warp_rod_screen.add_child(node)
 		node.position = pos
 		node.state = node.State.Available
-		if state_data.current_level == i:
+		if state_data.current_level == level_id:
 			node.state = node.State.Current
-		i += 1
 	for node: WarpRodNode in node_to_level.keys():
 		var level: LevelData = node_to_level[node]
 		var connects_to := {}

@@ -4,7 +4,7 @@ extends Node2D
 
 func _ready() -> void:
 	var pack_data := LevelPackData.get_default_level_pack()
-	var level_data := pack_data.levels[0]
+	var level_data: LevelData = pack_data.levels[0]
 	
 	
 	var SIZE := Vector2i(10000, 10000)

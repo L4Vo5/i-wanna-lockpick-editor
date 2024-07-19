@@ -14,7 +14,7 @@ func emit_changed_level_data():
 
 var level_data: LevelData:
 	get:
-		return level_pack_data.levels[pack_state.current_level]
+		return pack_state.get_current_level()
 	set(val):
 		assert(false)
 

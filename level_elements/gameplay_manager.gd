@@ -18,7 +18,7 @@ func load_level_pack(pack: LevelPackData, state: LevelPackStateData) -> void:
 	assert(PerfManager.start("GameplayManager::load_level_pack"))
 	pack_data = pack
 	pack_state = state
-	var level_data: LevelData = pack_data.levels[state.current_level]
+	var level_data := state.get_current_level()
 	level.level_data = level_data
 	reset()
 	assert(PerfManager.end("GameplayManager::load_level_pack"))
@@ -28,20 +28,20 @@ func set_current_level(id: int) -> void:
 	assert(PerfManager.start("GameplayManager::set_current_level (%d)" % id))
 	pack_state.current_level = id
 	pack_state.save()
-	var level_data: LevelData = pack_data.levels[pack_state.current_level]
+	var level_data := pack_state.get_current_level()
 	level.level_data = level_data
 	reset()
 	assert(PerfManager.end("GameplayManager::set_current_level (%d)" % id))
 
 func has_won_current_level() -> bool:
-	return pack_state.completed_levels[pack_state.current_level] == 1
+	return pack_state.current_level in pack_state.completed_levels
 
 func reset() -> void:
 	level.reset()
 
 func win() -> void:
-	if pack_state.completed_levels[pack_state.current_level] != 1:
-		pack_state.completed_levels[pack_state.current_level] = 1
+	if not has_won_current_level():
+		pack_state.completed_levels.push_back(pack_state.current_level)
 		pack_state.save()
 	win_animation("Congratulations!")
 
@@ -49,7 +49,7 @@ func can_exit() -> bool:
 	if pack_state.exit_levels.is_empty():
 		return false
 	var exit: int = pack_state.exit_levels[-1]
-	if exit < 0 or exit >= pack_data.levels.size():
+	if not pack_data.levels.has(exit):
 		pack_state.exit_levels.clear()
 		pack_state.exit_positions.clear()
 		return false
@@ -85,7 +85,7 @@ func enter_level(id: int, exit_position: Vector2i) -> void:
 		pack_state.exit_levels.clear()
 		pack_state.exit_positions.clear()
 	
-	var _new_level_data := pack_data.levels[id]
+	var _new_level_data: LevelData = pack_data.levels[id]
 	var target_level_name := _new_level_data.name
 	var target_level_title := _new_level_data.title
 	transition.level_enter_animation(target_level_name, target_level_title)

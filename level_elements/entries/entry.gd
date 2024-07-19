@@ -50,7 +50,7 @@ func _ready() -> void:
 # called by kid.gd
 func player_touching() -> void:
 	assert(is_instance_valid(gameplay_manager))
-	if data.leads_to >= 0 and data.leads_to < pack_data.levels.size():
+	if pack_data.levels.has(data.leads_to):
 		arrow.show()
 	level_name.show()
 	if name_tween: name_tween.kill()
@@ -86,8 +86,8 @@ func update_name() -> void:
 	if not is_instance_valid(gameplay_manager): return
 	if not is_node_ready(): return
 	level_name.text = "\n[Invalid entry]"
-	if data.leads_to >= 0 and data.leads_to < pack_data.levels.size():
-		var level_data := pack_data.levels[data.leads_to]
+	if pack_data.levels.has(data.leads_to):
+		var level_data: LevelData = pack_data.levels[data.leads_to]
 		level_name.text = level_data.title + "\n" + level_data.name
 		if not level_data.name and not level_data.title:
 			level_name.text = "\nUntitled"
@@ -95,7 +95,7 @@ func update_name() -> void:
 func update_status() -> void:
 	if not is_instance_valid(gameplay_manager): return
 	if not is_node_ready(): return
-	if data.leads_to < 0 or data.leads_to >= pack_data.levels.size():
+	if not pack_data.levels.has(data.leads_to):
 		sprite.texture = ENTRY_ERR
 		return
 	if pack_data.levels[data.leads_to].exitable:

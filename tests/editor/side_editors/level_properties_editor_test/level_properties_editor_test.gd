@@ -60,7 +60,7 @@ func test_change_third_level_properties() -> void:
 	var lvl_name := "Level name!"
 	var author := "Somebody"
 	var title := "The First"
-	var level := editor._level_pack_data.levels[2]
+	var level := editor._level_pack_data.get_level_by_position(2)
 	var size := Vector2i(32*121, 32*109)
 	
 	assert_str(level.name).is_not_equal(lvl_name)
@@ -104,7 +104,7 @@ func test_deleted_level_so_properties_changed() -> void:
 		pack_data.add_level(lvl, i)
 	pack_data.delete_level(3)
 	editor._level_pack_data = pack_data
-	editor._level_data = pack_data.levels[0]
+	editor._level_data = pack_data.get_level_by_position(0)
 	
 	for arr in [[0, 1], [1, 2]]:
 		var i: int = arr[0]
@@ -133,7 +133,7 @@ func test_delete_last_level() -> void:
 	editor._delete_current_level()
 	editor._set_level_number(1)
 	
-	var levels := editor._level_pack_data.levels
+	var levels := editor._level_pack_data.get_levels_ordered()
 	assert_array(levels).has_size(2)
 	var first_level := levels[0]
 	var second_level := levels[1]
@@ -144,12 +144,13 @@ func test_delete_last_level() -> void:
 	editor._delete_current_level()
 	assert_object(editor._level_data).is_same(first_level)
 	assert_object(editor._level_data).is_not_same(second_level)
-	levels = editor._level_pack_data.levels
+	levels = editor._level_pack_data.get_levels_ordered()
 	assert_array(levels).has_size(1)
 	assert_object(levels[0]).is_same(first_level)
 
 func test_delete_only_level() -> void:
-	assert_array(editor._level_pack_data.levels).has_size(1)
+	assert_array(editor._level_pack_data.get_levels_ordered())\
+		.has_size(1)
 	var level := editor._level_data
 	editor._delete_current_level()
 	assert_object(editor._level_data).is_not_equal(level)
