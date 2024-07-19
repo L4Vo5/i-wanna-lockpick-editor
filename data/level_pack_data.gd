@@ -8,7 +8,7 @@ signal moved_level(from: int, to: int)
 
 ## levels indexed by id
 @export var levels := {}
-## levels ordered by id
+## the ordered list of levels. contains their ids
 @export var level_order: PackedInt32Array
 ## used internally. level ids are sure to fit in 16 bits
 var _next_level_id: int = 0
@@ -84,8 +84,9 @@ func get_level_position_by_id(id: int) -> int:
 func get_levels_ordered() -> Array[LevelData]:
 	var arr: Array[LevelData] = []
 	arr.resize(levels.size())
-	for position in level_order:
-		arr.push_back(get_level_by_position(position))
+	for i in level_order.size():
+		var id := level_order[i]
+		arr[i] = levels[id]
 	return arr
 
 # yes, infinite loop if you have 65535 levels and add another.
@@ -97,7 +98,8 @@ func get_next_level_id() -> int:
 			_next_level_id -= 1 << 16
 	return _next_level_id
 
-func add_level(new_level: LevelData, position := -1) -> void:
+## Returns the id of the new level
+func add_level(new_level: LevelData, position := -1) -> int:
 	if position == -1:
 		position = levels.size()
 	var id := get_next_level_id()
@@ -106,10 +108,15 @@ func add_level(new_level: LevelData, position := -1) -> void:
 	assert(err == OK)
 	added_level.emit(id)
 	emit_changed()
+	return id
 
-func duplicate_level(id: int) -> void:
+## Returns the id of the new level
+func duplicate_level(id: int) -> int:
 	var index := get_level_position_by_id(id)
-	add_level(levels[id].duplicated(), index)
+	return add_level(levels[id].duplicated(), index + 1)
+
+func duplicate_level_by_pos(pos: int) -> int:
+	return duplicate_level(level_order[pos])
 
 func delete_level(id: int) -> void:
 	assert(levels.has(id))
@@ -117,6 +124,9 @@ func delete_level(id: int) -> void:
 	level_order.remove_at(level_order.find(id))
 	deleted_level.emit(id)
 	emit_changed()
+
+func delete_level_by_pos(pos: int) -> void:
+	delete_level(level_order[pos])
 
 ## This takes in indices in the ordered array, since that's the only thing you care about when swapping.
 func swap_levels(index_1: int, index_2: int) -> void:
