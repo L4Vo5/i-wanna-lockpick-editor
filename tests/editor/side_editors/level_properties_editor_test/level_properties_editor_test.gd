@@ -154,3 +154,10 @@ func test_delete_only_level() -> void:
 	editor._delete_current_level()
 	assert_object(editor._level_data).is_not_same(level)
 
+func test_delete_then_add() -> void:
+	editor._delete_current_level()
+	editor._delete_current_level()
+	editor._delete_current_level()
+	editor._create_new_level()
+	assert_int(editor._level_pack_data.levels.size()).is_equal(2)
+	assert_array(editor._level_pack_data.levels.keys()).contains_exactly([3, 4])

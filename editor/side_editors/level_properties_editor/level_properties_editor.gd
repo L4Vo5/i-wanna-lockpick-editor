@@ -204,7 +204,7 @@ func _delete_current_level() -> void:
 
 func _create_new_level() -> void:
 	var new_level := LevelData.get_default_level()
-	_level_pack_data.add_level(new_level, editor_data.pack_state.current_level + 1)
+	_level_pack_data.add_level(new_level, editor_data.pack_state.get_current_level_position() + 1)
 
 func _duplicate_current_level() -> void:
 	_level_pack_data.duplicate_level(editor_data.pack_state.current_level)

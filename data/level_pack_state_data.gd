@@ -36,6 +36,9 @@ signal changed_current_level
 func get_current_level() -> LevelData:
 	return pack_data.levels[current_level]
 
+func get_current_level_position() -> int:
+	return pack_data.level_order.find(current_level)
+
 static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
 	state.completed_levels = []
