@@ -7,8 +7,9 @@ extends GdUnitTestSuite
 func test_bigger_lock_bug() -> void:
 	var gameplay_manager: GameplayManager = preload("res://level_elements/gameplay.tscn").instantiate()
 	var pack_data := LevelPackData.get_default_level_pack()
+	var pack_state := LevelPackStateData.find_state_file_for_pack_or_create_new(pack_data)
 	add_child(gameplay_manager)
-	gameplay_manager.load_level_pack(pack_data)
+	gameplay_manager.load_level_pack(pack_data, pack_state)
 	var level: Level = gameplay_manager.level
 	
 	print("adding door 1")

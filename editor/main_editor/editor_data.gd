@@ -85,10 +85,10 @@ func set_level_pack_data(pack: LevelPackData) -> void:
 func set_pack_state(state: LevelPackStateData) -> void:
 	if state == pack_state: return
 	if pack_state:
-		pass
+		pack_state.changed_current_level.disconnect(emit_changed_level_data)
 	pack_state = state
 	if pack_state:
-		pass
+		pack_state.changed_current_level.connect(emit_changed_level_data)
 	if not _setting_pack_and_state:
 		changed_level_pack_data.emit()
 

@@ -93,7 +93,7 @@ func test_deleted_level_so_properties_changed() -> void:
 		["SECOND level", "1-2", "Who knows", 32*103],
 		["THIS IS THE THIRD", "1-3", "L4Vo6", 32*105]
 	]
-	var pack_data := LevelPackData.get_default_level_pack()
+	var pack_data := editor._level_pack_data
 	for i in properties.size():
 		var props = properties[i]
 		var lvl := LevelData.get_default_level()
@@ -102,9 +102,8 @@ func test_deleted_level_so_properties_changed() -> void:
 		lvl.author = props[2]
 		lvl.size = Vector2i.ONE * props[3]
 		pack_data.add_level(lvl, i)
-	pack_data.delete_level(3)
-	editor._level_pack_data = pack_data
-	editor._level_data = pack_data.get_level_by_position(0)
+	pack_data.delete_level_by_position(3)
+	editor._set_level_number(0)
 	
 	for arr in [[0, 1], [1, 2]]:
 		var i: int = arr[0]
@@ -153,5 +152,5 @@ func test_delete_only_level() -> void:
 		.has_size(1)
 	var level := editor._level_data
 	editor._delete_current_level()
-	assert_object(editor._level_data).is_not_equal(level)
+	assert_object(editor._level_data).is_not_same(level)
 

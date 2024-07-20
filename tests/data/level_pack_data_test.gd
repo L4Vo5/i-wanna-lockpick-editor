@@ -39,11 +39,11 @@ func test_get_levels_ordered() -> void:
 			.is_same(l2)
 
 func test_duplicate_level() -> void:
-	pack_data.duplicate_level_by_pos(1) # label: 1
+	pack_data.duplicate_level_by_position(1) # label: 1
 	set_level_data(2, "N", [1, 2])
 	verify_levels_integrity()
 	verify_level_labels([0, 1, "N", 2, 3, 4])
-	pack_data.duplicate_level_by_pos(4) # label: 3
+	pack_data.duplicate_level_by_position(4) # label: 3
 	set_level_data(5, "O", [1, 4, 4])
 	verify_levels_integrity()
 	verify_level_labels([0, 1, "N", 2, 3, "O", 4])
@@ -64,7 +64,7 @@ func test_swap_levels() -> void:
 
 @warning_ignore("unused_parameter")
 func test_delete_level(data, test_parameters := [
-	[[[3, 0], [3, 0], [2, 1], [1, 0], [0, 0]]],
+	[[[3, 0], [3, 0], [2, 1], [1, 0]]],
 	[[[4, 2], [1, 4], [2, 1], [1, 0]]],
 	[[[1, 2]]],
 	[[[2, 1]]],
@@ -73,7 +73,7 @@ func test_delete_level(data, test_parameters := [
 	for deletion in data:
 		var id_to_delete = deletion[0]
 		var expected_invalid_entries = deletion[1]
-		pack_data.delete_level_by_pos(id_to_delete)
+		pack_data.delete_level_by_position(id_to_delete)
 		verify_levels_integrity(expected_invalid_entries)
 		labels.remove_at(deletion[0])
 		verify_level_labels(labels)
@@ -81,12 +81,12 @@ func test_delete_level(data, test_parameters := [
 func test_duplicate_delete_swap() -> void:
 	# this test should be unnecessary, but whatever
 	
-	pack_data.duplicate_level_by_pos(1)
+	pack_data.duplicate_level_by_position(1)
 	set_level_data(2, "N", [1, 2])
 	verify_levels_integrity()
 	verify_level_labels([0, 1, "N", 2, 3, 4])
 	
-	pack_data.delete_level_by_pos(3)
+	pack_data.delete_level_by_position(3)
 	verify_levels_integrity(2)
 	verify_level_labels([0, 1, "N", 3, 4])
 	pack_data.swap_levels(0, 2)
@@ -107,11 +107,11 @@ func test_duplicate_delete_swap() -> void:
 	verify_levels_integrity(2)
 	verify_level_labels([1, "N", 0, 3, 4, "E"])
 	
-	pack_data.delete_level_by_pos(1)
+	pack_data.delete_level_by_position(1)
 	verify_levels_integrity(2)
 	verify_level_labels([1, 0, 3, 4, "E"])
 	
-	pack_data.delete_level_by_pos(1)
+	pack_data.delete_level_by_position(1)
 	verify_levels_integrity(4)
 	verify_level_labels([1, 3, 4, "E"])
 

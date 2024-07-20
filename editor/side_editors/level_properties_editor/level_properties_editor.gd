@@ -181,11 +181,12 @@ func _on_set_author(new_author: String) -> void:
 	_level_data.author = new_author
 	if DEBUG: print_debug("Level author: " + new_author)
 
-func _set_level_number(new_number: int) -> void:
-	if editor_data.pack_state.current_level != new_number:
-		editor_data.pack_state.current_level = new_number
+func _set_level_number(level_index: int) -> void:
+	var level_id := _level_pack_data.level_order[level_index]
+	if editor_data.pack_state.current_level != level_id:
+		editor_data.pack_state.current_level = level_id
 		if editor_data.gameplay:
-			editor_data.gameplay.set_current_level(new_number)
+			editor_data.gameplay.set_current_level(level_id)
 
 func _on_remove_goal_button_pressed() -> void:
 	if _setting_to_data: return
@@ -200,8 +201,6 @@ func _on_changed_exitable() -> void:
 
 func _delete_current_level() -> void:
 	_level_pack_data.delete_level(editor_data.pack_state.current_level)
-	if _level_pack_data.levels.size() == 0:
-		_level_pack_data.add_level(LevelData.get_default_level(), 0)
 
 func _create_new_level() -> void:
 	var new_level := LevelData.get_default_level()

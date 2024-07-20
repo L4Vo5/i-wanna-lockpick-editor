@@ -2,7 +2,7 @@ extends Resource
 class_name LevelPackData
 
 signal added_level(level_id: int)
-signal deleted_level(level_id: int)
+signal deleted_level(level_id: int, level_index: int)
 signal swapped_levels(level_1_index: int, level_2_index: int)
 signal moved_level(from: int, to: int)
 
@@ -105,7 +105,7 @@ func add_level(new_level: LevelData, position := -1) -> int:
 	var id := get_next_level_id()
 	levels[id] = new_level
 	var err := level_order.insert(position, id)
-	assert(err == OK)
+	assert(err == OK, error_string(err))
 	added_level.emit(id)
 	emit_changed()
 	return id
@@ -115,17 +115,20 @@ func duplicate_level(id: int) -> int:
 	var index := get_level_position_by_id(id)
 	return add_level(levels[id].duplicated(), index + 1)
 
-func duplicate_level_by_pos(pos: int) -> int:
+func duplicate_level_by_position(pos: int) -> int:
 	return duplicate_level(level_order[pos])
 
 func delete_level(id: int) -> void:
 	assert(levels.has(id))
+	if levels.size() == 1:
+		add_level(LevelData.get_default_level())
 	levels.erase(id)
-	level_order.remove_at(level_order.find(id))
-	deleted_level.emit(id)
+	var index := level_order.find(id)
+	level_order.remove_at(index)
+	deleted_level.emit(id, index)
 	emit_changed()
 
-func delete_level_by_pos(pos: int) -> void:
+func delete_level_by_position(pos: int) -> void:
 	delete_level(level_order[pos])
 
 ## This takes in indices in the ordered array, since that's the only thing you care about when swapping.

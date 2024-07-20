@@ -19,8 +19,12 @@ var pack_data: LevelPackData
 ## The salvaged doors. Their origin doesn't matter.
 @export var salvaged_doors: Array[DoorData] = []
 
+signal changed_current_level
 ## The id of the current level that's being played in the pack.
-@export var current_level: int
+@export var current_level: int:
+	set(val):
+		current_level = val
+		changed_current_level.emit()
 
 ## The level that you reach when exiting (backspace). Part of the exit stack.
 @export var exit_levels: PackedInt32Array = []
@@ -62,10 +66,13 @@ func get_salvaged_doors_count() -> int:
 		return accum + (1 if door else 0)
 	, 0)
 
-func _on_deleted_level(level_id: int) -> void:
+func _on_deleted_level(level_id: int, index: int) -> void:
 	var pos := completed_levels.find(level_id)
 	if pos != -1:
 		completed_levels.remove_at(pos)
+	if current_level == level_id:
+		index = clampi(index, 0, pack_data.levels.size() - 1)
+		current_level = pack_data.level_order[index]
 	save()
 
 func save() -> void:

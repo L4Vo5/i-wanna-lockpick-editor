@@ -10,7 +10,7 @@ var pack_data: LevelPackData:
 		pack_data = value
 		_connect_pack_data()
 
-signal selected_level(level: int)
+signal selected_level(level_index: int)
 
 func _ready() -> void:
 	# Create root
@@ -49,7 +49,7 @@ func _handle_level_added(id: int) -> void:
 	var item := get_root().create_child(index)
 	_connect_item_to_lvl(item, pack_data.get_level_by_position(index))
 
-func _handle_level_deleted(index: int) -> void:
+func _handle_level_deleted(_id: int, index: int) -> void:
 	var item := get_root().get_child(index)
 	get_root().remove_child(item)
 	_disconnect_item_from_lvl(item)
