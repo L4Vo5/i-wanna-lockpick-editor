@@ -113,7 +113,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_n4qnf")
-gameplay = NodePath("HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay")
+gameplay = NodePath("HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay")
 right_dock = NodePath("HSplitContainer/RightDock")
 side_tabs = NodePath("HSplitContainer/RightDock/BookmarkTabContainer")
 door_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Doors")
@@ -229,17 +229,17 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_kqd34")
 inner_container = NodePath("LevelContainerInner")
-gameplay = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay")
+gameplay = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay")
 level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport")
-ghost_door = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostDoor")
-ghost_key = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostKey")
-ghost_entry = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostEntry")
-ghost_salvage_point = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup/GhostSalvagePoint")
+ghost_door = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup/GhostDoor")
+ghost_key = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup/GhostKey")
+ghost_entry = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup/GhostEntry")
+ghost_salvage_point = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup/GhostSalvagePoint")
 editor = NodePath("../../..")
-danger_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/DangerHighlight")
-selected_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/SelectedHighlight")
-selection_outline = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/SelectionOutline")
-selection_box = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/SelectionBox")
+danger_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/DangerHighlight")
+selected_highlight = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/SelectedHighlight")
+selection_outline = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/SelectionOutline")
+selection_box = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/SelectionBox")
 
 [node name="Panel" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer"]
 layout_mode = 1
@@ -300,48 +300,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Gameplay" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("4_a2tib")]
-
-[node name="CanvasGroup" type="CanvasGroup" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
-self_modulate = Color(1, 1, 1, 0.498039)
-
-[node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("5_55fwv")]
-visible = false
-mouse_filter = 2
-
-[node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("6_n53nq")]
-data = SubResource("Resource_jn77e")
-metadata/_edit_vertical_guides_ = [32.0]
-metadata/_edit_horizontal_guides_ = [32.0]
-
-[node name="GhostEntry" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("7_46nwx")]
-visible = false
-mouse_filter = 2
-
-[node name="GhostSalvagePoint" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay/CanvasGroup" instance=ExtResource("8_8di3k")]
-visible = false
-
-[node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("7_8vfxp")]
-color = Color(1, 1, 1, 1)
-width = 3
-
-[node name="DangerHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("7_8vfxp")]
-color = Color(1, 0, 0, 0.74902)
-
-[node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
-script = ExtResource("9_r4glf")
-
-[node name="SelectionOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
-script = ExtResource("13_621va")
-
-[node name="SelectionBox" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
-visible = false
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_vegpn")
-
-[node name="CanvasLayer" type="CanvasLayer" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]
-
-[node name="CameraDragger" type="Control" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CanvasLayer" node_paths=PackedStringArray("node")]
+[node name="CameraDragger" type="Control" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("node")]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 15
@@ -355,8 +314,49 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("10_nd33d")
-node = NodePath("../../EditorCamera")
+node = NodePath("../EditorCamera")
 move_opposite_to_mouse = true
+enabled = null
+
+[node name="Gameplay" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger" instance=ExtResource("4_a2tib")]
+position = Vector2(150, 150)
+
+[node name="CanvasGroup" type="CanvasGroup" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay"]
+self_modulate = Color(1, 1, 1, 0.498039)
+
+[node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup" instance=ExtResource("5_55fwv")]
+visible = false
+mouse_filter = 2
+
+[node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup" instance=ExtResource("6_n53nq")]
+data = SubResource("Resource_jn77e")
+metadata/_edit_vertical_guides_ = [32.0]
+metadata/_edit_horizontal_guides_ = [32.0]
+
+[node name="GhostEntry" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup" instance=ExtResource("7_46nwx")]
+visible = false
+mouse_filter = 2
+
+[node name="GhostSalvagePoint" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup" instance=ExtResource("8_8di3k")]
+visible = false
+
+[node name="SelectedHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay" instance=ExtResource("7_8vfxp")]
+color = Color(1, 1, 1, 1)
+width = 3
+
+[node name="DangerHighlight" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay" instance=ExtResource("7_8vfxp")]
+color = Color(1, 0, 0, 0.74902)
+
+[node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay"]
+script = ExtResource("9_r4glf")
+
+[node name="SelectionOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay"]
+script = ExtResource("13_621va")
+
+[node name="SelectionBox" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay"]
+visible = false
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vegpn")
 
 [node name="EditorCamera" type="Camera2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]
 unique_name_in_owner = true

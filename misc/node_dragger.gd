@@ -7,6 +7,13 @@ class_name NodeDragger
 	set = _set_node
 ## This should be true when moving a camera.
 @export var move_opposite_to_mouse := false
+## Dragger will work if both enabled and visible.
+## It's necessary to allow visible but not enabled because you need the dragger to be the parent of stuff in order for the "pass" mouse filter to actually bubble up to the dragger...
+# WAITING4GODOT: unlikely, but if a more intuitive version of the "pass" filter is added, use it instead
+@export var enabled := true:
+	set(val):
+		enabled = val
+		_update_status()
 
 signal moved_node
 
@@ -14,13 +21,14 @@ var action_is_pressed := false
 var last_mouse_pos := Vector2i.ZERO
 
 func _ready() -> void:
-	visibility_changed.connect(_on_visibility_changed)
-	_on_visibility_changed()
+	visibility_changed.connect(_update_status)
+	_update_status()
 
-func _on_visibility_changed() -> void:
-	if not visible:
-		action_is_pressed = 0
-	set_process_input(visible)
+func _update_status() -> void:
+	var is_actually_enabled := visible and enabled
+	if not (is_actually_enabled):
+		action_is_pressed = false
+	set_process_input(is_actually_enabled)
 
 func _set_node(val: Node) -> void:
 	if node == val: return
@@ -30,6 +38,7 @@ func _set_node(val: Node) -> void:
 	action_is_pressed = false
 
 func _gui_input(event: InputEvent) -> void:
+	if not enabled: return
 	if not node: return
 	if event.is_action_pressed(input_action):
 		last_mouse_pos = DisplayServer.mouse_get_position()
@@ -41,7 +50,7 @@ func _gui_input(event: InputEvent) -> void:
 
 # unlike gui input, this should work even if the mouse is outside
 func _input(event: InputEvent) -> void:
-	assert(visible)
+	assert(visible and enabled)
 	if event is InputEventMouseMotion:
 		if action_is_pressed:
 			var new_mouse_pos := DisplayServer.mouse_get_position()

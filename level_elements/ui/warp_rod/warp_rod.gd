@@ -68,7 +68,8 @@ func regen_nodes() -> void:
 		var level: LevelData = node_to_level[node]
 		var connects_to := {}
 		for entry in level.entries:
-			connects_to[entry.leads_to] = true
+			if pack_data.levels.has(entry.leads_to):
+				connects_to[entry.leads_to] = true
 		for id: int in connects_to.keys():
 			var other_level: LevelData = pack_data.levels[id]
 			# Must store connection both ways for the strategy that's used to avoid drawing the same connection twice
