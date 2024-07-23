@@ -2,7 +2,6 @@
 extends MarginContainer
 class_name Door
 
-signal lock_clicked(event: InputEventMouseButton, lock: Lock)
 ## Emitted when the state of some curse has been changed
 signal changed_curse
 static var level_element_type := Enums.level_element_types.door
@@ -203,13 +202,11 @@ func update_locks() -> void:
 		for _i in current_locks - needed_locks:
 			var lock := lock_holder.get_child(-1)
 			lock_holder.remove_child(lock)
-			lock.clicked.disconnect(_on_lock_clicked)
 			NodePool.return_node(lock)
 	# or add them
 	else:
 		for i in range(current_locks, needed_locks):
 			var new_lock = NodePool.pool_node(LOCK)
-			new_lock.clicked.connect(_on_lock_clicked.bind(new_lock))
 			new_lock.lock_data = data.locks[i]
 			lock_holder.add_child(new_lock)
 	
@@ -217,9 +214,6 @@ func update_locks() -> void:
 		lock.level = level
 	
 	assert(PerfManager.end(&"Door::update_locks"))
-
-func _on_lock_clicked(event: InputEventMouseButton, lock: Lock) -> void:
-	lock_clicked.emit(event, lock)
 
 func update_curses() -> void:
 	if not is_instance_valid(data): return

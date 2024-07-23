@@ -2,8 +2,6 @@
 extends Control
 class_name Lock
 
-signal clicked(event: InputEventMouseButton)
-
 signal changed_lock_data
 @export var lock_data: LockData:
 	set(val):
@@ -48,11 +46,6 @@ func _exit_tree() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		_destroy_canvas_items()
-
-func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.is_pressed():
-		clicked.emit(event)
-		# the event should be accepted on the signal receiver's side
 
 func update_position() -> void:
 	if not ignore_position:
