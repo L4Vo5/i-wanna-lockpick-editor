@@ -316,7 +316,6 @@ mouse_filter = 1
 script = ExtResource("10_nd33d")
 node = NodePath("../EditorCamera")
 move_opposite_to_mouse = true
-enabled = null
 
 [node name="Gameplay" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger" instance=ExtResource("4_a2tib")]
 position = Vector2(150, 150)

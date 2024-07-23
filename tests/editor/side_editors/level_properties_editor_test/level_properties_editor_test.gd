@@ -89,9 +89,9 @@ func test_change_third_level_properties() -> void:
 func test_deleted_level_so_properties_changed() -> void:
 	# [name, title, author, size (square)]
 	var properties := [
-		["First level", "1-1", "Me", 32*100],
-		["SECOND level", "1-2", "Who knows", 32*103],
-		["THIS IS THE THIRD", "1-3", "L4Vo6", 32*105]
+		["First level", "1-1", "Me", 32*100.0],
+		["SECOND level", "1-2", "Who knows", 32*103.0],
+		["THIS IS THE THIRD", "1-3", "L4Vo6", 32*105.0]
 	]
 	var pack_data := editor._level_pack_data
 	for i in properties.size():

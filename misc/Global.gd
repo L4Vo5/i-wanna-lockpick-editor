@@ -10,6 +10,7 @@ var is_exported := OS.has_feature("release")
 var is_web := OS.has_feature("web")
 var is_windows := OS.has_feature("windows")
 var is_linux := OS.has_feature("linux")
+var is_in_test := OS.get_cmdline_args()[0] == "res://addons/gdUnit4/src/core/GdUnitRunner.tscn"
 
 var settings: LockpickSettings
 
@@ -62,9 +63,7 @@ func _init() -> void:
 func _ready() -> void:
 	set_mode(_current_mode)
 	
-	if not in_editor:
-		get_tree().root.focus_entered.connect(_on_window_focused)
-		get_tree().root.focus_exited.connect(_on_window_unfocused)
+	_setup_unfocus()
 	
 	# Look for update...
 	if not is_web and not in_editor:
@@ -255,8 +254,29 @@ func smart_adjust_rect(rect: Rect2i, bound: Rect2i) -> Rect2i:
 	rect.position = rect.position.clamp(bound.position, max_pos)
 	return rect
 
+var unfocus_timer: Timer
+func _setup_unfocus() -> void:
+	if not in_editor and not is_in_test:
+		get_tree().root.focus_entered.connect(_on_window_focused)
+		get_tree().root.focus_exited.connect(_on_window_unfocused)
+		unfocus_timer = Timer.new()
+		unfocus_timer.one_shot = true
+		unfocus_timer.timeout.connect(_unfocus_stuff)
+		add_child(unfocus_timer)
+
 # reduce cpu usage as much as possible when the window is unfocused
 func _on_window_unfocused() -> void:
+	# WAITING4GODOT: if I don't check this, focusing inner Windows (like the file dialog) will stop everything.
+	if get_tree().root.has_focus():
+		return
+	
+	if unfocus_timer.is_stopped():
+		unfocus_timer.start(10)
+
+func _unfocus_stuff() -> void:
+	# Just in case
+	if get_tree().root.has_focus():
+		return
 	get_tree().paused = true
 	
 	OS.low_processor_usage_mode = true
@@ -268,6 +288,7 @@ func _on_window_unfocused() -> void:
 	
 
 func _on_window_focused() -> void:
+	unfocus_timer.stop()
 	get_tree().paused = false
 	
 	OS.low_processor_usage_mode = false
