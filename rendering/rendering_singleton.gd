@@ -100,7 +100,7 @@ static func generate_colors(from: Dictionary) -> Dictionary:
 			dict[key] = Color(from[key])
 	return dict
 
-func get_lock_arrangement(level_data: LevelData, lock_count: int, option: int):
+func get_lock_arrangement(_level_data: LevelData, lock_count: int, option: int):
 	# this function needs to be fast because it's just weird for this to take too long lmao. so no merging arrays anymore
 	# ASSUMPTION: there's only one default arrangement per count
 	if option <= -1: return null

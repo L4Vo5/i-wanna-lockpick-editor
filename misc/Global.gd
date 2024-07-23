@@ -10,7 +10,7 @@ var is_exported := OS.has_feature("release")
 var is_web := OS.has_feature("web")
 var is_windows := OS.has_feature("windows")
 var is_linux := OS.has_feature("linux")
-var is_in_test := OS.get_cmdline_args()[0] == "res://addons/gdUnit4/src/core/GdUnitRunner.tscn"
+var is_in_test := ("res://addons/gdUnit4/src/core/GdUnitRunner.tscn" in OS.get_cmdline_args()) and (not is_exported)
 
 var settings: LockpickSettings
 
@@ -66,7 +66,7 @@ func _ready() -> void:
 	_setup_unfocus()
 	
 	# Look for update...
-	if not is_web and not in_editor:
+	if is_exported and not is_web:
 		search_update()
 	
 	if is_web:
