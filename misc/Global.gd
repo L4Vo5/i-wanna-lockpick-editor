@@ -62,6 +62,9 @@ func _init() -> void:
 func _ready() -> void:
 	set_mode(_current_mode)
 	
+	if not in_editor:
+		get_tree().root.focus_entered.connect(_on_window_focused)
+		get_tree().root.focus_exited.connect(_on_window_unfocused)
 	
 	# Look for update...
 	if not is_web and not in_editor:
@@ -171,7 +174,6 @@ func fully_disconnect(receiver: Object, emitter: Object) -> int:
 				count += 1
 	return count
 
-
 func _process(delta: float) -> void:
 	time += delta
 
@@ -252,3 +254,23 @@ func smart_adjust_rect(rect: Rect2i, bound: Rect2i) -> Rect2i:
 	var max_pos := bound.position + bound.size - rect.size
 	rect.position = rect.position.clamp(bound.position, max_pos)
 	return rect
+
+# reduce cpu usage as much as possible when the window is unfocused
+func _on_window_unfocused() -> void:
+	get_tree().paused = true
+	
+	OS.low_processor_usage_mode = true
+	OS.low_processor_usage_mode_sleep_usec = 300_000
+	
+	# This stops all rendering.
+	var viewport_rid := get_tree().root.get_viewport_rid()
+	RenderingServer.viewport_set_update_mode(viewport_rid, RenderingServer.VIEWPORT_UPDATE_DISABLED)
+	
+
+func _on_window_focused() -> void:
+	get_tree().paused = false
+	
+	OS.low_processor_usage_mode = false
+	
+	var viewport_rid := get_tree().root.get_viewport_rid()
+	RenderingServer.viewport_set_update_mode(viewport_rid, RenderingServer.VIEWPORT_UPDATE_WHEN_VISIBLE)
