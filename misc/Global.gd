@@ -21,10 +21,6 @@ var game_version: String = ProjectSettings.get_setting("application/config/game_
 @onready var http_request: HTTPRequest = $HTTPRequest
 var _non_fullscreen_window_mode := Window.MODE_MAXIMIZED
 
-var danger_override: bool:
-	get:
-		return (not is_exported) and (Input.is_key_pressed(KEY_CTRL))
-
 signal changed_level
 var current_level: Level:
 	set(val):

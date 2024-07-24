@@ -199,7 +199,7 @@ func _update_mode() -> void:
 
 func _on_play_pressed() -> void:
 	if Global.settings.should_save_on_play and not data.is_playing:
-		if SaveLoad.is_path_valid(data.level_pack_data.file_path):
+		if SaveLoad.is_path_valid_for_saving(data.level_pack_data.file_path):
 			save_level()
 	if data.is_playing:
 		data.pack_state.save()
@@ -309,7 +309,7 @@ func _on_save_as_pressed() -> void:
 	file_dialog.clear_filters()
 	file_dialog.add_filter("*.lvl", "Level file")
 	file_dialog.add_filter("*.png", "Level file (image)")
-	if Global.danger_override:
+	if Global.settings.allow_resource_files:
 		file_dialog.add_filter("*.res", "Binary Resource")
 		file_dialog.add_filter("*.tres", "Text Resource")
 	if data.level_pack_data.file_path == "":
@@ -324,10 +324,9 @@ func _on_save_as_pressed() -> void:
 
 
 func _on_save_pressed() -> void:
-	# Allow saving .res, .tres, and levels in res:// when testing
-	if Global.danger_override:
+	if Global.settings.allow_resource_files:
 		save_level()
-	elif SaveLoad.is_path_valid(data.level_pack_data.file_path):
+	elif SaveLoad.is_path_valid_for_saving(data.level_pack_data.file_path):
 		save_level()
 	else:
 		# "Save As" logic will assign a new path
@@ -339,7 +338,7 @@ func _on_load_pressed() -> void:
 	file_dialog.clear_filters()
 	file_dialog.add_filter("*.lvl", "Level file")
 	file_dialog.add_filter("*.png", "Level file (image)")
-	if Global.danger_override:
+	if Global.settings.allow_resource_files:
 		file_dialog.add_filter("*.res", "Binary Resource")
 		file_dialog.add_filter("*.tres", "Text Resource")
 	

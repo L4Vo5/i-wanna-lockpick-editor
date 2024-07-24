@@ -25,6 +25,12 @@ signal changed
 		queue_emit_changed()
 		queue_save()
 
+## "Dev-only" settings (currently, at least), meaning they're not exposed in the settings menu.
+
+@export var allow_resource_files := false
+## allows saving levels anywhere in the filesystem
+@export var allow_saving_anywhere := false
+
 ## Editor State is stuff that's always handled automatically, it doesn't show up in the settings editor. (at least, that sounds like a good idea)
 @export_group("EditorState")
 
