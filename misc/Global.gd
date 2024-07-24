@@ -13,7 +13,6 @@ var settings: LockpickSettings
 
 var game_version: String = ProjectSettings.get_setting("application/config/game_version")
 
-@onready var fatal_error_dialog: AcceptDialog = %FatalError
 @onready var safe_error_dialog: AcceptDialog = %SafeError
 @onready var http_request: HTTPRequest = $HTTPRequest
 var _non_fullscreen_window_mode := Window.MODE_MAXIMIZED
@@ -193,16 +192,6 @@ func set_mode(mode: Modes) -> void:
 		_set_viewport_to_gameplay()
 	else:
 		_set_viewport_to_editor()
-
-func fatal_error(text: String, size: Vector2i) -> void:
-	fatal_error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	
-	fatal_error_dialog.size = size
-	fatal_error_dialog.dialog_text = text
-	
-	fatal_error_dialog.popup_centered()
-	await fatal_error_dialog.visibility_changed
-	get_tree().quit()
 
 func safe_error(text: String, size: Vector2i) -> void:
 	safe_error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

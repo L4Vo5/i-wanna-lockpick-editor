@@ -22,10 +22,4 @@ popup_window = true
 ok_button_text = "OK 👍"
 dialog_autowrap = true
 
-[node name="FatalError" type="AcceptDialog" parent="Priority"]
-unique_name_in_owner = true
-popup_window = true
-ok_button_text = "Close Editor"
-dialog_autowrap = true
-
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
