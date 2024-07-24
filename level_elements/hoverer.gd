@@ -44,9 +44,6 @@ func stop_adapting(no_signal: bool = false) -> void:
 func _hide_all() -> void:
 	line.hide()
 
-func is_adapting() -> bool:
-	return current_obj == null
-
 func adapt_to(obj: Node, no_signal: bool = false) -> void:
 	if not is_instance_valid(obj):
 		stop_adapting(no_signal)
