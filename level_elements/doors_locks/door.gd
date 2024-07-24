@@ -196,6 +196,7 @@ func update_locks() -> void:
 	# redo the current ones
 	for i in mini(needed_locks, current_locks):
 		var lock := lock_holder.get_child(i)
+		lock.level = level
 		lock.lock_data = data.locks[i]
 	# shave off the rest
 	if current_locks > needed_locks:
@@ -206,12 +207,10 @@ func update_locks() -> void:
 	# or add them
 	else:
 		for i in range(current_locks, needed_locks):
-			var new_lock = NodePool.pool_node(LOCK)
+			var new_lock: Lock = NodePool.pool_node(LOCK)
+			new_lock.level = level
 			new_lock.lock_data = data.locks[i]
 			lock_holder.add_child(new_lock)
-	
-	for lock: Lock in lock_holder.get_children():
-		lock.level = level
 	
 	assert(PerfManager.end(&"Door::update_locks"))
 

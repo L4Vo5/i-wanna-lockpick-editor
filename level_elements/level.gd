@@ -101,6 +101,11 @@ var LEVEL_ELEMENT_DISCONNECT := {
 var dont_update_collision_system: bool = false
 
 func _unhandled_key_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if event.keycode == KEY_F11 and event.pressed:
+			var img: Image = await level_data.get_screenshot()
+			img.save_png("user://screenshot.png")
+			print("Saved screenshot!")
 	if exclude_player: return
 	if in_transition(): return
 	if event.is_action_pressed(&"i-view"):
@@ -124,12 +129,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"autorun"):
 		Global.settings.is_autorun_on = !Global.settings.is_autorun_on
 		ui.show_autorun_animation(Global.settings.is_autorun_on)
-	if event is InputEventKey:
-		if event.keycode == KEY_F11 and event.pressed:
-			if not Global.is_exported:
-				var img: Image = await level_data.get_screenshot()
-				img.save_png("user://screenshot.png")
-				print("Saved screenshot!")
 
 func _ready() -> void:
 	logic.level = self
