@@ -28,13 +28,17 @@ var current_level: Level:
 var time := 0.0
 var physics_time := 0.0
 var physics_step := 0
-var _current_mode := Modes.GAMEPLAY
 
 var image_copier
 var image_copier_exists:
 	get:
 		return is_instance_valid(image_copier)
 
+## Currently "unused", as you're always on the editor.
+## Gameplay mode will set the window's resolution to the in-game one, and the content will stretch accordingly.
+## Editor mode will maximize the window.
+var current_mode := Modes.GAMEPLAY:
+	set = set_mode
 enum Modes {
 	GAMEPLAY, EDITOR
 }
@@ -46,7 +50,7 @@ func _init() -> void:
 		settings = LockpickSettings.new()
 
 func _ready() -> void:
-	set_mode(_current_mode)
+	set_mode(current_mode)
 	
 	_setup_unfocus()
 	
@@ -160,12 +164,12 @@ func fully_disconnect(receiver: Object, emitter: Object) -> int:
 
 func _process(delta: float) -> void:
 	time += delta
+	RenderingServer.global_shader_parameter_set(&"FPS_TIME", time)
+	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
 
 func _physics_process(delta: float) -> void:
 	physics_time += delta
 	physics_step += 1
-	RenderingServer.global_shader_parameter_set(&"FPS_TIME", physics_time)
-	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
 	if not in_editor:
 		assert(PerfManager.check_balances())
 
@@ -183,9 +187,9 @@ func _set_viewport_to_editor() -> void:
 		get_tree().root.mode = _non_fullscreen_window_mode
 
 func set_mode(mode: Modes) -> void:
-	if _current_mode == mode: return
-	_current_mode = mode 
-	if _current_mode == Modes.GAMEPLAY:
+	if current_mode == mode: return
+	current_mode = mode 
+	if current_mode == Modes.GAMEPLAY:
 		_set_viewport_to_gameplay()
 	else:
 		_set_viewport_to_editor()
@@ -255,13 +259,16 @@ func _on_window_unfocused() -> void:
 	if get_tree().root.has_focus():
 		return
 	
-	if unfocus_timer.is_stopped():
-		unfocus_timer.start(10)
+	if settings.pause_when_unfocused and unfocus_timer.is_stopped():
+		unfocus_timer.start(settings.seconds_until_unfocus_pause)
 
 func _unfocus_stuff() -> void:
 	# Just in case
 	if get_tree().root.has_focus():
 		return
+	if not settings.pause_when_unfocused:
+		return
+	
 	get_tree().paused = true
 	
 	OS.low_processor_usage_mode = true
@@ -270,10 +277,10 @@ func _unfocus_stuff() -> void:
 	# This stops all rendering.
 	var viewport_rid := get_tree().root.get_viewport_rid()
 	RenderingServer.viewport_set_update_mode(viewport_rid, RenderingServer.VIEWPORT_UPDATE_DISABLED)
-	
 
 func _on_window_focused() -> void:
 	unfocus_timer.stop()
+	
 	get_tree().paused = false
 	
 	OS.low_processor_usage_mode = false
