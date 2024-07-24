@@ -14,14 +14,6 @@ var is_in_test := ("res://addons/gdUnit4/src/core/GdUnitRunner.tscn" in OS.get_c
 
 var settings: LockpickSettings
 
-signal changed_is_playing
-## Will basically be true if there's a player moving around
-var is_playing := false:
-	set(val):
-		if is_playing == val: return
-		is_playing = val
-		changed_is_playing.emit()
-
 var game_version: String = ProjectSettings.get_setting("application/config/game_version")
 
 @onready var fatal_error_dialog: AcceptDialog = %FatalError

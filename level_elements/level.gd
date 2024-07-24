@@ -1,12 +1,8 @@
 extends Node2D
 class_name Level
 ## Level scene. Handles the playing (and displaying) of a single level.
-## (Actually handles the whole progression through a LevelPack)
-## For performance reasons, it's far easier to keep a Level and change its level_data than to instance a new Level.
-
 
 var gameplay_manager: GameplayManager
-@onready var logic: LevelLogic = %LevelLogic
 
 signal changed_level_data
 var level_data: LevelData = null:
@@ -43,6 +39,7 @@ const SALVAGE_POINT := preload("res://level_elements/salvage_points/salvage_poin
 const PLAYER := preload("res://level_elements/kid/kid.tscn")
 const GOAL := preload("res://level_elements/goal/goal.tscn")
 
+@onready var logic: LevelLogic = %LevelLogic
 @onready var doors: Node2D = %Doors
 @onready var keys: Node2D = %Keys
 @onready var entries: Node2D = %Entries
@@ -56,7 +53,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var i_view_sound_2: AudioStreamPlayer = %IView2
 @onready var undo_sound: AudioStreamPlayer = %Undo
 @onready var camera: Camera2D = %LevelCamera
-@onready var ui: CanvasLayer = %UI
+@onready var ui: LevelUI = %UI
 
 
 @onready var hover_highlight: HoverHighlight = %HoverHighlight
@@ -107,7 +104,7 @@ var LEVEL_ELEMENT_DISCONNECT := {
 var dont_update_collision_system: bool = false
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not Global.is_playing: return
+	if exclude_player: return
 	if in_transition(): return
 	if event.is_action_pressed(&"i-view"):
 		logic.i_view = not logic.i_view
@@ -121,7 +118,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		undo.call_deferred()
 	# TODO: Make redo work properly (bugs related to standing on doors?)
 #	elif event.is_action(&"redo") and event.is_pressed():
-#		if not Global.is_playing: return
 #		undo_redo.redo()
 	elif event.is_action_pressed(&"savestate", true):
 		undo_sound.pitch_scale = 0.5
@@ -151,7 +147,6 @@ func _physics_process(_delta: float) -> void:
 
 # For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
 func undo() -> void:
-	if not Global.is_playing: return
 	undo_sound.pitch_scale = 0.6
 	undo_sound.play()
 	logic.undo()
@@ -425,7 +420,6 @@ func _spawn_player() -> void:
 		player_parent.remove_child(player)
 		player.queue_free()
 		player = null
-	Global.is_playing = not exclude_player
 	if exclude_player: return
 	player = PLAYER.instantiate()
 	player.position = level_data.player_spawn_position
