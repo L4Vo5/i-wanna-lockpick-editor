@@ -235,7 +235,7 @@ func _disconnect_level_data() -> void:
 func _update_player_spawn_position() -> void:
 	if not is_node_ready(): return
 	if not level_data: return
-	player_spawn_point.visible = Global.in_level_editor
+	player_spawn_point.visible = exclude_player
 	player_spawn_point.position = level_data.player_spawn_position
 	if not dont_update_collision_system:
 		var id: int

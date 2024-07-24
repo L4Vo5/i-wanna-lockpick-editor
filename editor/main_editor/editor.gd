@@ -53,12 +53,6 @@ var drag_and_drop_web: DragAndDropWeb = null
 
 var data := EditorData.new()
 
-func _enter_tree() -> void:
-	Global.in_level_editor = true
-
-func _exit_tree() -> void:
-	Global.in_level_editor = false
-
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("play"):
 		_on_play_pressed()

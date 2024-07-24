@@ -1,11 +1,8 @@
 @tool
 extends Node
 
-# in the godot editor, as opposed to the level editor (exported or f5)
+# in the godot editor, as opposed to the "game" (exported or f5)
 var in_editor := Engine.is_editor_hint()
-# in the level editor (as opposed to like, an individual level)
-# TODO: this is a duplicate of _current_mode??
-var in_level_editor := false
 var is_exported := OS.has_feature("release")
 var is_web := OS.has_feature("web")
 var is_windows := OS.has_feature("windows")

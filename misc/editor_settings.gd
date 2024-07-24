@@ -3,6 +3,8 @@ class_name LockpickSettings
 
 signal changed
 
+@export_group("")
+
 @export var should_save_on_play := true:
 	set(val):
 		should_save_on_play = val
@@ -26,6 +28,7 @@ signal changed
 		queue_save()
 
 ## "Dev-only" settings (currently, at least), meaning they're not exposed in the settings menu.
+@export_group("")
 
 @export var allow_resource_files := false
 ## allows saving levels anywhere in the filesystem
