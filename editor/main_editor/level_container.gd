@@ -5,7 +5,6 @@ class_name LevelContainer
 
 @export var inner_container: Control
 @export var gameplay: GameplayManager
-#@onready var level: Level = gameplay.level
 @export var level_viewport: SubViewport
 
 var door_editor: DoorEditor:
