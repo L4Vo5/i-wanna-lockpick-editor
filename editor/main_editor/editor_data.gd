@@ -47,14 +47,14 @@ var level_element_editors: Dictionary = {}
 # what's currently being edited
 # (not an enum because it's easier to check "if editor_data.doors" than like, "if editor_data.currently_editing == EditorData.Editing.DOORS"... or whatever using enums would look like)
 # I guess I could always use an enum internally and expose functions like is_editing_doors(), but, eh.
-var tilemap_edit := false
-var level_elements := false
+var tab_is_tilemap_edit := false
+var is_placing_level_element := false
 var level_element_type: Enums.level_element_types = Enums.level_element_types.door
-var level_properties := false
-var player_spawn := false
-var goal_position := false
-var editing_settings := false
-var multiple_selection := false
+var tab_is_level_properties := false
+var tab_is_editing_settings := false
+var tab_is_multiple_selection := false
+var is_placing_player_spawn := false
+var is_placing_goal_position := false
 
 # object selection / dragging / highlight / etc
 # note that hover_highlight is part of the level

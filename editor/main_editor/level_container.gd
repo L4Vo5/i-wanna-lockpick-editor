@@ -134,7 +134,7 @@ func _on_changed_level_data() -> void:
 
 func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types) -> void:
 	if editor_data.disable_editing: return
-	if editor_data.multiple_selection: return
+	if editor_data.tab_is_multiple_selection: return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
@@ -155,7 +155,7 @@ func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_elem
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
-	if editor_data.multiple_selection:
+	if editor_data.tab_is_multiple_selection:
 		return _gui_input_multiple_selection(event)
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -173,20 +173,20 @@ func _gui_input(event: InputEvent) -> void:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			if selected_obj and is_dragging:
 				relocate_selected()
-			elif Input.is_action_pressed(&"unbound_action") and editor_data.level_elements:
+			elif Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
 				place_element_on_mouse(editor_data.level_element_type)
-			elif editor_data.tilemap_edit:
+			elif editor_data.tab_is_tilemap_edit:
 				place_tile_on_mouse()
 				accept_event()
-			elif editor_data.level_properties:
-				if editor_data.player_spawn:
+			elif editor_data.tab_is_level_properties:
+				if editor_data.is_placing_player_spawn:
 					place_player_spawn_on_mouse()
 					accept_event()
-				elif editor_data.goal_position:
+				elif editor_data.is_placing_goal_position:
 					place_goal_on_mouse()
 					accept_event()
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-#			if editor_data.tilemap_edit:
+#			if editor_data.tab_is_tilemap_edit:
 				if remove_tile_on_mouse():
 					accept_event()
 		_retry_ghosts()
@@ -356,17 +356,17 @@ func _on_place_event() -> void:
 	grab_focus()
 	# if the event got this far, we want to deselect
 	selected_obj = null
-	if editor_data.tilemap_edit:
+	if editor_data.tab_is_tilemap_edit:
 		place_tile_on_mouse()
 		accept_event()
 		return
-	if editor_data.level_elements:
+	if editor_data.is_placing_level_element:
 		place_element_on_mouse(editor_data.level_element_type)
-	elif editor_data.level_properties:
-		if editor_data.player_spawn:
+	elif editor_data.tab_is_level_properties:
+		if editor_data.is_placing_player_spawn:
 			place_player_spawn_on_mouse()
 			accept_event()
-		elif editor_data.goal_position:
+		elif editor_data.is_placing_goal_position:
 			place_goal_on_mouse()
 			accept_event()
 
@@ -486,7 +486,7 @@ const GRID_SIZE := Vector2i(16, 16)
 
 func _place_ghosts() -> void:
 	assert(not is_dragging)
-	if not editor_data.level_elements or editor_data.is_playing:
+	if not editor_data.is_placing_level_element or editor_data.is_playing:
 		return
 	var type := editor_data.level_element_type
 	var grid_size: Vector2i = GRID_SIZE
@@ -519,7 +519,7 @@ func _place_ghosts() -> void:
 
 # places the danger obj only. this overrides the ghosts obvs
 func _place_danger_obj() -> void:
-	if not editor_data.level_elements or editor_data.is_playing:
+	if not editor_data.is_placing_level_element or editor_data.is_playing:
 		return
 	var type := editor_data.level_element_type
 	var obj: Node = ghosts[type]

@@ -180,16 +180,16 @@ func resolve_visibility() -> void:
 func _update_mode() -> void:
 	Global.settings.current_editor_tab = side_tabs.get_current_tab_index()
 	var current_tab := side_tabs.get_current_tab_control()
-	data.tilemap_edit = current_tab == tile_editor
-	data.level_elements = false
+	data.tab_is_tilemap_edit = current_tab == tile_editor
+	data.is_placing_level_element = false
 	for type in Enums.level_element_types.values():
 		if current_tab == level_element_editors[type]:
-			data.level_elements = true
+			data.is_placing_level_element = true
 			data.level_element_type = type
 			break
-	data.level_properties = current_tab == level_pack_properties_editor
-	data.editing_settings = current_tab.name == "Settings"
-	data.multiple_selection = current_tab.name == "MultipleSelection"
+	data.tab_is_level_properties = current_tab == level_pack_properties_editor
+	data.tab_is_editing_settings = current_tab.name == "Settings"
+	data.tab_is_multiple_selection = current_tab.name == "MultipleSelection"
 
 func _on_play_pressed() -> void:
 	if Global.settings.should_save_on_play and not data.is_playing:
