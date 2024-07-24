@@ -129,13 +129,13 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		ui.show_autorun_animation(Global.settings.is_autorun_on)
 
 func _ready() -> void:
+	logic.level = self
 	if not dont_make_current:
 		Global.current_level = self
 	reset()
 	_update_player_spawn_position()
 	hover_highlight.adapted_to.connect(_on_hover_adapted_to)
 	hover_highlight.stopped_adapting.connect(_on_hover_adapted_to.bind(null))
-	logic.level = self
 
 func _physics_process(_delta: float) -> void:
 	adjust_camera()

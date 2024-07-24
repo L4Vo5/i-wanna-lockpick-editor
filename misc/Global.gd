@@ -77,11 +77,10 @@ func _input(event: InputEvent) -> void:
 			get_tree().root.mode = _non_fullscreen_window_mode
 	if event is InputEventKey:
 		if event.keycode == KEY_F11 and event.pressed:
-			if is_instance_valid(current_level):
+			if is_instance_valid(current_level) and not is_exported:
 				var img: Image = await current_level.level_data.get_screenshot()
 				img.save_png("user://screenshot.png")
 				print("Saved screenshot")
-				
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and is_instance_valid(settings):

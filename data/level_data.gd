@@ -247,7 +247,7 @@ func get_screenshot() -> Image:
 	
 	var lvl: Level = preload("res://level_elements/level.tscn").instantiate()
 	lvl.exclude_player = true
-	lvl.pack_data = LevelPackData.make_from_level(duplicate())
+	lvl.level_data = duplicated()
 	viewport.add_child(lvl)
 	
 	await RenderingServer.frame_post_draw 

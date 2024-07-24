@@ -43,6 +43,7 @@ var level_to_node := {}
 var node_to_level := {}
 
 func regen_nodes() -> void:
+	if not gameplay_manager: return
 	var connections := {}
 	for child in warp_rod_screen.get_children():
 		child.free()

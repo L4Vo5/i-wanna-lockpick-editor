@@ -15,8 +15,11 @@ var level: Level:
 	set(val):
 		level = val
 		if not is_instance_valid(val): return
-		level_pack_state = val.gameplay_manager.pack_state
-var level_pack_state: LevelPackStateData
+var level_pack_state: LevelPackStateData:
+	get:
+		if level and level.gameplay_manager:
+			return level.gameplay_manager.pack_state
+		return null
 
 var door: Door = null
 var door_error = false
@@ -42,6 +45,8 @@ func _ready() -> void:
 
 func prep_output_step_1() -> void:
 	if not data.is_output:
+		return
+	if not level_pack_state:
 		return
 	var sid := data.sid
 	if sid < 0 or sid >= level_pack_state.salvaged_doors.size():
