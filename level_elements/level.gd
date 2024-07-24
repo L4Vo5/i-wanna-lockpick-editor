@@ -29,9 +29,6 @@ var level_data: LevelData = null:
 		allow_ui = val
 		ui.visible = allow_ui
 
-# makes it so the level doesn't set Global.current_level to itself
-var dont_make_current := false
-
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
 const ENTRY := preload("res://level_elements/entries/entry.tscn")
@@ -127,11 +124,15 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"autorun"):
 		Global.settings.is_autorun_on = !Global.settings.is_autorun_on
 		ui.show_autorun_animation(Global.settings.is_autorun_on)
+	if event is InputEventKey:
+		if event.keycode == KEY_F11 and event.pressed:
+			if not Global.is_exported:
+				var img: Image = await level_data.get_screenshot()
+				img.save_png("user://screenshot.png")
+				print("Saved screenshot!")
 
 func _ready() -> void:
 	logic.level = self
-	if not dont_make_current:
-		Global.current_level = self
 	reset()
 	_update_player_spawn_position()
 	hover_highlight.adapted_to.connect(_on_hover_adapted_to)

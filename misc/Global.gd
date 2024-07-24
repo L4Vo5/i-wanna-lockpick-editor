@@ -18,11 +18,6 @@ var game_version: String = ProjectSettings.get_setting("application/config/game_
 var _non_fullscreen_window_mode := Window.MODE_MAXIMIZED
 
 signal changed_level
-var current_level: Level:
-	set(val):
-		if current_level == val: return
-		current_level = val
-		changed_level.emit()
 
 var time := 0.0
 var physics_time := 0.0
@@ -75,12 +70,6 @@ func _input(event: InputEvent) -> void:
 			get_tree().root.mode = Window.MODE_FULLSCREEN
 		elif current_window_mode == Window.MODE_FULLSCREEN:
 			get_tree().root.mode = _non_fullscreen_window_mode
-	if event is InputEventKey:
-		if event.keycode == KEY_F11 and event.pressed:
-			if is_instance_valid(current_level) and not is_exported:
-				var img: Image = await current_level.level_data.get_screenshot()
-				img.save_png("user://screenshot.png")
-				print("Saved screenshot")
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and is_instance_valid(settings):
