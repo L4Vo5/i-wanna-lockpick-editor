@@ -275,12 +275,14 @@ signal element_gui_input(event: InputEvent, node: Node, type: Enums.level_elemen
 
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion:
-		update_mouseover()
+		update_hover()
 
 func update_hover():
+	assert(PerfManager.start("level::update_hover"))
 	var pos := get_local_mouse_position()
 	var node := get_object_occupying(pos.floor())
-	hover_highlight.adapt_to(node, true)
+	hover_highlight.adapt_to(node)
+	assert(PerfManager.end("level::update_hover"))
 
 ## Adds *something* to the level data. Returns null if it wasn't added
 func add_element(data) -> Node:
@@ -502,7 +504,7 @@ func _on_hover_adapted_to(_what: Node) -> void:
 	update_mouseover()
 
 func update_mouseover() -> void:
-	update_hover()
+	assert(PerfManager.start("Level::update_mouseover"))
 	mouseover.hide()
 	var obj := hover_highlight.current_obj
 	if obj:
@@ -511,6 +513,7 @@ func update_mouseover() -> void:
 			mouseover.show()
 		else:
 			printerr("object %s doesn't have get_mouseover_text method" % obj)
+	assert(PerfManager.end("Level::update_mouseover"))
 
 func add_debris_child(debris: Node) -> void:
 	debris_parent.add_child(debris)

@@ -36,8 +36,9 @@ func stop_adapting_to(obj: Object) -> void:
 
 func stop_adapting(no_signal: bool = false) -> void:
 	_hide_all()
+	var is_new_obj := current_obj != null
 	current_obj = null
-	if not no_signal:
+	if not no_signal and is_new_obj:
 		stopped_adapting.emit()
 
 func _hide_all() -> void:
@@ -53,6 +54,7 @@ func adapt_to(obj: Node, no_signal: bool = false) -> void:
 	# we allow the same object to be passed several times, in case position needs to be adjusted
 #	if obj == current_obj:
 #		return
+	var is_new_obj := obj != current_obj
 	current_obj = obj
 	_hide_all()
 	var size := Vector2i(32, 32)
@@ -68,5 +70,5 @@ func adapt_to(obj: Node, no_signal: bool = false) -> void:
 	line.add_point(Vector2(size.x, size.y))
 	line.add_point(Vector2(0, size.y))
 	line.add_point(Vector2(0, 0))
-	if not no_signal:
+	if not no_signal and is_new_obj:
 		adapted_to.emit(obj)
