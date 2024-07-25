@@ -229,8 +229,8 @@ func _connect_level_data() -> void:
 
 func _disconnect_level_data() -> void:
 	if not is_instance_valid(level_data): return
-	var amount = Global.fully_disconnect(self, level_data)
-	assert(amount == 2)
+	level_data.changed_player_spawn_position.disconnect(_update_player_spawn_position)
+	level_data.changed_goal_position.disconnect(_update_goal_position)
 
 func _update_player_spawn_position() -> void:
 	if not is_node_ready(): return
@@ -492,6 +492,7 @@ func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
 func is_space_inside(rect: Rect2i) -> bool:
 	return Rect2i(Vector2i.ZERO, level_data.size).encloses(rect)
 
+# TODO: remove these and do it in logic?
 func on_door_opened(_door: Door) -> void:
 	update_mouseover()
 

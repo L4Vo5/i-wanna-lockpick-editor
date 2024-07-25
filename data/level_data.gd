@@ -72,7 +72,6 @@ var has_goal := true:
 		label = val
 		changed.emit()
 
-## DEPRECATED
 ## KEPT FOR COMPATIBILITY (for now?)
 @export var author := "":
 	set(val):
