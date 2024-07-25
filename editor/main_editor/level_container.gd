@@ -19,6 +19,12 @@ var entry_editor: EntryEditor:
 var salvage_point_editor: SalvagePointEditor:
 	get:
 		return editor_data.salvage_point_editor
+var level: Level:
+	get:
+		return gameplay.level
+var collision_system: CollisionSystem:
+	get:
+		return level.level_data.collision_system
 
 @export var ghost_door: Door
 @export var ghost_key: KeyElement
@@ -39,15 +45,13 @@ var editor_data: EditorData: set = set_editor_data
 @export var selected_highlight: HoverHighlight
 var hover_highlight: HoverHighlight:
 	get:
-		return editor_data.hover_highlight
+		return level.hover_highlight
 
 @export var selection_outline: SelectionOutline
 @export var selection_box: Control
 
 @onready var camera_dragger: NodeDragger = %CameraDragger
 @onready var editor_camera: Camera2D = %EditorCamera
-
-# Ghosts shouldn't be seen when something's being dragged
 
 var is_dragging := false:
 	get:
@@ -87,19 +91,14 @@ func _adjust_inner_container_dimensions() -> void:
 		inner_container.size = size
 
 func _ready() -> void:
-	gameplay.level.element_gui_input.connect(_on_element_gui_input)
 	resized.connect(_adjust_inner_container_dimensions)
-	level_viewport.get_parent().show()
 
 func set_editor_data(data: EditorData) -> void:
 	assert(editor_data == null, "This should only really run once.")
 	editor_data = data
-	editor_data.selected_highlight = selected_highlight
-	editor_data.danger_highlight = danger_highlight
-	editor_data.hover_highlight = gameplay.level.hover_highlight
 	
 	editor_data.side_tabs.tab_changed.connect(reset_multiple_selection)
-	editor_data.side_tabs.tab_changed.connect(_retry_ghosts)
+	editor_data.side_tabs.tab_changed.connect(_update_ghosts)
 	editor_data.changed_level_data.connect(_on_changed_level_data)
 	_on_changed_level_data()
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
@@ -115,7 +114,7 @@ func _on_changed_is_playing() -> void:
 	if not editor_data.is_playing:
 		editor_camera.make_current()
 	camera_dragger.enabled = not editor_data.is_playing
-	_retry_ghosts()
+	_update_ghosts()
 
 # could be more sophisticated now that bigger level sizes are supported.
 func _center_level() -> void:
@@ -132,64 +131,23 @@ func _on_changed_level_data() -> void:
 	selection_outline.reset()
 	selection_box.visible = false
 
-func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types) -> void:
-	if editor_data.disable_editing: return
-	if editor_data.tab_is_multiple_selection: return
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT:
-			if event.pressed:
-				if remove_element(node):
-					accept_event()
-		elif event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				var editor_control = editor_data.level_element_editors[type]
-				editor_control.data = node.data.duplicated()
-				editor_data.side_tabs.set_current_tab_control(editor_control)
-				accept_event()
-				select_thing(node)
-	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
-			if remove_element(node):
-				accept_event()
-
-
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
-	if editor_data.tab_is_multiple_selection:
-		return _gui_input_multiple_selection(event)
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			if not event.pressed: # mouse button released
+			if event.pressed: 
+				if _handle_left_click():
+					accept_event()
+			else:
 				is_dragging = false
-				return
-			_on_place_event()
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			if not event.pressed:
-				return
-			selected_obj = null
-			if remove_tile_on_mouse():
-				accept_event()
+			if event.pressed:
+				if _handle_right_click():
+					accept_event()
 	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			if selected_obj and is_dragging:
-				relocate_selected()
-			elif Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
-				place_element_on_mouse(editor_data.level_element_type)
-			elif editor_data.tab_is_tilemap_edit:
-				place_tile_on_mouse()
-				accept_event()
-			elif editor_data.tab_is_level_properties:
-				if editor_data.is_placing_player_spawn:
-					place_player_spawn_on_mouse()
-					accept_event()
-				elif editor_data.is_placing_goal_position:
-					place_goal_on_mouse()
-					accept_event()
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-#			if editor_data.tab_is_tilemap_edit:
-				if remove_tile_on_mouse():
-					accept_event()
-		_retry_ghosts()
+		if _handle_mouse_movement():
+			accept_event()
+		_update_ghosts()
 
 var additional_selection: Dictionary = {}
 var did_toggle_selection: bool = false
@@ -317,7 +275,7 @@ func _gui_input_multiple_selection(event: InputEvent) -> void:
 				selection_outline.position += Vector2(delta)
 
 func _move_selection(delta: Vector2i) -> void:
-	gameplay.level.dont_update_collision_system = true
+	level.dont_update_collision_system = true
 	
 	var new_tile_id: Array[int] = []
 	var new_tile_pos: Array[Vector2i] = []
@@ -327,14 +285,14 @@ func _move_selection(delta: Vector2i) -> void:
 		if data is Vector2i:
 			# remove tile
 			var tile: int = editor_data.level_data.tiles[data]
-			gameplay.level.remove_tile(data, false)
+			level.remove_tile(data, false)
 			new_tile_id.push_back(id)
 			new_tile_pos.push_back(data + delta / 32)
 			new_tiles.push_back(tile)
 		elif data is RefCounted:
 			# assume level element
-			var element: Control = gameplay.level.original_data_to_element[data]
-			gameplay.level.move_element(element, data.position + delta, false)
+			var element: Control = level.original_data_to_element[data]
+			level.move_element(element, data.position + delta, false)
 		elif data == &"player_spawn":
 			editor_data.level_data.player_spawn_position += delta
 		elif data == &"goal":
@@ -344,50 +302,95 @@ func _move_selection(delta: Vector2i) -> void:
 		var tile := new_tiles[tile_index]
 		var new_pos := new_tile_pos[tile_index]
 		editor_data.level_data.tiles[new_pos] = tile
-		gameplay.level.update_tile_and_neighbors(new_pos)
+		level.update_tile_and_neighbors(new_pos)
 		editor_data.level_data.collision_system.set_rect_data(new_tile_id[tile_index], new_pos)
 		tile_index += 1
-	gameplay.level.dont_update_collision_system = false
+	level.dont_update_collision_system = false
 	editor_data.level_data.emit_changed()
 
-func _on_place_event() -> void:
+func _handle_left_click() -> bool:
+	# Clicked something? if not, try placing
+	var mouse_pos := level.get_local_mouse_position()
+	var obj = level.get_object_occupying(mouse_pos)
+	if obj != null:
+		select_thing(obj)
+		return true
+	else:
+		return _try_place_at_mouse()
+
+func _handle_right_click() -> bool:
+	selected_obj = null
+	return _try_remove_at_mouse()
+
+func _handle_mouse_movement() -> bool:
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		if selected_obj and is_dragging:
+			relocate_selected()
+			return true
+		elif Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
+			return _try_place_at_mouse()
+		elif editor_data.is_placing_player_spawn or editor_data.is_placing_goal_position or editor_data.tab_is_tilemap_edit:
+			return _try_place_at_mouse()
+	elif Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		if remove_tile_on_mouse():
+			accept_event()
+		elif Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
+			return _try_remove_at_mouse()
+		elif editor_data.tab_is_tilemap_edit:
+			return _try_remove_at_mouse()
+	return false
+
+func _try_place_at_mouse() -> bool:
 	# TODO: What's the focus for??
-	set_focus_mode(Control.FOCUS_ALL)
-	grab_focus()
+	#set_focus_mode(Control.FOCUS_ALL)
+	#grab_focus()
 	# if the event got this far, we want to deselect
 	selected_obj = null
 	if editor_data.tab_is_tilemap_edit:
-		place_tile_on_mouse()
-		accept_event()
-		return
+		return place_tile_on_mouse()
 	if editor_data.is_placing_level_element:
-		place_element_on_mouse(editor_data.level_element_type)
+		return place_element_on_mouse(editor_data.level_element_type)
 	elif editor_data.tab_is_level_properties:
 		if editor_data.is_placing_player_spawn:
 			place_player_spawn_on_mouse()
-			accept_event()
+			return true
 		elif editor_data.is_placing_goal_position:
 			place_goal_on_mouse()
-			accept_event()
+			return true
+	return false
+
+func _try_remove_at_mouse() -> bool:
+	if remove_tile_on_mouse():
+		return true
+	var mouse_pos := level.get_local_mouse_position()
+	var obj = level.get_object_occupying(mouse_pos)
+	if remove_element(obj):
+		return true
+	return false
 
 func select_thing(obj: Node) -> void:
+	if obj:
+		var type: Enums.level_element_types = obj.level_element_type
+		var editor_control = editor_data.level_element_editors[type]
+		editor_control.data = obj.data.duplicated()
+		editor_data.side_tabs.set_current_tab_control(editor_control)
 	# is_dragging is set to true by _on_selected_highlight_adapted_to
 	selected_obj = obj
 	hovered_obj = obj
 	danger_obj = null
-	_retry_ghosts()
+	_update_ghosts()
 
-func place_tile_on_mouse() -> void:
-	if editor_data.disable_editing: return
-	if is_mouse_out_of_bounds(): return
+func place_tile_on_mouse() -> bool:
+	if editor_data.disable_editing: return false
+	if is_mouse_out_of_bounds(): return false
 	var coord := get_mouse_tile_coord(32)
-	gameplay.level.place_tile(coord)
+	return level.place_tile(coord)
 
 func remove_tile_on_mouse() -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
 	var coord := get_mouse_tile_coord(32)
-	return gameplay.level.remove_tile(coord)
+	return level.remove_tile(coord)
 
 func place_element_on_mouse(type: Enums.level_element_types) -> bool:
 	if editor_data.disable_editing: return false
@@ -395,29 +398,29 @@ func place_element_on_mouse(type: Enums.level_element_types) -> bool:
 	var coord := get_mouse_coord(GRID_SIZE)
 	var data = editor.level_element_editors[type].data.duplicated()
 	data.position = coord
-	var node := gameplay.level.add_element(data)
+	var node := level.add_element(data)
 	if not is_instance_valid(node): return false
 	select_thing(node)
 	return true
 
 func remove_element(node: Node) -> bool:
 	if not is_instance_valid(node): return false
-	gameplay.level.remove_element(node)
+	level.remove_element(node)
 	select_thing(null)
-	_retry_ghosts()
+	_update_ghosts()
 	return true
 
 func place_player_spawn_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
 	var coord := get_mouse_coord(GRID_SIZE)
-	gameplay.level.place_player_spawn(coord)
+	level.place_player_spawn(coord)
 
 func place_goal_on_mouse() -> void:
 	if editor_data.disable_editing: return
 	if is_mouse_out_of_bounds(): return
 	var coord := get_mouse_coord(GRID_SIZE)
-	gameplay.level.place_goal(coord)
+	level.place_goal(coord)
 
 func relocate_selected() -> void:
 	if editor_data.disable_editing: return
@@ -427,7 +430,7 @@ func relocate_selected() -> void:
 	var used_coord := get_mouse_coord(GRID_SIZE) - round_coord(drag_offset, GRID_SIZE)
 	var cond: bool
 	var obj_pos: Vector2i = selected_obj.position
-	cond = gameplay.level.move_element(selected_obj, used_coord)
+	cond = level.move_element(selected_obj, used_coord)
 	
 	if not cond and obj_pos != used_coord:
 		_place_danger_obj()
@@ -456,7 +459,7 @@ func round_coord(coord: Vector2i, grid_size: Vector2i) -> Vector2i:
 
 func is_mouse_out_of_bounds() -> bool:
 	var local_pos := get_global_mouse_position() - get_level_pos()
-	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= gameplay.level.level_data.size.x or local_pos.y >= gameplay.level.level_data.size.y:
+	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= level.level_data.size.x or local_pos.y >= level.level_data.size.y:
 		return true
 	return false
 
@@ -475,17 +478,12 @@ func get_level_pos() -> Vector2:
 #	unique_queue[f] = false
 
 
-func _retry_ghosts() -> void:
-	for ghost: Node in ghosts.values():
-		ghost.hide()
-	
-	if not is_dragging:
-		_place_ghosts()
-
 const GRID_SIZE := Vector2i(16, 16)
 
-func _place_ghosts() -> void:
-	assert(not is_dragging)
+func _update_ghosts() -> void:
+	for ghost: Node in ghosts.values():
+		ghost.hide()
+	if is_dragging: return
 	if not editor_data.is_placing_level_element or editor_data.is_playing:
 		return
 	var type := editor_data.level_element_type
@@ -501,14 +499,14 @@ func _place_ghosts() -> void:
 	
 	var is_valid := true
 	
-	if gameplay.level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
+	if level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
 		is_valid = false
-	elif obj is Door and not obj.data.check_valid(gameplay.level.level_data, false):
+	elif obj is Door and not obj.data.check_valid(level.level_data, false):
 		is_valid = false
 	obj.visible = is_valid
 	
 	if (
-	not is_instance_valid(gameplay.level.hovering_over)
+	not is_instance_valid(level.hovering_over)
 	and not obj.visible
 	# TODO: This is just a double-check, but looks weird since tiles can't be hovered on yet
 	#	and not level.is_space_occupied(Rect2i(get_mouse_coord(1), Vector2.ONE))

@@ -269,9 +269,7 @@ func try_open_door(door: Door) -> void:
 	logic.try_open_door(door)
 
 
-# Editor functions
 
-signal element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types)
 
 var last_camera_pos := Vector2.ZERO
 func _process(delta: float) -> void:
@@ -290,6 +288,7 @@ func update_hover():
 	hover_highlight.adapt_to(node)
 	assert(PerfManager.end("level::update_hover"))
 
+# Editor functions
 ## Adds *something* to the level data. Returns null if it wasn't added
 func add_element(data) -> Node:
 	var type: Enums.level_element_types = data.level_element_type
@@ -318,7 +317,6 @@ func _spawn_element(data) -> Node:
 	element_to_original_data[node] = data
 	original_data_to_element[data] = node
 	
-	node.gui_input.connect(_on_element_gui_input.bind(node, type))
 	if LEVEL_ELEMENT_CONNECT.has(type):
 		LEVEL_ELEMENT_CONNECT[type].call(node)
 	level_element_type_to_container[type].add_child(node)
@@ -348,7 +346,6 @@ func _remove_element(node: Node) -> void:
 	element_to_original_data.erase(node)
 	original_data_to_element.erase(original_data)
 	
-	node.gui_input.disconnect(_on_element_gui_input.bind(node, type))
 	if LEVEL_ELEMENT_DISCONNECT.has(type):
 		LEVEL_ELEMENT_DISCONNECT[type].call(node)
 	node.level = null
@@ -387,15 +384,16 @@ func place_goal(coord: Vector2i) -> void:
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [], [&"goal"]): return
 	level_data.goal_position = coord
 
-func place_tile(tile_coord: Vector2i, update_collision_system: bool = true) -> void:
-	if level_data.tiles.get(tile_coord): return
-	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return
+func place_tile(tile_coord: Vector2i, update_collision_system: bool = true) -> bool:
+	if level_data.tiles.get(tile_coord): return false
+	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return false
 	level_data.tiles[tile_coord] = 1
 	update_tile_and_neighbors(tile_coord)
 	if update_collision_system:
 		var id := collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
 		level_data.elem_to_collision_system_id[tile_coord] = id
 		level_data.emit_changed()
+	return true
 
 ## Removes a tile from the level data. Returns true if a tile was there.
 func remove_tile(tile_coord: Vector2i, update_collision_system: bool = true) -> bool:
@@ -502,9 +500,6 @@ func _on_door_changed_curse(_door: Door) -> void:
 
 func _on_key_picked_up(_key: KeyElement) -> void:
 	update_mouseover()
-
-func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types) -> void:
-	element_gui_input.emit(event, node, type)
 
 func _on_hover_adapted_to(_what: Node) -> void:
 	update_mouseover()

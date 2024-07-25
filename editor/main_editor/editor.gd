@@ -203,9 +203,6 @@ func _on_play_pressed() -> void:
 	level.allow_ui = data.is_playing
 	level.load_output_points = data.is_playing
 	right_dock.visible = not data.disable_editing
-	data.danger_highlight.stop_adapting()
-	data.hover_highlight.stop_adapting()
-	data.selected_highlight.stop_adapting()
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
 	gameplay.reset()

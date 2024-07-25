@@ -10,7 +10,11 @@ var tiles := {}
 		if color == value: return
 		color = value
 		queue_redraw()
-@export var width: float = 3
+@export var width: float = 3:
+	set(val):
+		if width == val: return
+		width = val
+		queue_redraw()
 
 func reset() -> void:
 	tiles.clear()

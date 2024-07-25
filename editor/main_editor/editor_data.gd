@@ -56,13 +56,6 @@ var tab_is_multiple_selection := false
 var is_placing_player_spawn := false
 var is_placing_goal_position := false
 
-# object selection / dragging / highlight / etc
-# note that hover_highlight is part of the level
-
-var hover_highlight: HoverHighlight
-var danger_highlight: HoverHighlight
-var selected_highlight: HoverHighlight
-
 var _setting_pack_and_state := false
 func set_pack_and_state(pack: LevelPackData, state: LevelPackStateData) -> void:
 	assert(state.pack_data == pack)
