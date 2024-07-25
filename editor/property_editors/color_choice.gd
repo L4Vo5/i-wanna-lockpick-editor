@@ -50,7 +50,7 @@ var color: Enums.Colors:
 var is_ready := false
 func _ready():
 	is_ready = true
-	for a_color in Enums.COLOR_NAMES.keys():
+	for a_color in Enums.Colors.values():
 		if a_color == Enums.Colors.None: continue
 		if a_color == Enums.Colors.Gate and !support_gates: continue
 		var l := LOCK.instantiate()

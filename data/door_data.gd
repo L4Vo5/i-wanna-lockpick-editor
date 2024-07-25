@@ -146,7 +146,7 @@ func get_mouseover_text() -> String:
 	if outer_color == Enums.Colors.Gate:
 		s += "Gate"
 	else:
-		s += Enums.COLOR_NAMES[outer_color].capitalize() + " Door"
+		s += Enums.Colors.find_key(outer_color) + " Door"
 	
 	if not dont_show_copies and not amount.has_value(1, 0):
 		s += ", Copies: " + str(amount)
@@ -156,9 +156,9 @@ func get_mouseover_text() -> String:
 	for lock in locks:
 		s += "- "
 		if lock.lock_type != Enums.LockTypes.Normal:
-			s += Enums.LOCK_TYPE_NAMES[lock.lock_type] + " "
+			s += Enums.LockTypes.find_key(lock.lock_type) + " "
 		
-		s += Enums.COLOR_NAMES[lock.color].capitalize()
+		s += Enums.Colors.find_key(lock.color).capitalize()
 		s += " Lock"
 		
 		if lock.lock_type == Enums.LockTypes.Normal:
@@ -178,7 +178,7 @@ func get_mouseover_text() -> String:
 		s += "\n"
 	
 	if outer_color == Enums.Colors.Glitch or locks.any(func(lock): return lock.color == Enums.Colors.Glitch):
-		s += "Mimic: " + Enums.COLOR_NAMES[glitch_color].capitalize()
+		s += "Mimic: " + Enums.Colors.find_key(glitch_color).capitalize()
 		s += "\n"
 	
 	var effects_s := ""

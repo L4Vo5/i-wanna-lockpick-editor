@@ -44,7 +44,6 @@ func _init() -> void:
 		settings = LockpickSettings.new()
 
 func _ready() -> void:
-	print(Enums.KeyTypes.keys())
 	set_mode(current_mode)
 	
 	_setup_unfocus()

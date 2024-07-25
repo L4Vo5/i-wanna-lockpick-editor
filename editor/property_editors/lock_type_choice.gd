@@ -55,7 +55,7 @@ var type: Enums.LockTypes:
 var is_ready := false
 func _ready():
 	is_ready = true
-	for lock_type in Enums.LOCK_TYPE_NAMES.keys():
+	for lock_type in Enums.LockTypes.values():
 		var l := LOCK.instantiate()
 		var ld := LockData.new()
 		ld.color = color

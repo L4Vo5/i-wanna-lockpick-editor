@@ -69,14 +69,14 @@ func get_mouseover_text() -> String:
 	var s := ""
 	if is_infinite:
 		s += "Infinite "
-	s += Enums.COLOR_NAMES[color].capitalize() + " "
+	s += Enums.Colors.find_key(color) + " "
 	if type != Enums.KeyTypes.Add:
-		s += Enums.KEY_TYPE_NAMES[type].capitalize() + " "
+		s += Enums.KeyTypes.find_key(type) + " "
 	s += "Key"
 	if type == Enums.KeyTypes.Add or type == Enums.KeyTypes.Exact:
 		if not amount.has_value(1, 0):
 			s += "\n"
 			s += "Amount: " + str(amount)
 	if color == Enums.Colors.Glitch:
-		s += "\nMimic: " + Enums.COLOR_NAMES[glitch_color].capitalize()
+		s += "\nMimic: " + Enums.Colors.find_key(glitch_color)
 	return s

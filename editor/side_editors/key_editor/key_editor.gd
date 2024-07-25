@@ -30,7 +30,7 @@ func _ready() -> void:
 	color_choice.changed_color.connect(_update_key.unbind(1))
 	
 	type_choice.clear()
-	for key_type in Enums.KEY_TYPE_NAMES.keys():
+	for key_type in Enums.KeyTypes.values():
 		var new_key: KeyElement = KEY.instantiate()
 		new_key.ignore_position = true
 		type_choice_keys[key_type] = new_key

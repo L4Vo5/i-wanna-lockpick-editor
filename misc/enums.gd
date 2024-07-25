@@ -26,25 +26,6 @@ enum Colors {
 	Gate, # exclusive to doors, but locks can render it too for convenience
 }
 
-const COLOR_NAMES := {
-	Colors.None: "none",
-	Colors.White: "white",
-	Colors.Black: "black",
-	Colors.Orange: "orange",
-	Colors.Purple: "purple",
-	Colors.Cyan: "cyan",
-	Colors.Pink: "pink",
-	Colors.Red: "red",
-	Colors.Green: "green",
-	Colors.Blue: "blue",
-	Colors.Brown: "brown",
-	Colors.Master: "master",
-	Colors.Glitch: "glitch",
-	Colors.Pure: "pure",
-	Colors.Stone: "stone",
-	Colors.Gate: "gate",
-}
-
 # 0 shall be considered a positive number
 enum Sign {
 	Positive = 0,
@@ -68,27 +49,12 @@ enum KeyTypes {
 	Star, Unstar,
 	Flip, Rotor, RotorFlip
 }
-const KEY_TYPE_NAMES := {
-	KeyTypes.Add: "add",
-	KeyTypes.Exact: "exact",
-	KeyTypes.Star: "star",
-	KeyTypes.Unstar: "unstar",
-	KeyTypes.Flip: "flip",
-	KeyTypes.Rotor: "rotor",
-	KeyTypes.RotorFlip: "rotor_flip",
-}
 
 enum LockTypes {
 	Normal,
 	Blast,
 	Blank, # will ignore value_type and sign_type
 	All, # will ignore value_type and sign_type
-}
-const LOCK_TYPE_NAMES := {
-	LockTypes.Normal: "normal",
-	LockTypes.Blast: "blast",
-	LockTypes.Blank: "blank",
-	LockTypes.All: "all",
 }
 
 enum LevelElementTypes {
