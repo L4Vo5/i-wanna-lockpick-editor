@@ -9,8 +9,8 @@ const SPECIAL_ANIM_DURATION := 0.8 / 4.0
 
 # Order: main, clear, dark
 var frame_colors := generate_colors({
-	Enums.sign.positive: ["584027", "84603C", "2C2014"],
-	Enums.sign.negative: ["D8BFA7", "EBDFD3", "C49F7B"],
+	Enums.Sign.Positive: ["584027", "84603C", "2C2014"],
+	Enums.Sign.Negative: ["D8BFA7", "EBDFD3", "C49F7B"],
 })
 const frame_s_v := [
 	[70.0 / 100.0, 90.0 / 100.0],
@@ -45,45 +45,45 @@ func _process(_delta: float) -> void:
 	salvage_point_error_output_color = Color.from_hsv(0, salvage_error_sat, 1)
 
 var lock_colors := {
-	Enums.sign.positive: Color("2C2014"),
-	Enums.sign.negative: Color("EBDFD3"),
+	Enums.Sign.Positive: Color("2C2014"),
+	Enums.Sign.Negative: Color("EBDFD3"),
 }
 
 # middle / light / dark
 var color_colors := generate_colors({
-#	Enums.colors.none: [],
-#	Enums.colors.glitch: [],
-	Enums.colors.black: ["363029", "554B40", "181512"],
-	Enums.colors.white: ["D6CFC9", "EDEAE7", "BBAEA4"],
-	Enums.colors.pink: ["CF709F", "E4AFCA", "AF3A75"],
-	Enums.colors.orange: ["D68F49", "E7BF98", "9C6023"],
-	Enums.colors.purple: ["8F5FC0", "BFA4DB", "603689"],
-	Enums.colors.cyan: ["50AFAF", "8ACACA", "357575"],
-	Enums.colors.red: ["8F1B1B", "C83737", "480D0D"],
-	Enums.colors.green: ["359F50", "70CF88", "1B5028"],
-	Enums.colors.blue: ["5F71A0", "8795B8", "3A4665"],
-	Enums.colors.brown: ["704010", "AA6015", "382007"],
-#	Enums.colors.pure: [],
-#	Enums.colors.master: [],
-#	Enums.colors.stone: [],
+#	Enums.Colors.None: [],
+#	Enums.Colors.Glitch: [],
+	Enums.Colors.Black: ["363029", "554B40", "181512"],
+	Enums.Colors.White: ["D6CFC9", "EDEAE7", "BBAEA4"],
+	Enums.Colors.Pink: ["CF709F", "E4AFCA", "AF3A75"],
+	Enums.Colors.Orange: ["D68F49", "E7BF98", "9C6023"],
+	Enums.Colors.Purple: ["8F5FC0", "BFA4DB", "603689"],
+	Enums.Colors.Cyan: ["50AFAF", "8ACACA", "357575"],
+	Enums.Colors.Red: ["8F1B1B", "C83737", "480D0D"],
+	Enums.Colors.Green: ["359F50", "70CF88", "1B5028"],
+	Enums.Colors.Blue: ["5F71A0", "8795B8", "3A4665"],
+	Enums.Colors.Brown: ["704010", "AA6015", "382007"],
+#	Enums.Colors.Pure: [],
+#	Enums.Colors.Master: [],
+#	Enums.Colors.Stone: [],
 })
 
 var key_colors := generate_colors({
-#	Enums.colors.none: ,
-#	Enums.colors.glitch: ,
-	Enums.colors.black: "363029",
-	Enums.colors.white: "D6CFC9",
-	Enums.colors.pink: "CF709F",
-	Enums.colors.orange: "D68F49",
-	Enums.colors.purple: "8D5BBF",
-	Enums.colors.cyan: "50AFAF",
-	Enums.colors.red: "C83737",
-	Enums.colors.green: "359F50",
-	Enums.colors.blue: "5F71A0",
-	Enums.colors.brown: "704010",
-#	Enums.colors.pure: ,
-#	Enums.colors.master: ,
-#	Enums.colors.stone: ,
+#	Enums.Colors.None: ,
+#	Enums.Colors.Glitch: ,
+	Enums.Colors.Black: "363029",
+	Enums.Colors.White: "D6CFC9",
+	Enums.Colors.Pink: "CF709F",
+	Enums.Colors.Orange: "D68F49",
+	Enums.Colors.Purple: "8D5BBF",
+	Enums.Colors.Cyan: "50AFAF",
+	Enums.Colors.Red: "C83737",
+	Enums.Colors.Green: "359F50",
+	Enums.Colors.Blue: "5F71A0",
+	Enums.Colors.Brown: "704010",
+#	Enums.Colors.Pure: ,
+#	Enums.Colors.Master: ,
+#	Enums.Colors.Stone: ,
 })
 
 const key_number_colors: Array[Color] = [Color("EBE3DD"), Color("363029")]

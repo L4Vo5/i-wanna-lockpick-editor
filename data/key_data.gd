@@ -2,7 +2,7 @@
 extends Resource
 class_name KeyData
 
-static var level_element_type := Enums.level_element_types.key
+static var level_element_type := Enums.LevelElementTypes.Key
 
 @export var amount := ComplexNumber.new_with(1, 0):
 	set(val):
@@ -27,12 +27,12 @@ var is_spent := false:
 		is_spent = val
 		emit_changed()
 
-@export var type := Enums.key_types.add:
+@export var type := Enums.KeyTypes.Add:
 	set(val):
 		if type == val: return
 		type = val
 		emit_changed()
-@export var color := Enums.colors.white:
+@export var color := Enums.Colors.White:
 	set(val):
 		if color == val: return
 		color = val
@@ -42,7 +42,7 @@ var is_spent := false:
 		if position == val: return
 		position = val
 		emit_changed()
-var glitch_color := Enums.colors.glitch
+var glitch_color := Enums.Colors.Glitch
 
 
 func _init() -> void:
@@ -55,14 +55,14 @@ func duplicated() -> KeyData:
 func get_rect() -> Rect2i:
 	return Rect2i(position, Vector2i(32, 32))
 
-func get_used_color() -> Enums.colors:
-	if color == Enums.colors.glitch:
+func get_used_color() -> Enums.Colors:
+	if color == Enums.Colors.Glitch:
 		return glitch_color
 	else:
 		return color
 
 # Called by the actual in-level KeyElement
-func update_glitch_color(new_glitch_color: Enums.colors) -> void:
+func update_glitch_color(new_glitch_color: Enums.Colors) -> void:
 	glitch_color = new_glitch_color
 
 func get_mouseover_text() -> String:
@@ -70,13 +70,13 @@ func get_mouseover_text() -> String:
 	if is_infinite:
 		s += "Infinite "
 	s += Enums.COLOR_NAMES[color].capitalize() + " "
-	if type != Enums.key_types.add:
+	if type != Enums.KeyTypes.Add:
 		s += Enums.KEY_TYPE_NAMES[type].capitalize() + " "
 	s += "Key"
-	if type == Enums.key_types.add or type == Enums.key_types.exact:
+	if type == Enums.KeyTypes.Add or type == Enums.KeyTypes.Exact:
 		if not amount.has_value(1, 0):
 			s += "\n"
 			s += "Amount: " + str(amount)
-	if color == Enums.colors.glitch:
+	if color == Enums.Colors.Glitch:
 		s += "\nMimic: " + Enums.COLOR_NAMES[glitch_color].capitalize()
 	return s

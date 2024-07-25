@@ -76,16 +76,16 @@ func draw_base() -> void:
 	var rect := Rect2(Vector2.ZERO, size)
 	if not lock_data.dont_show_frame:
 		var sign := lock_data.get_sign_rot()
-		var frame_texture := FRAME_POS if sign == Enums.sign.positive else FRAME_NEG
+		var frame_texture := FRAME_POS if sign == Enums.Sign.Positive else FRAME_NEG
 		RenderingServer.canvas_item_add_nine_patch(base, rect, FRAME_RECT, frame_texture, FRAME_COORD, FRAME_COORD, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false)
 	
 	# Draw the base
 	rect = Rect2(Vector2(2, 2), size - Vector2(4, 4))
 	var used_color := lock_data.color
 	if lock_data.is_cursed:
-		used_color = Enums.colors.brown
-	if used_color == Enums.colors.glitch:
-		if lock_data.glitch_color == Enums.colors.glitch:
+		used_color = Enums.Colors.Brown
+	if used_color == Enums.Colors.Glitch:
+		if lock_data.glitch_color == Enums.Colors.Glitch:
 			RenderingServer.canvas_item_add_texture_rect(glitch_rid, rect, GLITCH_BASE)
 			assert(PerfManager.end("Lock:draw_base"))
 			return
@@ -93,21 +93,21 @@ func draw_base() -> void:
 			used_color = lock_data.glitch_color
 			RenderingServer.canvas_item_add_nine_patch(glitch_rid, rect, GLITCH_2_RECT, GLITCH_BASE_SHARED.get_rid(), GLITCH_2_DIST, GLITCH_2_DIST, RenderingServer.NINE_PATCH_TILE, RenderingServer.NINE_PATCH_TILE)
 	match used_color:
-		Enums.colors.master, Enums.colors.pure:
-			if lock_data.color == Enums.colors.glitch:
-				var tex := GLITCH_MASTER if used_color == Enums.colors.master else GLITCH_PURE
+		Enums.Colors.Master, Enums.Colors.Pure:
+			if lock_data.color == Enums.Colors.Glitch:
+				var tex := GLITCH_MASTER if used_color == Enums.Colors.Master else GLITCH_PURE
 				RenderingServer.canvas_item_add_texture_rect(base, rect, tex)
 			else:
-				var tex := BASE_MASTER if used_color == Enums.colors.master else BASE_PURE
+				var tex := BASE_MASTER if used_color == Enums.Colors.Master else BASE_PURE
 				for i in 4:
 					RenderingServer.canvas_item_add_animation_slice(base, Rendering.SPECIAL_ANIM_LENGTH, i * Rendering.SPECIAL_ANIM_DURATION, (i+1) * Rendering.SPECIAL_ANIM_DURATION)
 					RenderingServer.canvas_item_add_texture_rect_region(base, rect, tex, Rect2(Vector2(i, 0) * BASE_ANIM_TILE_SIZE, BASE_ANIM_TILE_SIZE))
 				RenderingServer.canvas_item_add_animation_slice(base, 1, 0, 1)
-		Enums.colors.stone:
+		Enums.Colors.Stone:
 			RenderingServer.canvas_item_add_texture_rect(base, rect, BASE_STONE, true)
-		Enums.colors.none:
+		Enums.Colors.None:
 			pass
-		Enums.colors.gate:
+		Enums.Colors.Gate:
 			var rect2 = rect
 			rect2.size /= 2
 			RenderingServer.canvas_item_add_rect(base, rect2, Color8(32, 32, 32))
@@ -135,22 +135,22 @@ func draw_locks() -> void:
 	var magnitude := lock_data.magnitude
 	
 	match lock_data.lock_type:
-		Enums.lock_types.blast:
+		Enums.LockTypes.Blast:
 			RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
-			var s := "x" if value_type == Enums.value.real else "+"
+			var s := "x" if value_type == Enums.Value.Real else "+"
 			LockCountDraw.draw_text(locks, s, 2)
 			
 			var si := LockCountDraw.get_min_size(s, 2)
 			RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (si)) / 2))
 			
-		Enums.lock_types.all:
+		Enums.LockTypes.All:
 			RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
 			LockCountDraw.draw_text(locks, "=", 2)
 			
 			var si := LockCountDraw.get_min_size("=", 2)
 			RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (si)) / 2))
 			
-		Enums.lock_types.normal:
+		Enums.LockTypes.Normal:
 			var arrangement = Rendering.get_lock_arrangement(level.level_data if level else null, magnitude, lock_data.lock_arrangement)
 			if arrangement != null:
 				RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
@@ -158,7 +158,7 @@ func draw_locks() -> void:
 				RenderingServer.canvas_item_set_transform(locks, Transform2D(0, (lock_data.size - (lock_data.minimum_size)) / 2))
 				
 				for lock_position in arrangement[1]:
-					var frame: int = lock_position[1] + (16 if value_type == Enums.value.imaginary else 0)
+					var frame: int = lock_position[1] + (16 if value_type == Enums.Value.Imaginary else 0)
 					var pos: Vector2i = lock_position[0] + Vector2i(-4, -4) # -6 for the centered, +2 for the frame
 					var tex_offset = Vector2(frame, 0) if frame < 16 else Vector2(frame-16, 1)
 					RenderingServer.canvas_item_add_texture_rect_region(locks, Rect2(pos, LOCKS_SIZE), LOCKS_TEXTURE, Rect2(tex_offset * LOCKS_SIZE, LOCKS_SIZE))
@@ -166,7 +166,7 @@ func draw_locks() -> void:
 				
 				RenderingServer.canvas_item_set_modulate(locks, Rendering.lock_colors[sign])
 				var s := str(magnitude)
-				var type := 2 if lock_data.dont_show_lock else 0 if value_type == Enums.value.real else 1 if value_type == Enums.value.imaginary else 2
+				var type := 2 if lock_data.dont_show_lock else 0 if value_type == Enums.Value.Real else 1 if value_type == Enums.Value.Imaginary else 2
 				LockCountDraw.draw_text(locks, s, type)
 				
 				var si := LockCountDraw.get_min_size(s, type)

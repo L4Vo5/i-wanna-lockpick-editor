@@ -71,30 +71,30 @@ var element_to_original_data := {}
 var original_data_to_element := {}
 
 @onready var level_element_type_to_container := {
-	Enums.level_element_types.door: doors,
-	Enums.level_element_types.key: keys,
-	Enums.level_element_types.entry: entries,
-	Enums.level_element_types.salvage_point: salvage_points,
+	Enums.LevelElementTypes.Door: doors,
+	Enums.LevelElementTypes.Key: keys,
+	Enums.LevelElementTypes.Entry: entries,
+	Enums.LevelElementTypes.SalvagePoint: salvage_points,
 }
 
 # Updated when connecting the level_data
 var level_element_type_to_level_data_array := {}
 
 const LEVEL_ELEMENT_TO_SCENE := {
-	Enums.level_element_types.door: DOOR,
-	Enums.level_element_types.key: KEY,
-	Enums.level_element_types.entry: ENTRY,
-	Enums.level_element_types.salvage_point: SALVAGE_POINT,
+	Enums.LevelElementTypes.Door: DOOR,
+	Enums.LevelElementTypes.Key: KEY,
+	Enums.LevelElementTypes.Entry: ENTRY,
+	Enums.LevelElementTypes.SalvagePoint: SALVAGE_POINT,
 };
 
 var LEVEL_ELEMENT_CONNECT := {
-	Enums.level_element_types.door: connect_door,
-	Enums.level_element_types.key: connect_key
+	Enums.LevelElementTypes.Door: connect_door,
+	Enums.LevelElementTypes.Key: connect_key
 };
 
 var LEVEL_ELEMENT_DISCONNECT := {
-	Enums.level_element_types.door: disconnect_door,
-	Enums.level_element_types.key: disconnect_key
+	Enums.LevelElementTypes.Door: disconnect_door,
+	Enums.LevelElementTypes.Key: disconnect_key
 };
 
 ## For selection system
@@ -165,7 +165,7 @@ func reset() -> void:
 	
 	# This initial stuff looks ugly for optimization's sake
 	# (yes, it makes a measurable impact, specially on big levels)
-	for type in Enums.level_element_types.values():
+	for type in Enums.NODE_LEVEL_ELEMENTS:
 		assert(PerfManager.start("Level::reset (" + str(type) + ")"))
 
 		var list: Array = level_element_type_to_level_data_array[type]
@@ -215,10 +215,10 @@ func reset() -> void:
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
 	level_element_type_to_level_data_array = {
-		Enums.level_element_types.door: level_data.doors,
-		Enums.level_element_types.key: level_data.keys,
-		Enums.level_element_types.entry: level_data.entries,
-		Enums.level_element_types.salvage_point: level_data.salvage_points,
+		Enums.LevelElementTypes.Door: level_data.doors,
+		Enums.LevelElementTypes.Key: level_data.keys,
+		Enums.LevelElementTypes.Entry: level_data.entries,
+		Enums.LevelElementTypes.SalvagePoint: level_data.salvage_points,
 	}
 	# Must do this in case level data has no version
 	level_data.check_valid(false)
@@ -291,9 +291,9 @@ func update_hover():
 # Editor functions
 ## Adds *something* to the level data. Returns null if it wasn't added
 func add_element(data) -> Node:
-	var type: Enums.level_element_types = data.level_element_type
+	var type: Enums.LevelElementTypes = data.level_element_type
 	if is_space_occupied(data.get_rect()): return null
-	if type == Enums.level_element_types.door:
+	if type == Enums.LevelElementTypes.Door:
 		if not data.check_valid(level_data, true): return null
 	var list: Array = level_element_type_to_level_data_array[type]
 	if not data in list:
@@ -306,7 +306,7 @@ func add_element(data) -> Node:
 
 ## Makes *something* physically appear (doesn't check collisions)
 func _spawn_element(data) -> Node:
-	var type: Enums.level_element_types = data.level_element_type
+	var type: Enums.LevelElementTypes = data.level_element_type
 	assert(PerfManager.start("Level::_spawn_element (%d)" % type))
 	var node := NodePool.pool_node(LEVEL_ELEMENT_TO_SCENE[type])
 	var dupe = data.duplicated()
@@ -325,7 +325,7 @@ func _spawn_element(data) -> Node:
 
 ## Removes *something* from the level data
 func remove_element(node: Node) -> void:
-	var type: Enums.level_element_types = node.level_element_type
+	var type: Enums.LevelElementTypes = node.level_element_type
 	var original_data = element_to_original_data[node]
 	var list: Array = level_element_type_to_level_data_array[type]
 	var i := list.find(original_data)
@@ -339,7 +339,7 @@ func remove_element(node: Node) -> void:
 	level_data.emit_changed()
 
 func _remove_element(node: Node) -> void:
-	var type: Enums.level_element_types = node.level_element_type
+	var type: Enums.LevelElementTypes = node.level_element_type
 	node.get_parent().remove_child(node)
 	
 	var original_data = element_to_original_data[node]
@@ -354,7 +354,7 @@ func _remove_element(node: Node) -> void:
 
 ## Moves *something*. Returns false if the move failed
 func move_element(node: Node, new_position: Vector2i, update_collision_system: bool = true) -> bool:
-	var type: Enums.level_element_types = node.level_element_type
+	var type: Enums.LevelElementTypes = node.level_element_type
 	var original_data = element_to_original_data[node]
 	var list: Array = level_element_type_to_level_data_array[type]
 	var i := list.find(original_data)
@@ -540,7 +540,7 @@ func _notification(what: int) -> void:
 		hover_highlight.stop_adapting()
 
 func remove_all_pooled() -> void:
-	for type in Enums.level_element_types.values():
+	for type in Enums.NODE_LEVEL_ELEMENTS:
 		var container: Node2D = level_element_type_to_container[type]
 		var c := container.get_children()
 		c.reverse()

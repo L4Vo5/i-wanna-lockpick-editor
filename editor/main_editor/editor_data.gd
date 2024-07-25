@@ -49,7 +49,7 @@ var level_element_editors: Dictionary = {}
 # I guess I could always use an enum internally and expose functions like is_editing_doors(), but, eh.
 var tab_is_tilemap_edit := false
 var is_placing_level_element := false
-var level_element_type: Enums.level_element_types = Enums.level_element_types.door
+var level_element_type: Enums.LevelElementTypes = Enums.LevelElementTypes.Door
 var tab_is_level_properties := false
 var tab_is_editing_settings := false
 var tab_is_multiple_selection := false

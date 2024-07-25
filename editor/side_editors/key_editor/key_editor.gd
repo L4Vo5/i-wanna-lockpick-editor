@@ -23,7 +23,7 @@ const KEY = preload("res://level_elements/keys/key.tscn")
 
 func _init() -> void:
 	data = KeyData.new()
-	data.color = Enums.colors.white
+	data.color = Enums.Colors.White
 func _ready() -> void:
 	key.data = data
 	
@@ -53,7 +53,7 @@ func _set_to_key_data() -> void:
 	real_amount.value = data.amount.real_part
 	imaginary_amount.value = data.amount.imaginary_part
 	is_infinite.button_pressed = data.is_infinite
-	amount.visible = data.type in [Enums.key_types.add, Enums.key_types.exact]
+	amount.visible = data.type in [Enums.KeyTypes.Add, Enums.KeyTypes.Exact]
 	type_choice.selected_object = type_choice_keys[data.type]
 	_update_type_choice_keys()
 	_setting_to_data = false
@@ -65,7 +65,7 @@ func _update_key() -> void:
 		data.type = type_choice.selected_object.data.type
 	data.is_infinite = is_infinite.button_pressed
 	data.amount.set_to(int(real_amount.value), int(imaginary_amount.value))
-	amount.visible = data.type in [Enums.key_types.add, Enums.key_types.exact]
+	amount.visible = data.type in [Enums.KeyTypes.Add, Enums.KeyTypes.Exact]
 	_update_type_choice_keys()
 
 func _update_type_choice_keys() -> void:

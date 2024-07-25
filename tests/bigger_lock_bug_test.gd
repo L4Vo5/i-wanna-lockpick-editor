@@ -15,7 +15,7 @@ func test_bigger_lock_bug() -> void:
 	print("adding door 1")
 	var door_data_1 := DoorData.new()
 	var lock_data_1 := LockData.new()
-	lock_data_1.color = Enums.colors.white
+	lock_data_1.color = Enums.Colors.White
 	lock_data_1.size = Vector2i(20, 1000)
 	door_data_1.size = Vector2i(32, 128)
 	door_data_1.add_lock(lock_data_1)
@@ -25,7 +25,7 @@ func test_bigger_lock_bug() -> void:
 	print("adding door 2")
 	var door_data_2 := DoorData.new()
 	var lock_data_2 := LockData.new()
-	lock_data_2.color = Enums.colors.white
+	lock_data_2.color = Enums.Colors.White
 	lock_data_2.size = Vector2i(20, 20)
 	door_data_2.size = Vector2i(32, 32)
 	door_data_2.add_lock(lock_data_2)

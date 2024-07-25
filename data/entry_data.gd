@@ -2,7 +2,7 @@
 extends Resource
 class_name EntryData
 
-static var level_element_type := Enums.level_element_types.entry
+static var level_element_type := Enums.LevelElementTypes.Entry
 
 @export var position: Vector2i:
 	set(val):

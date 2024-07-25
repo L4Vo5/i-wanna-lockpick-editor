@@ -32,10 +32,10 @@ var collision_system: CollisionSystem:
 @export var ghost_salvage_point: SalvagePoint
 
 @onready var ghosts: Dictionary = {
-	Enums.level_element_types.door: ghost_door,
-	Enums.level_element_types.key: ghost_key,
-	Enums.level_element_types.entry: ghost_entry,
-	Enums.level_element_types.salvage_point: ghost_salvage_point,
+	Enums.LevelElementTypes.Door: ghost_door,
+	Enums.LevelElementTypes.Key: ghost_key,
+	Enums.LevelElementTypes.Entry: ghost_entry,
+	Enums.LevelElementTypes.SalvagePoint: ghost_salvage_point,
 }
 
 @export var editor: LockpickEditor
@@ -126,6 +126,8 @@ func _on_changed_level_data() -> void:
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
+	#if editor_data.tab_is_multiple_selection:
+		#_gui_input_multiple_selection(event)
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed: 
@@ -363,7 +365,7 @@ func _try_remove_at_mouse() -> bool:
 
 func select_thing(obj: Node) -> void:
 	if obj:
-		var type: Enums.level_element_types = obj.level_element_type
+		var type: Enums.LevelElementTypes = obj.level_element_type
 		var editor_control = editor_data.level_element_editors[type]
 		editor_control.data = obj.data.duplicated()
 		editor_data.side_tabs.set_current_tab_control(editor_control)
@@ -387,7 +389,7 @@ func remove_tile_on_mouse() -> bool:
 	var coord := get_mouse_tile_coord(32)
 	return level.remove_tile(coord)
 
-func place_element_on_mouse(type: Enums.level_element_types) -> bool:
+func place_element_on_mouse(type: Enums.LevelElementTypes) -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
 	var coord := get_mouse_coord(GRID_SIZE)

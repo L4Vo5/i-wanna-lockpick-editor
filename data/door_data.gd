@@ -4,11 +4,11 @@ class_name DoorData
 
 ## Contains a door's logical data
 
-static var level_element_type := Enums.level_element_types.door
+static var level_element_type := Enums.LevelElementTypes.Door
 
 @export var amount := ComplexNumber.new_with(1, 0)
 
-@export var outer_color := Enums.colors.none
+@export var outer_color := Enums.Colors.None
 
 @export var locks: Array[LockData] = []
 
@@ -17,13 +17,13 @@ static var level_element_type := Enums.level_element_types.door
 @export var size := Vector2i(32, 32)
 
 @export var _curses := {
-	Enums.curse.ice: false,
-	Enums.curse.erosion: false,
-	Enums.curse.paint: false,
-	Enums.curse.brown: false,
+	Enums.Curse.Ice: false,
+	Enums.Curse.Erosion: false,
+	Enums.Curse.Paint: false,
+	Enums.Curse.Brown: false,
 }
 
-@export var glitch_color := Enums.colors.glitch:
+@export var glitch_color := Enums.Colors.Glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
@@ -41,17 +41,17 @@ func remove_lock_at(pos: int) -> void:
 	locks.remove_at(pos)
 	changed.emit()
 
-func set_curse(curse: Enums.curse, val: bool) -> void:
+func set_curse(curse: Enums.Curse, val: bool) -> void:
 	if _curses[curse] == val: return
-	if outer_color == Enums.colors.gate:
+	if outer_color == Enums.Colors.Gate:
 		return
-	if curse == Enums.curse.brown:
+	if curse == Enums.Curse.Brown:
 		for lock in locks:
 			lock.is_cursed = true
 	_curses[curse] = val
 	changed.emit()
 
-func get_curse(curse: Enums.curse) -> bool:
+func get_curse(curse: Enums.Curse) -> bool:
 	return _curses[curse]
 
 func duplicated() -> DoorData:
@@ -74,7 +74,7 @@ func get_rect() -> Rect2i:
 	return Rect2i(position, size)
 
 ## Returns true if the door has a given color (taking glitch and curses into account)
-func has_color(color: Enums.colors) -> bool:
+func has_color(color: Enums.Colors) -> bool:
 	if get_used_color() == color:
 		return true
 	for lock in locks:
@@ -83,11 +83,11 @@ func has_color(color: Enums.colors) -> bool:
 	return false
 
 ## gets the actually used outer color of the door
-func get_used_color() -> Enums.colors:
+func get_used_color() -> Enums.Colors:
 	var used_color := outer_color
-	if get_curse(Enums.curse.brown):
-		used_color = Enums.colors.brown
-	elif used_color == Enums.colors.glitch:
+	if get_curse(Enums.Curse.Brown):
+		used_color = Enums.Colors.Brown
+	elif used_color == Enums.Colors.Glitch:
 		used_color = glitch_color
 	return used_color
 
@@ -143,7 +143,7 @@ func get_mouseover_text() -> String:
 	if amount.has_value(0, Enums.INT_MAX): s += "Infinite Imaginary "
 	var dont_show_copies := s != ""
 	
-	if outer_color == Enums.colors.gate:
+	if outer_color == Enums.Colors.Gate:
 		s += "Gate"
 	else:
 		s += Enums.COLOR_NAMES[outer_color].capitalize() + " Door"
@@ -155,40 +155,40 @@ func get_mouseover_text() -> String:
 	
 	for lock in locks:
 		s += "- "
-		if lock.lock_type != Enums.lock_types.normal:
-			s += Enums.LOCK_TYPE_NAMES[lock.lock_type].capitalize() + " "
+		if lock.lock_type != Enums.LockTypes.Normal:
+			s += Enums.LOCK_TYPE_NAMES[lock.lock_type] + " "
 		
 		s += Enums.COLOR_NAMES[lock.color].capitalize()
 		s += " Lock"
 		
-		if lock.lock_type == Enums.lock_types.normal:
+		if lock.lock_type == Enums.LockTypes.Normal:
 			if not lock.get_complex_amount().has_value(1, 0):
 				s += ", Cost: "
 				s += str(lock.get_complex_amount())
-		elif lock.lock_type == Enums.lock_types.blast:
+		elif lock.lock_type == Enums.LockTypes.Blast:
 			var part := ""
-			if lock.sign == Enums.sign.positive:
+			if lock.sign == Enums.Sign.Positive:
 				part = "+"
 			else:
 				part = "-"
-			if lock.value_type == Enums.value.imaginary:
+			if lock.value_type == Enums.Value.Imaginary:
 				part += "i"
 			s += ", Cost: [All %s]" % part
 		
 		s += "\n"
 	
-	if outer_color == Enums.colors.glitch or locks.any(func(lock): return lock.color == Enums.colors.glitch):
+	if outer_color == Enums.Colors.Glitch or locks.any(func(lock): return lock.color == Enums.Colors.Glitch):
 		s += "Mimic: " + Enums.COLOR_NAMES[glitch_color].capitalize()
 		s += "\n"
 	
 	var effects_s := ""
-	if get_curse(Enums.curse.brown):
+	if get_curse(Enums.Curse.Brown):
 		effects_s += "Cursed!\n"
-	if get_curse(Enums.curse.ice):
+	if get_curse(Enums.Curse.Ice):
 		effects_s += "Frozen! (1x Red)\n"
-	if get_curse(Enums.curse.erosion):
+	if get_curse(Enums.Curse.Erosion):
 		effects_s += "Eroded! (5x Green)\n"
-	if get_curse(Enums.curse.paint):
+	if get_curse(Enums.Curse.Paint):
 		effects_s += "Painted! (3x Blue)\n"
 	
 	if effects_s != "":

@@ -5,93 +5,106 @@ class_name Enums
 const INT_MAX := 9223372036854775807
 const INT_MIN := -9223372036854775807
 
-enum colors {
-	none,
-	white,
-	black,
-	orange,
-	purple,
-	cyan,
-	pink,
-	red,
-	green,
-	blue,
-	brown,
-	master,
-	pure,
-	glitch,
-	stone,
-	gate, # exclusive to doors, but locks can render it too for convenience
+# Tip: it's not properly documented in-engine, but named enums are actually dictionaries where the keys are the names and the values are the corresponding integers
+
+enum Colors {
+	None,
+	White,
+	Black,
+	Orange,
+	Purple,
+	Cyan,
+	Pink,
+	Red,
+	Green,
+	Blue,
+	Brown,
+	Master,
+	Pure,
+	Glitch,
+	Stone,
+	Gate, # exclusive to doors, but locks can render it too for convenience
 }
 
 const COLOR_NAMES := {
-	colors.none: "none",
-	colors.white: "white",
-	colors.black: "black",
-	colors.orange: "orange",
-	colors.purple: "purple",
-	colors.cyan: "cyan",
-	colors.pink: "pink",
-	colors.red: "red",
-	colors.green: "green",
-	colors.blue: "blue",
-	colors.brown: "brown",
-	colors.master: "master",
-	colors.glitch: "glitch",
-	colors.pure: "pure",
-	colors.stone: "stone",
-	colors.gate: "gate",
+	Colors.None: "none",
+	Colors.White: "white",
+	Colors.Black: "black",
+	Colors.Orange: "orange",
+	Colors.Purple: "purple",
+	Colors.Cyan: "cyan",
+	Colors.Pink: "pink",
+	Colors.Red: "red",
+	Colors.Green: "green",
+	Colors.Blue: "blue",
+	Colors.Brown: "brown",
+	Colors.Master: "master",
+	Colors.Glitch: "glitch",
+	Colors.Pure: "pure",
+	Colors.Stone: "stone",
+	Colors.Gate: "gate",
 }
 
-# 0 shall generally be considered positive
-enum sign {
-	positive = 0,
-	negative = 1,
+# 0 shall be considered a positive number
+enum Sign {
+	Positive = 0,
+	Negative = 1,
 }
 
-enum value {
-	real = 0,
-	imaginary = 1
+enum Value {
+	Real = 0,
+	Imaginary = 1
 }
 
-enum curse {
-	ice, # 1 red
-	erosion, # 5 green
-	paint, # 3 blue
-	brown, # caused by 1 brown, cured by -1 brown
+enum Curse {
+	Ice, # 1 red
+	Erosion, # 5 green
+	Paint, # 3 blue
+	Brown, # caused by 1 brown, cured by -1 brown
 }
 
-enum key_types {
-	add, exact,
-	star, unstar,
-	flip, rotor, rotor_flip
+enum KeyTypes {
+	Add, Exact,
+	Star, Unstar,
+	Flip, Rotor, RotorFlip
 }
 const KEY_TYPE_NAMES := {
-	key_types.add: "add",
-	key_types.exact: "exact",
-	key_types.star: "star",
-	key_types.unstar: "unstar",
-	key_types.flip: "flip",
-	key_types.rotor: "rotor",
-	key_types.rotor_flip: "rotor_flip",
+	KeyTypes.Add: "add",
+	KeyTypes.Exact: "exact",
+	KeyTypes.Star: "star",
+	KeyTypes.Unstar: "unstar",
+	KeyTypes.Flip: "flip",
+	KeyTypes.Rotor: "rotor",
+	KeyTypes.RotorFlip: "rotor_flip",
 }
 
-enum lock_types {
-	normal,
-	blast,
-	blank, # will ignore value_type and sign_type
-	all, # will ignore value_type and sign_type
+enum LockTypes {
+	Normal,
+	Blast,
+	Blank, # will ignore value_type and sign_type
+	All, # will ignore value_type and sign_type
 }
 const LOCK_TYPE_NAMES := {
-	lock_types.normal: "normal",
-	lock_types.blast: "blast",
-	lock_types.blank: "blank",
-	lock_types.all: "all",
+	LockTypes.Normal: "normal",
+	LockTypes.Blast: "blast",
+	LockTypes.Blank: "blank",
+	LockTypes.All: "all",
 }
 
-enum level_element_types {
-	door,
-	key,
-	entry,
-	salvage_point,
+enum LevelElementTypes {
+	Door,
+	Key,
+	Entry,
+	SalvagePoint,
+	Tile,
+	PlayerSpawn,
+	Goal,
 }
+
+## The ones that are represtented by multiple nodes. (so not PlayerSpawn or Goal)
+const NODE_LEVEL_ELEMENTS := [
+	LevelElementTypes.Door,
+	LevelElementTypes.Key,
+	LevelElementTypes.Entry,
+	LevelElementTypes.SalvagePoint
+]

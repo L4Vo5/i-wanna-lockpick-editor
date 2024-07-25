@@ -2,7 +2,7 @@
 extends Control
 class_name SalvagePoint
 
-static var level_element_type := Enums.level_element_types.salvage_point
+static var level_element_type := Enums.LevelElementTypes.SalvagePoint
 
 @export var data: SalvagePointData:
 	set(val):
@@ -62,7 +62,7 @@ func prep_output_step_1() -> void:
 	new_position.y = position.y + 32 - new_door_data.size.y
 
 	new_door_data.position = new_position
-	new_door_data.glitch_color = Enums.colors.glitch
+	new_door_data.glitch_color = Enums.Colors.Glitch
 	# TODO: output points could have their own ammount?
 	#new_door_data.amount.set_to(1, 0)
 	new_door_data.sid = sid

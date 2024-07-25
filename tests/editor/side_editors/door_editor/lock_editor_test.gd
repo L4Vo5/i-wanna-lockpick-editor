@@ -14,7 +14,7 @@ func test_lock_size_bug() -> void:
 	var editor: LockEditor = LOCK_EDITOR.instantiate()
 	var lock_data := LockData.new()
 	lock_data.size = Vector2i(18, 18)
-	lock_data.color = Enums.colors.white
+	lock_data.color = Enums.Colors.White
 	editor.lock_data = lock_data
 	add_child(editor)
 	# This is just to try and catch when the scene changes, because it means the test might need to be updated accordingly.

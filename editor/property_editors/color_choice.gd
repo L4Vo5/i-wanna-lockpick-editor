@@ -2,7 +2,7 @@
 extends Control
 class_name ColorChoiceEditor
 
-signal changed_color(color: Enums.colors)
+signal changed_color(color: Enums.Colors)
 
 const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 
@@ -24,7 +24,7 @@ var lock_occupied_size: int:
 ## the locks that the editor has as children
 var locks: Array[Lock] = []
 
-## Lock by Enums.colors
+## Lock by Enums.Colors
 var lock_by_color: Dictionary
 
 ## how many locks there'll be per row
@@ -43,7 +43,7 @@ var selected_lock: Lock = null:
 		selected_lock = val
 		if selected_lock != null:
 			changed_color.emit(selected_lock.lock_data.color)
-var color: Enums.colors:
+var color: Enums.Colors:
 	set = set_to_color,
 	get = get_current_color
 
@@ -51,8 +51,8 @@ var is_ready := false
 func _ready():
 	is_ready = true
 	for a_color in Enums.COLOR_NAMES.keys():
-		if a_color == Enums.colors.none: continue
-		if a_color == Enums.colors.gate and !support_gates: continue
+		if a_color == Enums.Colors.None: continue
+		if a_color == Enums.Colors.Gate and !support_gates: continue
 		var l := LOCK.instantiate()
 		var ld := LockData.new()
 		ld.dont_show_frame = true
@@ -132,8 +132,8 @@ func _reposition_color_rect() -> void:
 		color_rect.show()
 		color_rect.position = selected_lock.position
 
-func set_to_color(new_color: Enums.colors) -> void:
+func set_to_color(new_color: Enums.Colors) -> void:
 	selected_lock = lock_by_color[new_color]
 
-func get_current_color() -> Enums.colors:
+func get_current_color() -> Enums.Colors:
 	return selected_lock.lock_data.color

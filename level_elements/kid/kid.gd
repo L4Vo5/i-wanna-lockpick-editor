@@ -215,10 +215,10 @@ func anim() -> void:
 # (sprites' visibility is used to determine active auras)
 func update_auras() -> void:
 	if !level: return
-	var red_amount: int = level.logic.key_counts[Enums.colors.red].real_part
-	var green_amount: int = level.logic.key_counts[Enums.colors.green].real_part
-	var blue_amount: int = level.logic.key_counts[Enums.colors.blue].real_part
-	var brown_amount: int = level.logic.key_counts[Enums.colors.brown].real_part
+	var red_amount: int = level.logic.key_counts[Enums.Colors.Red].real_part
+	var green_amount: int = level.logic.key_counts[Enums.Colors.Green].real_part
+	var blue_amount: int = level.logic.key_counts[Enums.Colors.Blue].real_part
+	var brown_amount: int = level.logic.key_counts[Enums.Colors.Brown].real_part
 	
 	# Pack the visibility status into a binary number. I swear this makes the code simpler.
 	assert(spr_brown_aura.frame in [0, 1])

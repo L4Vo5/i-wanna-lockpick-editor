@@ -72,9 +72,9 @@ static func _save_door(data: ByteAccess, door: DoorData) -> void:
 	# Curses take 3 bits. color takes 4 bits. 7 bits total
 	# bits are, x1234444, 1 = ice, 2 = erosion, 3 = paint, 4 = color
 	var curses := 0
-	curses += 4 if door.get_curse(Enums.curse.ice) else 0
-	curses += 2 if door.get_curse(Enums.curse.erosion) else 0
-	curses += 1 if door.get_curse(Enums.curse.paint) else 0
+	curses += 4 if door.get_curse(Enums.Curse.Ice) else 0
+	curses += 2 if door.get_curse(Enums.Curse.Erosion) else 0
+	curses += 1 if door.get_curse(Enums.Curse.Paint) else 0
 	data.store_u8((curses << 4) + door.outer_color)
 	data.store_u16(door.locks.size())
 	for lock in door.locks:
@@ -209,9 +209,9 @@ static func _load_door(data: ByteAccess) -> DoorData:
 	
 	var curses_color := data.get_u8()
 	# bits are, x1234444, 1 = ice, 2 = erosion, 3 = paint, 4 = color
-	door.set_curse(Enums.curse.ice, curses_color & (1<<6) != 0)
-	door.set_curse(Enums.curse.erosion, curses_color & (1<<5) != 0)
-	door.set_curse(Enums.curse.paint, curses_color & (1<<4) != 0)
+	door.set_curse(Enums.Curse.Ice, curses_color & (1<<6) != 0)
+	door.set_curse(Enums.Curse.Erosion, curses_color & (1<<5) != 0)
+	door.set_curse(Enums.Curse.Paint, curses_color & (1<<4) != 0)
 	door.outer_color = curses_color & 0b1111
 	
 	var lock_amount := data.get_u16()

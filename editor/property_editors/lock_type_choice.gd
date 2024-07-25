@@ -23,7 +23,7 @@ var lock_occupied_size: int:
 ## the locks that the editor has as children
 var locks: Array[Lock] = []
 
-## Lock by Enums.lock_types
+## Lock by Enums.LockTypes
 var lock_by_type: Dictionary
 
 ## how many locks there'll be per row
@@ -42,13 +42,13 @@ var selected_lock: Lock = null:
 		selected_lock = val
 		if selected_lock != null:
 			changed_type.emit()
-var color: Enums.colors = Enums.colors.none:
+var color: Enums.Colors = Enums.Colors.None:
 	set(val):
 		color = val
 		for lock in locks:
 			lock.lock_data.color = color
 			lock.update_visuals()
-var type: Enums.lock_types:
+var type: Enums.LockTypes:
 	set = set_to_type,
 	get = get_current_type
 
@@ -134,8 +134,8 @@ func _reposition_color_rect() -> void:
 		color_rect.show()
 		color_rect.position = selected_lock.position - Vector2.ONE * 2
 
-func set_to_type(new_type: Enums.lock_types) -> void:
+func set_to_type(new_type: Enums.LockTypes) -> void:
 	selected_lock = lock_by_type[new_type]
 
-func get_current_type() -> Enums.lock_types:
+func get_current_type() -> Enums.LockTypes:
 	return selected_lock.lock_data.lock_type

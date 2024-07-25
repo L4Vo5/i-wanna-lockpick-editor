@@ -31,7 +31,7 @@ func _draw() -> void:
 	for y in 7:
 		for x in 2:
 			var str := strings[y * 2 + x]
-			var color: Enums.colors = KeyPad.KEY_COLORS[y * 2 + x]
+			var color: Enums.Colors = KeyPad.KEY_COLORS[y * 2 + x]
 			var key_count := ComplexNumber.new()
 			if is_instance_valid(level):
 				key_count = level.logic.key_counts[color]

@@ -13,10 +13,10 @@ class_name LockpickEditor
 @export var salvage_point_editor: SalvagePointEditor
 
 @onready var level_element_editors: Dictionary = {
-	Enums.level_element_types.door: door_editor,
-	Enums.level_element_types.key: key_editor,
-	Enums.level_element_types.entry: entry_editor,
-	Enums.level_element_types.salvage_point: salvage_point_editor,
+	Enums.LevelElementTypes.Door: door_editor,
+	Enums.LevelElementTypes.Key: key_editor,
+	Enums.LevelElementTypes.Entry: entry_editor,
+	Enums.LevelElementTypes.SalvagePoint: salvage_point_editor,
 }
 
 @export var level_container: LevelContainer
@@ -182,7 +182,7 @@ func _update_mode() -> void:
 	var current_tab := side_tabs.get_current_tab_control()
 	data.tab_is_tilemap_edit = current_tab == tile_editor
 	data.is_placing_level_element = false
-	for type in Enums.level_element_types.values():
+	for type in Enums.NODE_LEVEL_ELEMENTS:
 		if current_tab == level_element_editors[type]:
 			data.is_placing_level_element = true
 			data.level_element_type = type

@@ -15,25 +15,25 @@ func test_key_copying_bug() -> void:
 	add_child(key_editor)
 	var key_data := KeyData.new()
 	key_data.amount.set_to(9, 9)
-	key_data.type = Enums.key_types.exact
+	key_data.type = Enums.KeyTypes.Exact
 	key_data.is_infinite = true
-	key_data.color = Enums.colors.purple
+	key_data.color = Enums.Colors.Purple
 	await await_idle_frame()
 	key_editor.data = key_data
 	assert_int(key_editor.data.amount.real_part).is_equal(9)
 	assert_int(key_editor.data.amount.imaginary_part).is_equal(9)
-	assert_int(key_editor.data.color).is_equal(Enums.colors.purple)
-	assert_int(key_editor.data.type).is_equal(Enums.key_types.exact)
-	assert_int(key_editor.type_choice.selected_object.data.type).is_equal(Enums.key_types.exact)
+	assert_int(key_editor.data.color).is_equal(Enums.Colors.Purple)
+	assert_int(key_editor.data.type).is_equal(Enums.KeyTypes.Exact)
+	assert_int(key_editor.type_choice.selected_object.data.type).is_equal(Enums.KeyTypes.Exact)
 	assert_bool(key_editor.data.is_infinite).is_true()
 	key_data = KeyData.new()
 	key_data.amount.set_to(-5, -5)
 	key_editor.data = key_data
 	assert_int(key_editor.data.amount.real_part).is_equal(-5)
 	assert_int(key_editor.data.amount.imaginary_part).is_equal(-5)
-	assert_int(key_editor.data.color).is_equal(Enums.colors.white)
-	assert_int(key_editor.data.type).is_equal(Enums.key_types.add)
-	assert_int(key_editor.type_choice.selected_object.data.type).is_equal(Enums.key_types.add)
+	assert_int(key_editor.data.color).is_equal(Enums.Colors.White)
+	assert_int(key_editor.data.type).is_equal(Enums.KeyTypes.Add)
+	assert_int(key_editor.type_choice.selected_object.data.type).is_equal(Enums.KeyTypes.Add)
 	assert_bool(key_editor.data.is_infinite).is_false()
 	
 	

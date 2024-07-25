@@ -110,7 +110,7 @@ func _update_lock_size() -> void:
 	lock_data.size = Vector2i(int(width.value), int(height.value))
 	_update_max_pos()
 
-func _update_lock_color(color: Enums.colors) -> void:
+func _update_lock_color(color: Enums.Colors) -> void:
 	if _setting_to_data: return
 	lock_data.color = color_choice.color
 	lock_data.emit_changed()
@@ -119,12 +119,12 @@ func _update_lock_color(color: Enums.colors) -> void:
 func _update_lock_type() -> void:
 	if _setting_to_data: return
 	lock_data.lock_type = lock_type_choice.type
-	if lock_data.lock_type == Enums.lock_types.normal:
+	if lock_data.lock_type == Enums.LockTypes.Normal:
 		arrangement_chooser.show()
 		requirement_parent.show()
 		for child in requirement_parent.get_children():
 			child.show()
-	elif lock_data.lock_type == Enums.lock_types.blast:
+	elif lock_data.lock_type == Enums.LockTypes.Blast:
 		arrangement_chooser.hide()
 		requirement_parent.show()
 		for child in requirement_parent.get_children():
@@ -143,7 +143,7 @@ func _update_lock_amount() -> void:
 	if _setting_to_data: return
 	# special case: amount's value shouldn't be 0
 	if amount.value == 0:
-		if lock_data.sign == Enums.sign.positive:
+		if lock_data.sign == Enums.Sign.Positive:
 			if last_amount_value == 1:
 				amount.value = -1
 			else:
@@ -156,11 +156,11 @@ func _update_lock_amount() -> void:
 		return
 	lock_data.magnitude = abs(amount.value)
 	if amount.value < 0:
-		lock_data.sign = Enums.sign.negative
+		lock_data.sign = Enums.Sign.Negative
 		if not is_negative.button_pressed:
 			is_negative.button_pressed = true
 	else:
-		lock_data.sign = Enums.sign.positive
+		lock_data.sign = Enums.Sign.Positive
 		if is_negative.button_pressed:
 			is_negative.button_pressed = false
 	last_amount_value = int(amount.value)
@@ -172,19 +172,19 @@ func _update_lock_amount() -> void:
 func _update_is_imaginary() -> void:
 	if _setting_to_data: return
 	if is_imaginary.button_pressed:
-		lock_data.value_type = Enums.value.imaginary
+		lock_data.value_type = Enums.Value.Imaginary
 	else:
-		lock_data.value_type = Enums.value.real
+		lock_data.value_type = Enums.Value.Real
 	lock_data.emit_changed()
 
 func _update_is_negative() -> void:
 	if _setting_to_data: return
 	if is_negative.button_pressed:
-		lock_data.sign = Enums.sign.negative
+		lock_data.sign = Enums.Sign.Negative
 		if amount.value > 0:
 			amount.value = -abs(amount.value)
 	else:
-		lock_data.sign = Enums.sign.positive
+		lock_data.sign = Enums.Sign.Positive
 		if amount.value < 0:
 			amount.value = abs(amount.value)
 	lock_data.emit_changed()

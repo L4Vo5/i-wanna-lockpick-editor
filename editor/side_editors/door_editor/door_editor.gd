@@ -32,9 +32,9 @@ var editor_data: EditorData
 
 func _init() -> void:
 	data = DoorData.new()
-	data.outer_color = Enums.colors.white
+	data.outer_color = Enums.Colors.White
 	var lock := LockData.new()
-	lock.color = Enums.colors.white
+	lock.color = Enums.Colors.White
 	data.add_lock(lock)
 
 func _ready() -> void:
@@ -69,9 +69,9 @@ func _ready() -> void:
 var _setting_to_data := false
 func _set_to_door_data() -> void:
 	_setting_to_data = true
-	ice_button.button_pressed = data.get_curse(Enums.curse.ice)
-	erosion_button.button_pressed = data.get_curse(Enums.curse.erosion)
-	paint_button.button_pressed = data.get_curse(Enums.curse.paint)
+	ice_button.button_pressed = data.get_curse(Enums.Curse.Ice)
+	erosion_button.button_pressed = data.get_curse(Enums.Curse.Erosion)
+	paint_button.button_pressed = data.get_curse(Enums.Curse.Paint)
 	width.value = data.size.x
 	height.value = data.size.y
 	
@@ -87,9 +87,9 @@ func _set_to_door_data() -> void:
 
 func _update_door_curse() -> void:
 	if _setting_to_data: return
-	data.set_curse(Enums.curse.ice, ice_button.button_pressed)
-	data.set_curse(Enums.curse.erosion, erosion_button.button_pressed)
-	data.set_curse(Enums.curse.paint, paint_button.button_pressed)
+	data.set_curse(Enums.Curse.Ice, ice_button.button_pressed)
+	data.set_curse(Enums.Curse.Erosion, erosion_button.button_pressed)
+	data.set_curse(Enums.Curse.Paint, paint_button.button_pressed)
 
 func _update_door_size() -> void:
 	if _setting_to_data: return
@@ -147,11 +147,11 @@ func _update_lock_editors_door_size() -> void:
 func _add_new_lock() -> void:
 	var new_lock := LockData.new()
 	new_lock.color = data.outer_color
-	if data.outer_color == Enums.colors.gate:
+	if data.outer_color == Enums.Colors.Gate:
 		if lock_editor_parent.get_child_count() != 0:
 			new_lock.color = lock_editor_parent.get_child(-1).lock.lock_data.color
 		else:
-			new_lock.color = Enums.colors.white
+			new_lock.color = Enums.Colors.White
 	data.add_lock(new_lock)
 	
 	var lock_editor: LockEditor = LOCK_EDITOR.instantiate()
