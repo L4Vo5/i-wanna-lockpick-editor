@@ -30,7 +30,7 @@ func add_rectangle(rect: Rect2i, sign: int) -> void:
 				tiles[entry] = 1
 
 func _draw() -> void:
-	PerfManager.start("SelectionOutline::draw")
+	assert(PerfManager.start("SelectionOutline::draw"))
 	
 	# organized by [check, offset, size]
 	var data: PackedVector2Array = [
@@ -48,4 +48,4 @@ func _draw() -> void:
 		for i in range(0, 24, 3):
 			if not tiles.has(tile + data[i]):
 				draw_rect(Rect2(tile + data[i+1], data[i+2]), color)
-	PerfManager.end("SelectionOutline::draw")
+	assert(PerfManager.end("SelectionOutline::draw"))
