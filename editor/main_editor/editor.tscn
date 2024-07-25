@@ -112,6 +112,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_n4qnf")
 gameplay = NodePath("HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay")
 right_dock = NodePath("HSplitContainer/RightDock")
@@ -143,6 +144,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
@@ -227,6 +229,7 @@ clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+mouse_filter = 1
 script = ExtResource("2_kqd34")
 inner_container = NodePath("LevelContainerInner")
 gameplay = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay")
@@ -325,7 +328,6 @@ self_modulate = Color(1, 1, 1, 0.498039)
 
 [node name="GhostDoor" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup" instance=ExtResource("5_55fwv")]
 visible = false
-mouse_filter = 2
 
 [node name="GhostKey" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay/CanvasGroup" instance=ExtResource("6_n53nq")]
 data = SubResource("Resource_jn77e")

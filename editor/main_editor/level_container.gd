@@ -53,13 +53,7 @@ var hover_highlight: HoverHighlight:
 @onready var camera_dragger: NodeDragger = %CameraDragger
 @onready var editor_camera: Camera2D = %EditorCamera
 
-var is_dragging := false:
-	get:
-		if selected_obj == null or Input.is_action_pressed(&"unbound_action"):
-			is_dragging = false
-		return is_dragging
-	set(val):
-		is_dragging = val and selected_obj != null and not Input.is_action_pressed(&"unbound_action")
+var is_dragging := false
 var drag_offset := Vector2i.ZERO
 var selected_obj: Node:
 	set(val):
@@ -103,7 +97,6 @@ func set_editor_data(data: EditorData) -> void:
 	_on_changed_level_data()
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_on_changed_is_playing, CONNECT_DEFERRED)
-	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
 	
 	editor_camera.make_current()
 	_on_changed_is_playing()
@@ -374,7 +367,9 @@ func select_thing(obj: Node) -> void:
 		var editor_control = editor_data.level_element_editors[type]
 		editor_control.data = obj.data.duplicated()
 		editor_data.side_tabs.set_current_tab_control(editor_control)
-	# is_dragging is set to true by _on_selected_highlight_adapted_to
+		if not is_dragging:
+			is_dragging = true
+			drag_offset = get_mouse_tile_coord(1) - Vector2i(obj.position)
 	selected_obj = obj
 	hovered_obj = obj
 	danger_obj = null
@@ -437,16 +432,14 @@ func relocate_selected() -> void:
 	else:
 		danger_obj = null
 	# refreshes the position
-	selected_obj = selected_obj
-	hovered_obj = hovered_obj
-
-
+	selected_highlight.update_line()
+	hover_highlight.update_line()
 
 func get_mouse_coord(grid_size: Vector2i) -> Vector2i:
-	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), grid_size)
+	return round_coord(level.get_local_mouse_position(), grid_size)
 
 func get_mouse_tile_coord(grid_size: int) -> Vector2i:
-	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), Vector2i(grid_size, grid_size)) / grid_size
+	return round_coord(level.get_local_mouse_position(), Vector2i(grid_size, grid_size)) / grid_size
 
 func round_coord(coord: Vector2i, grid_size: Vector2i) -> Vector2i:
 	# wasn't sure how to do a "floor divide". this is crude but it works
@@ -458,32 +451,16 @@ func round_coord(coord: Vector2i, grid_size: Vector2i) -> Vector2i:
 	return val
 
 func is_mouse_out_of_bounds() -> bool:
-	var local_pos := get_global_mouse_position() - get_level_pos()
+	var local_pos := level.get_local_mouse_position()
 	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= level.level_data.size.x or local_pos.y >= level.level_data.size.y:
 		return true
 	return false
-
-func get_level_pos() -> Vector2:
-	return level_viewport.get_parent().global_position + gameplay.global_position - editor_camera.position
-	#return level_viewport.get_parent().global_position + level.global_position - level.get_camera_position()
-
-#var unique_queue := {}
-#func _defer_unique(f: Callable) -> void:
-#	if not unique_queue.get(f):
-#		unique_queue[f] = true
-#		f.call_deferred()
-#		_erase_from_queue.bind(f).call_deferred()
-#
-#func _erase_from_queue(f: Callable) -> void:
-#	unique_queue[f] = false
-
 
 const GRID_SIZE := Vector2i(16, 16)
 
 func _update_ghosts() -> void:
 	for ghost: Node in ghosts.values():
 		ghost.hide()
-	if is_dragging: return
 	if not editor_data.is_placing_level_element or editor_data.is_playing:
 		return
 	var type := editor_data.level_element_type
@@ -529,9 +506,3 @@ func _place_danger_obj() -> void:
 		maybe_pos -= round_coord(drag_offset, GRID_SIZE)
 	obj.position = maybe_pos
 	danger_obj = obj
-
-func _on_selected_highlight_adapted_to(_obj: Node) -> void:
-	if (Input.get_mouse_button_mask() & MOUSE_BUTTON_MASK_LEFT):
-		if not is_dragging:
-			is_dragging = true
-			drag_offset = get_mouse_tile_coord(1) - Vector2i(_obj.position)

@@ -4,9 +4,16 @@ class_name HoverHighlight
 signal adapted_to(obj: Node)
 signal stopped_adapting
 
-var current_obj: Node:
+var current_obj: CanvasItem:
 	set(val):
-		current_obj = val if is_instance_valid(val) else null
+		val = val if is_instance_valid(val) else null
+		if current_obj == val: return
+		current_obj = val
+		update_line()
+		if current_obj:
+			adapted_to.emit(current_obj)
+		else:
+			stopped_adapting.emit()
 	get:
 		if not is_instance_valid(current_obj) and current_obj != null:
 			stop_adapting()
@@ -34,38 +41,30 @@ func stop_adapting_to(obj: Object) -> void:
 	if obj == current_obj:
 		stop_adapting()
 
-func stop_adapting(no_signal: bool = false) -> void:
-	_hide_all()
-	var is_new_obj := current_obj != null
+func stop_adapting() -> void:
 	current_obj = null
-	if not no_signal and is_new_obj:
-		stopped_adapting.emit()
 
 func _hide_all() -> void:
 	line.hide()
 
-func adapt_to(obj: Node, no_signal: bool = false) -> void:
-	if not is_instance_valid(obj):
-		stop_adapting(no_signal)
-		return
-	# we allow the same object to be passed several times, in case position needs to be adjusted
-#	if obj == current_obj:
-#		return
-	var is_new_obj := obj != current_obj
+func adapt_to(obj: Node) -> void:
 	current_obj = obj
-	_hide_all()
+
+func update_line() -> void:
+	if not current_obj:
+		line.hide()
+		return
+	line.show()
 	var size := Vector2i(32, 32)
-	if obj is Door:
-		var data: DoorData = obj.data
+	if current_obj is Door:
+		var data: DoorData = current_obj.data
 		assert(is_instance_valid(data))
 		size = data.size
 	line.show()
-	line.global_position = obj.global_position
+	line.global_position = current_obj.global_position
 	line.clear_points()
 	line.add_point(Vector2(0, 0))
 	line.add_point(Vector2(size.x, 0))
 	line.add_point(Vector2(size.x, size.y))
 	line.add_point(Vector2(0, size.y))
 	line.add_point(Vector2(0, 0))
-	if not no_signal and is_new_obj:
-		adapted_to.emit(obj)

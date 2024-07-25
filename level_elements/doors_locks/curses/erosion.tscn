@@ -6,6 +6,7 @@
 [node name="Erosion" type="MarginContainer"]
 offset_right = 32.0
 offset_bottom = 32.0
+mouse_filter = 2
 
 [node name="Outline" type="NinePatchRect" parent="."]
 layout_mode = 2
