@@ -322,7 +322,7 @@ func _handle_mouse_movement() -> bool:
 			return true
 		elif Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
 			return _try_place_at_mouse()
-		elif editor_data.is_placing_player_spawn or editor_data.is_placing_goal_position or editor_data.tab_is_tilemap_edit:
+		elif editor_data.tab_is_level_properties and (editor_data.is_placing_player_spawn or editor_data.is_placing_goal_position) or editor_data.tab_is_tilemap_edit:
 			return _try_place_at_mouse()
 	elif Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		if remove_tile_on_mouse():
@@ -491,6 +491,7 @@ func _update_ghosts() -> void:
 		danger_obj = obj
 	else:
 		danger_obj = null
+	danger_highlight.update_line()
 
 # places the danger obj only. this overrides the ghosts obvs
 func _place_danger_obj() -> void:
