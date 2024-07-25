@@ -197,7 +197,7 @@ func detect_doors(vel: Vector2) -> void:
 					vel.y = 0
 
 func interact_with_door(door: Door) -> void:
-	level.try_open_door(door)
+	level.logic.try_open_door(door)
 
 func anim() -> void:
 	if velocity.y < 0:

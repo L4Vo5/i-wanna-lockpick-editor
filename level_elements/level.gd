@@ -100,6 +100,37 @@ var LEVEL_ELEMENT_DISCONNECT := {
 ## For selection system
 var dont_update_collision_system: bool = false
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EXIT_TREE:
+		remove_all_pooled()
+	if what == NOTIFICATION_WM_MOUSE_EXIT:
+		hover_highlight.stop_adapting()
+
+func _ready() -> void:
+	logic.level = self
+	reset()
+	_update_player_spawn_position()
+	hover_highlight.adapted_to.connect(_on_hover_adapted_to)
+	hover_highlight.stopped_adapting.connect(_on_hover_adapted_to.bind(null))
+
+var last_camera_pos := Vector2.ZERO
+func _process(_delta: float) -> void:
+	if camera.position != last_camera_pos:
+		last_camera_pos = camera.position
+		update_hover()
+
+func _physics_process(_delta: float) -> void:
+	adjust_camera()
+	
+	var mouse_pos := get_local_mouse_position()
+	var camera_rect := Rect2(camera.position, camera.get_viewport_rect().size)
+	if not camera_rect.has_point(mouse_pos):
+		hover_highlight.stop_adapting()
+
+func _input(event: InputEvent):
+	if event is InputEventMouseMotion:
+		update_hover()
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		if event.keycode == KEY_F11 and event.pressed:
@@ -129,21 +160,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"autorun"):
 		Global.settings.is_autorun_on = !Global.settings.is_autorun_on
 		ui.show_autorun_animation(Global.settings.is_autorun_on)
-
-func _ready() -> void:
-	logic.level = self
-	reset()
-	_update_player_spawn_position()
-	hover_highlight.adapted_to.connect(_on_hover_adapted_to)
-	hover_highlight.stopped_adapting.connect(_on_hover_adapted_to.bind(null))
-
-func _physics_process(_delta: float) -> void:
-	adjust_camera()
-	
-	var mouse_pos := get_local_mouse_position()
-	var camera_rect := Rect2(camera.position, camera.get_viewport_rect().size)
-	if not camera_rect.has_point(mouse_pos):
-		hover_highlight.stop_adapting()
 
 # For legal reasons this should happen in a deferred call, so it's at the end of the frame and everything that happens in this frame had time to record their undo calls
 func undo() -> void:
@@ -264,22 +280,6 @@ func _update_goal_position() -> void:
 			level_data.elem_to_collision_system_id[&"goal"] = id
 		else:
 			level_data.elem_to_collision_system_id.erase(&"goal")
-
-func try_open_door(door: Door) -> void:
-	logic.try_open_door(door)
-
-
-
-
-var last_camera_pos := Vector2.ZERO
-func _process(delta: float) -> void:
-	if camera.position != last_camera_pos:
-		last_camera_pos = camera.position
-		update_hover()
-
-func _input(event: InputEvent):
-	if event is InputEventMouseMotion:
-		update_hover()
 
 func update_hover():
 	assert(PerfManager.start("level::update_hover"))
@@ -533,12 +533,6 @@ func connect_key(key: KeyElement) -> void:
 
 func disconnect_key(key: KeyElement) -> void:
 	key.picked_up.disconnect(_on_key_picked_up.bind(key))
-
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_EXIT_TREE:
-		remove_all_pooled()
-	if what == NOTIFICATION_WM_MOUSE_EXIT:
-		hover_highlight.stop_adapting()
 
 func remove_all_pooled() -> void:
 	for type in Enums.NODE_LEVEL_ELEMENTS:
