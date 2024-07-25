@@ -273,6 +273,12 @@ func try_open_door(door: Door) -> void:
 
 signal element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types)
 
+var last_camera_pos := Vector2.ZERO
+func _process(delta: float) -> void:
+	if camera.position != last_camera_pos:
+		last_camera_pos = camera.position
+		update_hover()
+
 func _input(event: InputEvent):
 	if event is InputEventMouseMotion:
 		update_hover()
