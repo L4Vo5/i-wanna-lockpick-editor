@@ -384,11 +384,8 @@ func update_mouseover() -> void:
 	mouseover.hide()
 	var obj := hover_highlight.current_obj
 	if obj:
-		if obj.has_method("get_mouseover_text"):
-			mouseover.text = obj.get_mouseover_text()
-			mouseover.show()
-		else:
-			printerr("object %s doesn't have get_mouseover_text method" % obj)
+		mouseover.text = obj.get_mouseover_text()
+		mouseover.show()
 	assert(PerfManager.end("Level::update_mouseover"))
 
 func add_debris_child(debris: Node) -> void:
@@ -422,23 +419,15 @@ func immediately_adjust_camera() -> void:
 func adjust_camera() -> void:
 	if not is_instance_valid(player): return
 	camera.position = player.position - get_viewport_rect().size / 2
-	limit_camera()
-
-func limit_camera() -> void:
 	var limit := Vector2(
 		level_data.size.x - get_viewport_rect().size.x
 		, level_data.size.y - get_viewport_rect().size.y
 	)
 	# custom clamp in case limit goes under 0
-	# TODO
 	camera.position.x = minf(camera.position.x, limit.x)
 	camera.position.x = maxf(camera.position.x, 0)
 	camera.position.y = minf(camera.position.y, limit.y)
 	camera.position.y = maxf(camera.position.y, 0)
-	#camera.position = camera.position.clamp(Vector2(0, 0), limit)
-
-func get_camera_position() -> Vector2:
-	return camera.position
 
 func in_transition() -> bool:
 	var transition := gameplay_manager.transition

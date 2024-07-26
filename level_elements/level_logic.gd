@@ -94,7 +94,7 @@ func reset() -> void:
 	glitch_color = Enums.Colors.Glitch
 	for key: KeyElement in level.keys.get_children():
 		# TODO: definitely no! ... ?
-		key._on_changed_glitch_color()
+		key.update_glitch_color()
 	i_view = false
 	undo_redo.clear_history()
 	active_salvage = null
@@ -175,7 +175,7 @@ func set_glitch_color(new_glitch_color: Enums.Colors, is_undo := false) -> void:
 	
 	for key: KeyElement in level.keys.get_children():
 		if key.data.color == Enums.Colors.Glitch:
-			key._on_changed_glitch_color()
+			key.update_glitch_color()
 	
 	for door: Door in level.doors.get_children():
 		var _door_data := door.data

@@ -126,11 +126,3 @@ position = Vector2(24, 7)
 texture = ExtResource("12_4mi1v")
 hframes = 4
 frame = 3
-
-[node name="GuiInputGrabber" type="Control" parent="."]
-visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_right = 32.0
-offset_bottom = 31.0
-mouse_filter = 1

@@ -27,7 +27,6 @@ static var level_element_type := Enums.LevelElementTypes.Key
 @onready var symbol: Sprite2D = %Symbol
 @onready var symbol_inf: Sprite2D = %SymbolInf
 @onready var collision: Area2D = %Collision
-#@onready var input_grabber: Control = $GuiInputGrabber
 
 var level: Level = null:
 	set(val):
@@ -43,24 +42,15 @@ func _ready() -> void:
 		shadow.hide()
 	collision.area_entered.connect(on_collide)
 	update_visual()
-	
-#	input_grabber.gui_input.connect(_gui_input)
-#	input_grabber.mouse_entered.connect(_on_mouse_entered)
-#	input_grabber.mouse_exited.connect(_on_mouse_exited)
-
-func _on_mouse_entered() -> void:
-	mouse_entered.emit()
-func _on_mouse_exited() -> void:
-	mouse_exited.emit()
 
 func disconnect_level() -> void:
 	if not is_instance_valid(level): return
 
 func connect_level() -> void:
 	if not is_instance_valid(level): return
-	_on_changed_glitch_color()
+	update_glitch_color()
 
-func _on_changed_glitch_color() -> void:
+func update_glitch_color() -> void:
 	if not is_instance_valid(data): return
 	data.update_glitch_color(level.logic.glitch_color)
 	update_visual()
@@ -218,6 +208,3 @@ func on_pickup() -> void:
 	else:
 		snd_pickup.stream = preload("res://level_elements/keys/key_pickup.wav")
 	snd_pickup.play()
-
-#func get_rect() -> Rect2:
-#	return input_grabber.get_global_rect()
