@@ -363,6 +363,19 @@ func _try_remove_at_mouse() -> bool:
 		return true
 	return false
 
+func remove_tile_on_mouse() -> bool:
+	if editor_data.disable_editing: return false
+	if is_mouse_out_of_bounds(): return false
+	var coord := get_mouse_tile_coord(32)
+	return level.remove_tile(coord)
+
+func remove_element(node: Node) -> bool:
+	if not is_instance_valid(node): return false
+	level.remove_element(node)
+	select_thing(null)
+	_update_ghosts()
+	return true
+
 func select_thing(obj: Node) -> void:
 	if obj:
 		var type: Enums.LevelElementTypes = obj.level_element_type
@@ -383,12 +396,6 @@ func place_tile_on_mouse() -> bool:
 	var coord := get_mouse_tile_coord(32)
 	return level.place_tile(coord)
 
-func remove_tile_on_mouse() -> bool:
-	if editor_data.disable_editing: return false
-	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_tile_coord(32)
-	return level.remove_tile(coord)
-
 func place_element_on_mouse(type: Enums.LevelElementTypes) -> bool:
 	if editor_data.disable_editing: return false
 	if is_mouse_out_of_bounds(): return false
@@ -398,13 +405,6 @@ func place_element_on_mouse(type: Enums.LevelElementTypes) -> bool:
 	var node := level.add_element(data)
 	if not is_instance_valid(node): return false
 	select_thing(node)
-	return true
-
-func remove_element(node: Node) -> bool:
-	if not is_instance_valid(node): return false
-	level.remove_element(node)
-	select_thing(null)
-	_update_ghosts()
 	return true
 
 func place_player_spawn_on_mouse() -> void:
