@@ -54,9 +54,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 
 
 @onready var hover_highlight: HoverHighlight = %HoverHighlight
-var hovering_over: Node:
-	get:
-		return hover_highlight.current_obj
+var hovering_over: int = -1
 @onready var mouseover: Node2D = %Mouseover
 
 var collision_system: CollisionSystem:
@@ -66,9 +64,9 @@ var collision_system: CollisionSystem:
 var player: Kid
 var goal: LevelGoal
 
-# elements will have a duplicate of the data stored in level_data. this lets you find the original when needed.
-var element_to_original_data := {}
-var original_data_to_element := {}
+# nodes belonging to Enums.NODE_LEVEL_ELEMENTS will have a duplicate of the data stored in level_data. this lets you find the original when needed.
+var node_to_original_data := {}
+var original_data_to_node := {}
 
 @onready var level_element_type_to_container := {
 	Enums.LevelElementTypes.Door: doors,
@@ -77,7 +75,7 @@ var original_data_to_element := {}
 	Enums.LevelElementTypes.SalvagePoint: salvage_points,
 }
 
-# Updated when connecting the level_data
+# Updated when connecting the level_data. Only contains data for the node elements.
 var level_element_type_to_level_data_array := {}
 
 const LEVEL_ELEMENT_TO_SCENE := {
@@ -96,9 +94,6 @@ var LEVEL_ELEMENT_DISCONNECT := {
 	Enums.LevelElementTypes.Door: disconnect_door,
 	Enums.LevelElementTypes.Key: disconnect_key
 };
-
-## For selection system
-var dont_update_collision_system: bool = false
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:
@@ -193,8 +188,8 @@ func reset() -> void:
 		for i in mini(needed, current):
 			var node := container.get_child(i)
 			var original_data = list[i]
-			element_to_original_data[node] = original_data
-			original_data_to_element[original_data] = node
+			node_to_original_data[node] = original_data
+			original_data_to_node[original_data] = node
 			node.data = original_data.duplicated()
 		# shave off the rest
 		if current > needed:
@@ -204,7 +199,7 @@ func reset() -> void:
 		# or add them
 		else:
 			for i in range(current, needed):
-				_spawn_element(list[i])
+				_spawn_node_element(list[i])
 		assert(PerfManager.end("Level::reset (" + Enums.LevelElementTypes.find_key(type) + ")"))
 	
 	assert(PerfManager.start("Level::reset (tiles)"))
@@ -230,6 +225,7 @@ func reset() -> void:
 
 func _connect_level_data() -> void:
 	if not is_instance_valid(level_data): return
+	level_data.regen_collision_system()
 	level_element_type_to_level_data_array = {
 		Enums.LevelElementTypes.Door: level_data.doors,
 		Enums.LevelElementTypes.Key: level_data.keys,
@@ -253,13 +249,8 @@ func _update_player_spawn_position() -> void:
 	if not level_data: return
 	player_spawn_point.visible = Global.current_mode == Global.Modes.EDITOR
 	player_spawn_point.position = level_data.player_spawn_position
-	if not dont_update_collision_system:
-		var id: int
-		if level_data.elem_to_collision_system_id.has(&"player_spawn"):
-			id = level_data.elem_to_collision_system_id[&"player_spawn"]
-			collision_system.remove_rect(id)
-		id = collision_system.add_rect(Rect2i(level_data.player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)), &"player_spawn")
-		level_data.elem_to_collision_system_id[&"player_spawn"] = id
+	var id: int = level_data.elem_to_collision_system_id[&"player_spawn"]
+	collision_system.change_rect(id, Rect2i(level_data.player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)))
 
 func _update_goal_position() -> void:
 	if not is_node_ready(): return
@@ -270,52 +261,62 @@ func _update_goal_position() -> void:
 	else:
 		if is_instance_valid(goal):
 			goal.queue_free()
-	if not dont_update_collision_system:
-		var id: int
-		if level_data.elem_to_collision_system_id.has(&"goal"):
-			id = level_data.elem_to_collision_system_id[&"goal"]
-			collision_system.remove_rect(id)
-		if level_data.has_goal:
+	# Wow this relatively straight forward thing looks way more complicated than it should. It's basically "update or add it if it should be there, otherwise remove it if it's there"
+	var id := -1
+	if level_data.elem_to_collision_system_id.has(&"goal"):
+		id = level_data.elem_to_collision_system_id[&"goal"]
+	if level_data.has_goal:
+		if id != -1:
+			collision_system.change_rect(id, Rect2i(level_data.goal_position, Vector2i(32, 32)))
+		else:
 			id = collision_system.add_rect(Rect2i(level_data.goal_position, Vector2i(32, 32)), &"goal")
 			level_data.elem_to_collision_system_id[&"goal"] = id
-		else:
+	else:
+		if id != -1:
+			id = level_data.elem_to_collision_system_id[&"goal"]
 			level_data.elem_to_collision_system_id.erase(&"goal")
+			collision_system.remove_rect(id)
 
 func update_hover():
 	assert(PerfManager.start("level::update_hover"))
 	var pos := get_local_mouse_position()
-	var node := get_object_occupying(pos.floor())
+	var id := _get_visible_element_at_pos(pos)
+	hovering_over = id
+	var node: Node = null
+	if hovering_over != -1:
+		var data = collision_system.get_rect_data(hovering_over)
+		if original_data_to_node.has(data):
+			node = original_data_to_node[data]
 	hover_highlight.adapt_to(node)
 	assert(PerfManager.end("level::update_hover"))
 
-
-## Makes *something* physically appear (doesn't check collisions)
-func _spawn_element(data) -> Node:
+## Makes a Node element physically appear (doesn't check collisions)
+func _spawn_node_element(data) -> Node:
 	var type: Enums.LevelElementTypes = data.level_element_type
-	assert(PerfManager.start("Level::_spawn_element (%s)" % Enums.LevelElementTypes.find_key(type)))
+	assert(PerfManager.start("Level::_spawn_node_element (%s)" % Enums.LevelElementTypes.find_key(type)))
 	var node := NodePool.pool_node(LEVEL_ELEMENT_TO_SCENE[type])
 	var dupe = data.duplicated()
 	
 	node.level = self
 	node.data = dupe
 	
-	element_to_original_data[node] = data
-	original_data_to_element[data] = node
+	node_to_original_data[node] = data
+	original_data_to_node[data] = node
 	
 	if LEVEL_ELEMENT_CONNECT.has(type):
 		LEVEL_ELEMENT_CONNECT[type].call(node)
 	level_element_type_to_container[type].add_child(node)
-	assert(PerfManager.end("Level::_spawn_element (%s)" % Enums.LevelElementTypes.find_key(type)))
+	assert(PerfManager.end("Level::_spawn_node_element (%s)" % Enums.LevelElementTypes.find_key(type)))
 	return node
 
-
+# poor naming when combined with _remove_node_element...
 func _remove_element(node: Node) -> void:
 	var type: Enums.LevelElementTypes = node.level_element_type
 	node.get_parent().remove_child(node)
 	
-	var original_data = element_to_original_data[node]
-	element_to_original_data.erase(node)
-	original_data_to_element.erase(original_data)
+	var original_data = node_to_original_data[node]
+	node_to_original_data.erase(node)
+	original_data_to_node.erase(original_data)
 	
 	if LEVEL_ELEMENT_DISCONNECT.has(type):
 		LEVEL_ELEMENT_DISCONNECT[type].call(node)
@@ -324,8 +325,10 @@ func _remove_element(node: Node) -> void:
 	NodePool.return_node(node)
 
 func update_tile(tile_coord: Vector2i) -> void:
-	if not level_data.tiles.get(tile_coord): return
 	var layer := 0
+	if not level_data.tiles.get(tile_coord):
+		tile_map.erase_cell(layer, tile_coord)
+		return
 	var id := 1
 	var what_tile := AutoTiling.get_tile(tile_coord, level_data)
 	tile_map.set_cell(layer, tile_coord, id, what_tile)
@@ -353,18 +356,16 @@ func _spawn_goal() -> void:
 	goal.level = self
 	goal_parent.add_child(goal)
 
-## Returns the object at that position.
-func get_object_occupying(pos: Vector2i) -> Node:
+func _get_visible_element_at_pos(pos: Vector2i) -> int:
 	var rect_ids := collision_system.get_rects_containing_point_in_grid(pos)
 	for id in rect_ids:
-		var obj = collision_system.get_rect_data(id)
-		if original_data_to_element.has(obj):
-			var element: Node = original_data_to_element[obj]
-			# Invisible elements include: opened doors, picked up keys, and output points after spawning a door.
-			if not element.visible:
-				continue
-			return element
-	return null
+		var elem = collision_system.get_rect_data(id)
+		if original_data_to_node.has(elem):
+			if original_data_to_node[elem].visible:
+				return id
+		else:
+			return id
+	return -1
 
 # TODO: remove these and do it in logic?
 func on_door_opened(_door: Door) -> void:
@@ -438,133 +439,199 @@ func in_transition() -> bool:
 ## Returns true if there's not enough space to fit a salvage
 ## this cares about doors and tiles CURRENTLY in the level, not in the level data
 # TODO: revamp
-func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
-	return is_space_occupied(rect, [&"salvage_points"], [element_to_original_data[exclude]])
+#func is_salvage_blocked(rect: Rect2i, exclude: Door) -> bool:
+	#return is_space_occupied(rect, [&"salvage_points"], [node_to_original_data[exclude]])
 
 
 
 # Editor functions
 
-## Adds *something* to the level data. Returns null if it wasn't added
-func add_element(data: Variant) -> Node:
-	var type: Enums.LevelElementTypes = data.level_element_type
-	if is_space_occupied(data.get_rect()): return null
-	if type == Enums.LevelElementTypes.Door:
-		if not data.check_valid(level_data, true): return null
-	var list: Array = level_element_type_to_level_data_array[type]
-	if not data in list:
-		list.push_back(data)
-		
-		var id := collision_system.add_rect(data.get_rect(), data)
-		level_data.elem_to_collision_system_id[data] = id
-		level_data.emit_changed()
-	return _spawn_element(data)
+## Adds an element to the level and level data.
+## Updates the ElementInfo to reflect the change.
+## Returns -1 if adding the element failed, otherwise the id
+func add_element(element: NewLevelElementInfo) -> int:
+	var id := -1
+	match element.type:
+		Enums.LevelElementTypes.PlayerSpawn:
+			id = _place_player_spawn(element.position)
+		Enums.LevelElementTypes.Goal:
+			id = _place_goal(element.position)
+		Enums.LevelElementTypes.Tile:
+			id = _place_tile(element.position)
+		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
+			element.data.position = element.position
+			id = _add_node_element(element.data)
+		_:
+			assert(false)
+	if id != -1:
+		update_hover()
+	return id
 
-## Removes *something* from the level data
-func remove_element(node: Node) -> void:
-	var type: Enums.LevelElementTypes = node.level_element_type
-	var original_data = element_to_original_data[node]
+func _place_tile(pos: Vector2i, custom_id := -1) -> int:
+	var tile_coord := pos / 32
+	if is_space_occupied(Rect2i(pos, Vector2i(32, 32))):
+		return -1
+	level_data.tiles[tile_coord] = true
+	update_tile_and_neighbors(tile_coord)
+	var id := collision_system.add_rect(Rect2i(pos, Vector2i(32, 32)), tile_coord, custom_id)
+	level_data.elem_to_collision_system_id[tile_coord] = id
+	level_data.emit_changed()
+	return id
+
+func _add_node_element(data) -> int:
+	var type = data.level_element_type
+	if is_space_occupied(data.get_rect()): return -1
+	if type == Enums.LevelElementTypes.Door:
+		if not data.check_valid(level_data, true): return -1
+	level_element_type_to_level_data_array[type].push_back(data)
+	
+	var id := collision_system.add_rect(data.get_rect(), data)
+	level_data.elem_to_collision_system_id[data] = id
+	level_data.emit_changed()
+	var node := _spawn_node_element(data)
+	return id
+
+func _place_player_spawn(coord: Vector2i) -> int:
+	var id: int = level_data.elem_to_collision_system_id[&"player_spawn"]
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}):
+		return -1
+	level_data.player_spawn_position = coord + Vector2i(14, 32)
+	return id
+
+func _place_goal(coord: Vector2i) -> bool:
+	var id: int = level_data.elem_to_collision_system_id[&"goal"]
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}):
+		return false
+	level_data.goal_position = coord
+	return true
+
+
+## Removes whatever's at the given position. Returns true on success.
+func remove_at_pos(pos: Vector2i) -> bool:
+	var id := _get_visible_element_at_pos(pos)
+	if id == -1: return false
+	var element = collision_system.get_rect_data(id)
+	var type := level_data.get_element_type(element)
+	var success := false
+	match type:
+		Enums.LevelElementTypes.PlayerSpawn:
+			success = false
+		Enums.LevelElementTypes.Goal:
+			level_data.has_goal = false
+			success = true
+		Enums.LevelElementTypes.Tile:
+			_remove_tile(element * 32)
+			success = true
+		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
+			_remove_node_element(element)
+			success = true
+		_:
+			assert(false)
+	if success:
+		update_hover()
+	return success
+
+func _remove_node_element(original_data) -> void:
+	var type: Enums.LevelElementTypes = original_data.level_element_type
 	var list: Array = level_element_type_to_level_data_array[type]
 	var i := list.find(original_data)
-	if i != -1:
-		list.remove_at(i)
-		
-		var id: int = level_data.elem_to_collision_system_id[original_data]
-		level_data.elem_to_collision_system_id.erase(original_data)
-		collision_system.remove_rect(id)
+	assert(i != -1)
+	list.remove_at(i)
+	
+	var id: int = level_data.elem_to_collision_system_id[original_data]
+	level_data.elem_to_collision_system_id.erase(original_data)
+	collision_system.remove_rect(id)
+	var node: Node = original_data_to_node[original_data]
 	_remove_element(node)
 	level_data.emit_changed()
 
-## Moves *something*. Returns false if the move failed
-func move_element(node: Node, new_position: Vector2i, update_collision_system: bool = true) -> bool:
-	var type: Enums.LevelElementTypes = node.level_element_type
-	var original_data = element_to_original_data[node]
+# Removes a tile from the level data.
+func _remove_tile(pos: Vector2i) -> void:
+	var tile_coord := pos / 32
+	assert(level_data.tiles.has(tile_coord))
+	level_data.tiles.erase(tile_coord)
+	
+	var id: int = level_data.elem_to_collision_system_id[tile_coord]
+	level_data.elem_to_collision_system_id.erase(tile_coord)
+	collision_system.remove_rect(id)
+	
+	level_data.emit_changed()
+	update_tile_and_neighbors(tile_coord)
+
+## Moves an "array" of elements (stored in a Dictionary for efficiency) by a relative position. Returns false if the move failed.
+# This function trusts that the relative_pos is in accordance to all the elements' grid sizes.
+func move_elements(ids: Dictionary, relative_pos: Vector2i) -> bool:
+	if relative_pos == Vector2i.ZERO: return true
+	for id in ids:
+		var rect := collision_system.get_rect(id)
+		rect.position += relative_pos
+		if is_space_occupied(rect, ids):
+			return false
+	# They can all be moved!
+	# This should preserve id, to keep the current selection valid.
+	# Tiles are a mess because the "element" has no identity and is just a Vector2i.
+	var tiles := PackedInt64Array([])
+	for id in ids:
+		var data = collision_system.get_rect_data(id)
+		var type := level_data.get_element_type(data)
+		var old_pos := collision_system.get_rect(id).position
+		var new_pos := old_pos + relative_pos
+		match type:
+			Enums.LevelElementTypes.PlayerSpawn:
+				_place_player_spawn(new_pos)
+			Enums.LevelElementTypes.Goal:
+				_place_goal(new_pos)
+			Enums.LevelElementTypes.Tile:
+				_remove_tile(old_pos)
+				tiles.push_back(id)
+				tiles.push_back(new_pos.x)
+				tiles.push_back(new_pos.y)
+			Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
+				_move_node_element(data, new_pos)
+			_:
+				assert(false)
+	for i in range(0, tiles.size(), 3):
+		var id := tiles[i]
+		var new_pos := Vector2i(tiles[i+1], tiles[i+2])
+		_place_tile(new_pos, id)
+	return true
+
+# Moves the element. Doesn't check for collisions beforehand!
+func _move_node_element(original_data, new_position: Vector2i) -> void:
+	var type: Enums.LevelElementTypes = original_data.level_element_type
+	var node = original_data_to_node[original_data]
 	var list: Array = level_element_type_to_level_data_array[type]
 	var i := list.find(original_data)
 	assert(i != -1)
 	
+	node.position = new_position
+	original_data.position = new_position
+	node.data.position = new_position
 	var rect := Rect2i(new_position, original_data.get_rect().size)
-	if not is_space_occupied(rect, [], [original_data]):
-		node.position = new_position
-		original_data.position = new_position
-		node.data.position = new_position
-		
-		if update_collision_system:
-			var id: int = level_data.elem_to_collision_system_id[original_data]
-			collision_system.remove_rect(id)
-			id = collision_system.add_rect(original_data.get_rect(), original_data)
-			level_data.elem_to_collision_system_id[original_data] = id
-			level_data.emit_changed()
-		return true
-	else:
-		return false
-
-func place_player_spawn(coord: Vector2i) -> void:
-	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [], [&"player_spawn"]): return
-	level_data.player_spawn_position = coord + Vector2i(14, 32)
-
-func place_goal(coord: Vector2i) -> void:
-	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), [], [&"goal"]): return
-	level_data.goal_position = coord
-
-func place_tile(tile_coord: Vector2i, update_collision_system: bool = true) -> bool:
-	if level_data.tiles.get(tile_coord): return false
-	if is_space_occupied(Rect2i(tile_coord * 32, Vector2i(32, 32)), [&"tiles"]): return false
-	level_data.tiles[tile_coord] = 1
-	update_tile_and_neighbors(tile_coord)
-	if update_collision_system:
-		var id := collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
-		level_data.elem_to_collision_system_id[tile_coord] = id
-		level_data.emit_changed()
-	return true
-
-## Removes a tile from the level data. Returns true if a tile was there.
-func remove_tile(tile_coord: Vector2i, update_collision_system: bool = true) -> bool:
-	if not level_data.tiles.has(tile_coord): return false
-	level_data.tiles.erase(tile_coord)
-	if update_collision_system:
-		var id: int = level_data.elem_to_collision_system_id[tile_coord]
-		level_data.elem_to_collision_system_id.erase(tile_coord)
-		collision_system.remove_rect(id)
-	var layer := 0
-	tile_map.erase_cell(layer, tile_coord)
+	
+	var id: int = level_data.elem_to_collision_system_id[original_data]
+	collision_system.change_rect(id, original_data.get_rect())
 	level_data.emit_changed()
-	update_tile_and_neighbors(tile_coord)
-	return true
 
 func update_tile_and_neighbors(center_tile_coord: Vector2i) -> void:
 	for x in [-1, 0, 1]:
 		for y in [-1, 0, 1]:
 			update_tile(center_tile_coord + Vector2i(x, y))
 
-
-## Returns true if the space is fully inside the level
-func is_space_inside(rect: Rect2i) -> bool:
+## Returns true if the rect is fully inside the level
+func is_rect_inside(rect: Rect2i) -> bool:
 	return Rect2i(Vector2i.ZERO, level_data.size).encloses(rect)
 
-## Returns true if there's a tile, door, key, entry, or player spawn position inside the given rect, or if the rect falls outside the level boundaries
-func is_space_occupied(rect: Rect2i, exclusions: Array[String] = [], excluded_data := []) -> bool:
-	if not is_space_inside(rect):
+## Returns true if there's an element in the given rect, or if the rect falls outside the level boundaries.
+## excluded_ids are from the collision_system
+func is_space_occupied(rect: Rect2i, excluded_ids := {}) -> bool:
+	if not is_rect_inside(rect):
 		return true
-	# Currently the collision system accounts for doors, keys, entries, salvages, tiles, goal and player spawn
-	if exclusions.is_empty() and excluded_data.is_empty():
+	if excluded_ids.is_empty():
 		return collision_system.rect_has_collision_in_grid(rect)
 	else:
 		var dict: Dictionary = collision_system.get_rects_intersecting_rect_in_grid(rect)
 		for id in dict.keys():
-			var obj = collision_system.get_rect_data(id)
-			if obj in excluded_data:
-				continue
-			if obj is Vector2i and not &"tiles" in exclusions:
-				return true
-			if obj is DoorData and not &"doors" in exclusions:
-				return true
-			if obj is KeyData and not &"keys" in exclusions:
-				return true
-			if obj is EntryData and not &"entries" in exclusions:
-				return true
-			if obj is SalvagePointData and not &"salvage_points" in exclusions:
+			if not excluded_ids.has(id):
 				return true
 	return false
-
-

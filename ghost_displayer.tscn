@@ -1,0 +1,49 @@
+[gd_scene load_steps=10 format=3 uid="uid://cu0sc2p0wg16c"]
+
+[ext_resource type="Script" path="res://editor/main_editor/ghost_displayer.gd" id="1_83ry1"]
+[ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="2_tjjht"]
+[ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="3_c4sjt"]
+[ext_resource type="Script" path="res://data/complex_number.gd" id="4_jtslk"]
+[ext_resource type="Script" path="res://data/key_data.gd" id="5_grgip"]
+[ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="6_hw71d"]
+[ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvage_points/salvage_point.tscn" id="7_agfe6"]
+
+[sub_resource type="Resource" id="Resource_k5lmb"]
+script = ExtResource("4_jtslk")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_jn77e"]
+script = ExtResource("5_grgip")
+amount = SubResource("Resource_k5lmb")
+is_infinite = false
+type = 0
+color = 1
+position = Vector2i(0, 0)
+
+[node name="GhostDisplayer" type="CanvasGroup"]
+self_modulate = Color(1, 1, 1, 0.498039)
+script = ExtResource("1_83ry1")
+
+[node name="GhostDoor" parent="." instance=ExtResource("2_tjjht")]
+unique_name_in_owner = true
+visible = false
+ignore_position = true
+
+[node name="GhostKey" parent="." instance=ExtResource("3_c4sjt")]
+unique_name_in_owner = true
+data = SubResource("Resource_jn77e")
+ignore_position = true
+metadata/_edit_vertical_guides_ = [32.0]
+metadata/_edit_horizontal_guides_ = [32.0]
+
+[node name="GhostEntry" parent="." instance=ExtResource("6_hw71d")]
+unique_name_in_owner = true
+visible = false
+mouse_filter = 2
+ignore_position = true
+
+[node name="GhostSalvagePoint" parent="." instance=ExtResource("7_agfe6")]
+unique_name_in_owner = true
+visible = false
+ignore_position = true

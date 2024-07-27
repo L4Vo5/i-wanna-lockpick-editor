@@ -13,6 +13,9 @@ var collision_count: int
 
 var moving_state: bool
 
+func _init() -> void:
+	breakpoint
+
 ## Adds a set of rectangles to the selection and updates the outline
 func add_multiple_to_selection(ids: Dictionary, outline: SelectionOutline) -> void:
 	assert(not moving_state, "Tried to modify selection during moving state")
@@ -92,6 +95,7 @@ func stop_moving() -> void:
 	for id in selection:
 		var rect := collision_system.get_rect(id)
 		rect.position += last_valid_offset
+		breakpoint
 		collision_system._rects[id] = rect
 		var iter := collision_system._get_rect_tile_iter(rect)
 		for x in range(iter.position.x, iter.end.x):

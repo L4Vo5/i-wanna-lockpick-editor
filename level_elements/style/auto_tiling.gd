@@ -2,6 +2,7 @@ class_name AutoTiling
 
 # Given a tile's position in the grid, returns the corresponding atlas_coords for that tile.
 static func get_tile(tile_coord: Vector2i, level_data: LevelData) -> Vector2i:
+	assert(PerfManager.start(&"AutoTiling::get_tile"))
 	var level_width: int = level_data.size.x / 32
 	var level_height: int = level_data.size.y / 32
 	var tiles := level_data.tiles
@@ -12,7 +13,7 @@ static func get_tile(tile_coord: Vector2i, level_data: LevelData) -> Vector2i:
 		vec = TILE_LOOKUP_ORDER[i] + tile_coord
 		if tiles.get(vec) or vec.x < 0 or vec.y < 0 or vec.x >= level_width or vec.y >= level_height:
 			bits |= 1 << i
-	
+	assert(PerfManager.end(&"AutoTiling::get_tile"))
 	return tiling_lookup[bits] 
 
 # Internal stuff

@@ -138,6 +138,22 @@ func regen_collision_system() -> void:
 		elem_to_collision_system_id[tile_coord] = id
 	assert(PerfManager.end("LevelData::regen_collision_system"))
 
+static func get_element_type(elem: Variant) -> Enums.LevelElementTypes:
+	if elem is StringName:
+		if elem == &"player_spawn":
+			return Enums.LevelElementTypes.PlayerSpawn
+		if elem == &"goal":
+			return Enums.LevelElementTypes.Goal
+	if elem is Vector2i:
+		return Enums.LevelElementTypes.Tile
+	return elem.level_element_type
+
+static func get_element_grid_size(type: Enums.LevelElementTypes) -> Vector2i:
+	if type == Enums.LevelElementTypes.Tile:
+		return Vector2i(32, 32)
+	else:
+		return Vector2i(16, 16)
+
 ## Deletes stuff outside the level boundary
 func clear_outside_things() -> void:
 	var amount_deleted := 0

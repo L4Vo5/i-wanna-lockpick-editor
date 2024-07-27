@@ -74,7 +74,7 @@ func prep_output_step_1() -> void:
 	level.level_data.elem_to_collision_system_id[new_door_data] = id
 	
 	# TODO: Don't use a function starting with _, it's supposed to be "private"!
-	door = level._spawn_element(new_door_data)
+	door = level._spawn_node_element(new_door_data)
 	door_error = false
 
 func prep_output_step_2() -> void:

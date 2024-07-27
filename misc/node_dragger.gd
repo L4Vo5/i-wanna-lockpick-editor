@@ -40,11 +40,11 @@ func _set_node(val: Node) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if not enabled: return
 	if not node: return
-	if event.is_action_pressed(input_action):
+	if event.is_action_pressed(input_action, false, true):
 		last_mouse_pos = DisplayServer.mouse_get_position()
 		action_is_pressed = true
 		accept_event()
-	elif event.is_action_released(input_action):
+	elif event.is_action_released(input_action, true):
 		action_is_pressed = Input.is_action_pressed(input_action)
 		accept_event()
 
