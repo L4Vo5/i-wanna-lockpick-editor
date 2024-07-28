@@ -20,7 +20,6 @@ const name_to_icon := {
 	Level = preload("res://editor/bookmark_tab_container/icons/level.png"),
 	LevelPack = preload("res://editor/bookmark_tab_container/icons/level_pack.png"),
 	Settings = preload("res://editor/bookmark_tab_container/icons/settings.svg"),
-	MultipleSelection = preload("res://editor/bookmark_tab_container/icons/multi_selection.svg"),
 }
 
 const BOOKMARK_FLAP = preload("res://editor/bookmark_tab_container/bookmark_flap.tscn")

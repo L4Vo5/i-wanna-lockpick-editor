@@ -30,7 +30,6 @@ var collision_system: CollisionSystem:
 @export var editor: LockpickEditor
 var editor_data: EditorData: set = set_editor_data
 
-@export var selected_highlight: HoverHighlight
 var hover_highlight: HoverHighlight:
 	get:
 		return level.hover_highlight

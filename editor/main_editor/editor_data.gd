@@ -52,7 +52,6 @@ var is_placing_level_element := false
 var level_element_type: Enums.LevelElementTypes = Enums.LevelElementTypes.Door
 var tab_is_level_properties := false
 var tab_is_editing_settings := false
-var tab_is_multiple_selection := false
 var is_placing_player_spawn := false
 var is_placing_goal_position := false
 
