@@ -29,62 +29,18 @@ func mimic_other(other: SelectionOutline) -> void:
 	outline_tiles = other.outline_tiles
 	queue_redraw()
 
-signal do_keep_going
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			#do_keep_going.emit()
-			#queue_redraw()
-			speed *= 0.95
-		if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			if speed < 0.001:
-				speed = 0.001
-			speed /= 0.95
-
-var speed := 0.1
-var waiting_count := 0
-
-func keep_going(checking = [], wait_weight := 1.0):
-	if not checking is Array:
-		checking = [checking]
-	for r in checking:
-		currently_checking.push_back(r)
-	#currently_checking = checking
-	queue_redraw()
-	#print(get_stack()[1]["line"])
-	#await do_keep_going
-	waiting_count += 1
-	await get_tree().create_timer(speed * wait_weight).timeout
-	waiting_count -= 1
-	for r in checking:
-		currently_checking.erase(r)
-
-var currently_checking := []
-
-signal done_for_now
-func maybe_done_for_now() -> void:
-	if waiting_count == 0:
-		done_for_now.emit()
-
 func add_rect(rect: Rect2i) -> void:
 	var tile_iter := CollisionSystem.get_rect_tile_iter(rect, 1.0 / tile_size)
-	var coords := []
 	for y in range(tile_iter.position.y, tile_iter.end.y):
 		for x in range(tile_iter.position.x, tile_iter.end.x):
 			var coord := Vector2i(x, y)
 			tiles[coord] = true
 			outline_tiles.erase(coord)
-			coords.push_back(coord)
-			if coords.size() > 16:
-				await keep_going(coords)
-				coords.clear()
-	if not coords.is_empty(): await keep_going(coords)
 	
 	var outline_iter := tile_iter.grow(1)
 	for x in range(outline_iter.position.x, outline_iter.end.x):
 		var top := Vector2i(x, outline_iter.position.y)
 		var bottom := Vector2i(x, outline_iter.end.y - 1)
-		await keep_going(top)
 		if not tiles.has(top):
 			var num: int = outline_tiles.get(top, 0)
 			if x < outline_iter.end.x - 2:
@@ -94,7 +50,6 @@ func add_rect(rect: Rect2i) -> void:
 			if x > outline_iter.position.x and x < outline_iter.end.x - 1:
 				num |= Bytes.D
 			outline_tiles[top] = num
-		await keep_going(bottom)
 		if not tiles.has(bottom):
 			var num: int = outline_tiles.get(bottom, 0)
 			if x < outline_iter.end.x - 2:
@@ -107,7 +62,6 @@ func add_rect(rect: Rect2i) -> void:
 	for y in range(outline_iter.position.y + 1, outline_iter.end.y - 1):
 		var left := Vector2i(outline_iter.position.x, y)
 		var right := Vector2i(outline_iter.end.x - 1, y)
-		await keep_going(left)
 		if not tiles.has(left):
 			var num: int = outline_tiles.get(left, 0)
 			if y < outline_iter.end.y - 2:
@@ -117,7 +71,6 @@ func add_rect(rect: Rect2i) -> void:
 			if y > outline_iter.position.y and y < outline_iter.end.y - 1:
 				num |= Bytes.R
 			outline_tiles[left] = num
-		await keep_going(right)
 		if not tiles.has(right):
 			var num: int = outline_tiles.get(right, 0)
 			if y < outline_iter.end.y - 2:
@@ -127,27 +80,18 @@ func add_rect(rect: Rect2i) -> void:
 			if y > outline_iter.position.y and y < outline_iter.end.y - 1:
 				num |= Bytes.L
 			outline_tiles[right] = num
-	await keep_going()
-	maybe_done_for_now()
 	queue_redraw()
 
 func remove_rect(rect: Rect2i) -> void:
 	var tile_iter := CollisionSystem.get_rect_tile_iter(rect, 1.0 / tile_size)
-	var coords := []
 	for y in range(tile_iter.position.y, tile_iter.end.y):
 		for x in range(tile_iter.position.x, tile_iter.end.x):
 			var coord := Vector2i(x, y)
 			tiles.erase(coord)
-			coords.push_back(coord)
-			if coords.size() > 16:
-				await keep_going(coords)
-				coords.clear()
-	if not coords.is_empty(): await keep_going(coords)
 	# New potential outline tiles: the inner edges of the removed rect
 	for x in range(tile_iter.position.x, tile_iter.end.x):
 		var top := Vector2i(x, tile_iter.position.y)
 		var bottom := Vector2i(x, tile_iter.end.y - 1)
-		await keep_going(top)
 		var num_top := 0
 		if tiles.has(top + Vector2i(0, -1)):
 			num_top |= Bytes.U
@@ -157,7 +101,6 @@ func remove_rect(rect: Rect2i) -> void:
 			num_top |= Bytes.UR
 		if num_top != 0:
 			outline_tiles[top] = outline_tiles.get(top, 0) | num_top
-		await keep_going(bottom)
 		var num_bottom := 0
 		if tiles.has(bottom + Vector2i(0, 1)):
 			num_bottom |= Bytes.D
@@ -170,7 +113,6 @@ func remove_rect(rect: Rect2i) -> void:
 	for y in range(tile_iter.position.y, tile_iter.end.y):
 		var left := Vector2i(tile_iter.position.x, y)
 		var right := Vector2i(tile_iter.end.x - 1, y)
-		await keep_going(left)
 		var num_left := 0
 		if tiles.has(left + Vector2i(-1, 0)):
 			num_left |= Bytes.L
@@ -180,7 +122,6 @@ func remove_rect(rect: Rect2i) -> void:
 			num_left |= Bytes.DL
 		if num_left != 0:
 			outline_tiles[left] = outline_tiles.get(left, 0) | num_left
-		await keep_going(right)
 		var num_right := 0
 		if tiles.has(right + Vector2i(1, 0)):
 			num_right |= Bytes.R
@@ -198,7 +139,6 @@ func remove_rect(rect: Rect2i) -> void:
 	for x in range(outline_iter.position.x, outline_iter.end.x):
 		var top := Vector2i(x, outline_iter.position.y)
 		var bottom := Vector2i(x, outline_iter.end.y - 1)
-		await keep_going(top)
 		if not tiles.has(top):
 			var num: int = outline_tiles.get(top, 0)
 			if x < outline_iter.end.x - 2:
@@ -211,7 +151,6 @@ func remove_rect(rect: Rect2i) -> void:
 				outline_tiles.erase(top)
 			else:
 				outline_tiles[top] = num
-		await keep_going(bottom)
 		if not tiles.has(bottom):
 			var num: int = outline_tiles.get(bottom, 0)
 			if x < outline_iter.end.x - 2:
@@ -227,7 +166,6 @@ func remove_rect(rect: Rect2i) -> void:
 	for y in range(outline_iter.position.y + 1, outline_iter.end.y - 1):
 		var left := Vector2i(outline_iter.position.x, y)
 		var right := Vector2i(outline_iter.end.x - 1, y)
-		await keep_going(left)
 		if not tiles.has(left):
 			var num: int = outline_tiles.get(left, 0)
 			if y < outline_iter.end.y - 2:
@@ -240,7 +178,6 @@ func remove_rect(rect: Rect2i) -> void:
 				outline_tiles.erase(left)
 			else:
 				outline_tiles[left] = num
-		await keep_going(right)
 		if not tiles.has(right):
 			var num: int = outline_tiles.get(right, 0)
 			if y < outline_iter.end.y - 2:
@@ -253,8 +190,6 @@ func remove_rect(rect: Rect2i) -> void:
 				outline_tiles.erase(right)
 			else:
 				outline_tiles[right] = num
-	await keep_going()
-	maybe_done_for_now()
 	queue_redraw()
 
 const NEIGHBORS := [
@@ -347,11 +282,6 @@ func get_rects() -> Array:
 func _draw() -> void:
 	assert(PerfManager.start(&"SelectionOutline::draw"))
 	var rects := get_rects()
-	
-	for tile in tiles:
-		draw_rect(Rect2(tile * tile_size, Vector2(tile_size, tile_size)), Color.ORANGE)
-	for tile in currently_checking:
-		draw_rect(Rect2(tile * tile_size, Vector2(tile_size, tile_size)), Color.DARK_GREEN)
 	
 	for tile: Vector2i in outline_tiles:
 		var tile_pos := tile as Vector2 * tile_size
