@@ -288,14 +288,6 @@ func update_currently_adding() -> void:
 	if editor_data.current_tab.name == &"Tiles":
 		info.type = Enums.LevelElementTypes.Tile
 	elif editor_data.current_tab.name == &"LevelPack":
-		assert(false)
-		if editor_data.is_placing_player_spawn:
-			info.type = Enums.LevelElementTypes.PlayerSpawn
-		elif editor_data.is_placing_goal_position:
-			info.type = Enums.LevelElementTypes.Goal
-		else:
-			assert(false)
-	elif editor_data.current_tab.name == &"LevelPack":
 		info.type = editor_data.current_tab.placing
 	elif editor_data.current_tab.name in [&"Doors", &"Keys", &"Entries", &"SalvagePoints"]:
 		info.type = editor_data.current_tab.data.level_element_type

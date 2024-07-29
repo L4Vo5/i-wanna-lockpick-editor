@@ -9,33 +9,147 @@ script/source = "extends Node2D
 @onready var selection_outline: SelectionOutline = %SelectionOutline
 @onready var tile_map: TileMap = %TileMap
 
+var amount := 1
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if event.pressed and event.keycode == KEY_RIGHT:
+			amount += 1
+		if event.pressed and event.keycode == KEY_LEFT:
+			amount -= 1
+			amount = max(1, amount)
+		if event.pressed and event.keycode == KEY_SPACE:
+			do_the_thing()
+			queue_redraw()
+		if event.pressed or event.is_echo():
+			if event.keycode == KEY_R:
+				var satisfaction := 0.0
+				while satisfaction < 100:
+					satisfaction += 1 if try_expand_one_rect() else 0.5
+				queue_redraw()
+	if event is InputEventMouseButton:
+		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			delete_rect_at_mouse()
+	if event is InputEventMouseMotion:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			delete_rect_at_mouse()
+
+var rects := []
+
+var _doing := false
+func do_the_thing() -> void:
+	if _doing: return
+	_doing = true
+	var used_rects := {}
+	while true:
+		var chosen_rects := []
+		for i in amount:
+			var rect = rects.pick_random()
+			while rect in chosen_rects:
+				rects.pick_random()
+			chosen_rects.push_back(rect)
+			if used_rects.has(rect):
+				used_rects.erase(rect)
+				selection_outline.remove_rect(rect)
+			else:
+				used_rects[rect] = true
+				selection_outline.add_rect(rect)
+		await selection_outline.done_for_now
+
+func try_expand_one_rect() -> bool:
+	var rect: Rect2i = rects.pick_random() as Rect2i
+	var original_rect := rect
+	rect = rect.grow_side(randi() % 4, 16)
+	if not Rect2i(0, 0, 800, 608).encloses(rect): return false
+	rects.erase(rect)
+	var success := true
+	var enclosed_rects := []
+	for other_rect: Rect2i in rects:
+		if other_rect.intersects(rect) and not rect.encloses(other_rect):
+			success = false
+			break
+		if rect.encloses(other_rect):
+			enclosed_rects.push_back(other_rect)
+	if success:
+		for other_rect in enclosed_rects:
+			rects.erase(other_rect)
+		rects.push_back(rect)
+		return true
+	else:
+		rects.push_back(original_rect)
+		return false 
+
+func delete_rect_at_mouse() -> void:
+	if _doing: return
+	var mouse_pos := get_local_mouse_position()
+	var chosen = null
+	for rect: Rect2i in rects:
+		if rect.has_point(mouse_pos):
+			chosen = rect
+			break
+	if chosen != null:
+		var rect: Rect2i = chosen as Rect2i
+		rects.erase(rect)
+		for x in range(rect.position.x, rect.end.x, 16):
+			for y in range(rect.position.y, rect.end.y, 16):
+				rects.push_back(Rect2i(x, y, 16, 16))
+		queue_redraw()
+
 func _ready() -> void:
 	selection_outline.clear()
 	
-	PerfManager.start(\"add tiles\")
+	#await selection_outline.add_rect(Rect2i(16, 16, 16, 16))
+	#await selection_outline.add_rect(Rect2i(32, 16, 16, 16))
+	#await selection_outline.add_rect(Rect2i(16, 32, 16, 16))
+	#await selection_outline.add_rect(Rect2i(32, 32, 16, 16))
+	#await selection_outline.remove_rect(Rect2i(32, 32, 16, 16))
+	#print(\"DONE\")
+	#PerfManager.start(\"add tiles\")
 	var tiles := tile_map.get_used_cells(0)
+	tiles = []
+	for x in 800/16:
+		for y in 608/16:
+			tiles.push_back(Vector2i(x, y))
 	for tile in tiles:
-		var rect := Rect2i(tile * 32, Vector2i(32, 32))
-		selection_outline.add_rect(rect)
-		var base_rect := rect
-		for x in 10:
-			for y in 10:
-				rect = base_rect
-				rect.position.x += x * 22 * 32
-				rect.position.y += y * 16 * 32
-				selection_outline.add_rect(rect)
-	PerfManager.end(\"add tiles\")
+		rects.push_back(Rect2i(tile * 16, Vector2i(16, 16)))
+	#for tile in tiles:
+		#var rect := Rect2i(tile * 32, Vector2i(32, 32))
+		#selection_outline.add_rect(rect)
+		#var base_rect := rect
+		##for x in 10:
+			##for y in 10:
+				##rect = base_rect
+				##rect.position.x += x * 22 * 32
+				##rect.position.y += y * 16 * 32
+				##selection_outline.add_rect(rect)
+	#PerfManager.end(\"add tiles\")
+	#PerfManager.start(\"remove tiles\")
+	#for tile in tiles:
+		#var rect := Rect2i(tile * 32, Vector2i(32, 32))
+		#if randf() > 0.5:
+			#selection_outline.remove_rect(rect)
+	#PerfManager.end(\"remove tiles\")
+
+func _draw() -> void:
+	if _doing: return
+	for rect in rects:
+		var color = Color.ORANGE
+		#var x = rect.position.x / 800.0
+		#var y = rect.position.y / 608.0
+		#var r = hash((Vector2(x*100, y*30)))/255.0
+		#var g = hash(Vector3(x - 900, y * 342, (y+x)*99))/255.0
+		#var b = hash(Vector2(y*100, x * 1000 + 500))/255.0
+		#var color = Color(fposmod(r, 1), fposmod(g, 1), fposmod(b, 1), 1)
+		draw_rect(rect, color)
+		draw_rect(rect, Color.BLACK, false, 2)
+	pass
 "
 
 [node name="Node2D" type="Node2D"]
-scale = Vector2(0.5, 0.5)
 script = SubResource("GDScript_y404o")
 
 [node name="SelectionOutline" type="Node2D" parent="."]
 unique_name_in_owner = true
-modulate = Color(1, 0, 0, 0.533333)
 script = ExtResource("1_5x8i0")
-color = Color(1, 0, 0, 0.533333)
 
 [node name="TileMap" type="TileMap" parent="."]
 unique_name_in_owner = true
