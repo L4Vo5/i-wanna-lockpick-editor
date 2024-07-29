@@ -29,6 +29,13 @@ var level_data: LevelData = null:
 		allow_ui = val
 		ui.visible = allow_ui
 
+@export var allow_hovering := true:
+	set(val):
+		if allow_hovering == val: return
+		allow_hovering = val
+		hover_highlight.visible = allow_hovering
+		update_mouseover()
+
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
 const ENTRY := preload("res://level_elements/entries/entry.tscn")
@@ -384,7 +391,7 @@ func update_mouseover() -> void:
 	assert(PerfManager.start("Level::update_mouseover"))
 	mouseover.hide()
 	var obj := hover_highlight.current_obj
-	if obj:
+	if obj and allow_hovering:
 		mouseover.text = obj.get_mouseover_text()
 		mouseover.show()
 	assert(PerfManager.end("Level::update_mouseover"))

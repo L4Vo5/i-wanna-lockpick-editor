@@ -39,15 +39,49 @@ var hover_highlight: HoverHighlight:
 @onready var selection_box: Control = %SelectionBox
 @onready var danger_outline: SelectionOutline = %DangerOutline
 
-@onready var camera_dragger: NodeDragger = %CameraDragger
 @onready var editor_camera: Camera2D = %EditorCamera
 
-var drag_start := Vector2i.ZERO
-var drag_state := None:
-	set = set_drag_state
-enum {
-	None, Dragging, Selecting
+# "Tool" system not shown to the user (yet?) but serves as an FSM.
+# I'll describe the system here, for lack of a proper design document
+
+# Input relevant for tools: Ctrl, Shift, Alt, Mouse Wheel pressed. Left/Right click. Mouse motion.
+# In order of priority:
+# Left Clicked on selection while on Pencil: DragSelection until click is released, ignoring all other input.
+# Alt or Mouse Wheel: DragLevel
+# Ctrl: ModifySelection
+# Shift: Brush
+# Otherwise: Pencil
+
+# Other considerations:
+# Ghost: Only shown on Pencil
+# Danger outline: Only shown on Pencil, Brush, and DragSelection
+# Selection outline: Shown whenver there's a selection.
+# Hover outline / Mouseover text: only on Pencil?
+# TODO:
+# Ctrl+C / Ctrl+X: Copy/Cut, only if there's a valid selection. Sets ghosts to the selection.
+# Ctrl+V: Sets ghosts back to the previous copied thing.
+
+var current_tool := Tool.Pencil:
+	set = set_tool
+
+enum Tool {
+	# Left click: place and select, or just select if can't place (overriding previous selection). If something selected, transitions to DragSelection. Right click: remove under mouse. If nothing to remove, clear selection.
+	Pencil,
+	# Left click: place (even with mouse movement). Right click: remove (even with mouse movement).
+	Brush,
+	# Left click + drag: add to selection in a rectangle. Right click + drag: remove to selection in a rectangle. (if you don't drag they still apply only to whatever's under the mouse)
+	ModifySelection,
+	# (Alt+Left click) or (Mouse wheel click) + mouse motion: drag the level around
+	DragLevel, 
+	# Moving the mouse moves the selection (clicking enters/exits the state)
+	DragSelection,
 }
+
+var drag_start := Vector2i.ZERO
+var drag_state := Drag.None
+enum Drag { None = 0, Left, Right }
+
+var new_selection_candidates := {} # idk how else to name it...
 
 var currently_adding: NewLevelElementInfo
 # Key: collision system id (returned by level). Value: nothing
@@ -70,7 +104,7 @@ func set_editor_data(data: EditorData) -> void:
 	assert(editor_data == null, "This should only really run once.")
 	editor_data = data
 	
-	editor_data.side_tabs.tab_changed.connect(_update_preview)
+	editor_data.changed_side_editor_data.connect(update_currently_adding)
 	editor_data.changed_level_data.connect(_on_changed_level_data)
 	_on_changed_level_data()
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
@@ -84,7 +118,6 @@ func _on_changed_is_playing() -> void:
 	_adjust_inner_container_dimensions()
 	if not editor_data.is_playing:
 		editor_camera.make_current()
-	camera_dragger.enabled = not editor_data.is_playing
 	_update_preview()
 
 # could be more sophisticated now that bigger level sizes are supported.
@@ -101,74 +134,140 @@ func _on_changed_level_data() -> void:
 	#selection_box.visible = false
 
 func _input(event: InputEvent) -> void:
-	# Don't wanna risk putting it in _gui_input and not receiving the event.
+	# Don't wanna risk putting these in _gui_input and not receiving the event.
+	decide_tool()
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
-			drag_state = None
+			_handle_left_unclick()
+		if event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
+			_handle_right_unclick()
+		if event.button_index == MOUSE_BUTTON_MIDDLE and not event.pressed:
+			_handle_middle_unclick()
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
-	#if editor_data.tab_is_multiple_selection:
-		#_gui_input_multiple_selection(event)
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed: 
-				if _handle_left_click():
-					accept_event()
-		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			if event.pressed:
-				if _handle_right_click():
-					accept_event()
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed: 
+			if _handle_left_click():
+				accept_event()
+		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			if _handle_right_click():
+				accept_event()
+		elif event.button_index == MOUSE_BUTTON_MIDDLE:
+			if _handle_middle_click():
+				accept_event()
 	elif event is InputEventMouseMotion:
 		if _handle_mouse_movement():
 			accept_event()
-		_update_preview()
 
 func _handle_left_click() -> bool:
 	var handled := false
-	# Clicked something? if not, try placing
-	if Input.is_key_pressed(KEY_CTRL):
-		drag_state = Selecting
-		drag_start = level.get_local_mouse_position()
-		if level.hovering_over != -1:
-			add_to_selection(level.hovering_over)
-		handled = true
-	elif level.hovering_over != -1:
-		if not level.hovering_over in selection:
-			select_thing(level.hovering_over)
-		drag_state = Dragging
-		drag_start = level.get_local_mouse_position()
-		handled = true
-	else:
-		handled = _try_place_curretly_adding()
-	
+	match current_tool:
+		Tool.Pencil:
+			if level.hovering_over != -1:
+				select_thing(level.hovering_over)
+				handled = true
+			else:
+				handled = _try_place_curretly_adding()
+				if not handled:
+					clear_selection()
+		Tool.Brush:
+			drag_start = level.get_local_mouse_position()
+			drag_state = Drag.Left
+			handled = _try_place_curretly_adding()
+		Tool.ModifySelection:
+			if drag_state == Drag.Right:
+				finish_expanding_selection()
+			drag_start = level.get_local_mouse_position()
+			drag_state = Drag.Left
+			expand_selection()
+			handled = true
+		Tool.DragLevel:
+			drag_start = level.get_local_mouse_position()
+			drag_state = Drag.Left
+			handled = true
+		Tool.DragSelection:
+			# It's entered with left click and exited when it's released, thus this should never happen.
+			assert(false)
+		_:
+			assert(false)
 	return handled
 
-func _handle_right_click() -> bool:
-	return _try_remove_at_mouse()
+func _handle_left_unclick() -> void:
+	match current_tool:
+		Tool.DragSelection:
+			decide_tool()
+	if drag_state == Drag.Left:
+		match current_tool:
+			Tool.ModifySelection:
+				finish_expanding_selection()
+		drag_state = Drag.None
 
-func _handle_mouse_movement() -> bool:
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		if drag_state == Selecting:
+func _handle_right_click() -> bool:
+	var handled := false
+	match current_tool:
+		Tool.Pencil:
+			handled = _try_remove_at_mouse()
+			if not handled:
+				clear_selection()
+		Tool.Brush:
+			drag_start = level.get_local_mouse_position()
+			drag_state = Drag.Right
+			handled = _try_place_curretly_adding()
+		Tool.ModifySelection:
+			if drag_state == Drag.Left:
+				finish_expanding_selection()
+			drag_start = level.get_local_mouse_position()
+			drag_state = Drag.Right
 			expand_selection()
-			return true
-		if not selection.is_empty() and drag_state == Dragging:
-			relocate_selection()
-			return true
-		elif Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
-			return _try_place_curretly_adding()
-		elif editor_data.tab_is_level_properties and (editor_data.is_placing_player_spawn or editor_data.is_placing_goal_position) or editor_data.tab_is_tilemap_edit:
-			return _try_place_curretly_adding()
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		if Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
-			return _try_remove_at_mouse()
-		elif editor_data.tab_is_tilemap_edit:
-			return _try_remove_at_mouse()
+			handled = true
+	return handled
+
+func _handle_right_unclick() -> void:
+	if drag_state == Drag.Right:
+		match current_tool:
+			Tool.ModifySelection:
+				finish_expanding_selection()
+		drag_state = Drag.None
+
+func _handle_middle_click() -> bool:
 	return false
 
+func _handle_middle_unclick() -> void:
+	pass
+
+func _handle_mouse_movement() -> bool:
+	var handled := false
+	match current_tool:
+		Tool.ModifySelection:
+			if drag_state != Drag.None:
+				expand_selection()
+				handled = true
+		Tool.DragSelection:
+			if drag_state == Drag.Left:
+				relocate_selection()
+				handled = true
+		Tool.DragLevel:
+			assert(false)
+	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		#if drag_state == Selecting:
+			#expand_selection()
+			#return true
+		#if not selection.is_empty() and drag_state == Dragging:
+			#relocate_selection()
+			#return true
+		#elif Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
+			#return _try_place_curretly_adding()
+		#elif editor_data.tab_is_level_properties and (editor_data.is_placing_player_spawn or editor_data.is_placing_goal_position) or editor_data.tab_is_tilemap_edit:
+			#return _try_place_curretly_adding()
+	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		#if Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
+			#return _try_remove_at_mouse()
+		#elif editor_data.tab_is_tilemap_edit:
+			#return _try_remove_at_mouse()
+	return handled
+
 func _try_place_curretly_adding() -> bool:
-	# PERF: update when it actually changes, not here?
-	_update_currently_adding()
 	if not currently_adding:
 		return false
 	var id := level.add_element(currently_adding)
@@ -184,20 +283,23 @@ func _try_remove_at_mouse() -> bool:
 		return true
 	return false
 
-func _update_currently_adding() -> void:
+func update_currently_adding() -> void:
 	var info := NewLevelElementInfo.new()
-	if editor_data.tab_is_tilemap_edit:
+	if editor_data.current_tab.name == &"Tiles":
 		info.type = Enums.LevelElementTypes.Tile
-	elif editor_data.is_placing_level_element:
-		info.type = editor_data.level_element_type
-		info.data = editor.level_element_editors[info.type].data.duplicated()
-	elif editor_data.tab_is_level_properties:
+	elif editor_data.current_tab.name == &"LevelPack":
+		assert(false)
 		if editor_data.is_placing_player_spawn:
 			info.type = Enums.LevelElementTypes.PlayerSpawn
 		elif editor_data.is_placing_goal_position:
 			info.type = Enums.LevelElementTypes.Goal
 		else:
 			assert(false)
+	elif editor_data.current_tab.name == &"LevelPack":
+		info.type = editor_data.current_tab.placing
+	elif editor_data.current_tab.name in [&"Doors", &"Keys", &"Entries", &"SalvagePoints"]:
+		info.type = editor_data.current_tab.data.level_element_type
+		info.data = editor_data.current_tab.data.duplicated()
 	else:
 		info = null
 	if info:
@@ -209,7 +311,7 @@ func _update_currently_adding() -> void:
 	
 	currently_adding = info
 	ghost_displayer.info = currently_adding
-	if currently_adding and drag_state == None:
+	if currently_adding:
 		danger_outline.clear()
 		danger_outline.position = Vector2.ZERO
 		danger_outline.add_rect(currently_adding.get_rect())
@@ -232,12 +334,19 @@ func add_to_selection(id: int) -> void:
 		maxi(selection_grid_size.y, grid_size.y)
 	)
 
+func remove_from_selection(id: int) -> void:
+	selection.erase(id)
+	var rect := collision_system.get_rect(id)
+	selection_outline.remove_rect(rect)
+	# TODO: This won't update selection_grid_size...
+
 func select_thing(id: int) -> void:
 	# TODO: make optimized ig
 	#selection.clear()
 	#selection[id] = true
 	clear_selection()
 	add_to_selection(id)
+	current_tool = Tool.DragSelection
 	
 	var elem = collision_system.get_rect_data(id)
 	var type := LevelData.get_element_type(elem)
@@ -248,7 +357,7 @@ func select_thing(id: int) -> void:
 
 func relocate_selection() -> void:
 	if editor_data.disable_editing: return
-	assert(drag_state == Dragging)
+	assert(current_tool == Tool.DragSelection)
 	assert(not selection.is_empty())
 	drag_start = (drag_start / selection_grid_size) * selection_grid_size
 	var mouse_pos := ((level.get_local_mouse_position() as Vector2i) / selection_grid_size) * selection_grid_size
@@ -269,28 +378,66 @@ func expand_selection() -> void:
 	selection_box.size = rect.size
 	selection_box.show()
 	var ids := collision_system.get_rects_intersecting_rect_in_grid(rect)
+	for id in new_selection_candidates:
+		if id not in ids:
+			remove_from_selection(id)
 	for id in ids:
 		if id not in selection:
+			new_selection_candidates[id] = true
 			add_to_selection(id)
-	
 
-func set_drag_state(state: int) -> void:
-	if drag_state == state: return
-	drag_state = state
+func finish_expanding_selection() -> void:
+	if drag_state == Drag.None: return
 	selection_box.hide()
-	if drag_state == None:
-		danger_outline.clear()
-		danger_outline.position = Vector2.ZERO
-		danger_outline.add_rect(currently_adding.get_rect())
-	elif drag_state == Dragging:
-		danger_outline.mimic_other(selection_outline)
-		danger_outline.hide()
+	new_selection_candidates.clear()
+
+func set_tool(tool: Tool) -> void:
+	if tool == current_tool: return
+	# Exit previous tool
+	ghost_displayer.hide()
+	selection_box.hide()
+	
+	current_tool = tool
+	
+	# Enter new tool
+	match current_tool:
+		Tool.DragSelection:
+			# Always entered from a left click.
+			drag_state = Drag.Left
+			drag_start = level.get_local_mouse_position()
+			danger_outline.mimic_other(selection_outline)
+	level.allow_hovering = current_tool == Tool.Pencil
+
+func decide_tool() -> void:
+	if current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		pass # don't change it
+	elif Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE) or Input.is_key_pressed(KEY_ALT):
+		current_tool = Tool.DragLevel
+	elif Input.is_key_pressed(KEY_CTRL):
+		current_tool = Tool.ModifySelection
+	elif Input.is_key_pressed(KEY_SHIFT):
+		current_tool = Tool.Brush
+	else:
+		current_tool = Tool.Pencil
+
+#func set_drag_state(state: int) -> void:
+	#if state == None and Input.is_key_pressed(KEY_CTRL):
+		#state = CtrlHeld
+	#if drag_state == state: return
+	#drag_state = state
+	#selection_box.hide()
+	#match drag_state:
+		#None:
+			#danger_outline.clear()
+			#danger_outline.position = Vector2.ZERO
+			#danger_outline.add_rect(currently_adding.get_rect())
+		#Dragging:
+			#danger_outline.mimic_other(selection_outline)
+			#danger_outline.hide()
+	#_update_preview()
 
 # Updates the ghost and the danger preview
 func _update_preview() -> void:
-	# PERF: update when it actually changes, not here?
-	_update_currently_adding()
-	if drag_state != None: return
 	if not currently_adding or is_instance_valid(level.hover_highlight.current_obj):
 		ghost_displayer.hide()
 		danger_outline.hide()

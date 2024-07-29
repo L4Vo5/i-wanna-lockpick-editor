@@ -82,6 +82,10 @@ func add_rect(rect: Rect2i) -> void:
 			outline_tiles[right] = num
 	queue_redraw()
 
+func remove_rect(rect: Rect2i) -> void:
+	assert(false, "Unimplemented!")
+	pass
+
 var cached_rects := {}
 enum {
 #   1,  2, 4,  8, 16, 32, 64, 128

@@ -44,16 +44,14 @@ var entry_editor: EntryEditor
 var salvage_point_editor: SalvagePointEditor
 var level_element_editors: Dictionary = {}
 
-# what's currently being edited
-# (not an enum because it's easier to check "if editor_data.doors" than like, "if editor_data.currently_editing == EditorData.Editing.DOORS"... or whatever using enums would look like)
-# I guess I could always use an enum internally and expose functions like is_editing_doors(), but, eh.
-var tab_is_tilemap_edit := false
-var is_placing_level_element := false
-var level_element_type: Enums.LevelElementTypes = Enums.LevelElementTypes.Door
-var tab_is_level_properties := false
-var tab_is_editing_settings := false
-var is_placing_player_spawn := false
-var is_placing_goal_position := false
+## Emitted when the currently edited thing changes (either the type itself changed or the inner data was edited)
+signal changed_side_editor_data
+func emit_changed_side_editor_data(): changed_side_editor_data.emit()
+
+var current_tab: Node:
+	set(val):
+		current_tab = val
+		changed_side_editor_data.emit()
 
 var _setting_pack_and_state := false
 func set_pack_and_state(pack: LevelPackData, state: LevelPackStateData) -> void:

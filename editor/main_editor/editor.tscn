@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=30 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/main_editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/main_editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -9,7 +9,6 @@
 [ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
 [ext_resource type="Script" path="res://editor/main_editor/level_outline.gd" id="9_r4glf"]
 [ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
-[ext_resource type="Script" path="res://misc/node_dragger.gd" id="10_nd33d"]
 [ext_resource type="Script" path="res://data/door_data.gd" id="11_psli5"]
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/side_editors/key_editor/key_editor.tscn" id="12_cr7ft"]
 [ext_resource type="Script" path="res://editor/misc/selection_outline.gd" id="13_621va"]
@@ -97,7 +96,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_n4qnf")
-gameplay = NodePath("HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay")
+gameplay = NodePath("HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay")
 right_dock = NodePath("HSplitContainer/RightDock")
 side_tabs = NodePath("HSplitContainer/RightDock/BookmarkTabContainer")
 door_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Doors")
@@ -215,7 +214,7 @@ size_flags_vertical = 3
 mouse_filter = 1
 script = ExtResource("2_kqd34")
 inner_container = NodePath("LevelContainerInner")
-gameplay = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay")
+gameplay = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay")
 level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport")
 editor = NodePath("../../..")
 
@@ -278,43 +277,25 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CameraDragger" type="Control" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" node_paths=PackedStringArray("node")]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -150.0
-offset_right = 148.0
-offset_bottom = 148.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
-script = ExtResource("10_nd33d")
-node = NodePath("../EditorCamera")
-move_opposite_to_mouse = true
+[node name="Gameplay" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport" instance=ExtResource("4_a2tib")]
 
-[node name="Gameplay" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger" instance=ExtResource("4_a2tib")]
-position = Vector2(150, 150)
-
-[node name="GhostDisplayer" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay" instance=ExtResource("6_x3b2w")]
+[node name="GhostDisplayer" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("6_x3b2w")]
 unique_name_in_owner = true
 
-[node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay"]
+[node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
 script = ExtResource("9_r4glf")
 
-[node name="SelectionOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay"]
+[node name="SelectionOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
 unique_name_in_owner = true
 script = ExtResource("13_621va")
 
-[node name="DangerOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay"]
+[node name="DangerOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
 unique_name_in_owner = true
 script = ExtResource("13_621va")
 color = Color(1, 0, 0, 0.752941)
 width = 2.0
 
-[node name="SelectionBox" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/CameraDragger/Gameplay"]
+[node name="SelectionBox" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
 unique_name_in_owner = true
 visible = false
 mouse_filter = 2
@@ -329,7 +310,7 @@ custom_minimum_size = Vector2(362, 0)
 layout_mode = 2
 
 [node name="BookmarkTabContainer" parent="HSplitContainer/RightDock" instance=ExtResource("20_4gm0f")]
-custom_minimum_size = Vector2(357, 0)
+custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]

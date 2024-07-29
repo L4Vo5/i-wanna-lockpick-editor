@@ -27,6 +27,8 @@ var _level_pack_data: LevelPackData:
 		_level_pack_data = val
 		_connect_pack_data()
 
+var placing := Enums.LevelElementTypes.Goal
+
 @onready var search: LineEdit = %Search
 @onready var level_list: LevelList = %LevelList
 
@@ -129,8 +131,12 @@ func _on_changed_goal_position() -> void:
 func _on_what_to_place_changed(selected_object: Node) -> void:
 	if not is_node_ready(): return
 	if not is_instance_valid(editor_data): return
-	editor_data.is_placing_player_spawn = selected_object == place_player_spawn
-	editor_data.is_placing_goal_position = selected_object == place_goal
+	if selected_object == place_goal:
+		placing = Enums.LevelElementTypes.Goal
+	else:
+		placing = Enums.LevelElementTypes.PlayerSpawn
+	if editor_data.current_tab == self:
+		editor_data.changed_side_editor_data.emit()
 
 # adapts the controls to the level's data
 var _setting_to_data := false

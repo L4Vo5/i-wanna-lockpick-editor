@@ -4,7 +4,9 @@ class_name DoorEditor
 
 @export var data: DoorData:
 	set(val):
+		_disconnect_data()
 		data = val
+		_connect_data()
 		if not is_node_ready(): await ready
 		# TODO: Allow editing doors in the level (currently not done so you can't resize them)
 		door.data = data
@@ -44,7 +46,6 @@ func _ready() -> void:
 		line_edit.add_theme_constant_override(&"minimum_character_width", 2)
 		line_edit.expand_to_text_length = true
 	
-	
 	ice_button.tooltip_text = "Ice curse, broken with 1 red key or more."
 	erosion_button.tooltip_text = "Erosion curse, broken with 5 green keys or more."
 	paint_button.tooltip_text = "Paint curse, broken with 3 blue keys or more."
@@ -63,6 +64,14 @@ func _ready() -> void:
 	color_choice.changed_color.connect(_update_door_color.unbind(1))
 	
 	add_lock.pressed.connect(_add_new_lock)
+
+func _connect_data() -> void:
+	if not data or not editor_data: return
+	data.changed.connect(editor_data.emit_changed_side_editor_data)
+
+func _disconnect_data() -> void:
+	if not data or not editor_data: return
+	data.changed.disconnect(editor_data.emit_changed_side_editor_data)
 
 # This avoids signals changing the door data while it's being set here
 # Fixes, for example, doors with sizes of 64x64 changing the width to 64, which calls _update_door_size, which sets the height to the default of 32
