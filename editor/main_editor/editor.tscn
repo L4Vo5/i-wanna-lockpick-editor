@@ -291,8 +291,8 @@ script = ExtResource("13_621va")
 
 [node name="DangerOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
 unique_name_in_owner = true
+modulate = Color(1, 0, 0, 0.752941)
 script = ExtResource("13_621va")
-color = Color(1, 0, 0, 0.752941)
 width = 2.0
 
 [node name="SelectionBox" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
@@ -310,7 +310,7 @@ custom_minimum_size = Vector2(362, 0)
 layout_mode = 2
 
 [node name="BookmarkTabContainer" parent="HSplitContainer/RightDock" instance=ExtResource("20_4gm0f")]
-custom_minimum_size = Vector2(340, 0)
+custom_minimum_size = Vector2(357, 0)
 layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]

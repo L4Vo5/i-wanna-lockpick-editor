@@ -5,11 +5,6 @@ var tiles := {}
 var outline_tiles := {}
 
 @export var tile_size: int = 16
-@export var color: Color = Color.WHITE:
-	set(value):
-		if color == value: return
-		color = value
-		modulate = value
 @export var width: float = 3:
 	set(val):
 		if width == val: return
