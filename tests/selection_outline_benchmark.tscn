@@ -9,77 +9,120 @@ script/source = "extends Node2D
 @onready var selection_outline: SelectionOutline = %SelectionOutline
 @onready var tile_map: TileMap = %TileMap
 
-var amount := 1
+var tiles := {}
+var is_dragging := false
+var drag_start := Vector2i.ZERO
+var drag_end := Vector2i.ZERO
+
+const KEY_WEIGHTS := {
+	KEY_Q: 1,
+	KEY_A: 2,
+	KEY_Z: 3,
+	
+	KEY_W: 3,
+	KEY_S: 4,
+	KEY_X: 5,
+	
+	KEY_E: 5,
+	KEY_D: 6,
+	KEY_C: 7,
+	
+	KEY_R: 7,
+	KEY_F: 8,
+	KEY_V: 9,
+	
+	KEY_T: 10,
+	KEY_G: 11,
+	KEY_B: 12,
+	
+	KEY_Y: 12,
+	KEY_H: 13,
+	KEY_N: 14,
+	
+	KEY_U: 15,
+	KEY_J: 16,
+	KEY_M: 17,
+	
+	KEY_I: 18,
+	KEY_K: 19,
+	
+	KEY_O: 20,
+	KEY_L: 21,
+	
+	KEY_P: 22,
+}
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey:
-		if event.pressed and event.keycode == KEY_RIGHT:
-			amount += 1
-		if event.pressed and event.keycode == KEY_LEFT:
-			amount -= 1
-			amount = max(1, amount)
-		if event.pressed and event.keycode == KEY_SPACE:
-			do_the_thing()
-			queue_redraw()
-		if event.pressed or event.is_echo():
-			if event.keycode == KEY_R:
-				var satisfaction := 0.0
-				while satisfaction < 100:
-					satisfaction += 1 if try_expand_one_rect() else 0.5
-				queue_redraw()
+		if event.pressed:
+			if event.keycode in KEY_WEIGHTS:
+				random_rect(KEY_WEIGHTS[event.keycode])
+			
 	if event is InputEventMouseButton:
-		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-			delete_rect_at_mouse()
-	if event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			delete_rect_at_mouse()
-
-var rects := []
-
-var _doing := false
-func do_the_thing() -> void:
-	if _doing: return
-	_doing = true
-	var used_rects := {}
-	while true:
-		var chosen_rects := []
-		for i in amount:
-			var rect = rects.pick_random()
-			while rect in chosen_rects:
-				rects.pick_random()
-			chosen_rects.push_back(rect)
-			if used_rects.has(rect):
-				used_rects.erase(rect)
-				selection_outline.remove_rect(rect)
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				drag_start = ((get_local_mouse_position() as Vector2i) / 16) * 16
+				if not tiles.has(drag_start):
+					is_dragging = true
+					drag_end = drag_start
 			else:
-				used_rects[rect] = true
-				selection_outline.add_rect(rect)
-		await selection_outline.done_for_now
+				if is_dragging:
+					is_dragging = false
+					var tile_iter := Rect2i(drag_start, Vector2i.ZERO)
+					tile_iter = tile_iter.expand(drag_end)
+					tile_iter.size += Vector2i(16, 16)
+					add_rect(tile_iter)
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.pressed:
+				delete_rect_at_mouse()
+	if event is InputEventMouseMotion:
+		if is_dragging:
+			var drag_pos := ((get_local_mouse_position() as Vector2i) / 16) * 16
+			var tile_iter := Rect2i(drag_start, Vector2i.ZERO)
+			tile_iter = tile_iter.expand(drag_pos)
+			tile_iter.size += Vector2i(16, 16)
+			var success := true
+			for x in range(tile_iter.position.x, tile_iter.end.x, 16):
+				for y in range(tile_iter.position.y, tile_iter.end.y, 16):
+					if tiles.has(Vector2i(x, y)):
+						success = false
+			if success:
+				drag_end = drag_pos
 
-func try_expand_one_rect() -> bool:
-	var rect: Rect2i = rects.pick_random() as Rect2i
-	var original_rect := rect
-	rect = rect.grow_side(randi() % 4, 16)
-	if not Rect2i(0, 0, 800, 608).encloses(rect): return false
-	rects.erase(rect)
+var rects := {}
+
+func add_rect(rect: Rect2i) -> void:
+	if rect.size.x < 16 or rect.size.y < 16:
+		print(\"A\")
+		return
+	for x in range(rect.position.x, rect.end.x, 16):
+		for y in range(rect.position.y, rect.end.y, 16):
+			assert(not tiles.has(Vector2i(x, y)))
+			tiles[Vector2i(x, y)] = true
+	await selection_outline.add_rect(rect)
+	rects[rect] = true
+
+func random_rect(size_weight: int) -> void:
+	var rect := Rect2i(0, 0, 1, 1)
+	rect.position.x = randi() % (800/16)
+	rect.position.y = randi() % (608/16)
+	rect.size.x += floori(size_weight * randf())
+	rect.size.y += floori(size_weight * randf())
+	if rect.end.x > 800/16:
+		rect.end.x = 800/16
+	if rect.end.y > 608/16:
+		rect.end.y = 608/16
+	rect.position *= 16
+	rect.size *= 16
 	var success := true
-	var enclosed_rects := []
-	for other_rect: Rect2i in rects:
-		if other_rect.intersects(rect) and not rect.encloses(other_rect):
-			success = false
-			break
-		if rect.encloses(other_rect):
-			enclosed_rects.push_back(other_rect)
+	for x in range(rect.position.x, rect.end.x, 16):
+		for y in range(rect.position.y, rect.end.y, 16):
+			if tiles.has(Vector2i(x, y)):
+				success = false
 	if success:
-		for other_rect in enclosed_rects:
-			rects.erase(other_rect)
-		rects.push_back(rect)
-		return true
-	else:
-		rects.push_back(original_rect)
-		return false 
+		add_rect(rect)
 
 func delete_rect_at_mouse() -> void:
-	if _doing: return
 	var mouse_pos := get_local_mouse_position()
 	var chosen = null
 	for rect: Rect2i in rects:
@@ -89,10 +132,14 @@ func delete_rect_at_mouse() -> void:
 	if chosen != null:
 		var rect: Rect2i = chosen as Rect2i
 		rects.erase(rect)
+		await selection_outline.remove_rect(rect)
 		for x in range(rect.position.x, rect.end.x, 16):
 			for y in range(rect.position.y, rect.end.y, 16):
-				rects.push_back(Rect2i(x, y, 16, 16))
+				tiles.erase(Vector2i(x, y))
 		queue_redraw()
+
+func _process(delta: float) -> void:
+	queue_redraw()
 
 func _ready() -> void:
 	selection_outline.clear()
@@ -105,12 +152,6 @@ func _ready() -> void:
 	#print(\"DONE\")
 	#PerfManager.start(\"add tiles\")
 	var tiles := tile_map.get_used_cells(0)
-	tiles = []
-	for x in 800/16:
-		for y in 608/16:
-			tiles.push_back(Vector2i(x, y))
-	for tile in tiles:
-		rects.push_back(Rect2i(tile * 16, Vector2i(16, 16)))
 	#for tile in tiles:
 		#var rect := Rect2i(tile * 32, Vector2i(32, 32))
 		#selection_outline.add_rect(rect)
@@ -130,22 +171,30 @@ func _ready() -> void:
 	#PerfManager.end(\"remove tiles\")
 
 func _draw() -> void:
-	if _doing: return
+	var mouse_pos := get_local_mouse_position()
+	if is_dragging:
+		var tile_iter := Rect2i(drag_start, Vector2.ZERO)
+		tile_iter = tile_iter.expand(drag_end)
+		for x in range(tile_iter.position.x, tile_iter.end.x+16, 16):
+			for y in range(tile_iter.position.y, tile_iter.end.y+16, 16):
+				var rect := Rect2i(x, y, 16, 16)
+				draw_rect(rect, Color.CORNFLOWER_BLUE)
+				draw_rect(rect, Color(0, 0, 0, 0.3), false, 2)
 	for rect in rects:
-		var color = Color.ORANGE
-		#var x = rect.position.x / 800.0
-		#var y = rect.position.y / 608.0
-		#var r = hash((Vector2(x*100, y*30)))/255.0
-		#var g = hash(Vector3(x - 900, y * 342, (y+x)*99))/255.0
-		#var b = hash(Vector2(y*100, x * 1000 + 500))/255.0
-		#var color = Color(fposmod(r, 1), fposmod(g, 1), fposmod(b, 1), 1)
-		draw_rect(rect, color)
-		draw_rect(rect, Color.BLACK, false, 2)
+		if rect.has_point(mouse_pos):
+			var color = Color.ORANGE
+			color = color.blend(Color(1, 1, 1, 0.5))
+			draw_rect(rect, color)
+			draw_rect(rect, Color.BLACK, false, 2)
+	#for tile in tiles:
+		#var rect := Rect2i(tile, Vector2i(16, 16))
+		#draw_rect(rect, Color.GREEN)
+		#draw_rect(rect, Color.BLACK, false, 2)
 	pass
 "
 
 [node name="Node2D" type="Node2D"]
-script = SubResource("GDScript_y404o")
+unique_name_in_owner = true
 
 [node name="SelectionOutline" type="Node2D" parent="."]
 unique_name_in_owner = true
@@ -157,3 +206,6 @@ visible = false
 tile_set = ExtResource("2_ioe1d")
 format = 2
 layer_0/tile_data = PackedInt32Array(196611, 65537, 1, 262147, 65537, 1, 262149, 65537, 1, 262151, 65537, 1, 262153, 65537, 1, 262155, 65537, 1, 196619, 65537, 1, 131083, 65537, 1, 327689, 65537, 1, 393225, 65537, 1, 458761, 65537, 1, 393229, 65537, 1, 458765, 65537, 1, 524301, 65537, 1, 589837, 65537, 1, 524289, 65537, 1, 589829, 65537, 1, 589830, 65537, 1, 393221, 65537, 1, 327685, 65537, 1, 327681, 65537, 1, 262145, 65537, 1, 196609, 65537, 1, 131073, 65537, 1, 131074, 65537, 1, 65538, 65537, 1, 65539, 65537, 1, 65540, 65537, 1, 65541, 65537, 1, 65542, 65537, 1, 65543, 65537, 1, 131079, 65537, 1, 196615, 65537, 1, 12, 65537, 1, 11, 65537, 1, 10, 65537, 1, 65546, 65537, 1, 65545, 65537, 1, 131081, 65537, 1, 262157, 65537, 1, 327697, 65537, 1, 262161, 65537, 1, 393233, 65537, 1, 655369, 65537, 1, 589833, 65537, 1, 589834, 65537, 1, 589832, 65537, 1, 655363, 65537, 1, 589827, 65537, 1, 458751, 65537, 1, 589839, 65537, 1, 14, 65537, 1, 15, 65537, 1, 16, 65537, 1, 65552, 65537, 1, 131088, 65537, 1, 131087, 65537, 1, 65551, 65537, 1, 65547, 65537, 1, 655360, 65537, 1, 720896, 65537, 1, 131075, 65537, 1, 131077, 65537, 1, 196613, 65537, 1, 327683, 65537, 1, 458755, 65537, 1, 589825, 65537, 1, 524291, 65537, 1, 458757, 65537, 1, 393223, 65537, 1, 524293, 65537, 1, 589828, 65537, 1, 655362, 65537, 1, 655364, 65537, 1, 524295, 65537, 1, 524297, 65537, 1, 524299, 65537, 1, 589835, 65537, 1, 655368, 65537, 1, 589836, 65537, 1, 524303, 65537, 1, 655371, 65537, 1, 589838, 65537, 1, 524304, 65537, 1, 458768, 65537, 1, 458767, 65537, 1, 393231, 65537, 1, 327695, 65537, 1, 196624, 65537, 1, 196623, 65537, 1, 262159, 65537, 1, 196625, 65537, 1, 196621, 65537, 1, 196617, 65537, 1, 65544, 65537, 1, 65549, 65537, 1, 13, 65537, 1, 131085, 65537, 1, 327693, 65537, 1, 327691, 65537, 1, 393227, 65537, 1, 458763, 65537, 1, 327687, 65537, 1, 393219, 65537, 1, 458759, 65537, 1, 393217, 65537, 1, 458753, 65537, 1, 589831, 65537, 1)
+
+[node name="Director" type="Node2D" parent="."]
+script = SubResource("GDScript_y404o")

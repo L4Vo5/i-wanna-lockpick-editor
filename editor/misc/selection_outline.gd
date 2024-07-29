@@ -44,7 +44,7 @@ func _input(event: InputEvent) -> void:
 var speed := 0.1
 var waiting_count := 0
 
-func keep_going(checking = []):
+func keep_going(checking = [], wait_weight := 1.0):
 	if not checking is Array:
 		checking = [checking]
 	for r in checking:
@@ -54,7 +54,7 @@ func keep_going(checking = []):
 	#print(get_stack()[1]["line"])
 	#await do_keep_going
 	waiting_count += 1
-	await get_tree().create_timer(speed).timeout
+	await get_tree().create_timer(speed * wait_weight).timeout
 	waiting_count -= 1
 	for r in checking:
 		currently_checking.erase(r)
@@ -68,12 +68,17 @@ func maybe_done_for_now() -> void:
 
 func add_rect(rect: Rect2i) -> void:
 	var tile_iter := CollisionSystem.get_rect_tile_iter(rect, 1.0 / tile_size)
+	var coords := []
 	for y in range(tile_iter.position.y, tile_iter.end.y):
 		for x in range(tile_iter.position.x, tile_iter.end.x):
 			var coord := Vector2i(x, y)
-			await keep_going(coord)
 			tiles[coord] = true
 			outline_tiles.erase(coord)
+			coords.push_back(coord)
+			if coords.size() > 16:
+				await keep_going(coords)
+				coords.clear()
+	if not coords.is_empty(): await keep_going(coords)
 	
 	var outline_iter := tile_iter.grow(1)
 	for x in range(outline_iter.position.x, outline_iter.end.x):
@@ -128,11 +133,16 @@ func add_rect(rect: Rect2i) -> void:
 
 func remove_rect(rect: Rect2i) -> void:
 	var tile_iter := CollisionSystem.get_rect_tile_iter(rect, 1.0 / tile_size)
+	var coords := []
 	for y in range(tile_iter.position.y, tile_iter.end.y):
 		for x in range(tile_iter.position.x, tile_iter.end.x):
 			var coord := Vector2i(x, y)
-			await keep_going(coord)
 			tiles.erase(coord)
+			coords.push_back(coord)
+			if coords.size() > 16:
+				await keep_going(coords)
+				coords.clear()
+	if not coords.is_empty(): await keep_going(coords)
 	# New potential outline tiles: the inner edges of the removed rect
 	for x in range(tile_iter.position.x, tile_iter.end.x):
 		var top := Vector2i(x, tile_iter.position.y)
