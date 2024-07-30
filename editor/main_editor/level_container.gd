@@ -175,7 +175,7 @@ func _handle_left_click() -> bool:
 				if not handled:
 					clear_selection()
 		Tool.Brush:
-			drag_start = level.get_local_mouse_position()
+			drag_start = currently_adding.position
 			drag_state = Drag.Left
 			handled = _try_place_curretly_adding()
 		Tool.ModifySelection:
@@ -216,7 +216,7 @@ func _handle_right_click() -> bool:
 			if not handled:
 				clear_selection()
 		Tool.Brush:
-			drag_start = level.get_local_mouse_position()
+			drag_start = currently_adding.position
 			drag_state = Drag.Right
 			handled = _try_remove_at_mouse()
 		Tool.ModifySelection:
@@ -256,12 +256,22 @@ func _handle_mouse_movement() -> bool:
 			update_currently_adding_position()
 			_update_preview()
 		Tool.Brush:
-			update_currently_adding_position()
-			if drag_state == Drag.Left:
-				_try_place_curretly_adding()
-			elif drag_state == Drag.Right:
-				_try_remove_at_mouse()
-			_update_preview()
+			if currently_adding:
+				if drag_state == Drag.Left:
+					var grid_size := currently_adding.get_rect().size as Vector2
+					var mouse_pos := level.get_local_mouse_position()
+					var diff := mouse_pos - (drag_start as Vector2)
+					diff = (diff / grid_size).floor() * grid_size
+					drag_start += diff as Vector2i
+					currently_adding.position = drag_start
+					danger_outline.position = currently_adding.position
+					_try_place_curretly_adding()
+				elif drag_state == Drag.Right:
+					update_currently_adding_position()
+					_try_remove_at_mouse()
+				else:
+					update_currently_adding_position()
+				_update_preview()
 		Tool.ModifySelection:
 			if drag_state != Drag.None:
 				expand_selection()
