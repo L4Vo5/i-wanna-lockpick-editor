@@ -79,7 +79,7 @@ enum Tool {
 
 var drag_start := Vector2i.ZERO
 var drag_state := Drag.None
-enum Drag { None = 0, Left, Right }
+enum Drag { None = 0, Left, Right, Middle}
 
 var new_selection_candidates := {} # idk how else to name it...
 @export var expand_selection_style_box: StyleBox
@@ -156,7 +156,7 @@ func _gui_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			if _handle_right_click():
 				accept_event()
-		elif event.button_index == MOUSE_BUTTON_MIDDLE:
+		elif event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:
 			if _handle_middle_click():
 				accept_event()
 	elif event is InputEventMouseMotion:
@@ -187,9 +187,10 @@ func _handle_left_click() -> bool:
 			expand_selection()
 			handled = true
 		Tool.DragLevel:
-			drag_start = level.get_local_mouse_position()
-			drag_state = Drag.Left
-			handled = true
+			if drag_state == Drag.None:
+				drag_start = get_local_mouse_position()
+				drag_state = Drag.Left
+				handled = true
 		Tool.DragSelection:
 			# It's entered with left click and exited when it's released, thus this should never happen.
 			assert(false)
@@ -236,10 +237,17 @@ func _handle_right_unclick() -> void:
 		drag_state = Drag.None
 
 func _handle_middle_click() -> bool:
-	return false
+	decide_tool()
+	if current_tool == Tool.DragLevel:
+		if drag_state == Drag.None:
+			drag_state = Drag.Middle
+			drag_start = get_local_mouse_position()
+	return true
 
 func _handle_middle_unclick() -> void:
-	pass
+	if drag_state == Drag.Middle:
+		drag_state = Drag.None
+	decide_tool()
 
 func _handle_mouse_movement() -> bool:
 	var handled := false
@@ -263,7 +271,12 @@ func _handle_mouse_movement() -> bool:
 				relocate_selection()
 				handled = true
 		Tool.DragLevel:
-			assert(false)
+			if drag_state != Drag.None:
+				assert(drag_state != Drag.Right)
+				var new_pos := get_local_mouse_position() as Vector2i
+				var offset := new_pos - drag_start
+				drag_start = new_pos
+				editor_camera.position -= offset as Vector2
 	return handled
 
 func _try_place_curretly_adding() -> bool:
