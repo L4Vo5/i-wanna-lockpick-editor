@@ -101,6 +101,7 @@ func _adjust_inner_container_dimensions() -> void:
 
 func _ready() -> void:
 	resized.connect(_adjust_inner_container_dimensions)
+	mouse_entered.connect(update_currently_adding)
 
 func set_editor_data(data: EditorData) -> void:
 	assert(editor_data == null, "This should only really run once.")
@@ -299,7 +300,7 @@ func update_currently_adding() -> void:
 	
 	currently_adding = info
 	ghost_displayer.info = currently_adding
-	if currently_adding:
+	if currently_adding and current_tool in [Tool.Pencil, Tool.Brush]:
 		danger_outline.clear()
 		danger_outline.position = Vector2.ZERO
 		danger_outline.add_rect(currently_adding.get_rect())
@@ -317,7 +318,6 @@ func update_currently_adding_position() -> void:
 func clear_selection() -> void:
 	selection.clear()
 	selection_outline.clear()
-	danger_outline.clear()
 	selection_grid_size = Vector2i.ONE
 
 func add_to_selection(id: int) -> void:
@@ -343,14 +343,16 @@ func select_thing(id: int) -> void:
 	if id not in selection: 
 		clear_selection()
 		add_to_selection(id)
-	current_tool = Tool.DragSelection
-	if id not in selection:
+		current_tool = Tool.DragSelection
 		var elem = collision_system.get_rect_data(id)
 		var type := LevelData.get_element_type(elem)
 		if type in Enums.NODE_LEVEL_ELEMENTS:
 			var editor_control = editor_data.level_element_editors[type]
 			editor_control.data = elem.duplicated()
 			editor_data.side_tabs.set_current_tab_control(editor_control)
+			update_currently_adding()
+	else:
+		current_tool = Tool.DragSelection
 
 func relocate_selection() -> void:
 	if editor_data.disable_editing: return
