@@ -106,7 +106,7 @@ sid = 0
 is_output = false
 position = Vector2i(0, 0)
 
-[node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_pack_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "test_button", "save_button", "save_as_button", "download_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
+[node name="Editor" type="Control" node_paths=PackedStringArray("gameplay", "right_dock", "side_tabs", "door_editor", "key_editor", "tile_editor", "level_properties_editor", "level_pack_properties_editor", "entry_editor", "salvage_point_editor", "level_container", "play_button", "save_button", "save_as_button", "download_button", "load_button", "load_from_clipboard_button", "level_path_displayer", "open_files_location", "new_level_button", "more_options", "file_dialog", "invalid_level_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -126,7 +126,6 @@ entry_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/Entries"
 salvage_point_editor = NodePath("HSplitContainer/RightDock/BookmarkTabContainer/SalvagePoints")
 level_container = NodePath("HSplitContainer/LeftSide/LevelContainer")
 play_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/Play")
-test_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/Test")
 save_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/Save")
 save_as_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/SaveAs")
 download_button = NodePath("HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer/Download")
@@ -181,10 +180,6 @@ theme_override_constants/separation = 5
 [node name="Play" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 text = "Play"
-
-[node name="Test" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
-layout_mode = 2
-text = "Test"
 
 [node name="Save" type="Button" parent="HSplitContainer/LeftSide/Tools/ScrollContainerImprover/ScrollContainer/HBoxContainer"]
 layout_mode = 2

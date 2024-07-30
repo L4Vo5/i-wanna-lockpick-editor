@@ -106,8 +106,7 @@ static func load(raw_data: PackedByteArray, offset: int) -> LevelPackData:
 	# Load all levels
 	if SaveLoad.PRINT_LOAD: print("It has %d levels" % level_count)
 	for i in level_count:
-		var lvl := _load_level(data)
-		level_pack.levels.push_back(lvl)
+		level_pack.levels.push_back(_load_level(data))
 	return level_pack
 
 static func _load_level(data: ByteAccess) -> LevelData:
@@ -127,7 +126,7 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	var tile_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("tile count is %d" % tile_amount)
 	for _i in tile_amount:
-		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = 1
+		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = true
 	
 	var key_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("key count is %d" % key_amount)

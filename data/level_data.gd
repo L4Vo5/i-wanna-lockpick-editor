@@ -80,9 +80,6 @@ var has_goal := true:
 		author = val
 		changed.emit()
 
-## The unique id of the level, similar to pack ids.
-@export var unique_id := randi() + (randi() << 32)
-
 var collision_system := CollisionSystem.new(16)
 
 func _init() -> void:

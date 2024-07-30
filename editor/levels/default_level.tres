@@ -4,24 +4,17 @@
 
 [resource]
 script = ExtResource("5_ng5dl")
+editor_version = ""
 doors = Array[Resource("res://data/door_data.gd")]([])
 keys = Array[Resource("res://data/key_data.gd")]([])
-entries = Array[Resource("res://data/entry_data.gd")]([])
-salvage_points = Array[Resource("res://data/salvage_point_data.gd")]([])
-required_levels = null
-min_required_level_count = 0
-exitable = true
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(398, 448)
 goal_position = Vector2i(384, 352)
 custom_lock_arrangements = {}
 tiles = {
-Vector2i(11, 14): 1,
-Vector2i(12, 14): 1,
-Vector2i(13, 14): 1
+Vector2i(11, 14): true,
+Vector2i(12, 14): true,
+Vector2i(13, 14): true
 }
 name = ""
-title = ""
-label = ""
 author = ""
-unique_id = null

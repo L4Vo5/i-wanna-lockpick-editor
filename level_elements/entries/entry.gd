@@ -68,15 +68,6 @@ func player_stopped_touching() -> void:
 	name_tween.tween_property(level_name, "position:y", name_start_y + tween_y_offset, t).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 	name_tween.tween_property(self, "tween_progress", 0, t)
 
-func end_animation() -> void:
-	if not is_node_ready(): return
-	# to make resets properly reset the entry
-	arrow.hide()
-	if name_tween: name_tween.kill()
-	level_name.modulate.a = 0
-	level_name.position.y = name_start_y + tween_y_offset
-	tween_progress = 0
-
 # called by kid.gd
 func enter() -> void:
 	if not is_instance_valid(level): return
@@ -109,7 +100,8 @@ func update_status() -> void:
 	else:
 		sprite.texture = ENTRY_WORLD
 		sprite.position.y = -36
-	if level.gameplay_manager.active_state.completed_levels.has(pack_data.levels[data.leads_to].unique_id):
+	if pack_data.state_data.completed_levels[data.leads_to]:
+		completion.texture = COMPLETED
 		completion.visible = true
 	else:
 		completion.visible = false
@@ -121,7 +113,6 @@ func _disconnect_data() -> void:
 func _connect_data() -> void:
 	if not is_instance_valid(data): return
 	data.changed.connect(update_position)
-	end_animation()
 	update_name()
 	update_position()
 	update_status()

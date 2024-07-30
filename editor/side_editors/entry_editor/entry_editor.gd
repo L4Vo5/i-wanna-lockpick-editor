@@ -45,6 +45,5 @@ func _update_level_name() -> void:
 
 func _on_changed_level_pack_data() -> void:
 	level_list.pack_data = editor_data.level_pack_data
-	data.leads_to = 0
 	_set_to_data()
 	_general_update()

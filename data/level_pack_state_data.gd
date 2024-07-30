@@ -12,30 +12,40 @@ static var SHOULD_PRINT := false
 ## The actual pack data
 var pack_data: LevelPackData
 
-## A dictionary of all completed levels by unique id.
-## The values currently have no meaning.
-@export var completed_levels: Dictionary
+## An array with the completion status of each level (0: incomplete, 1: completed).
+## A level is completed when you reach the goal.
+@export var completed_levels: PackedByteArray
 
 ## The salvaged doors. Their origin doesn't matter.
 @export var salvaged_doors: Array[DoorData] = []
 
-## The current level by unique id that's being played in the pack.
+## The current level that's being played in the pack.
 @export var current_level: int
 
-## The levels by unique id that you reach when exiting (backspace), as a stack.
-@export var exit_levels: PackedInt64Array = []
+## The level that you reach when exiting (backspace), for each other level.
+@export var exit_levels: PackedInt32Array = []
 
-## The player positions within exit_levels after exiting
+## The player position within exit_level after exiting
 @export var exit_positions: Array[Vector2i] = []
 
 static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
-	state.completed_levels = {}
+	state.completed_levels = []
+	state.completed_levels.resize(pack.levels.size())
 	state.exit_levels = []
 	state.exit_positions = []
 	state.pack_id = pack.pack_id
 	state.pack_data = pack
+	state.connect_pack_data()
 	return state
+
+func connect_pack_data() -> void:
+	if !pack_data: return
+	pack_data.state_data = self
+	pack_data.added_level.connect(_on_added_level)
+	pack_data.deleted_level.connect(_on_deleted_level)
+	pack_data.swapped_levels.connect(_on_swapped_levels)
+	pack_data.moved_level.connect(_on_moved_levels)
 
 func salvage_door(sid: int, door: DoorData) -> void:
 	if sid < 0 or sid > 999:
@@ -46,12 +56,65 @@ func salvage_door(sid: int, door: DoorData) -> void:
 	save()
 
 func get_completed_levels_count() -> int:
-	return completed_levels.size()
+	return completed_levels.count(1)
 
 func get_salvaged_doors_count() -> int:
 	return salvaged_doors.reduce(func(accum, door):
 		return accum + (1 if door else 0)
 	, 0)
+
+func _on_added_level(id: int) -> void:
+	assert(pack_data.levels.size() == completed_levels.size() + 1)
+	completed_levels.insert(id, 0)
+	for i in exit_levels.size():
+		if exit_levels[i] >= id:
+			exit_levels[i] += 1
+	save()
+
+func _on_deleted_level(level_id: int) -> void:
+	assert(pack_data.levels.size() == completed_levels.size() - 1)
+	completed_levels.remove_at(level_id)
+	for i in exit_levels.size():
+		if exit_levels[i] == level_id:
+			exit_levels.remove_at(i)
+			exit_positions.remove_at(i)
+			i -= 1
+		elif exit_levels[i] >= level_id:
+			exit_levels[i] -= 1
+	assert(pack_data.levels.size() == completed_levels.size())
+	save()
+
+func _on_swapped_levels(level_1_id: int, level_2_id: int) -> void:
+	array_swap(completed_levels, level_1_id, level_2_id)
+	for i in exit_levels.size():
+		if exit_levels[i] == level_1_id:
+			exit_levels[i] = level_2_id
+		elif exit_levels[i] == level_2_id:
+			exit_levels[i] = level_1_id
+	save()
+
+func _on_moved_levels(from_id: int, to_id: int) -> void:
+	array_move(completed_levels, from_id, to_id)
+	for i in exit_levels.size():
+		if exit_levels[i] == from_id:
+			exit_levels[i] = to_id
+		elif to_id > from_id:
+			if exit_levels[i] > from_id and exit_levels[i] <= to_id:
+				exit_levels[i] -= 1
+		else:
+			if exit_levels[i] >= to_id and exit_levels[i] < from_id:
+				exit_levels[i] += 1
+	save()
+
+func array_swap(array: Array, id_1: int, id_2: int) -> void:
+	var v = array[id_1]
+	array[id_1] = array[id_2]
+	array[id_2] = v
+
+func array_move(array: Array, from: int, to: int) -> void:
+	var v = array[from]
+	array.remove_at(from)
+	array.insert(to, v)
 
 func save() -> void:
 	assert(pack_id == pack_data.pack_id)
@@ -68,12 +131,16 @@ func save() -> void:
 
 func check_and_fix() -> void:
 	# TODO: maybe improve (what if there's extra salvages? etc)
-	if not pack_data.levels_by_id.has(current_level):
-		printerr("State's current level doesn't exist: ", String.num_uint64(current_level, 16))
-		current_level = pack_data.levels[0].unique_id
-	for id in exit_levels:
-		if not pack_data.levels_by_id.has(id):
-			printerr("Invalid level on exit stack: ", String.num_uint64(id, 16))
+	var pack_level_count := pack_data.levels.size()
+	# hack but this is the easiest way to make sure they all have the appropiate size i guess
+	var current_level_count := completed_levels.size()
+	if current_level_count != pack_level_count:
+		printerr("state is keeping track of %d levels, but level pack has %d, resizing." % [current_level_count, pack_level_count])
+		completed_levels.resize(pack_level_count)
+	if current_level < 0 or current_level >= pack_data.levels.size():
+		printerr("State's current level is out of range: current level = ",
+			current_level, " level count ", pack_data.levels.size())
+		current_level = 0
 
 static func load_pack_state(path: String, pack: LevelPackData) -> LevelPackStateData:
 	var state: LevelPackStateData
@@ -86,6 +153,7 @@ static func load_pack_state(path: String, pack: LevelPackData) -> LevelPackState
 		return null
 	assert(state.pack_id == pack.pack_id)
 	state.pack_data = pack
+	state.connect_pack_data()
 	state.check_and_fix()
 	return state
 

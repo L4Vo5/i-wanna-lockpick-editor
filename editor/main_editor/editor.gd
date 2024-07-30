@@ -23,7 +23,6 @@ class_name LockpickEditor
 @export var level_container: LevelContainer
 
 @export var play_button: Button
-@export var test_button: Button
 @export var save_button: Button
 @export var save_as_button: Button
 @export var download_button: Button
@@ -35,7 +34,6 @@ class_name LockpickEditor
 @export var more_options: MenuButton
 
 @onready var hide_on_play: Array[CanvasItem] = [
-	test_button,
 	save_button,
 	save_as_button,
 	load_button,
@@ -64,7 +62,7 @@ func _exit_tree() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("play"):
-		_on_play_pressed(GameplayManager.PlayMode.PLAYING)
+		_on_play_pressed()
 		accept_event()
 
 func _ready() -> void:
@@ -110,8 +108,7 @@ func _ready() -> void:
 	salvage_point_editor.editor_data = data
 	
 	side_tabs.tab_changed.connect(_update_mode)
-	play_button.pressed.connect(_on_play_pressed.bind(GameplayManager.PlayMode.PLAYING))
-	test_button.pressed.connect(_on_play_pressed.bind(GameplayManager.PlayMode.TESTING))
+	play_button.pressed.connect(_on_play_pressed)
 	
 	save_button.pressed.connect(_on_save_pressed)
 	save_as_button.pressed.connect(_on_save_as_pressed)
@@ -202,11 +199,11 @@ func _update_mode() -> void:
 	data.editing_settings = current_tab.name == "Settings"
 	data.multiple_selection = current_tab.name == "MultipleSelection"
 
-func _on_play_pressed(mode: GameplayManager.PlayMode) -> void:
+func _on_play_pressed() -> void:
 	if Global.settings.should_save_on_play and not data.is_playing:
 		if SaveLoad.is_path_valid(data.level_pack_data.file_path):
 			save_level()
-	if data.is_playing and gameplay.mode == GameplayManager.PlayMode.PLAYING:
+	if data.is_playing:
 		data.level_pack_data.state_data.save()
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
@@ -219,11 +216,7 @@ func _on_play_pressed(mode: GameplayManager.PlayMode) -> void:
 	data.selected_highlight.stop_adapting()
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
-	# also resets level
-	if data.is_playing:
-		gameplay.set_play_mode(mode)
-	else:
-		gameplay.set_play_mode(GameplayManager.PlayMode.EDITOR)
+	gameplay.reset()
 	resolve_visibility()
 	# fix for things staying focused when playing
 	set_focus_mode(Control.FOCUS_ALL)

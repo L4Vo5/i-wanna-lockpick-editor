@@ -130,3 +130,5 @@ position_smoothing_speed = 3.0
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
 editor_draw_drag_margin = true
+
+[node name="MultiSelectionLine" type="Line2D" parent="."]

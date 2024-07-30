@@ -23,11 +23,6 @@ var level_data: LevelData:
 		return level.level_data
 	set(val):
 		assert(false)
-var current_level: int:
-	get:
-		return gameplay.current_level
-	set(val):
-		gameplay.current_level = val
 
 
 signal changed_is_playing

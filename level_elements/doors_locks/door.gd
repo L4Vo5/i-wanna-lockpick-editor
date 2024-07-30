@@ -65,12 +65,6 @@ func _enter_tree():
 	# reset collisions
 	ignore_collisions_gate = -1
 	update_visuals()
-	# that fixes a bug where after
-	# 1. destroying a door
-	# 2. going into a level without doors
-	# 3. going back
-	# the door would not be visible
-	show()
 	resolve_collision_mode()
 
 func _exit_tree():
