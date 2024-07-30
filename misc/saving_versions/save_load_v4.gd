@@ -6,11 +6,12 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.store_s64(level_pack.pack_id)
 	
 	data.store_u32(level_pack.levels.size())
+	data.store_u32(level_pack.get_next_level_id())
 	
 	# Save all levels
 	for level_id in level_pack.level_order:
 		var level: LevelData = level_pack.levels[level_id]
-		data.store_u16(level_id)
+		data.store_u32(level_id)
 		_save_level(level, data)
 	
 	data.compress()
@@ -122,6 +123,7 @@ static func load(raw_data: PackedByteArray, offset: int) -> LevelPackData:
 	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
 	
 	var level_count := data.get_u32()
+	level_pack._next_level_id = data.get_u32()
 	
 	# Load all levels
 	if SaveLoad.PRINT_LOAD: print("It has %d levels" % level_count)
@@ -129,7 +131,7 @@ static func load(raw_data: PackedByteArray, offset: int) -> LevelPackData:
 	level_pack.level_order.resize(level_count)
 	for i in level_count:
 		if data.reached_eof(): return
-		var id := data.get_u16()
+		var id := data.get_u32()
 		level_pack.level_order[i] = id
 		level_pack.levels[id] = _load_level(data)
 	return level_pack
@@ -268,7 +270,7 @@ static func save_pack_state(data: ByteAccess, state: LevelPackStateData) -> void
 	var level_count := state.completed_levels.size()
 	data.store_u32(level_count)
 	for x in state.completed_levels:
-		data.store_u8(x)
+		data.store_u32(x)
 	
 	data.store_u32(state.exit_levels.size())
 	assert(state.exit_levels.size() == state.exit_positions.size())
@@ -296,11 +298,10 @@ static func load_pack_state(data: ByteAccess) -> LevelPackStateData:
 	state.current_level = data.get_u32()
 	var level_count := data.get_u32()
 	if level_count > MAX_ARRAY_SIZE: return
-	state.completed_levels.resize(level_count)
 	
 	for i in level_count:
 		if data.reached_eof(): return
-		state.completed_levels[i] = data.get_u8()
+		state.completed_levels[data.get_u32()] = true
 	
 	var exit_count := data.get_u32()
 	state.exit_levels.resize(exit_count)

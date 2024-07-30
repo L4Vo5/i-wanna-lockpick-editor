@@ -91,11 +91,13 @@ func get_levels_ordered() -> Array[LevelData]:
 
 # yes, infinite loop if you have 65535 levels and add another.
 # but I'd say that's your own damn fault.
+# ... why is this restricted to 65535? seriously 32 bit is just 2 more bytes and rarely matters
+# there is now no longer a problem with having above 65535 levels
 func get_next_level_id() -> int:
 	while levels.has(_next_level_id):
 		_next_level_id += 1
-		if _next_level_id >= (1 << 16):
-			_next_level_id -= 1 << 16
+		if _next_level_id >= (1 << 32):
+			_next_level_id -= 1 << 32
 	return _next_level_id
 
 ## Returns the id of the new level

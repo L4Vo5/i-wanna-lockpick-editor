@@ -1,4 +1,5 @@
 class_name NewLevelElementInfo
+extends RefCounted
 ## basically a "struct" used only to pass around the data required to add a new element to a level
 
 signal changed_position
@@ -12,7 +13,8 @@ var position: Vector2i:
 # data, if any (one of the Data classes)
 var data
 
-func new_from_data(data) -> NewLevelElementInfo:
+@warning_ignore("shadowed_variable")
+static func new_from_data(data) -> NewLevelElementInfo:
 	var e = NewLevelElementInfo.new()
 	e.type = data.level_element_type
 	e.data = data

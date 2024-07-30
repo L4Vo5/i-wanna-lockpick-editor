@@ -170,14 +170,15 @@ func _handle_left_click() -> bool:
 			if level.hovering_over != -1:
 				select_thing(level.hovering_over)
 				handled = true
+			elif not selection.is_empty():
+				clear_selection()
+				handled = true
 			else:
-				handled = _try_place_curretly_adding()
-				if not handled:
-					clear_selection()
+				handled = _try_place_currently_adding()
 		Tool.Brush:
 			drag_start = currently_adding.position
 			drag_state = Drag.Left
-			handled = _try_place_curretly_adding()
+			handled = _try_place_currently_adding()
 		Tool.ModifySelection:
 			if drag_state == Drag.Right:
 				finish_expanding_selection()
@@ -265,7 +266,7 @@ func _handle_mouse_movement() -> bool:
 					drag_start += diff as Vector2i
 					currently_adding.position = drag_start
 					danger_outline.position = currently_adding.position
-					_try_place_curretly_adding()
+					_try_place_currently_adding()
 				elif drag_state == Drag.Right:
 					update_currently_adding_position()
 					_try_remove_at_mouse()
@@ -289,12 +290,13 @@ func _handle_mouse_movement() -> bool:
 				editor_camera.position -= offset as Vector2
 	return handled
 
-func _try_place_curretly_adding() -> bool:
+func _try_place_currently_adding() -> bool:
 	if not currently_adding:
 		return false
 	var id := level.add_element(currently_adding)
 	if id != -1 and current_tool == Tool.Pencil:
-		select_thing(id)
+		# just annoying, makes you move something that you probably already placed correctly
+		#select_thing(id)
 		return true
 	return false
 
@@ -356,11 +358,25 @@ func add_to_selection(id: int) -> void:
 	)
 
 func remove_from_selection(id: int) -> void:
-	selection.erase(id)
+	if not selection.erase(id):
+		return
 	var rect := collision_system.get_rect(id)
+	var type := LevelData.get_element_type(collision_system.get_rect_data(id))
+	var grid_size := LevelData.get_element_grid_size(type)
 	rect.position -= selection_outline.position as Vector2i
 	selection_outline.remove_rect(rect)
-	# TODO: This won't update selection_grid_size...
+	if selection_grid_size.x <= grid_size.x or selection_grid_size.y <= grid_size.y:
+		update_grid_size()
+
+func update_grid_size() -> void:
+	selection_grid_size = Vector2i.ONE
+	for id in selection:
+		var type := LevelData.get_element_type(collision_system.get_rect_data(id))
+		var grid_size := LevelData.get_element_grid_size(type)
+		selection_grid_size = Vector2i(
+			maxi(selection_grid_size.x, grid_size.x),
+			maxi(selection_grid_size.y, grid_size.y)
+		)
 
 func select_thing(id: int) -> void:
 	if id not in selection: 

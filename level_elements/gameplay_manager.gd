@@ -34,14 +34,14 @@ func set_current_level(id: int) -> void:
 	assert(PerfManager.end("GameplayManager::set_current_level (%d)" % id))
 
 func has_won_current_level() -> bool:
-	return pack_state.current_level in pack_state.completed_levels
+	return pack_state.completed_levels.has(pack_state.current_level)
 
 func reset() -> void:
 	level.reset()
 
 func win() -> void:
 	if not has_won_current_level():
-		pack_state.completed_levels.push_back(pack_state.current_level)
+		pack_state.completed_levels[pack_state.current_level] = true
 		pack_state.save()
 	win_animation("Congratulations!")
 

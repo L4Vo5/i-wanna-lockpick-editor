@@ -514,6 +514,14 @@ func _place_goal(coord: Vector2i) -> bool:
 	level_data.goal_position = coord
 	return true
 
+## Returns the node associated by the given id. Mostly used for testing.
+func get_node_by_id(id: int) -> Node:
+	var element = collision_system.get_rect_data(id)
+	var type := level_data.get_element_type(element)
+	if type not in [Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint]:
+		return null
+	return original_data_to_node[element]
+
 
 ## Removes whatever's at the given position. Returns the id on success or -1 otherwise.
 func remove_element(id: int) -> void:

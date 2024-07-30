@@ -22,6 +22,10 @@ var _level_pack_data: LevelPackData:
 		_level_pack_data = val
 		_connect_pack_data()
 
+var placing: Enums.LevelElementTypes:
+	get:
+		return level_properties_editor.placing
+
 @onready var pack_name: LineEdit = %PackName
 @onready var pack_author: LineEdit = %PackAuthor
 @onready var pack_description: CodeEdit = %PackDescription
