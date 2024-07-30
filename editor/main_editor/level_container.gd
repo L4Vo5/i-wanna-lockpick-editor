@@ -216,7 +216,7 @@ func _handle_right_click() -> bool:
 		Tool.Brush:
 			drag_start = level.get_local_mouse_position()
 			drag_state = Drag.Right
-			handled = _try_place_curretly_adding()
+			handled = _try_remove_at_mouse()
 		Tool.ModifySelection:
 			if drag_state == Drag.Left:
 				finish_expanding_selection()
@@ -243,6 +243,16 @@ func _handle_middle_unclick() -> void:
 func _handle_mouse_movement() -> bool:
 	var handled := false
 	match current_tool:
+		Tool.Pencil:
+			update_currently_adding_position()
+			_update_preview()
+		Tool.Brush:
+			update_currently_adding_position()
+			if drag_state == Drag.Left:
+				_try_place_curretly_adding()
+			elif drag_state == Drag.Right:
+				_try_remove_at_mouse()
+			_update_preview()
 		Tool.ModifySelection:
 			if drag_state != Drag.None:
 				expand_selection()
@@ -253,36 +263,24 @@ func _handle_mouse_movement() -> bool:
 				handled = true
 		Tool.DragLevel:
 			assert(false)
-	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		#if drag_state == Selecting:
-			#expand_selection()
-			#return true
-		#if not selection.is_empty() and drag_state == Dragging:
-			#relocate_selection()
-			#return true
-		#elif Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
-			#return _try_place_curretly_adding()
-		#elif editor_data.tab_is_level_properties and (editor_data.is_placing_player_spawn or editor_data.is_placing_goal_position) or editor_data.tab_is_tilemap_edit:
-			#return _try_place_curretly_adding()
-	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		#if Input.is_action_pressed(&"unbound_action") and editor_data.is_placing_level_element:
-			#return _try_remove_at_mouse()
-		#elif editor_data.tab_is_tilemap_edit:
-			#return _try_remove_at_mouse()
 	return handled
 
 func _try_place_curretly_adding() -> bool:
 	if not currently_adding:
 		return false
 	var id := level.add_element(currently_adding)
-	if id != -1:
+	if id != -1 and current_tool == Tool.Pencil:
 		select_thing(id)
 		return true
 	return false
 
 func _try_remove_at_mouse() -> bool:
 	var mouse_pos := level.get_local_mouse_position()
-	if level.remove_at_pos(mouse_pos):
+	var id := level.get_visible_element_at_pos(mouse_pos)
+	if id != -1:
+		if id in selection:
+			remove_from_selection(id)
+		level.remove_element(id)
 		_update_preview()
 		return true
 	return false
@@ -298,12 +296,6 @@ func update_currently_adding() -> void:
 		info.data = editor_data.current_tab.data.duplicated()
 	else:
 		info = null
-	if info:
-		var grid_size := LevelData.get_element_grid_size(info.type)
-		var rect_size := info.get_rect().size
-		var mouse_pos := level.get_local_mouse_position() as Vector2i
-		var pos := mouse_pos - rect_size / 2
-		info.position = pos.snapped(grid_size)
 	
 	currently_adding = info
 	ghost_displayer.info = currently_adding
@@ -311,6 +303,16 @@ func update_currently_adding() -> void:
 		danger_outline.clear()
 		danger_outline.position = Vector2.ZERO
 		danger_outline.add_rect(currently_adding.get_rect())
+	update_currently_adding_position()
+
+func update_currently_adding_position() -> void:
+	if currently_adding:
+		var grid_size := LevelData.get_element_grid_size(currently_adding.type)
+		var rect_size := currently_adding.get_rect().size
+		var mouse_pos := level.get_local_mouse_position() as Vector2i
+		var pos := mouse_pos - rect_size / 2
+		currently_adding.position = pos.snapped(grid_size)
+		danger_outline.position = currently_adding.position
 
 func clear_selection() -> void:
 	selection.clear()
@@ -333,23 +335,22 @@ func add_to_selection(id: int) -> void:
 func remove_from_selection(id: int) -> void:
 	selection.erase(id)
 	var rect := collision_system.get_rect(id)
+	rect.position -= selection_outline.position as Vector2i
 	selection_outline.remove_rect(rect)
 	# TODO: This won't update selection_grid_size...
 
 func select_thing(id: int) -> void:
-	# TODO: make optimized ig
-	#selection.clear()
-	#selection[id] = true
-	clear_selection()
-	add_to_selection(id)
+	if id not in selection: 
+		clear_selection()
+		add_to_selection(id)
 	current_tool = Tool.DragSelection
-	
-	var elem = collision_system.get_rect_data(id)
-	var type := LevelData.get_element_type(elem)
-	if type in Enums.NODE_LEVEL_ELEMENTS:
-		var editor_control = editor_data.level_element_editors[type]
-		editor_control.data = elem.duplicated()
-		editor_data.side_tabs.set_current_tab_control(editor_control)
+	if id not in selection:
+		var elem = collision_system.get_rect_data(id)
+		var type := LevelData.get_element_type(elem)
+		if type in Enums.NODE_LEVEL_ELEMENTS:
+			var editor_control = editor_data.level_element_editors[type]
+			editor_control.data = elem.duplicated()
+			editor_data.side_tabs.set_current_tab_control(editor_control)
 
 func relocate_selection() -> void:
 	if editor_data.disable_editing: return
@@ -404,6 +405,7 @@ func set_tool(tool: Tool) -> void:
 	# Exit previous tool
 	ghost_displayer.hide()
 	selection_box.hide()
+	danger_outline.hide()
 	
 	current_tool = tool
 	
@@ -414,6 +416,15 @@ func set_tool(tool: Tool) -> void:
 			drag_state = Drag.Left
 			drag_start = level.get_local_mouse_position()
 			danger_outline.mimic_other(selection_outline)
+			danger_outline.position = selection_outline.position
+		Tool.Pencil, Tool.Brush:
+			if currently_adding:
+				currently_adding.position = Vector2i.ZERO
+				danger_outline.clear()
+				danger_outline.position = Vector2.ZERO
+				danger_outline.add_rect(currently_adding.get_rect())
+			update_currently_adding_position()
+			_update_preview()
 	level.allow_hovering = current_tool == Tool.Pencil
 
 func decide_tool() -> void:
@@ -427,22 +438,6 @@ func decide_tool() -> void:
 		current_tool = Tool.Brush
 	else:
 		current_tool = Tool.Pencil
-
-#func set_drag_state(state: int) -> void:
-	#if state == None and Input.is_key_pressed(KEY_CTRL):
-		#state = CtrlHeld
-	#if drag_state == state: return
-	#drag_state = state
-	#selection_box.hide()
-	#match drag_state:
-		#None:
-			#danger_outline.clear()
-			#danger_outline.position = Vector2.ZERO
-			#danger_outline.add_rect(currently_adding.get_rect())
-		#Dragging:
-			#danger_outline.mimic_other(selection_outline)
-			#danger_outline.hide()
-	#_update_preview()
 
 # Updates the ghost and the danger preview
 func _update_preview() -> void:

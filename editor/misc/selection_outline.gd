@@ -197,13 +197,6 @@ const NEIGHBOR_DIRECTIONS := [
 	Bytes.L,           Bytes.R,
 	Bytes.DL, Bytes.D, Bytes.DR
 ]
-func update_outline_tile(coord: Vector2i) -> void:
-	if tiles.has(coord): return
-	var num := 0
-	for i in 8:
-		if tiles.has(coord + NEIGHBORS[i]):
-			num |= NEIGHBOR_DIRECTIONS[i]
-	outline_tiles[coord] = num
 
 var cached_rects := {}
 enum {

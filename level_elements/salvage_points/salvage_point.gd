@@ -87,16 +87,16 @@ func prep_output_step_2() -> void:
 func prep_output_step_3() -> void:
 	if not data.is_output:
 		return
-	if door != null and door_error:
-		level.remove_element(door)
-		door = null
-	if door != null:
-		hide()
+	#if door != null and door_error:
+		#level.remove_element(door)
+		#door = null
+	#if door != null:
+		#hide()
 
 func remove_door() -> void:
-	if door != null:
-		level.remove_element(door)
-		door = null
+	#if door != null:
+		#level.remove_element(door)
+		#door = null
 	door_error = false
 	show()
 

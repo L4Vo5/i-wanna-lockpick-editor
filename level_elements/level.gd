@@ -34,6 +34,8 @@ var level_data: LevelData = null:
 		if allow_hovering == val: return
 		allow_hovering = val
 		hover_highlight.visible = allow_hovering
+		if not allow_hovering:
+			hovering_over = -1
 		update_mouseover()
 
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
@@ -287,7 +289,7 @@ func _update_goal_position() -> void:
 func update_hover():
 	assert(PerfManager.start("level::update_hover"))
 	var pos := get_local_mouse_position()
-	var id := _get_visible_element_at_pos(pos)
+	var id := get_visible_element_at_pos(pos)
 	hovering_over = id
 	var node: Node = null
 	if hovering_over != -1:
@@ -316,7 +318,7 @@ func _spawn_node_element(data) -> Node:
 	assert(PerfManager.end("Level::_spawn_node_element (%s)" % Enums.LevelElementTypes.find_key(type)))
 	return node
 
-# poor naming when combined with _remove_node_element...
+# poor naming when combined with _remove_node_element...... and with remove_element........
 func _remove_element(node: Node) -> void:
 	var type: Enums.LevelElementTypes = node.level_element_type
 	node.get_parent().remove_child(node)
@@ -363,7 +365,7 @@ func _spawn_goal() -> void:
 	goal.level = self
 	goal_parent.add_child(goal)
 
-func _get_visible_element_at_pos(pos: Vector2i) -> int:
+func get_visible_element_at_pos(pos: Vector2i) -> int:
 	var rect_ids := collision_system.get_rects_containing_point_in_grid(pos)
 	for id in rect_ids:
 		var elem = collision_system.get_rect_data(id)
@@ -467,7 +469,7 @@ func add_element(element: NewLevelElementInfo) -> int:
 			id = _place_tile(element.position)
 		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
 			element.data.position = element.position
-			id = _add_node_element(element.data)
+			id = _add_node_element(element.data.duplicated())
 		_:
 			assert(false)
 	if id != -1:
@@ -513,30 +515,23 @@ func _place_goal(coord: Vector2i) -> bool:
 	return true
 
 
-## Removes whatever's at the given position. Returns true on success.
-func remove_at_pos(pos: Vector2i) -> bool:
-	var id := _get_visible_element_at_pos(pos)
-	if id == -1: return false
+## Removes whatever's at the given position. Returns the id on success or -1 otherwise.
+func remove_element(id: int) -> void:
+	assert(id != -1)
 	var element = collision_system.get_rect_data(id)
 	var type := level_data.get_element_type(element)
-	var success := false
 	match type:
 		Enums.LevelElementTypes.PlayerSpawn:
-			success = false
+			pass
 		Enums.LevelElementTypes.Goal:
 			level_data.has_goal = false
-			success = true
 		Enums.LevelElementTypes.Tile:
 			_remove_tile(element * 32)
-			success = true
 		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
 			_remove_node_element(element)
-			success = true
 		_:
 			assert(false)
-	if success:
-		update_hover()
-	return success
+	update_hover()
 
 func _remove_node_element(original_data) -> void:
 	var type: Enums.LevelElementTypes = original_data.level_element_type

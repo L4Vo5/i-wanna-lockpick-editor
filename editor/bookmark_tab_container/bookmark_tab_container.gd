@@ -26,6 +26,7 @@ const BOOKMARK_FLAP = preload("res://editor/bookmark_tab_container/bookmark_flap
 var current_tab: Control = null
 
 func set_current_tab_control(tab: Control):
+	if current_tab == tab: return
 	_on_flap_toggled(true, tab_to_flap[tab])
 
 func _ready() -> void:

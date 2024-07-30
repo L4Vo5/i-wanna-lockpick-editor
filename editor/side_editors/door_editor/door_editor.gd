@@ -71,7 +71,8 @@ func _connect_data() -> void:
 
 func _disconnect_data() -> void:
 	if not data or not editor_data: return
-	data.changed.disconnect(editor_data.emit_changed_side_editor_data)
+	if data.changed.is_connected(editor_data.emit_changed_side_editor_data):
+		data.changed.disconnect(editor_data.emit_changed_side_editor_data)
 
 # This avoids signals changing the door data while it's being set here
 # Fixes, for example, doors with sizes of 64x64 changing the width to 64, which calls _update_door_size, which sets the height to the default of 32
