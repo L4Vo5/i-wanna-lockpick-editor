@@ -8,9 +8,7 @@ class_name CollisionSystem
 ## IMPORTANT: Please don't access any of the variables starting with _
 
 ## Size of each tile in the grid.
-var tile_size := 16:
-	set(val):
-		assert(false, "Changing grid tile size is currently unsupported.")
+var tile_size := 16
 var inv_tile_size := 1.0 / tile_size
 
 # For each tile (Vector2i), what rects (int) are inside it. (PackedInt64Array)
@@ -24,9 +22,8 @@ var _rects_data := {}
 var _next_rect_id := 1
 
 func _init(_tile_size: int) -> void:
-	assert(_tile_size == 16)
-	#tile_size = _tile_size
-	#inv_tile_size = 1.0 / tile_size
+	tile_size = _tile_size
+	inv_tile_size = 1.0 / tile_size
 
 func clear() -> void:
 	_tile_to_rects.clear()
@@ -36,9 +33,12 @@ func clear() -> void:
 
 ## Adds a rect to the system.
 ## Returns the unique id given to that rect.
-func add_rect(rect: Rect2i, associated_data: Variant = null) -> int:
-	var id := _next_rect_id
-	_next_rect_id += 1
+func add_rect(rect: Rect2i, associated_data: Variant = null, custom_id := -1) -> int:
+	var id := custom_id
+	if custom_id == -1:
+		id = _next_rect_id
+		_next_rect_id += 1
+	assert(not _rects.has(id))
 	_rects[id] = rect
 	
 	var tile_iter := _get_rect_tile_iter(rect)
@@ -46,8 +46,9 @@ func add_rect(rect: Rect2i, associated_data: Variant = null) -> int:
 	for x in range(tile_iter.position.x, tile_iter.end.x):
 		for y in range(tile_iter.position.y, tile_iter.end.y):
 			if not _tile_to_rects.has(Vector2i(x, y)):
-				_tile_to_rects[Vector2i(x,y)] = PackedInt64Array()
-			_tile_to_rects[Vector2i(x,y)].push_back(id)
+				_tile_to_rects[Vector2i(x,y)] = PackedInt64Array([id])
+			else:
+				_tile_to_rects[Vector2i(x,y)].push_back(id)
 	
 	_rects_data[id] = associated_data
 	return id
@@ -61,13 +62,16 @@ func remove_rect(id: int) -> void:
 	
 	for x in range(tile_iter.position.x, tile_iter.end.x):
 		for y in range(tile_iter.position.y, tile_iter.end.y):
-			# This assumes the array will be in order, so you can't reuse ids.
-			# and you CANNOT resize rects after adding them to the system.
-			# (unless you take the necessary precautions to manually keep arrays sorted, but at that point bsearch isn't worth it)
-			var arr: Array = _tile_to_rects[Vector2i(x, y)]
-			arr.remove_at(arr.bsearch(id))
+			var arr: PackedInt64Array = _tile_to_rects[Vector2i(x, y)]
+			arr.remove_at(arr.find(id))
 			if arr.size() == 0:
 				_tile_to_rects.erase(Vector2i(x, y))
+
+## Useful when you want to preserve the id.
+func change_rect(id: int, new_rect: Rect2i) -> void:
+	var data = _rects_data[id]
+	remove_rect(id)
+	add_rect(new_rect, data, id)
 
 func get_rect(id: int) -> Rect2i:
 	return _rects[id]
@@ -125,8 +129,11 @@ func get_rects_containing_point_in_grid(point: Vector2i) -> PackedInt64Array:
 # - The (exclusive) xy end of tiles this rect is in
 # I don't like using floats, but this is seemingly the fastest method to do it (I tried others). Inlining the function should make it about twice as fast, if really needed (it's probably not).
 # Rect2i and Vector2i use 32-bit integers, so there should be no precision concerns anyways, I think? since floats are 64-bit
-func _get_rect_tile_iter(r: Rect2i) -> Rect2i:
+static func get_rect_tile_iter(r: Rect2i, _inv_tile_size: float) -> Rect2i:
 	var orig_end := r.end
-	r.position = Vector2i((r.position * inv_tile_size).floor())
-	r.end = Vector2i((orig_end * inv_tile_size).ceil())
+	r.position = Vector2i((r.position * _inv_tile_size).floor())
+	r.end = Vector2i((orig_end * _inv_tile_size).ceil())
 	return r
+
+func _get_rect_tile_iter(r: Rect2i) -> Rect2i:
+	return get_rect_tile_iter(r, inv_tile_size)

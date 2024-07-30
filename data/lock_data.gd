@@ -2,15 +2,15 @@
 extends Resource
 class_name LockData
 
-@export var color := Enums.colors.none
+@export var color := Enums.Colors.None
 
 @export var magnitude := 1
 
-@export var sign := Enums.sign.positive
+@export var sign := Enums.Sign.Positive
 
-@export var value_type := Enums.value.real
+@export var value_type := Enums.Value.Real
 
-@export var lock_type := Enums.lock_types.normal
+@export var lock_type := Enums.LockTypes.Normal
 
 # visual settings
 
@@ -47,7 +47,7 @@ var minimum_size := Vector2i(0, 0)
 		changed.emit()
 
 ## Variables modified by the door data for easier rendering. Not meant to be stored, but I guess they can be used for logic?
-var glitch_color := Enums.colors.glitch:
+var glitch_color := Enums.Colors.Glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
@@ -94,11 +94,11 @@ func duplicated() -> LockData:
 	lock.dont_show_lock = dont_show_lock
 	return lock
 
-func get_used_color() -> Enums.colors:
+func get_used_color() -> Enums.Colors:
 	var used_color := color
 	if is_cursed:
-		used_color = Enums.colors.brown
-	elif used_color == Enums.colors.glitch:
+		used_color = Enums.Colors.Brown
+	elif used_color == Enums.Colors.Glitch:
 		used_color = glitch_color
 	return used_color
 
@@ -106,9 +106,9 @@ func get_used_color() -> Enums.colors:
 func get_complex_amount() -> ComplexNumber:
 	assert(PerfManager.start("LockData::get_complex_amount()"))
 	var val := magnitude
-	if sign == Enums.sign.negative: val *= -1
+	if sign == Enums.Sign.Negative: val *= -1
 	var num := ComplexNumber.new()
-	if value_type == Enums.value.real:
+	if value_type == Enums.Value.Real:
 		num.real_part = val
 	else:
 		num.imaginary_part = val
@@ -116,22 +116,22 @@ func get_complex_amount() -> ComplexNumber:
 	return num
 
 ## returns the sign after applying the current rotation
-func get_sign_rot() -> Enums.sign:
-	if rotation == 0 or (rotation == 90 and value_type == Enums.value.real) or (rotation == 270 and value_type == Enums.value.imaginary):
+func get_sign_rot() -> Enums.Sign:
+	if rotation == 0 or (rotation == 90 and value_type == Enums.Value.Real) or (rotation == 270 and value_type == Enums.Value.Imaginary):
 		return sign
 	else:
 		return 1 - sign
 
 ## returns the value type after applying the current rotation
-func get_value_rot() -> Enums.value:
+func get_value_rot() -> Enums.Value:
 	if rotation == 0 or rotation == 180:
 		return value_type
 	else:
 		return 1 - value_type
 
 const flip_sign_dict := {
-	Enums.sign.positive: Enums.sign.negative,
-	Enums.sign.negative: Enums.sign.positive,
+	Enums.Sign.Positive: Enums.Sign.Negative,
+	Enums.Sign.Negative: Enums.Sign.Positive,
 }
 ## should be useful for the editor
 func flip_sign() -> LockData:
@@ -139,13 +139,13 @@ func flip_sign() -> LockData:
 	return self
 
 const rotor_dict_value = {
-	Enums.value.real: Enums.value.imaginary,
-	Enums.value.imaginary: Enums.value.real,
+	Enums.Value.Real: Enums.Value.Imaginary,
+	Enums.Value.Imaginary: Enums.Value.Real,
 }
 ## should be useful for the editor
 func rotor() -> LockData:
 	value_type = rotor_dict_value[value_type]
-	if value_type == Enums.value.real:
+	if value_type == Enums.Value.Real:
 		flip_sign()
 	return self
 
@@ -159,14 +159,14 @@ func update_minimum_size() -> void:
 	var min_size: Vector2i
 	var using_arrangement := false
 	match lock_type:
-		Enums.lock_types.blast:
-			var s := "x" if value_type == Enums.value.real else "+"
+		Enums.LockTypes.Blast:
+			var s := "x" if value_type == Enums.Value.Real else "+"
 			min_size = LockCountDraw.get_min_size(s, 2)
-		Enums.lock_types.all:
+		Enums.LockTypes.All:
 			min_size = LockCountDraw.get_min_size("=", 2)
-		Enums.lock_types.blank:
+		Enums.LockTypes.Blank:
 			min_size = Vector2i(1, 1)
-		Enums.lock_types.normal:
+		Enums.LockTypes.Normal:
 			# TODO: When supporting custom arrangements, level_data will have to be passed here..
 			var arrangement = Rendering.get_lock_arrangement(null, magnitude, lock_arrangement)
 			if arrangement != null:
@@ -174,7 +174,7 @@ func update_minimum_size() -> void:
 				using_arrangement = true
 			else:
 				var s := str(magnitude)
-				var type := 2 if dont_show_lock else 0 if value_type == Enums.value.real else 1 if value_type == Enums.value.imaginary else 2
+				var type := 2 if dont_show_lock else 0 if value_type == Enums.Value.Real else 1 if value_type == Enums.Value.Imaginary else 2
 				min_size = LockCountDraw.get_min_size(s, type)
 	
 	if not using_arrangement:
@@ -185,10 +185,10 @@ func update_minimum_size() -> void:
 
 func check_valid(level_data: LevelData, should_correct: bool) -> bool:
 	var is_valid := true
-	if color == Enums.colors.none:
+	if color == Enums.Colors.None:
 		level_data.add_invalid_reason("Lock has none color", false)
 		is_valid = false
-	if magnitude == 0 and lock_type == Enums.lock_types.normal:
+	if magnitude == 0 and lock_type == Enums.LockTypes.Normal:
 		level_data.add_invalid_reason("Lock has normal type but magnitude 0", true)
 		is_valid = is_valid and should_correct
 		if should_correct:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://bebv7glrk1www"]
 
 [ext_resource type="Texture2D" uid="uid://dfc3a7q6mo00j" path="res://level_elements/doors_locks/curses/spr_paint.png" id="1_mu2ek"]
 
@@ -10,6 +10,7 @@ offset_right = -768.0
 offset_bottom = -576.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("1_mu2ek")
 expand_mode = 1
 stretch_mode = 1

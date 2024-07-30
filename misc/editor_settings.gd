@@ -3,6 +3,8 @@ class_name LockpickSettings
 
 signal changed
 
+@export_group("")
+
 @export var should_save_on_play := true:
 	set(val):
 		should_save_on_play = val
@@ -25,7 +27,22 @@ signal changed
 		queue_emit_changed()
 		queue_save()
 
-## Editor State is stuff that's always handled automatically, it doesn't show up in the settings editor. (at least, that sounds like a good idea)
+# Performance settings
+@export_group("Performance")
+
+@export var pause_when_unfocused := true
+@export var seconds_until_unfocus_pause := 10.0
+
+# "Dev-only" settings (currently, at least),
+# meaning they're not exposed in the settings menu.
+# (or if they are, only when not exported)
+@export_group("")
+
+@export var allow_resource_files := false
+## Allows saving levels anywhere in the filesystem.
+@export var allow_saving_anywhere := false
+
+# Editor State is stuff that's always handled automatically, it doesn't show up in the settings editor. (at least, that sounds like a good idea)
 @export_group("EditorState")
 
 @export var current_editor_tab := 0:

@@ -8,8 +8,16 @@ const WARP_ROD_NODE = preload("res://level_elements/ui/warp_rod/warp_rod_node.ts
 @onready var warp_rod_screen: Control = %WarpRodScreen
 
 var pack_data: LevelPackData:
+	get:
+		return gameplay_manager.pack_data
+
+var state_data: LevelPackStateData:
+	get:
+		return gameplay_manager.pack_state
+
+var gameplay_manager: GameplayManager:
 	set(val):
-		pack_data = val
+		gameplay_manager = val
 		regen_nodes()
 
 func _ready() -> void:
@@ -35,14 +43,15 @@ var level_to_node := {}
 var node_to_level := {}
 
 func regen_nodes() -> void:
+	if not gameplay_manager: return
 	var connections := {}
 	for child in warp_rod_screen.get_children():
 		child.free()
 		level_to_node.clear()
 		node_to_level.clear()
 	
-	var i := 0
-	for level in pack_data.levels:
+	for level_id in pack_data.levels:
+		var level: LevelData = pack_data.levels[level_id]
 		var warp_title := level.name if level.name else level.title if level.title else "Untitled"
 		var pos := Vector2.ZERO
 		pos.x = floorf(randf() * warp_rod_screen.size.x)
@@ -54,14 +63,14 @@ func regen_nodes() -> void:
 		warp_rod_screen.add_child(node)
 		node.position = pos
 		node.state = node.State.Available
-		if pack_data.state_data.current_level == i:
+		if state_data.current_level == level_id:
 			node.state = node.State.Current
-		i += 1
 	for node: WarpRodNode in node_to_level.keys():
 		var level: LevelData = node_to_level[node]
 		var connects_to := {}
 		for entry in level.entries:
-			connects_to[entry.leads_to] = true
+			if pack_data.levels.has(entry.leads_to):
+				connects_to[entry.leads_to] = true
 		for id: int in connects_to.keys():
 			var other_level: LevelData = pack_data.levels[id]
 			# Must store connection both ways for the strategy that's used to avoid drawing the same connection twice

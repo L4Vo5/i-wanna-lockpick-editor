@@ -35,7 +35,6 @@ func _ready() -> void:
 #	await test_func(func():
 #		i[0] += 1
 #		l = preload("res://level_elements/level.tscn").instantiate()
-#		l.dont_make_current = true
 #
 #		l.level_data = levels[i[0]%3]
 ##		l.level_data = levels[2]

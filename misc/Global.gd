@@ -1,54 +1,38 @@
 @tool
 extends Node
 
-# in the godot editor, as opposed to the level editor (exported or f5)
+# in the godot editor, as opposed to the "game" (exported or f5)
 var in_editor := Engine.is_editor_hint()
-# in the level editor (as opposed to like, an individual level)
-# TODO: this is a duplicate of _current_mode??
-var in_level_editor := false
 var is_exported := OS.has_feature("release")
 var is_web := OS.has_feature("web")
 var is_windows := OS.has_feature("windows")
 var is_linux := OS.has_feature("linux")
+var is_in_test := ("res://addons/gdUnit4/src/core/GdUnitRunner.tscn" in OS.get_cmdline_args()) and (not is_exported)
 
 var settings: LockpickSettings
 
-signal changed_is_playing
-## Will basically be true if there's a player moving around
-var is_playing := false:
-	set(val):
-		if is_playing == val: return
-		is_playing = val
-		changed_is_playing.emit()
-
 var game_version: String = ProjectSettings.get_setting("application/config/game_version")
 
-@onready var fatal_error_dialog: AcceptDialog = %FatalError
 @onready var safe_error_dialog: AcceptDialog = %SafeError
 @onready var http_request: HTTPRequest = $HTTPRequest
 var _non_fullscreen_window_mode := Window.MODE_MAXIMIZED
 
-var danger_override: bool:
-	get:
-		return (not is_exported) and (Input.is_key_pressed(KEY_CTRL))
-
 signal changed_level
-var current_level: Level:
-	set(val):
-		if current_level == val: return
-		current_level = val
-		changed_level.emit()
 
 var time := 0.0
 var physics_time := 0.0
 var physics_step := 0
-var _current_mode := Modes.GAMEPLAY
 
 var image_copier
 var image_copier_exists:
 	get:
 		return is_instance_valid(image_copier)
 
+## Currently "unused", as you're always on the editor.
+## Gameplay mode will set the window's resolution to the in-game one, and the content will stretch accordingly.
+## Editor mode will maximize the window.
+var current_mode := Modes.GAMEPLAY:
+	set = set_mode
 enum Modes {
 	GAMEPLAY, EDITOR
 }
@@ -60,11 +44,12 @@ func _init() -> void:
 		settings = LockpickSettings.new()
 
 func _ready() -> void:
-	set_mode(_current_mode)
+	set_mode(current_mode)
 	
+	_setup_unfocus()
 	
 	# Look for update...
-	if not is_web and not in_editor:
+	if is_exported and not is_web:
 		search_update()
 	
 	if is_web:
@@ -85,13 +70,6 @@ func _input(event: InputEvent) -> void:
 			get_tree().root.mode = Window.MODE_FULLSCREEN
 		elif current_window_mode == Window.MODE_FULLSCREEN:
 			get_tree().root.mode = _non_fullscreen_window_mode
-	if event is InputEventKey:
-		if event.keycode == KEY_F11 and event.pressed:
-			if is_instance_valid(current_level):
-				var img: Image = await current_level.level_data.get_screenshot()
-				img.save_png("user://screenshot.png")
-				print("Saved screenshot")
-				
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST and is_instance_valid(settings):
@@ -148,38 +126,14 @@ func inform_newer_version() -> void:
 func _open_download_page() -> void:
 	OS.shell_open("https://l4vo5.itch.io/i-wanna-lockpick-editor")
 
-## Disconnects every signal the emitter had connected to the receiver.
-## Returns how many signals were disconnected (so you can assert if you know beforehand)
-# TODO: ? check if, for anonymous functions, this actually disconnects them from ALL receivers
-func fully_disconnect(receiver: Object, emitter: Object) -> int:
-	var count := 0
-	# anonymous functions have the script itself as the owner... may not be that good tho
-	var receiver_script = receiver.get_script()
-	assert(receiver_script is Object)
-	for sig_data in emitter.get_signal_list():
-		assert(not sig_data.name is StringName) # maybe they'll update it 
-		var sig_name: String = sig_data.name
-		for connection_data in emitter.get_signal_connection_list(sig_name):
-			var sig: Signal = connection_data.signal
-			var callable: Callable = connection_data.callable
-#			var met = receiver.get(callable.get_method())
-#			if not met is Callable: continue
-#			if sig.is_connected(met): 
-			var obj: Object = callable.get_object()
-			if obj == receiver or obj == receiver_script:
-				sig.disconnect(callable)
-				count += 1
-	return count
-
-
 func _process(delta: float) -> void:
 	time += delta
+	RenderingServer.global_shader_parameter_set(&"FPS_TIME", time)
+	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
 
 func _physics_process(delta: float) -> void:
 	physics_time += delta
 	physics_step += 1
-	RenderingServer.global_shader_parameter_set(&"FPS_TIME", physics_time)
-	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
 	if not in_editor:
 		assert(PerfManager.check_balances())
 
@@ -197,22 +151,12 @@ func _set_viewport_to_editor() -> void:
 		get_tree().root.mode = _non_fullscreen_window_mode
 
 func set_mode(mode: Modes) -> void:
-	if _current_mode == mode: return
-	_current_mode = mode 
-	if _current_mode == Modes.GAMEPLAY:
+	if current_mode == mode: return
+	current_mode = mode 
+	if current_mode == Modes.GAMEPLAY:
 		_set_viewport_to_gameplay()
 	else:
 		_set_viewport_to_editor()
-
-func fatal_error(text: String, size: Vector2i) -> void:
-	fatal_error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	
-	fatal_error_dialog.size = size
-	fatal_error_dialog.dialog_text = text
-	
-	fatal_error_dialog.popup_centered()
-	await fatal_error_dialog.visibility_changed
-	get_tree().quit()
 
 func safe_error(text: String, size: Vector2i) -> void:
 	safe_error_dialog.get_label().horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -252,3 +196,48 @@ func smart_adjust_rect(rect: Rect2i, bound: Rect2i) -> Rect2i:
 	var max_pos := bound.position + bound.size - rect.size
 	rect.position = rect.position.clamp(bound.position, max_pos)
 	return rect
+
+var unfocus_timer: Timer
+func _setup_unfocus() -> void:
+	if not in_editor and not is_in_test:
+		get_tree().root.focus_entered.connect(_on_window_focused)
+		get_tree().root.focus_exited.connect(_on_window_unfocused)
+		unfocus_timer = Timer.new()
+		unfocus_timer.one_shot = true
+		unfocus_timer.timeout.connect(_unfocus_stuff)
+		add_child(unfocus_timer)
+
+# reduce cpu usage as much as possible when the window is unfocused
+func _on_window_unfocused() -> void:
+	# WAITING4GODOT: if I don't check this, focusing inner Windows (like the file dialog) will stop everything.
+	if get_tree().root.has_focus():
+		return
+	
+	if settings.pause_when_unfocused and unfocus_timer.is_stopped():
+		unfocus_timer.start(settings.seconds_until_unfocus_pause)
+
+func _unfocus_stuff() -> void:
+	# Just in case
+	if get_tree().root.has_focus():
+		return
+	if not settings.pause_when_unfocused:
+		return
+	
+	get_tree().paused = true
+	
+	OS.low_processor_usage_mode = true
+	OS.low_processor_usage_mode_sleep_usec = 300_000
+	
+	# This stops all rendering.
+	var viewport_rid := get_tree().root.get_viewport_rid()
+	RenderingServer.viewport_set_update_mode(viewport_rid, RenderingServer.VIEWPORT_UPDATE_DISABLED)
+
+func _on_window_focused() -> void:
+	unfocus_timer.stop()
+	
+	get_tree().paused = false
+	
+	OS.low_processor_usage_mode = false
+	
+	var viewport_rid := get_tree().root.get_viewport_rid()
+	RenderingServer.viewport_set_update_mode(viewport_rid, RenderingServer.VIEWPORT_UPDATE_WHEN_VISIBLE)

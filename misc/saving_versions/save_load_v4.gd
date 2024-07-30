@@ -8,7 +8,9 @@ static func save(level_pack: LevelPackData, data: ByteAccess) -> void:
 	data.store_u32(level_pack.levels.size())
 	
 	# Save all levels
-	for level in level_pack.levels:
+	for level_id in level_pack.level_order:
+		var level: LevelData = level_pack.levels[level_id]
+		data.store_u16(level_id)
 		_save_level(level, data)
 	
 	data.compress()
@@ -70,9 +72,9 @@ static func _save_door(data: ByteAccess, door: DoorData) -> void:
 	# Curses take 3 bits. color takes 4 bits. 7 bits total
 	# bits are, x1234444, 1 = ice, 2 = erosion, 3 = paint, 4 = color
 	var curses := 0
-	curses += 4 if door.get_curse(Enums.curse.ice) else 0
-	curses += 2 if door.get_curse(Enums.curse.erosion) else 0
-	curses += 1 if door.get_curse(Enums.curse.paint) else 0
+	curses += 4 if door.get_curse(Enums.Curse.Ice) else 0
+	curses += 2 if door.get_curse(Enums.Curse.Erosion) else 0
+	curses += 1 if door.get_curse(Enums.Curse.Paint) else 0
 	data.store_u8((curses << 4) + door.outer_color)
 	data.store_u16(door.locks.size())
 	for lock in door.locks:
@@ -98,8 +100,8 @@ static func _save_lock(data: ByteAccess, lock: LockData) -> void:
 static func _save_entry(data: ByteAccess, entry: EntryData) -> void:
 	data.store_u32(entry.position.x)
 	data.store_u32(entry.position.y)
-	data.store_u32(entry.skin)
-	data.store_u32(entry.leads_to)
+	data.store_u8(entry.skin)
+	data.store_u16(entry.leads_to)
 
 static func _save_salvage_point(data: ByteAccess, salvage_point: SalvagePointData) -> void:
 	data.store_u32(salvage_point.position.x)
@@ -124,10 +126,12 @@ static func load(raw_data: PackedByteArray, offset: int) -> LevelPackData:
 	# Load all levels
 	if SaveLoad.PRINT_LOAD: print("It has %d levels" % level_count)
 	if level_count > MAX_ARRAY_SIZE: return
-	level_pack.levels.resize(level_count)
+	level_pack.level_order.resize(level_count)
 	for i in level_count:
 		if data.reached_eof(): return
-		level_pack.levels[i] = _load_level(data)
+		var id := data.get_u16()
+		level_pack.level_order[i] = id
+		level_pack.levels[id] = _load_level(data)
 	return level_pack
 
 static func _load_level(data: ByteAccess) -> LevelData:
@@ -205,9 +209,9 @@ static func _load_door(data: ByteAccess) -> DoorData:
 	
 	var curses_color := data.get_u8()
 	# bits are, x1234444, 1 = ice, 2 = erosion, 3 = paint, 4 = color
-	door.set_curse(Enums.curse.ice, curses_color & (1<<6) != 0)
-	door.set_curse(Enums.curse.erosion, curses_color & (1<<5) != 0)
-	door.set_curse(Enums.curse.paint, curses_color & (1<<4) != 0)
+	door.set_curse(Enums.Curse.Ice, curses_color & (1<<6) != 0)
+	door.set_curse(Enums.Curse.Erosion, curses_color & (1<<5) != 0)
+	door.set_curse(Enums.Curse.Paint, curses_color & (1<<4) != 0)
 	door.outer_color = curses_color & 0b1111
 	
 	var lock_amount := data.get_u16()
@@ -240,8 +244,8 @@ static func _load_lock(data: ByteAccess) -> LockData:
 static func _load_entry(data: ByteAccess) -> EntryData:
 	var entry := EntryData.new()
 	entry.position = Vector2i(data.get_u32(), data.get_u32())
-	entry.skin = data.get_u32()
-	entry.leads_to = data.get_u32()
+	entry.skin = data.get_u8()
+	entry.leads_to = data.get_u16()
 	return entry
 
 static func _load_salvage_point(data: ByteAccess) -> SalvagePointData:

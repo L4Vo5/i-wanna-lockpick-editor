@@ -15,146 +15,143 @@
 [node name="LevelPropertiesEditor" type="MarginContainer"]
 offset_right = 193.0
 offset_bottom = 596.0
-theme_override_constants/margin_left = 6
-theme_override_constants/margin_right = 6
 script = ExtResource("1_000i2")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
-layout_mode = 2
-horizontal_scroll_mode = 0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 text = "- Levels -"
 horizontal_alignment = 1
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/HBoxContainer3"]
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 text = "Search: "
 
-[node name="Search" type="LineEdit" parent="ScrollContainer/VBoxContainer/HBoxContainer3"]
+[node name="Search" type="LineEdit" parent="VBoxContainer/HBoxContainer3"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 context_menu_enabled = false
 
-[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 6
 
-[node name="MinimumSizeContainer" type="Container" parent="ScrollContainer/VBoxContainer/MarginContainer"]
+[node name="MinimumSizeContainer" type="Container" parent="VBoxContainer/MarginContainer"]
 layout_mode = 2
 script = ExtResource("2_lvu58")
 vertical = true
 
-[node name="GrowContainer" type="Container" parent="ScrollContainer/VBoxContainer/MarginContainer/MinimumSizeContainer"]
+[node name="GrowContainer" type="Container" parent="VBoxContainer/MarginContainer/MinimumSizeContainer"]
 custom_minimum_size = Vector2(280, 163)
 layout_mode = 2
 script = ExtResource("4_whsrq")
 
-[node name="LevelList" type="Tree" parent="ScrollContainer/VBoxContainer/MarginContainer/MinimumSizeContainer/GrowContainer"]
+[node name="LevelList" type="Tree" parent="VBoxContainer/MarginContainer/MinimumSizeContainer/GrowContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 mouse_filter = 1
+hide_folding = true
+hide_root = true
+select_mode = 1
 script = ExtResource("4_wyuvq")
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 5
 
-[node name="AddLevel" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
+[node name="AddLevel" type="Button" parent="VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Create a new level after this one."
 icon = ExtResource("4_bvcps")
 
-[node name="Duplicate" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
+[node name="Duplicate" type="Button" parent="VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Duplicate this level."
 icon = ExtResource("2_s1ihu")
 
-[node name="DeleteLevel" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer2"]
+[node name="DeleteLevel" type="Button" parent="VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Delete this level."
 icon = ExtResource("2_3hvsl")
 
-[node name="ListSpacing3" type="Control" parent="ScrollContainer/VBoxContainer"]
+[node name="ListSpacing3" type="Control" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
-[node name="Name" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="Name" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Name"]
+[node name="Label" type="Label" parent="VBoxContainer/Name"]
 layout_mode = 2
 text = "Name: "
 
-[node name="LevelName" type="LineEdit" parent="ScrollContainer/VBoxContainer/Name"]
+[node name="LevelName" type="LineEdit" parent="VBoxContainer/Name"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unnamed)"
 context_menu_enabled = false
 
-[node name="Title" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="Title" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Title"]
+[node name="Label" type="Label" parent="VBoxContainer/Title"]
 layout_mode = 2
 text = "Title: "
 
-[node name="LevelTitle" type="LineEdit" parent="ScrollContainer/VBoxContainer/Title"]
+[node name="LevelTitle" type="LineEdit" parent="VBoxContainer/Title"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(no title)"
 context_menu_enabled = false
 
-[node name="Author" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="Author" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Author"]
+[node name="Label" type="Label" parent="VBoxContainer/Author"]
 layout_mode = 2
 text = "Author/s: "
 
-[node name="LevelAuthor" type="LineEdit" parent="ScrollContainer/VBoxContainer/Author"]
+[node name="LevelAuthor" type="LineEdit" parent="VBoxContainer/Author"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "(unknown)"
 context_menu_enabled = false
 
-[node name="Size" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="Size" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Size" type="MarginContainer" parent="ScrollContainer/VBoxContainer/Size"]
+[node name="Size" type="MarginContainer" parent="VBoxContainer/Size"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/Size/Size"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Size/Size"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/Size/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Size:"
 vertical_alignment = 1
 
-[node name="Width" type="SpinBox" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
+[node name="Width" type="SpinBox" parent="VBoxContainer/Size/Size/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -166,13 +163,13 @@ step = 32.0
 value = 800.0
 alignment = 1
 
-[node name="Label2" type="Label" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
+[node name="Label2" type="Label" parent="VBoxContainer/Size/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "×"
 vertical_alignment = 1
 
-[node name="Height" type="SpinBox" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
+[node name="Height" type="SpinBox" parent="VBoxContainer/Size/Size/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -184,20 +181,26 @@ step = 32.0
 value = 608.0
 alignment = 1
 
-[node name="Label3" type="Label" parent="ScrollContainer/VBoxContainer/Size/Size/HBoxContainer"]
+[node name="Label3" type="Label" parent="VBoxContainer/Size/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "pixels"
 vertical_alignment = 1
 
-[node name="WhatToPlace" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="Exitable" type="CheckBox" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Whether the level can be exited by pressing backspace."
+text = "Can exit"
+
+[node name="WhatToPlace" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/WhatToPlace"]
+[node name="Label" type="Label" parent="VBoxContainer/WhatToPlace"]
 layout_mode = 2
 text = "Reposition:"
 
-[node name="WhatToPlace" type="Container" parent="ScrollContainer/VBoxContainer/WhatToPlace"]
+[node name="WhatToPlace" type="Container" parent="VBoxContainer/WhatToPlace"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
@@ -205,52 +208,47 @@ size_flags_horizontal = 3
 script = ExtResource("3_pu07t")
 object_size = 40
 
-[node name="StartPos" type="TextureRect" parent="ScrollContainer/VBoxContainer/WhatToPlace/WhatToPlace"]
+[node name="StartPos" type="TextureRect" parent="VBoxContainer/WhatToPlace/WhatToPlace"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("4_fvmj3")
 stretch_mode = 3
 
-[node name="Goal" type="Container" parent="ScrollContainer/VBoxContainer/WhatToPlace/WhatToPlace"]
+[node name="Goal" type="Container" parent="VBoxContainer/WhatToPlace/WhatToPlace"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("5_oak3v")
 
-[node name="goal" parent="ScrollContainer/VBoxContainer/WhatToPlace/WhatToPlace/Goal" instance=ExtResource("5_tmadf")]
+[node name="goal" parent="VBoxContainer/WhatToPlace/WhatToPlace/Goal" instance=ExtResource("5_tmadf")]
 position = Vector2(20, 20)
 
-[node name="RemoveGoal" type="Button" parent="ScrollContainer/VBoxContainer"]
+[node name="RemoveGoal" type="Button" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Remove Goal"
 
-[node name="SpawnPos" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="SpawnPos" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/SpawnPos"]
+[node name="Label" type="Label" parent="VBoxContainer/SpawnPos"]
 layout_mode = 2
 text = "Player Spawn: "
 
-[node name="PlayerSpawnCoord" type="Label" parent="ScrollContainer/VBoxContainer/SpawnPos"]
+[node name="PlayerSpawnCoord" type="Label" parent="VBoxContainer/SpawnPos"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "(0, 0)"
 
-[node name="GoalPos" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="GoalPos" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/GoalPos"]
+[node name="Label" type="Label" parent="VBoxContainer/GoalPos"]
 layout_mode = 2
 text = "Goal: "
 
-[node name="GoalCoord" type="Label" parent="ScrollContainer/VBoxContainer/GoalPos"]
+[node name="GoalCoord" type="Label" parent="VBoxContainer/GoalPos"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "(0, 0)"
-
-[node name="Exitable" type="CheckBox" parent="ScrollContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Can exit"

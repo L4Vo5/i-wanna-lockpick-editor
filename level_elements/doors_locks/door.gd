@@ -2,10 +2,9 @@
 extends MarginContainer
 class_name Door
 
-signal lock_clicked(event: InputEventMouseButton, lock: Lock)
 ## Emitted when the state of some curse has been changed
 signal changed_curse
-static var level_element_type := Enums.level_element_types.door
+static var level_element_type := Enums.LevelElementTypes.Door
 
 const LOCK := preload("res://level_elements/doors_locks/lock.tscn")
 const DEBRIS := preload("res://level_elements/doors_locks/debris/door_debris.tscn")
@@ -197,36 +196,30 @@ func update_locks() -> void:
 	# redo the current ones
 	for i in mini(needed_locks, current_locks):
 		var lock := lock_holder.get_child(i)
+		lock.level = level
 		lock.lock_data = data.locks[i]
 	# shave off the rest
 	if current_locks > needed_locks:
 		for _i in current_locks - needed_locks:
 			var lock := lock_holder.get_child(-1)
 			lock_holder.remove_child(lock)
-			lock.clicked.disconnect(_on_lock_clicked)
 			NodePool.return_node(lock)
 	# or add them
 	else:
 		for i in range(current_locks, needed_locks):
-			var new_lock = NodePool.pool_node(LOCK)
-			new_lock.clicked.connect(_on_lock_clicked.bind(new_lock))
+			var new_lock: Lock = NodePool.pool_node(LOCK)
+			new_lock.level = level
 			new_lock.lock_data = data.locks[i]
 			lock_holder.add_child(new_lock)
 	
-	for lock: Lock in lock_holder.get_children():
-		lock.level = level
-	
 	assert(PerfManager.end(&"Door::update_locks"))
-
-func _on_lock_clicked(event: InputEventMouseButton, lock: Lock) -> void:
-	lock_clicked.emit(event, lock)
 
 func update_curses() -> void:
 	if not is_instance_valid(data): return
-	ice.visible = data.get_curse(Enums.curse.ice)
-	erosion.visible = data.get_curse(Enums.curse.erosion)
-	paint.visible = data.get_curse(Enums.curse.paint)
-	brown_curse.visible = data.get_curse(Enums.curse.brown)
+	ice.visible = data.get_curse(Enums.Curse.Ice)
+	erosion.visible = data.get_curse(Enums.Curse.Erosion)
+	paint.visible = data.get_curse(Enums.Curse.Paint)
+	brown_curse.visible = data.get_curse(Enums.Curse.Brown)
 
 ## Perform animations, plays sounds, etc. after the door was opened with some result
 func open(result: Dictionary) -> void:
@@ -237,7 +230,7 @@ func open(result: Dictionary) -> void:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
 		elif data.locks.size() > 1:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_combo.wav")
-		elif data.outer_color == Enums.colors.master:
+		elif data.outer_color == Enums.Colors.Master:
 			snd_open.stream = preload("res://level_elements/doors_locks/open_master.wav")
 		else:
 			snd_open.stream = preload("res://level_elements/doors_locks/open.wav")
@@ -290,9 +283,9 @@ func create_debris() -> void:
 			timer.timeout.connect(debris.queue_free)
 			debris.add_child(timer)
 			debris.color = data.outer_color
-			if data.get_curse(Enums.curse.brown):
-				debris.color = Enums.colors.brown
-			elif data.outer_color == Enums.colors.glitch:
+			if data.get_curse(Enums.Curse.Brown):
+				debris.color = Enums.Colors.Brown
+			elif data.outer_color == Enums.Colors.Glitch:
 				debris.color = data.glitch_color
 				debris.is_glitched_color = true
 			debris.global_position = global_position
@@ -360,12 +353,12 @@ func _draw_base() -> void:
 	RenderingServer.canvas_item_clear(door_glitch)
 	var rect := Rect2(Vector2(3,3),data.size - Vector2i(6, 6))
 	var used_color := data.outer_color
-	if data.get_curse(Enums.curse.brown):
-		used_color = Enums.colors.brown
+	if data.get_curse(Enums.Curse.Brown):
+		used_color = Enums.Colors.Brown
 	
 	# Glitch is a special boy...
-	if used_color == Enums.colors.glitch:
-		if data.glitch_color == Enums.colors.glitch:
+	if used_color == Enums.Colors.Glitch:
+		if data.glitch_color == Enums.Colors.Glitch:
 			RenderingServer.canvas_item_add_nine_patch(door_glitch, rect, BASE_TEX_RECT, GLITCH_BASE.get_rid(), BASE_DIST, BASE_DIST)
 			assert(PerfManager.end("Door:_draw_base"))
 			return
@@ -375,22 +368,22 @@ func _draw_base() -> void:
 			RenderingServer.canvas_item_add_nine_patch(door_glitch, rect, GLITCH_2_RECT, GLITCH_BASE_SHARED.get_rid(), GLITCH_2_DIST, GLITCH_2_DIST, RenderingServer.NINE_PATCH_TILE, RenderingServer.NINE_PATCH_TILE)
 	
 	match used_color:
-		Enums.colors.master, Enums.colors.pure:
-			if data.outer_color == Enums.colors.glitch:
-				var tex := GLITCH_MASTER if used_color == Enums.colors.master else GLITCH_PURE
+		Enums.Colors.Master, Enums.Colors.Pure:
+			if data.outer_color == Enums.Colors.Glitch:
+				var tex := GLITCH_MASTER if used_color == Enums.Colors.Master else GLITCH_PURE
 				RenderingServer.canvas_item_add_texture_rect(door_base, rect, tex)
 			else:
-				var tex := BASE_MASTER if used_color == Enums.colors.master else BASE_PURE
+				var tex := BASE_MASTER if used_color == Enums.Colors.Master else BASE_PURE
 				for i in 4:
 					RenderingServer.canvas_item_add_animation_slice(door_base, Rendering.SPECIAL_ANIM_LENGTH, i * Rendering.SPECIAL_ANIM_DURATION, (i+1) * Rendering.SPECIAL_ANIM_DURATION)
 					RenderingServer.canvas_item_add_texture_rect_region(door_base, rect, tex, Rect2(Vector2(i, 0) * BASE_ANIM_TILE_SIZE, BASE_ANIM_TILE_SIZE))
 				RenderingServer.canvas_item_add_animation_slice(door_base, 1, 0, 1)
 			
-		Enums.colors.stone:
+		Enums.Colors.Stone:
 			RenderingServer.canvas_item_add_texture_rect(door_base, rect, BASE_STONE.get_rid(), true)
-		Enums.colors.none:
+		Enums.Colors.None:
 			pass
-		Enums.colors.gate:
+		Enums.Colors.Gate:
 			rect = Rect2(Vector2(-1,-1), data.size + Vector2i(2, 2))
 			RenderingServer.canvas_item_add_nine_patch(door_base, rect, Rect2(Vector2.ZERO, GATE_TEXTURE.get_size()), GATE_TEXTURE, Vector2(1,1), Vector2(1, 1), RenderingServer.NINE_PATCH_TILE, RenderingServer.NINE_PATCH_TILE)
 		_: # normal colors
@@ -412,14 +405,14 @@ const GATE_TEXTURE := preload("res://level_elements/doors_locks/textures/gate_te
 func _draw_frame() -> void:
 	RenderingServer.canvas_item_clear(door_frame)
 	if not is_instance_valid(data): return
-	if data.outer_color == Enums.colors.gate: return
+	if data.outer_color == Enums.Colors.Gate: return
 	assert(PerfManager.start("Door:_draw_frame"))
 	var rect := Rect2(Vector2.ZERO,data.size)
 	var frame_palette: Array
 	if using_i_view_colors:
 		frame_palette = Rendering.i_view_palette
 	else:
-		frame_palette = Rendering.frame_colors[Enums.sign.positive if data.amount.real_part >= 0 else Enums.sign.negative]
+		frame_palette = Rendering.frame_colors[Enums.Sign.Positive if data.amount.real_part >= 0 else Enums.Sign.Negative]
 	
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_LIGHT.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, false,  frame_palette[1])
 	RenderingServer.canvas_item_add_nine_patch(door_frame, rect, FRAME_TEXT_RECT, FRAME_MID.get_rid(), FRAME_TL, FRAME_BR, RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH, true, frame_palette[0])

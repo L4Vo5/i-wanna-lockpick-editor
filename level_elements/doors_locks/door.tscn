@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://level_elements/doors_locks/door.gd" id="1_pj0ca"]
 [ext_resource type="PackedScene" uid="uid://dh6h46bjp6c2s" path="res://level_elements/doors_locks/curses/erosion.tscn" id="2_t0ev5"]
-[ext_resource type="PackedScene" path="res://level_elements/doors_locks/curses/paint.tscn" id="3_bjor7"]
+[ext_resource type="PackedScene" uid="uid://bebv7glrk1www" path="res://level_elements/doors_locks/curses/paint.tscn" id="3_bjor7"]
 [ext_resource type="PackedScene" uid="uid://dnfyqi6rplh85" path="res://level_elements/doors_locks/curses/ice.tscn" id="4_cxymq"]
 [ext_resource type="PackedScene" uid="uid://8b3sdv51pkn1" path="res://level_elements/doors_locks/curses/brown_curse.tscn" id="5_1uhdk"]
 [ext_resource type="AudioStream" uid="uid://c43grm5imae8c" path="res://level_elements/doors_locks/open.wav" id="6_uslf4"]
@@ -14,6 +14,7 @@ size = Vector2(1, 1)
 [node name="Door" type="MarginContainer"]
 offset_right = 32.0
 offset_bottom = 32.0
+mouse_filter = 2
 script = ExtResource("1_pj0ca")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
@@ -37,13 +38,11 @@ mouse_filter = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-mouse_filter = 2
 
 [node name="Paint" parent="." instance=ExtResource("3_bjor7")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-mouse_filter = 2
 
 [node name="Ice" parent="." instance=ExtResource("4_cxymq")]
 unique_name_in_owner = true

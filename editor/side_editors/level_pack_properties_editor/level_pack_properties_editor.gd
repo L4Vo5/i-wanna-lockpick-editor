@@ -6,13 +6,14 @@ static var DEBUG := false
 # set externally
 var editor_data: EditorData:
 	set(val):
-		if editor_data == val: return
-		if is_instance_valid(editor_data):
-			editor_data.changed_level_pack_data.disconnect(_update_level_pack_data)
+		assert(editor_data == null)
+		assert(val)
+		assert(level_properties_editor)
 		editor_data = val
-		if is_instance_valid(editor_data):
-			editor_data.changed_level_pack_data.connect(_update_level_pack_data)
-			_update_level_pack_data()
+		level_properties_editor.editor_data = val
+		editor_data.changed_level_pack_data \
+			.connect(_update_level_pack_data)
+		_update_level_pack_data()
 
 var _level_pack_data: LevelPackData:
 	set(val):
@@ -34,6 +35,8 @@ var _level_pack_data: LevelPackData:
 @onready var completed_levels_label: Label = %CompletedLevelsLabel
 @onready var salvaged_doors_label: Label = %SalvagedDoorsLabel
 
+@onready var level_properties_editor: LevelPropertiesEditor = %LevelPropertiesEditor
+
 func _connect_pack_data() -> void:
 	if not is_instance_valid(_level_pack_data): return
 	_level_pack_data.changed.connect(_set_to_level_pack_data)
@@ -44,9 +47,6 @@ func _disconnect_pack_data() -> void:
 	_level_pack_data.changed.disconnect(_set_to_level_pack_data)
 
 func _ready() -> void:
-	# These are just so the scene works in isolation
-	_level_pack_data = LevelPackData.new()
-	
 	if not Global.image_copier_exists:
 		copy_to_clipboard.text = "Force Refresh"
 	
@@ -64,6 +64,7 @@ func _ready() -> void:
 
 func _update_level_pack_data() -> void:
 	_level_pack_data = editor_data.level_pack_data
+	assert(_level_pack_data)
 
 var _setting_to_data := false
 
@@ -73,7 +74,7 @@ func _set_to_level_pack_data() -> void:
 	pack_name.text = _level_pack_data.name
 	pack_author.text = _level_pack_data.author
 	pack_description.text = _level_pack_data.description
-	var state_data := _level_pack_data.state_data
+	var state_data := editor_data.pack_state
 	if state_data:
 		completed_levels_label.text = str(state_data.get_completed_levels_count())
 		salvaged_doors_label.text = str(state_data.get_salvaged_doors_count())
@@ -92,8 +93,9 @@ func _on_set_pack_author(new_author: String) -> void:
 	_level_pack_data.author = new_author
 	if DEBUG: print_debug("Pack author: " + new_author)
 
-func _on_set_pack_description(new_description: String) -> void:
+func _on_set_pack_description() -> void:
 	if _setting_to_data: return
+	var new_description: String = pack_description.text
 	if _level_pack_data.description == new_description: return
 	_level_pack_data.description = new_description
 	if DEBUG: print_debug("Pack description: " + new_description)
@@ -113,4 +115,5 @@ func _copy_image_to_clipboard() -> void:
 		Global.copy_image_to_clipboard(level_image_rect.texture.get_image())
 
 func _erase_save_state() -> void:
-	_level_pack_data.state_data.erase()
+	# TODO: this probably no longer works (gameplay manager should reset)
+	editor_data.pack_state.delete_file()

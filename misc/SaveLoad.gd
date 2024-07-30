@@ -38,15 +38,15 @@ static func get_image(level_pack: LevelPackData) -> Image:
 	img.set_data(image_size, image_size, false, Image.FORMAT_RGB8, data)
 	return img
 
-static func is_path_valid(path: String) -> bool:
+static func is_path_valid_for_saving(path: String) -> bool:
 	if path == "": return false
 	var globalized_path := ProjectSettings.globalize_path(path)
-	return Global.danger_override or globalized_path.begins_with(LEVELS_PATH)
+	return Global.settings.allow_saving_anywhere or globalized_path.begins_with(LEVELS_PATH)
 
 ## Saves a LevelPackData to its file_path
 static func save_level(level_pack: LevelPackData) -> void:
 	var path := level_pack.file_path
-	assert(is_path_valid(path))
+	assert(is_path_valid_for_saving(path))
 	
 	if path.get_extension() == "lvl":
 		var file := FileAccess.open(path, FileAccess.WRITE)
@@ -61,7 +61,6 @@ static func save_level(level_pack: LevelPackData) -> void:
 			print("error saving image: " + str(err))
 	else:
 		assert(false)
-	level_pack.state_data.save()
 
 static func load_pack_state_from_path(path: String) -> LevelPackStateData:
 	var data := FileAccess.get_file_as_bytes(path)

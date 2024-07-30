@@ -14,46 +14,46 @@ var player: Kid:
 var active_salvage: SalvagePoint
 
 var key_counts := {
-	Enums.colors.glitch: ComplexNumber.new(),
-	Enums.colors.black: ComplexNumber.new(),
-	Enums.colors.white: ComplexNumber.new(),
-	Enums.colors.pink: ComplexNumber.new(),
-	Enums.colors.orange: ComplexNumber.new(),
-	Enums.colors.purple: ComplexNumber.new(),
-	Enums.colors.cyan: ComplexNumber.new(),
-	Enums.colors.red: ComplexNumber.new(),
-	Enums.colors.green: ComplexNumber.new(),
-	Enums.colors.blue: ComplexNumber.new(),
-	Enums.colors.brown: ComplexNumber.new(),
-	Enums.colors.pure: ComplexNumber.new(),
-	Enums.colors.master: ComplexNumber.new(),
-	Enums.colors.stone: ComplexNumber.new(),
+	Enums.Colors.Glitch: ComplexNumber.new(),
+	Enums.Colors.Black: ComplexNumber.new(),
+	Enums.Colors.White: ComplexNumber.new(),
+	Enums.Colors.Pink: ComplexNumber.new(),
+	Enums.Colors.Orange: ComplexNumber.new(),
+	Enums.Colors.Purple: ComplexNumber.new(),
+	Enums.Colors.Cyan: ComplexNumber.new(),
+	Enums.Colors.Red: ComplexNumber.new(),
+	Enums.Colors.Green: ComplexNumber.new(),
+	Enums.Colors.Blue: ComplexNumber.new(),
+	Enums.Colors.Brown: ComplexNumber.new(),
+	Enums.Colors.Pure: ComplexNumber.new(),
+	Enums.Colors.Master: ComplexNumber.new(),
+	Enums.Colors.Stone: ComplexNumber.new(),
 }
 var star_keys := {
-	Enums.colors.glitch: false,
-	Enums.colors.black: false,
-	Enums.colors.white: false,
-	Enums.colors.pink: false,
-	Enums.colors.orange: false,
-	Enums.colors.purple: false,
-	Enums.colors.cyan: false,
-	Enums.colors.red: false,
-	Enums.colors.green: false,
-	Enums.colors.blue: false,
-	Enums.colors.brown: false,
-	Enums.colors.pure: false,
-	Enums.colors.master: false,
-	Enums.colors.stone: false,
+	Enums.Colors.Glitch: false,
+	Enums.Colors.Black: false,
+	Enums.Colors.White: false,
+	Enums.Colors.Pink: false,
+	Enums.Colors.Orange: false,
+	Enums.Colors.Purple: false,
+	Enums.Colors.Cyan: false,
+	Enums.Colors.Red: false,
+	Enums.Colors.Green: false,
+	Enums.Colors.Blue: false,
+	Enums.Colors.Brown: false,
+	Enums.Colors.Pure: false,
+	Enums.Colors.Master: false,
+	Enums.Colors.Stone: false,
 }
 # Not really a setter, just used for undo/redo
-func set_star_key(color: Enums.colors, val: bool) -> void:
+func set_star_key(color: Enums.Colors, val: bool) -> void:
 	star_keys[color] = val
 
 var undo_redo: GoodUndoRedo
 
 signal changed_glitch_color
 ## The main glitch color. Keep in mind some doors might have a different glitch color.
-var glitch_color := Enums.colors.glitch:
+var glitch_color := Enums.Colors.Glitch:
 	set(val):
 		if glitch_color == val: return
 		glitch_color = val
@@ -91,10 +91,10 @@ func reset() -> void:
 		key_counts[color].set_to(0, 0)
 	for color in star_keys.keys():
 		star_keys[color] = false
-	glitch_color = Enums.colors.glitch
+	glitch_color = Enums.Colors.Glitch
 	for key: KeyElement in level.keys.get_children():
 		# TODO: definitely no! ... ?
-		key._on_changed_glitch_color()
+		key.update_glitch_color()
 	i_view = false
 	undo_redo.clear_history()
 	active_salvage = null
@@ -119,20 +119,20 @@ func reset() -> void:
 
 # TODO: the way undos would work here would make each individual affected door take up an action! oh no! either merge them or apply them all at once.
 func apply_auras_on_door(door: Door) -> void:
-	if key_counts[Enums.colors.red].real_part >= 1:
-		if apply_curse_door(door, Enums.curse.ice, false):
+	if key_counts[Enums.Colors.Red].real_part >= 1:
+		if apply_curse_door(door, Enums.Curse.Ice, false):
 			door.break_curse_ice()
-	if key_counts[Enums.colors.green].real_part >= 5:
-		if apply_curse_door(door, Enums.curse.erosion, false):
+	if key_counts[Enums.Colors.Green].real_part >= 5:
+		if apply_curse_door(door, Enums.Curse.Erosion, false):
 			door.break_curse_erosion()
-	if key_counts[Enums.colors.blue].real_part >= 3:
-		apply_curse_door(door, Enums.curse.paint, false)
+	if key_counts[Enums.Colors.Blue].real_part >= 3:
+		apply_curse_door(door, Enums.Curse.Paint, false)
 		door.break_curse_paint()
-	if key_counts[Enums.colors.brown].real_part >= 1:
-		if apply_curse_door(door, Enums.curse.brown, true):
+	if key_counts[Enums.Colors.Brown].real_part >= 1:
+		if apply_curse_door(door, Enums.Curse.Brown, true):
 			door.curse_brown()
-	elif key_counts[Enums.colors.brown].real_part <= -1:
-		if apply_curse_door(door, Enums.curse.brown, false):
+	elif key_counts[Enums.Colors.Brown].real_part <= -1:
+		if apply_curse_door(door, Enums.Curse.Brown, false):
 			door.break_curse_brown()
 	if undo_redo.is_building_action():
 		end_undo_action()
@@ -140,15 +140,15 @@ func apply_auras_on_door(door: Door) -> void:
 		update_gates()
 
 ## Returns true if the curse/uncurse was successful (and the animation should play), false if it wasn't.
-func apply_curse_door(door: Door, curse: Enums.curse, val: bool) -> bool:
+func apply_curse_door(door: Door, curse: Enums.Curse, val: bool) -> bool:
 	var door_data := door.data
-	if door_data.outer_color == Enums.colors.gate: return false
+	if door_data.outer_color == Enums.Colors.Gate: return false
 	if door_data.get_curse(curse) == val: return false
 	
-	if curse == Enums.curse.brown:
-		if door_data.has_color(Enums.colors.pure): return false
+	if curse == Enums.Curse.Brown:
+		if door_data.has_color(Enums.Colors.Pure): return false
 		# Can't curse completely brown doors (doesn't matter either way, but it's a visual change)
-		if door_data.outer_color == Enums.colors.brown and door_data.locks.all(func(l: LockData) -> bool: return l.color == Enums.colors.brown):
+		if door_data.outer_color == Enums.Colors.Brown and door_data.locks.all(func(l: LockData) -> bool: return l.color == Enums.Colors.Brown):
 			return false
 	
 	door_data.set_curse(curse, val)
@@ -160,7 +160,7 @@ func apply_curse_door(door: Door, curse: Enums.curse, val: bool) -> bool:
 	
 	return true
 
-func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
+func set_glitch_color(new_glitch_color: Enums.Colors, is_undo := false) -> void:
 	var old_glitch_color := glitch_color
 	glitch_color = new_glitch_color
 	
@@ -174,12 +174,12 @@ func set_glitch_color(new_glitch_color: Enums.colors, is_undo := false) -> void:
 	# so that it doesn't have to go through ALL all? 
 	
 	for key: KeyElement in level.keys.get_children():
-		if key.data.color == Enums.colors.glitch:
-			key._on_changed_glitch_color()
+		if key.data.color == Enums.Colors.Glitch:
+			key.update_glitch_color()
 	
 	for door: Door in level.doors.get_children():
 		var _door_data := door.data
-		if not _door_data.get_curse(Enums.curse.brown):
+		if not _door_data.get_curse(Enums.Curse.Brown):
 			# If the door was previously cursed, its glitch color might not match up, so we need to keep track of that in the undo.
 			# (unless this is an undo)
 			if not is_undo and _door_data.glitch_color != old_glitch_color:
@@ -195,15 +195,15 @@ func try_open_door(door: Door) -> void:
 	# Check if the door is currently in cooldown state
 	if door.open_cooldown > 0: return
 	# Gates have separate logic, this function doesn't concern them
-	if door_data.outer_color == Enums.colors.gate: return
+	if door_data.outer_color == Enums.Colors.Gate: return
 	
 	var result := try_open_door_data(door_data, false)
 	
 	var opened: bool = result.opened
 	var used_master_key: bool = result.master_key
 	var amount_delta: ComplexNumber = result.amount_delta
-	var new_glitch_color: Enums.colors = result.new_glitch_color
-	var changed_key_color: Enums.colors = result.changed_color
+	var new_glitch_color: Enums.Colors = result.new_glitch_color
+	var changed_key_color: Enums.Colors = result.changed_color
 	var color_delta: ComplexNumber = result.color_delta
 	
 	if not opened: return
@@ -216,13 +216,13 @@ func try_open_door(door: Door) -> void:
 			if not master_equipped.is_zero():
 				update_master_equipped(true, false)
 	
-	if changed_key_color != Enums.colors.none:
+	if changed_key_color != Enums.Colors.None:
 		var color_count: ComplexNumber = key_counts[changed_key_color]
 		undo_redo.add_do_method(color_count.add.bind(color_delta))
 		undo_redo.add_undo_method(color_count.sub.bind(color_delta))
 		color_count.add(color_delta)
 	
-	if new_glitch_color != Enums.colors.none:
+	if new_glitch_color != Enums.Colors.None:
 		set_glitch_color(new_glitch_color)
 	
 	door_data.amount.add(amount_delta)
@@ -249,7 +249,7 @@ func try_open_door(door: Door) -> void:
 	end_undo_action()
 	door.open_cooldown = OPEN_COOLDOWN_TIME
 	update_gates()
-	if changed_key_color == Enums.colors.master:
+	if changed_key_color == Enums.Colors.Master:
 		update_master_equipped(false, false, true)
 
 ## try to open the door with the current keys.
@@ -268,21 +268,21 @@ func try_open_door_data(door_data: DoorData, ignore_master: bool) -> Dictionary:
 		"master_key": false,
 		"added_copy": false, 
 		"amount_delta": ComplexNumber.new(),
-		"new_glitch_color": Enums.colors.none,
-		"changed_color": Enums.colors.none,
+		"new_glitch_color": Enums.Colors.None,
+		"changed_color": Enums.Colors.None,
 		"color_delta": ComplexNumber.new(),
 	}
 	if door_data.amount.is_zero(): return return_dict
-	if door_data.get_curse(Enums.curse.ice) or door_data.get_curse(Enums.curse.erosion) or door_data.get_curse(Enums.curse.paint): return return_dict
+	if door_data.get_curse(Enums.Curse.Ice) or door_data.get_curse(Enums.Curse.Erosion) or door_data.get_curse(Enums.Curse.Paint): return return_dict
 	
 	var used_outer_color := door_data.get_used_color()
-	var is_gate := door_data.outer_color == Enums.colors.gate
+	var is_gate := door_data.outer_color == Enums.Colors.Gate
 	if is_gate: assert(ignore_master)
 	
 	# first, try to open with master keys
 	if not ignore_master and not master_equipped.is_zero():
 		var can_master := true
-		const NON_COPIABLE_COLORS := [Enums.colors.master, Enums.colors.pure]
+		const NON_COPIABLE_COLORS := [Enums.Colors.Master, Enums.Colors.Pure]
 		if used_outer_color in NON_COPIABLE_COLORS:
 			can_master = false
 		else:
@@ -296,8 +296,8 @@ func try_open_door_data(door_data: DoorData, ignore_master: bool) -> Dictionary:
 			return_dict.amount_delta = master_equipped.flipped()
 			return_dict.added_copy = master_equipped.is_negative()
 			
-			if not star_keys[Enums.colors.master]:
-				return_dict.changed_color = Enums.colors.master
+			if not star_keys[Enums.Colors.Master]:
+				return_dict.changed_color = Enums.Colors.Master
 				return_dict.color_delta = master_equipped.flipped()
 			return return_dict
 	
@@ -371,7 +371,7 @@ func update_gates() -> void:
 
 func update_gate(gate: Door) -> void:
 	var door_data := gate.data
-	if door_data.outer_color != Enums.colors.gate:
+	if door_data.outer_color != Enums.Colors.Gate:
 		if gate.ignore_collisions_gate != -1:
 			gate.ignore_collisions_gate = -1
 			gate.resolve_collision_mode()
@@ -386,8 +386,8 @@ func update_gate(gate: Door) -> void:
 
 # I can't believe I made this lmao??? fine tho
 const value_type_to_ComplexNumber_var: Dictionary = {
-	Enums.value.real: &"real_part",
-	Enums.value.imaginary: &"imaginary_part",
+	Enums.Value.Real: &"real_part",
+	Enums.Value.Imaginary: &"imaginary_part",
 }
 # returns the key count difference after opening, or null if it can't be opened
 func open_lock_data_with(lock_data: LockData, key_count: ComplexNumber, flipped: bool, is_rotor: bool) -> ComplexNumber:
@@ -400,12 +400,12 @@ func open_lock_data_with(lock_data: LockData, key_count: ComplexNumber, flipped:
 			temp_lock.rotor()
 		return open_lock_data_with(temp_lock, key_count, false, false)
 	
-	if lock_data.lock_type == Enums.lock_types.all:
+	if lock_data.lock_type == Enums.LockTypes.All:
 		if key_count.is_zero():
 			return null
 		else:
 			return key_count.duplicated().flip()
-	elif lock_data.lock_type == Enums.lock_types.blank:
+	elif lock_data.lock_type == Enums.LockTypes.Blank:
 		if not key_count.is_zero():
 			return null
 		else:
@@ -416,8 +416,8 @@ func open_lock_data_with(lock_data: LockData, key_count: ComplexNumber, flipped:
 		return null
 	var new_key_count := ComplexNumber.new()
 	# use 1 for blast doors
-	var used_magnitude := lock_data.magnitude if lock_data.lock_type == Enums.lock_types.normal else 1
-	var signed_magnitude := used_magnitude if lock_data.sign == Enums.sign.positive else -used_magnitude
+	var used_magnitude := lock_data.magnitude if lock_data.lock_type == Enums.LockTypes.Normal else 1
+	var signed_magnitude := used_magnitude if lock_data.sign == Enums.Sign.Positive else -used_magnitude
 	var relevant_value_sn: StringName = value_type_to_ComplexNumber_var[lock_data.value_type]
 	var relevant_value = key_count.get(relevant_value_sn)
 	
@@ -425,9 +425,9 @@ func open_lock_data_with(lock_data: LockData, key_count: ComplexNumber, flipped:
 		return null
 	
 	match lock_data.lock_type:
-		Enums.lock_types.normal:
+		Enums.LockTypes.Normal:
 			new_key_count.set(relevant_value_sn, -signed_magnitude)
-		Enums.lock_types.blast:
+		Enums.LockTypes.Blast:
 			new_key_count.set(relevant_value_sn, -relevant_value)
 	
 	return new_key_count
@@ -446,9 +446,9 @@ func update_master_equipped(switch_state := false, play_sounds := true, unequip_
 		var original_count := master_equipped.duplicated()
 		master_equipped.set_to(0,0)
 		if not i_view:
-			master_equipped.real_part = signi(key_counts[Enums.colors.master].real_part)
+			master_equipped.real_part = signi(key_counts[Enums.Colors.Master].real_part)
 		else:
-			master_equipped.imaginary_part = signi(key_counts[Enums.colors.master].imaginary_part)
+			master_equipped.imaginary_part = signi(key_counts[Enums.Colors.Master].imaginary_part)
 		if unequip_if_different and not original_count.is_equal_to(master_equipped):
 			master_equipped.set_to(0, 0)
 	if play_sounds:
@@ -473,21 +473,21 @@ func pick_up_key(key: KeyElement) -> void:
 	var orig_star: bool = star_keys[used_color]
 	
 	if star_keys[used_color]:
-		if key_data.type == Enums.key_types.unstar:
+		if key_data.type == Enums.KeyTypes.Unstar:
 			star_keys[used_color] = false
 	else:
 		match key_data.type:
-			Enums.key_types.add:
+			Enums.KeyTypes.Add:
 				current_count.add(key_data.amount)
-			Enums.key_types.exact:
+			Enums.KeyTypes.Exact:
 				current_count.set_to_this(key_data.amount)
-			Enums.key_types.rotor:
+			Enums.KeyTypes.Rotor:
 				current_count.rotor()
-			Enums.key_types.flip:
+			Enums.KeyTypes.Flip:
 				current_count.flip()
-			Enums.key_types.rotor_flip:
+			Enums.KeyTypes.RotorFlip:
 				current_count.rotor().flip()
-			Enums.key_types.star:
+			Enums.KeyTypes.Star:
 				star_keys[used_color] = true
 	
 	if star_keys[used_color] != orig_star:
@@ -498,7 +498,7 @@ func pick_up_key(key: KeyElement) -> void:
 		undo_redo.add_undo_method(current_count.set_to.bind(orig_count.real_part, orig_count.imaginary_part))
 	end_undo_action()
 	update_gates()
-	if used_color == Enums.colors.master:
+	if used_color == Enums.Colors.Master:
 		update_master_equipped(false, false, true)
 
 func on_salvaged_door(door: Door) -> void:

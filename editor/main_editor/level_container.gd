@@ -5,7 +5,6 @@ class_name LevelContainer
 
 @export var inner_container: Control
 @export var gameplay: GameplayManager
-#@onready var level: Level = gameplay.level
 @export var level_viewport: SubViewport
 
 var door_editor: DoorEditor:
@@ -20,65 +19,78 @@ var entry_editor: EntryEditor:
 var salvage_point_editor: SalvagePointEditor:
 	get:
 		return editor_data.salvage_point_editor
+var level: Level:
+	get:
+		return gameplay.level
+var collision_system: CollisionSystem:
+	get:
+		return level.level_data.collision_system
 
-@export var ghost_door: Door
-@export var ghost_key: KeyElement
-@export var ghost_entry: Entry
-@export var ghost_salvage_point: SalvagePoint
-
-@onready var ghosts: Dictionary = {
-	Enums.level_element_types.door: ghost_door,
-	Enums.level_element_types.key: ghost_key,
-	Enums.level_element_types.entry: ghost_entry,
-	Enums.level_element_types.salvage_point: ghost_salvage_point,
-}
 
 @export var editor: LockpickEditor
 var editor_data: EditorData: set = set_editor_data
 
-@export var danger_highlight: HoverHighlight
-@export var selected_highlight: HoverHighlight
 var hover_highlight: HoverHighlight:
 	get:
-		return editor_data.hover_highlight
+		return level.hover_highlight
 
-@export var selection_outline: SelectionOutline
-@export var selection_box: Control
+@onready var ghost_displayer: GhostDisplayer = %GhostDisplayer
+@onready var selection_outline: SelectionOutline = %SelectionOutline
+@onready var selection_box: Panel = %SelectionBox
+@onready var danger_outline: SelectionOutline = %DangerOutline
 
-@onready var camera_dragger: NodeDragger = %CameraDragger
 @onready var editor_camera: Camera2D = %EditorCamera
 
-# Ghosts shouldn't be seen when something's being dragged
+# "Tool" system not shown to the user (yet?) but serves as an FSM.
+# I'll describe the system here, for lack of a proper design document
 
-var is_dragging := false:
-	get:
-		if selected_obj == null or Input.is_action_pressed(&"unbound_action"):
-			is_dragging = false
-		return is_dragging
-	set(val):
-		is_dragging = val and selected_obj != null and not Input.is_action_pressed(&"unbound_action")
-var drag_offset := Vector2i.ZERO
-var selected_obj: Node:
-	set(val):
-		selected_highlight.adapt_to(val)
-	get:
-		return selected_highlight.current_obj
-var hovered_obj: Node:
-	set(val):
-		hover_highlight.adapt_to(val)
-	get:
-		return hover_highlight.current_obj
-var danger_obj: Node:
-	set(val):
-		danger_highlight.adapt_to(val)
-	get:
-		return danger_highlight.current_obj
-#var level_offset :=  Vector2(0, 0)
+# Input relevant for tools: Ctrl, Shift, Alt, Mouse Wheel pressed. Left/Right click. Mouse motion.
+# In order of priority:
+# Left Clicked on selection while on Pencil: DragSelection until click is released, ignoring all other input.
+# Alt or Mouse Wheel: DragLevel
+# Ctrl: ModifySelection
+# Shift: Brush
+# Otherwise: Pencil
+
+# Other considerations:
+# Ghost: Only shown on Pencil
+# Danger outline: Only shown on Pencil, Brush, and DragSelection
+# Selection outline: Shown whenver there's a selection.
+# Hover outline / Mouseover text: only on Pencil?
+# TODO:
+# Ctrl+C / Ctrl+X: Copy/Cut, only if there's a valid selection. Sets ghosts to the selection.
+# Ctrl+V: Sets ghosts back to the previous copied thing.
+
+var current_tool := Tool.Pencil:
+	set = set_tool
+
+enum Tool {
+	# Left click: place and select, or just select if can't place (overriding previous selection). If something selected, transitions to DragSelection. Right click: remove under mouse. If nothing to remove, clear selection.
+	Pencil,
+	# Left click: place (even with mouse movement). Right click: remove (even with mouse movement).
+	Brush,
+	# Left click + drag: add to selection in a rectangle. Right click + drag: remove to selection in a rectangle. (if you don't drag they still apply only to whatever's under the mouse)
+	ModifySelection,
+	# (Alt+Left click) or (Mouse wheel click) + mouse motion: drag the level around
+	DragLevel, 
+	# Moving the mouse moves the selection (clicking enters/exits the state)
+	DragSelection,
+}
+
+var drag_start := Vector2i.ZERO
+var drag_state := Drag.None
+enum Drag { None = 0, Left, Right, Middle}
+
+var new_selection_candidates := {} # idk how else to name it...
+@export var expand_selection_style_box: StyleBox
+@export var shrink_selection_style_box: StyleBox
+
+var currently_adding: NewLevelElementInfo
+# Key: collision system id (returned by level). Value: nothing
+var selection := {}
+var selection_grid_size := Vector2i.ONE
 
 const OBJ_SIZE := Vector2(800, 608)
-
-var selection_system := SelectionSystem.new()
-
 func _adjust_inner_container_dimensions() -> void:
 	if editor_data.is_playing:
 		inner_container.position = ((size - OBJ_SIZE) / 2).floor()
@@ -88,24 +100,18 @@ func _adjust_inner_container_dimensions() -> void:
 		inner_container.size = size
 
 func _ready() -> void:
-	gameplay.level.element_gui_input.connect(_on_element_gui_input)
 	resized.connect(_adjust_inner_container_dimensions)
-	level_viewport.get_parent().show()
+	mouse_entered.connect(update_currently_adding)
 
 func set_editor_data(data: EditorData) -> void:
 	assert(editor_data == null, "This should only really run once.")
 	editor_data = data
-	editor_data.selected_highlight = selected_highlight
-	editor_data.danger_highlight = danger_highlight
-	editor_data.hover_highlight = gameplay.level.hover_highlight
 	
-	editor_data.side_tabs.tab_changed.connect(reset_multiple_selection)
-	editor_data.side_tabs.tab_changed.connect(_retry_ghosts)
+	editor_data.changed_side_editor_data.connect(update_currently_adding)
 	editor_data.changed_level_data.connect(_on_changed_level_data)
 	_on_changed_level_data()
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_on_changed_is_playing, CONNECT_DEFERRED)
-	selected_highlight.adapted_to.connect(_on_selected_highlight_adapted_to)
 	
 	editor_camera.make_current()
 	_on_changed_is_playing()
@@ -115,426 +121,375 @@ func _on_changed_is_playing() -> void:
 	_adjust_inner_container_dimensions()
 	if not editor_data.is_playing:
 		editor_camera.make_current()
-	camera_dragger.visible = not editor_data.is_playing
-	_retry_ghosts()
+	_update_preview()
 
 # could be more sophisticated now that bigger level sizes are supported.
 func _center_level() -> void:
 	editor_camera.position = - (size - OBJ_SIZE) / 2
 
 func _on_changed_level_data() -> void:
-	# deselect everything
-	selected_obj = null
-	hovered_obj = null
-	danger_obj = null
-	selection_system.level_container = self
-	selection_system.collision_system = editor_data.level_data.collision_system
-	selection_system.reset_selection()
-	selection_outline.reset()
-	selection_box.visible = false
+	pass
+	# TODO: figure out what goes here
+	#selection_system.level_container = self
+	#selection_system.collision_system = editor_data.level_data.collision_system
+	#selection_system.reset_selection()
+	#selection_outline.reset()
+	#selection_box.visible = false
 
-func _on_element_gui_input(event: InputEvent, node: Node, type: Enums.level_element_types) -> void:
-	if editor_data.disable_editing: return
-	if editor_data.multiple_selection: return
+func _input(event: InputEvent) -> void:
+	# Don't wanna risk putting these in _gui_input and not receiving the event.
+	decide_tool()
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT:
-			if event.pressed:
-				if remove_element(node):
-					accept_event()
-		elif event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				var editor_control = editor_data.level_element_editors[type]
-				editor_control.data = node.data.duplicated()
-				editor_data.side_tabs.set_current_tab_control(editor_control)
-				accept_event()
-				select_thing(node)
-	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and Input.is_action_pressed(&"unbound_action"):
-			if remove_element(node):
-				accept_event()
-
+		if event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+			_handle_left_unclick()
+		if event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
+			_handle_right_unclick()
+		if event.button_index == MOUSE_BUTTON_MIDDLE and not event.pressed:
+			_handle_middle_unclick()
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
-	if editor_data.multiple_selection:
-		return _gui_input_multiple_selection(event)
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if not event.pressed: # mouse button released
-				is_dragging = false
-				return
-			_on_place_event()
-		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			if not event.pressed:
-				return
-			selected_obj = null
-			if remove_tile_on_mouse():
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed: 
+			if _handle_left_click():
+				accept_event()
+		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			if _handle_right_click():
+				accept_event()
+		elif event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:
+			if _handle_middle_click():
 				accept_event()
 	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			if selected_obj and is_dragging:
-				relocate_selected()
-			elif Input.is_action_pressed(&"unbound_action") and editor_data.level_elements:
-				place_element_on_mouse(editor_data.level_element_type)
-			elif editor_data.tilemap_edit:
-				place_tile_on_mouse()
-				accept_event()
-			elif editor_data.level_properties:
-				if editor_data.player_spawn:
-					place_player_spawn_on_mouse()
-					accept_event()
-				elif editor_data.goal_position:
-					place_goal_on_mouse()
-					accept_event()
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-#			if editor_data.tilemap_edit:
-				if remove_tile_on_mouse():
-					accept_event()
-		_retry_ghosts()
+		if _handle_mouse_movement():
+			accept_event()
 
-var additional_selection: Dictionary = {}
-var did_toggle_selection: bool = false
-var toggle_selection_remove: bool = false
-var multi_drag: bool = false
-
-func _multiple_selection_grid_size() -> Vector2i:
-	var max_grid_size := GRID_SIZE
-	for id in selection_system.selection:
-		var data = editor_data.level_data.collision_system.get_rect_data(id)
-		# if there's any tiles in the selection, grid size is 32,32
-		if data is Vector2i:
-			return Vector2i(32, 32)
-	return max_grid_size
-
-func reset_multiple_selection() -> void:
-	selection_system.reset_selection()
-	selection_outline.reset()
-	additional_selection.clear()
-
-func _gui_input_multiple_selection(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			selection_outline.color = Color.WHITE
-			if not event.pressed: # mouse button released
-				if multi_drag:
-					selection_outline.position += Vector2(selection_system.last_valid_offset - selection_system.offset)
-				selection_system.stop_moving()
-				if not multi_drag:
-					var collision_system := editor_data.level_data.collision_system
-					var rect := selection_box.get_rect()
-					var rects := collision_system.get_rects_intersecting_rect_in_grid(rect)
-					if did_toggle_selection and toggle_selection_remove:
-						selection_system.remove_multiple_from_selection(rects, selection_outline)
-					else:
-						selection_system.add_multiple_to_selection(rects, selection_outline)
-					#for data in _get_additional_selectables():
-						#var other_rect := _get_additional_selection_rect(data)
-						#if other_rect.intersects(rect) and not additional_selection.has(data):
-							#additional_selection[data] = true
-							#selection_outline.add_rectangle_no_grid(other_rect, 1)
-				multi_drag = false
-				did_toggle_selection = false
-				selection_box.visible = false
-				return
-			var pos_in_level: Vector2i = get_mouse_tile_coord(1)
-			multi_drag = false
-			drag_offset = pos_in_level
-			did_toggle_selection = false
-			selection_box.position = pos_in_level
-			selection_box.visible = false
-			selection_box.size = Vector2i.ZERO
-			if Input.is_key_pressed(KEY_SHIFT):
-				# toggle selection
-				var collision_system := editor_data.level_data.collision_system
-				var rects := collision_system.get_rects_containing_point_in_grid(pos_in_level)
-				var action := 0
-				for id in rects:
-					if selection_system.selection.has(id):
-						if action == 0:
-							action = 1
-						if action == 1:
-							selection_system.remove_from_selection(id, selection_outline)
-					else:
-						if action == 0:
-							action = 2
-						if action == 2:
-							selection_system.add_to_selection(id, selection_outline)
-				#for data in _get_additional_selectables():
-					#var other_rect := _get_additional_selection_rect(data)
-					#if other_rect.has_point(pos_in_level):
-						#if additional_selection.has(data):
-							#additional_selection.erase(data)
-							#selection_outline.add_rectangle_no_grid(other_rect, -1)
-						#else:
-							#additional_selection[data] = true
-							#selection_outline.add_rectangle_no_grid(other_rect, 1)
-				if action == 1:
-					did_toggle_selection = true
-					toggle_selection_remove = true
-				elif action == 2:
-					did_toggle_selection = true
-					toggle_selection_remove = false
-				return
-			elif not selection_system.selection.is_empty() or not additional_selection.is_empty():
-				# Try to see whether we clicked on a selected item
-				#for data in additional_selection:
-					#var other_rect := _get_additional_selection_rect(data)
-					#if other_rect.has_point(pos_in_level):
-						#multi_drag = true
-						#return
-				var collision_system := editor_data.level_data.collision_system
-				var rects := collision_system.get_rects_containing_point_in_grid(pos_in_level)
-				for id in rects:
-					if selection_system.selection.has(id):
-						# clicked on selection
-						multi_drag = true
-						return
-			reset_multiple_selection()
-	elif event is InputEventMouseMotion:
-		if event.button_mask & MOUSE_BUTTON_LEFT:
-			if not multi_drag:
-				var rect := Rect2i()
-				rect.position = drag_offset
-				rect.end = get_mouse_tile_coord(1)
-				rect = rect.abs()
-				selection_box.position = rect.position
-				selection_box.size = rect.size
-				selection_box.visible = true
+func _handle_left_click() -> bool:
+	var handled := false
+	match current_tool:
+		Tool.Pencil:
+			if level.hovering_over != -1:
+				select_thing(level.hovering_over)
+				handled = true
 			else:
-				var grid_size := _multiple_selection_grid_size()
-				var new_offset := get_mouse_coord(grid_size) - round_coord(drag_offset, grid_size)
-				var delta := new_offset - selection_system.offset
-				if delta == Vector2i.ZERO:
-					return
-				var act_delta := new_offset - selection_system.last_valid_offset
-				#var valid := _can_move_additional_selection(act_delta)
-				var valid := true
-				if selection_system.move_selection(delta, valid):
-					_move_selection(act_delta)
-					#_move_additional_selection(act_delta)
-					selection_outline.color = Color.WHITE
+				handled = _try_place_curretly_adding()
+				if not handled:
+					clear_selection()
+		Tool.Brush:
+			drag_start = currently_adding.position
+			drag_state = Drag.Left
+			handled = _try_place_curretly_adding()
+		Tool.ModifySelection:
+			if drag_state == Drag.Right:
+				finish_expanding_selection()
+			drag_start = level.get_local_mouse_position()
+			drag_state = Drag.Left
+			selection_box[&"theme_override_styles/panel"] = expand_selection_style_box
+			expand_selection()
+			handled = true
+		Tool.DragLevel:
+			if drag_state == Drag.None:
+				drag_start = get_local_mouse_position()
+				drag_state = Drag.Left
+				handled = true
+		Tool.DragSelection:
+			# It's entered with left click and exited when it's released, thus this should never happen.
+			assert(false)
+		_:
+			assert(false)
+	return handled
+
+func _handle_left_unclick() -> void:
+	match current_tool:
+		Tool.DragSelection:
+			decide_tool()
+	if drag_state == Drag.Left:
+		match current_tool:
+			Tool.ModifySelection:
+				finish_expanding_selection()
+		drag_state = Drag.None
+
+func _handle_right_click() -> bool:
+	var handled := false
+	match current_tool:
+		Tool.Pencil:
+			handled = _try_remove_at_mouse()
+			if not handled:
+				clear_selection()
+		Tool.Brush:
+			drag_start = currently_adding.position
+			drag_state = Drag.Right
+			handled = _try_remove_at_mouse()
+		Tool.ModifySelection:
+			if drag_state == Drag.Left:
+				finish_expanding_selection()
+			drag_start = level.get_local_mouse_position()
+			drag_state = Drag.Right
+			selection_box[&"theme_override_styles/panel"] = shrink_selection_style_box
+			expand_selection()
+			handled = true
+	return handled
+
+func _handle_right_unclick() -> void:
+	if drag_state == Drag.Right:
+		match current_tool:
+			Tool.ModifySelection:
+				finish_expanding_selection()
+		drag_state = Drag.None
+
+func _handle_middle_click() -> bool:
+	decide_tool()
+	if current_tool == Tool.DragLevel:
+		if drag_state == Drag.None:
+			drag_state = Drag.Middle
+			drag_start = get_local_mouse_position()
+	return true
+
+func _handle_middle_unclick() -> void:
+	if drag_state == Drag.Middle:
+		drag_state = Drag.None
+	decide_tool()
+
+func _handle_mouse_movement() -> bool:
+	var handled := false
+	match current_tool:
+		Tool.Pencil:
+			update_currently_adding_position()
+			_update_preview()
+		Tool.Brush:
+			if currently_adding:
+				if drag_state == Drag.Left:
+					var grid_size := currently_adding.get_rect().size as Vector2
+					var mouse_pos := level.get_local_mouse_position()
+					var diff := mouse_pos - (drag_start as Vector2)
+					diff = (diff / grid_size).floor() * grid_size
+					drag_start += diff as Vector2i
+					currently_adding.position = drag_start
+					danger_outline.position = currently_adding.position
+					_try_place_curretly_adding()
+				elif drag_state == Drag.Right:
+					update_currently_adding_position()
+					_try_remove_at_mouse()
 				else:
-					selection_outline.color = Color.RED
-				selection_outline.position += Vector2(delta)
+					update_currently_adding_position()
+				_update_preview()
+		Tool.ModifySelection:
+			if drag_state != Drag.None:
+				expand_selection()
+				handled = true
+		Tool.DragSelection:
+			if drag_state == Drag.Left:
+				relocate_selection()
+				handled = true
+		Tool.DragLevel:
+			if drag_state != Drag.None:
+				assert(drag_state != Drag.Right)
+				var new_pos := get_local_mouse_position() as Vector2i
+				var offset := new_pos - drag_start
+				drag_start = new_pos
+				editor_camera.position -= offset as Vector2
+	return handled
 
-func _move_selection(delta: Vector2i) -> void:
-	gameplay.level.dont_update_collision_system = true
-	
-	var new_tile_id: Array[int] = []
-	var new_tile_pos: Array[Vector2i] = []
-	var new_tiles: Array[int] = []
-	for id in selection_system.selection:
-		var data = editor_data.level_data.collision_system.get_rect_data(id)
-		if data is Vector2i:
-			# remove tile
-			var tile: int = editor_data.level_data.tiles[data]
-			gameplay.level.remove_tile(data, false)
-			new_tile_id.push_back(id)
-			new_tile_pos.push_back(data + delta / 32)
-			new_tiles.push_back(tile)
-		elif data is RefCounted:
-			# assume level element
-			var element: Control = gameplay.level.original_data_to_element[data]
-			gameplay.level.move_element(element, data.position + delta, false)
-		elif data == &"player_spawn":
-			editor_data.level_data.player_spawn_position += delta
-		elif data == &"goal":
-			editor_data.level_data.goal_position += delta
-	for tile_index in new_tile_pos.size():
-		# add tile
-		var tile := new_tiles[tile_index]
-		var new_pos := new_tile_pos[tile_index]
-		editor_data.level_data.tiles[new_pos] = tile
-		gameplay.level.update_tile_and_neighbors(new_pos)
-		editor_data.level_data.collision_system.set_rect_data(new_tile_id[tile_index], new_pos)
-		tile_index += 1
-	gameplay.level.dont_update_collision_system = false
-	editor_data.level_data.emit_changed()
-
-func _on_place_event() -> void:
-	# TODO: What's the focus for??
-	set_focus_mode(Control.FOCUS_ALL)
-	grab_focus()
-	# if the event got this far, we want to deselect
-	selected_obj = null
-	if editor_data.tilemap_edit:
-		place_tile_on_mouse()
-		accept_event()
-		return
-	if editor_data.level_elements:
-		place_element_on_mouse(editor_data.level_element_type)
-	elif editor_data.level_properties:
-		if editor_data.player_spawn:
-			place_player_spawn_on_mouse()
-			accept_event()
-		elif editor_data.goal_position:
-			place_goal_on_mouse()
-			accept_event()
-
-func select_thing(obj: Node) -> void:
-	# is_dragging is set to true by _on_selected_highlight_adapted_to
-	selected_obj = obj
-	hovered_obj = obj
-	danger_obj = null
-	_retry_ghosts()
-
-func place_tile_on_mouse() -> void:
-	if editor_data.disable_editing: return
-	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_tile_coord(32)
-	gameplay.level.place_tile(coord)
-
-func remove_tile_on_mouse() -> bool:
-	if editor_data.disable_editing: return false
-	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_tile_coord(32)
-	return gameplay.level.remove_tile(coord)
-
-func place_element_on_mouse(type: Enums.level_element_types) -> bool:
-	if editor_data.disable_editing: return false
-	if is_mouse_out_of_bounds(): return false
-	var coord := get_mouse_coord(GRID_SIZE)
-	var data = editor.level_element_editors[type].data.duplicated()
-	data.position = coord
-	var node := gameplay.level.add_element(data)
-	if not is_instance_valid(node): return false
-	select_thing(node)
-	return true
-
-func remove_element(node: Node) -> bool:
-	if not is_instance_valid(node): return false
-	gameplay.level.remove_element(node)
-	select_thing(null)
-	_retry_ghosts()
-	return true
-
-func place_player_spawn_on_mouse() -> void:
-	if editor_data.disable_editing: return
-	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_coord(GRID_SIZE)
-	gameplay.level.place_player_spawn(coord)
-
-func place_goal_on_mouse() -> void:
-	if editor_data.disable_editing: return
-	if is_mouse_out_of_bounds(): return
-	var coord := get_mouse_coord(GRID_SIZE)
-	gameplay.level.place_goal(coord)
-
-func relocate_selected() -> void:
-	if editor_data.disable_editing: return
-	if is_mouse_out_of_bounds(): return
-	if not is_dragging: return
-	if not is_instance_valid(selected_obj): return
-	var used_coord := get_mouse_coord(GRID_SIZE) - round_coord(drag_offset, GRID_SIZE)
-	var cond: bool
-	var obj_pos: Vector2i = selected_obj.position
-	cond = gameplay.level.move_element(selected_obj, used_coord)
-	
-	if not cond and obj_pos != used_coord:
-		_place_danger_obj()
-	else:
-		danger_obj = null
-	# refreshes the position
-	selected_obj = selected_obj
-	hovered_obj = hovered_obj
-
-
-
-func get_mouse_coord(grid_size: Vector2i) -> Vector2i:
-	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), grid_size)
-
-func get_mouse_tile_coord(grid_size: int) -> Vector2i:
-	return round_coord(Vector2i(get_global_mouse_position() - get_level_pos()), Vector2i(grid_size, grid_size)) / grid_size
-
-func round_coord(coord: Vector2i, grid_size: Vector2i) -> Vector2i:
-	# wasn't sure how to do a "floor divide". this is crude but it works
-	var val := coord.snapped(grid_size)
-	if val.x > coord.x:
-		val.x -= grid_size.x
-	if val.y > coord.y:
-		val.y -= grid_size.y
-	return val
-
-func is_mouse_out_of_bounds() -> bool:
-	var local_pos := get_global_mouse_position() - get_level_pos()
-	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= gameplay.level.level_data.size.x or local_pos.y >= gameplay.level.level_data.size.y:
+func _try_place_curretly_adding() -> bool:
+	if not currently_adding:
+		return false
+	var id := level.add_element(currently_adding)
+	if id != -1 and current_tool == Tool.Pencil:
+		select_thing(id)
 		return true
 	return false
 
-func get_level_pos() -> Vector2:
-	return level_viewport.get_parent().global_position + gameplay.global_position - editor_camera.position
-	#return level_viewport.get_parent().global_position + level.global_position - level.get_camera_position()
+func _try_remove_at_mouse() -> bool:
+	var mouse_pos := level.get_local_mouse_position()
+	var id := level.get_visible_element_at_pos(mouse_pos)
+	if id != -1:
+		if id in selection:
+			remove_from_selection(id)
+		level.remove_element(id)
+		_update_preview()
+		return true
+	return false
 
-#var unique_queue := {}
-#func _defer_unique(f: Callable) -> void:
-#	if not unique_queue.get(f):
-#		unique_queue[f] = true
-#		f.call_deferred()
-#		_erase_from_queue.bind(f).call_deferred()
-#
-#func _erase_from_queue(f: Callable) -> void:
-#	unique_queue[f] = false
-
-
-func _retry_ghosts() -> void:
-	for ghost: Node in ghosts.values():
-		ghost.hide()
-	
-	if not is_dragging:
-		_place_ghosts()
-
-const GRID_SIZE := Vector2i(16, 16)
-
-func _place_ghosts() -> void:
-	assert(not is_dragging)
-	if not editor_data.level_elements or editor_data.is_playing:
-		return
-	var type := editor_data.level_element_type
-	var grid_size: Vector2i = GRID_SIZE
-	var obj: Node = ghosts[type]
-	
-	var editor_control: Control = editor_data.level_element_editors[type]
-	obj.data = editor_control.data
-	
-	var maybe_pos := get_mouse_coord(grid_size)
-	obj.position = maybe_pos
-	obj.data.position = maybe_pos
-	
-	var is_valid := true
-	
-	if gameplay.level.is_space_occupied(Rect2i(maybe_pos, obj.get_rect().size)):
-		is_valid = false
-	elif obj is Door and not obj.data.check_valid(gameplay.level.level_data, false):
-		is_valid = false
-	obj.visible = is_valid
-	
-	if (
-	not is_instance_valid(gameplay.level.hovering_over)
-	and not obj.visible
-	# TODO: This is just a double-check, but looks weird since tiles can't be hovered on yet
-	#	and not level.is_space_occupied(Rect2i(get_mouse_coord(1), Vector2.ONE))
-	):
-		danger_obj = obj
+func update_currently_adding() -> void:
+	var info := NewLevelElementInfo.new()
+	if editor_data.current_tab.name == &"Tiles":
+		info.type = Enums.LevelElementTypes.Tile
+	elif editor_data.current_tab.name == &"LevelPack":
+		info.type = editor_data.current_tab.placing
+	elif editor_data.current_tab.name in [&"Doors", &"Keys", &"Entries", &"SalvagePoints"]:
+		info.type = editor_data.current_tab.data.level_element_type
+		info.data = editor_data.current_tab.data.duplicated()
 	else:
-		danger_obj = null
+		info = null
+	
+	currently_adding = info
+	ghost_displayer.info = currently_adding
+	if currently_adding and current_tool in [Tool.Pencil, Tool.Brush]:
+		danger_outline.clear()
+		danger_outline.position = Vector2.ZERO
+		danger_outline.add_rect(currently_adding.get_rect())
+	update_currently_adding_position()
+
+func update_currently_adding_position() -> void:
+	if currently_adding:
+		var grid_size := LevelData.get_element_grid_size(currently_adding.type)
+		var rect_size := currently_adding.get_rect().size
+		var mouse_pos := level.get_local_mouse_position() as Vector2i
+		var pos := mouse_pos - rect_size / 2
+		currently_adding.position = pos.snapped(grid_size)
+		danger_outline.position = currently_adding.position
+
+func clear_selection() -> void:
+	selection.clear()
+	selection_outline.clear()
+	selection_grid_size = Vector2i.ONE
+
+func add_to_selection(id: int) -> void:
+	selection[id] = true
+	var rect := collision_system.get_rect(id)
+	rect.position -= selection_outline.position as Vector2i
+	selection_outline.add_rect(rect)
+	var type := LevelData.get_element_type(collision_system.get_rect_data(id))
+	var grid_size := LevelData.get_element_grid_size(type)
+	selection_grid_size = Vector2i(
+		maxi(selection_grid_size.x, grid_size.x),
+		maxi(selection_grid_size.y, grid_size.y)
+	)
+
+func remove_from_selection(id: int) -> void:
+	selection.erase(id)
+	var rect := collision_system.get_rect(id)
+	rect.position -= selection_outline.position as Vector2i
+	selection_outline.remove_rect(rect)
+	# TODO: This won't update selection_grid_size...
+
+func select_thing(id: int) -> void:
+	if id not in selection: 
+		clear_selection()
+		add_to_selection(id)
+		current_tool = Tool.DragSelection
+		var elem = collision_system.get_rect_data(id)
+		var type := LevelData.get_element_type(elem)
+		if type in Enums.NODE_LEVEL_ELEMENTS:
+			var editor_control = editor_data.level_element_editors[type]
+			editor_control.data = elem.duplicated()
+			editor_data.side_tabs.set_current_tab_control(editor_control)
+			update_currently_adding()
+	else:
+		current_tool = Tool.DragSelection
+
+func relocate_selection() -> void:
+	if editor_data.disable_editing: return
+	assert(current_tool == Tool.DragSelection)
+	assert(not selection.is_empty())
+	drag_start = (drag_start / selection_grid_size) * selection_grid_size
+	var mouse_pos := ((level.get_local_mouse_position() as Vector2i) / selection_grid_size) * selection_grid_size
+	var relative_pos := mouse_pos - drag_start
+	if level.move_elements(selection, relative_pos):
+		drag_start = mouse_pos
+		selection_outline.position += relative_pos as Vector2
+		danger_outline.hide()
+	else:
+		danger_outline.show()
+		danger_outline.position = selection_outline.position + (relative_pos as Vector2)
+
+func expand_selection() -> void:
+	var mouse_pos := level.get_local_mouse_position() as Vector2i
+	var rect := Rect2i(mouse_pos, Vector2.ZERO)
+	rect = rect.expand(drag_start)
+	selection_box.position = rect.position
+	selection_box.size = rect.size
+	selection_box.show()
+	var ids := collision_system.get_rects_intersecting_rect_in_grid(rect)
+	match drag_state:
+		Drag.Left:
+			for id in new_selection_candidates:
+				if id not in ids:
+					remove_from_selection(id)
+			for id in ids:
+				if id not in selection:
+					new_selection_candidates[id] = true
+					add_to_selection(id)
+		Drag.Right:
+			for id in new_selection_candidates:
+				if id not in ids:
+					add_to_selection(id)
+			for id in ids:
+				if id in selection:
+					new_selection_candidates[id] = true
+					remove_from_selection(id)
+		Drag.None:
+			assert(false)
+
+func finish_expanding_selection() -> void:
+	if drag_state == Drag.None: return
+	selection_box.hide()
+	new_selection_candidates.clear()
+
+func set_tool(tool: Tool) -> void:
+	if tool == current_tool: return
+	# Exit previous tool
+	ghost_displayer.hide()
+	selection_box.hide()
+	danger_outline.hide()
+	
+	current_tool = tool
+	
+	# Enter new tool
+	match current_tool:
+		Tool.DragSelection:
+			# Always entered from a left click.
+			drag_state = Drag.Left
+			drag_start = level.get_local_mouse_position()
+			danger_outline.mimic_other(selection_outline)
+			danger_outline.position = selection_outline.position
+		Tool.Pencil, Tool.Brush:
+			if currently_adding:
+				currently_adding.position = Vector2i.ZERO
+				danger_outline.clear()
+				danger_outline.position = Vector2.ZERO
+				danger_outline.add_rect(currently_adding.get_rect())
+			update_currently_adding_position()
+			_update_preview()
+	level.allow_hovering = current_tool == Tool.Pencil
+
+func decide_tool() -> void:
+	if current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		pass # don't change it
+	elif Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE) or Input.is_key_pressed(KEY_ALT):
+		current_tool = Tool.DragLevel
+	elif Input.is_key_pressed(KEY_CTRL):
+		current_tool = Tool.ModifySelection
+	elif Input.is_key_pressed(KEY_SHIFT):
+		current_tool = Tool.Brush
+	else:
+		current_tool = Tool.Pencil
+
+# Updates the ghost and the danger preview
+func _update_preview() -> void:
+	if not currently_adding or is_instance_valid(level.hover_highlight.current_obj):
+		ghost_displayer.hide()
+		danger_outline.hide()
+		return
+	var rect := currently_adding.get_rect()
+	if level.is_space_occupied(rect):
+		ghost_displayer.hide()
+		danger_outline.show()
+	else:
+		ghost_displayer.show()
+		danger_outline.hide()
 
 # places the danger obj only. this overrides the ghosts obvs
 func _place_danger_obj() -> void:
-	if not editor_data.level_elements or editor_data.is_playing:
-		return
-	var type := editor_data.level_element_type
-	var obj: Node = ghosts[type]
-	
-	obj.data = editor_data.level_element_editors[type].data
-		
-	var maybe_pos := get_mouse_coord(GRID_SIZE)
-	if is_dragging:
-		maybe_pos -= round_coord(drag_offset, GRID_SIZE)
-	obj.position = maybe_pos
-	danger_obj = obj
-
-func _on_selected_highlight_adapted_to(_obj: Node) -> void:
-	if (Input.get_mouse_button_mask() & MOUSE_BUTTON_MASK_LEFT):
-		if not is_dragging:
-			is_dragging = true
-			drag_offset = get_mouse_tile_coord(1) - Vector2i(_obj.position)
+	pass
+	#if not editor_data.is_placing_level_element or editor_data.is_playing:
+		#return
+	#var type := editor_data.level_element_type
+	#var obj: Node = ghosts[type]
+	#
+	#obj.data = editor_data.level_element_editors[type].data
+		#
+	#var maybe_pos := get_mouse_coord(GRID_SIZE)
+	#if is_dragging:
+		#maybe_pos -= round_coord(drag_start, GRID_SIZE)
+	#obj.position = maybe_pos
+	#danger_obj = obj

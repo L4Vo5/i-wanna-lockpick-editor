@@ -2,7 +2,7 @@
 extends Control
 class_name SalvagePoint
 
-static var level_element_type := Enums.level_element_types.salvage_point
+static var level_element_type := Enums.LevelElementTypes.SalvagePoint
 
 @export var data: SalvagePointData:
 	set(val):
@@ -15,8 +15,11 @@ var level: Level:
 	set(val):
 		level = val
 		if not is_instance_valid(val): return
-		level_pack_state = val.gameplay_manager.pack_state
-var level_pack_state: LevelPackStateData
+var level_pack_state: LevelPackStateData:
+	get:
+		if level and level.gameplay_manager:
+			return level.gameplay_manager.pack_state
+		return null
 
 var door: Door = null
 var door_error = false
@@ -43,6 +46,8 @@ func _ready() -> void:
 func prep_output_step_1() -> void:
 	if not data.is_output:
 		return
+	if not level_pack_state:
+		return
 	var sid := data.sid
 	if sid < 0 or sid >= level_pack_state.salvaged_doors.size():
 		door = null
@@ -57,7 +62,7 @@ func prep_output_step_1() -> void:
 	new_position.y = position.y + 32 - new_door_data.size.y
 
 	new_door_data.position = new_position
-	new_door_data.glitch_color = Enums.colors.glitch
+	new_door_data.glitch_color = Enums.Colors.Glitch
 	# TODO: output points could have their own ammount?
 	#new_door_data.amount.set_to(1, 0)
 	new_door_data.sid = sid
@@ -69,7 +74,7 @@ func prep_output_step_1() -> void:
 	level.level_data.elem_to_collision_system_id[new_door_data] = id
 	
 	# TODO: Don't use a function starting with _, it's supposed to be "private"!
-	door = level._spawn_element(new_door_data)
+	door = level._spawn_node_element(new_door_data)
 	door_error = false
 
 func prep_output_step_2() -> void:
@@ -82,16 +87,16 @@ func prep_output_step_2() -> void:
 func prep_output_step_3() -> void:
 	if not data.is_output:
 		return
-	if door != null and door_error:
-		level.remove_element(door)
-		door = null
-	if door != null:
-		hide()
+	#if door != null and door_error:
+		#level.remove_element(door)
+		#door = null
+	#if door != null:
+		#hide()
 
 func remove_door() -> void:
-	if door != null:
-		level.remove_element(door)
-		door = null
+	#if door != null:
+		#level.remove_element(door)
+		#door = null
 	door_error = false
 	show()
 

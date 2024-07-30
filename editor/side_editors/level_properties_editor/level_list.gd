@@ -1,3 +1,4 @@
+@tool
 extends Tree
 class_name LevelList
 
@@ -10,7 +11,7 @@ var pack_data: LevelPackData:
 		pack_data = value
 		_connect_pack_data()
 
-signal selected_level(level: int)
+signal selected_level(level_index: int)
 
 func _ready() -> void:
 	# Create root
@@ -33,10 +34,8 @@ func _disconnect_pack_data() -> void:
 	pack_data.deleted_level.disconnect(_handle_level_deleted)
 	pack_data.moved_level.disconnect(_handle_level_moved)
 	pack_data.swapped_levels.disconnect(_handle_level_moved)
-	for i in get_root().get_child_count():
-		var item := get_root().get_child(i)
-		var lvl := pack_data.levels[i]
-		_disconnect_item_from_lvl(item, lvl)
+	for item in get_root().get_children():
+		_disconnect_item_from_lvl(item)
 
 func _connect_pack_data() -> void:
 	if not is_instance_valid(pack_data): return
@@ -46,41 +45,48 @@ func _connect_pack_data() -> void:
 	pack_data.moved_level.connect(_handle_level_moved)
 	pack_data.swapped_levels.connect(_handle_level_moved)
 
-func _handle_level_added(index: int) -> void:
+func _handle_level_added(id: int) -> void:
+	var index := pack_data.get_level_position_by_id(id)
 	var item := get_root().create_child(index)
-	_connect_item_to_lvl(item, pack_data.levels[index])
+	_connect_item_to_lvl(item, pack_data.get_level_by_position(index))
 
-func _handle_level_deleted(index: int) -> void:
+func _handle_level_deleted(_id: int, index: int) -> void:
 	var item := get_root().get_child(index)
 	get_root().remove_child(item)
-	_disconnect_item_from_lvl(item, pack_data.levels[index])
+	_disconnect_item_from_lvl(item)
 
 func _handle_level_moved(from: int, to: int) -> void:
 	var old_item := get_root().get_child(from)
 	get_root().remove_child(old_item)
-	_disconnect_item_from_lvl(old_item, pack_data.levels[to])
+	_disconnect_item_from_lvl(old_item)
 	var new_item := get_root().create_child(to)
-	_connect_item_to_lvl(new_item, pack_data.levels[to])
+	_connect_item_to_lvl(new_item, pack_data.get_level_by_position(to))
 
 func update_all() -> void:
 	clear()
 	create_item() # create root
 	for i in pack_data.levels.size():
-		var lvl := pack_data.levels[i]
+		var lvl := pack_data.get_level_by_position(i)
 		var item := create_item()
 		_connect_item_to_lvl(item, lvl)
 
 func _connect_item_to_lvl(item: TreeItem, level: LevelData) -> void:
+	assert(item.get_metadata(0) == null)
+	item.set_metadata(0, level)
 	level.changed.connect(_update_item.bind(item, level))
 	_update_item(item, level)
 
-func _disconnect_item_from_lvl(item: TreeItem, level: LevelData) -> void:
+func _disconnect_item_from_lvl(item: TreeItem) -> void:
+	var level: LevelData = item.get_metadata(0)
 	level.changed.disconnect(_update_item.bind(item, level))
+	item.set_metadata(0, null)
 
 func _update_item(item: TreeItem, level: LevelData) -> void:
 	item.set_text(0, get_level_string(level))
 
-func set_selected_to(index: int) -> void:
+func set_selected_to(id: int) -> void:
+	var index := pack_data.level_order.find(id)
+	assert(index != -1)
 	var item: TreeItem = get_root().get_child(index)
 	if not item:
 		breakpoint

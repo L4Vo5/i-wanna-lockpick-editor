@@ -99,22 +99,22 @@ func is_zero() -> bool:
 func is_negative() -> bool:
 	return (_real_part <= 0 and _imaginary_part <= 0) and (_real_part < 0 or _imaginary_part < 0)
 
-## Returns the sign in Enums.sign terms, assuming it's a 1d vector in either direction
-func sign_1d() -> Enums.sign:
+## Returns the sign in Enums.Sign terms, assuming it's a 1d vector in either direction
+func sign_1d() -> Enums.Sign:
 	assert(_real_part == 0 or _imaginary_part == 0)
 	var val := _real_part + _imaginary_part
 	if val >= 0:
-		return Enums.sign.positive
+		return Enums.Sign.Positive
 	else:
-		return Enums.sign.negative
+		return Enums.Sign.Negative
 
-## Returns the value type in Enums.value terms, assuming it's a 1d vector in either direction
-func value_type_1d() -> Enums.value:
+## Returns the value type in Enums.Value terms, assuming it's a 1d vector in either direction
+func value_type_1d() -> Enums.Value:
 	assert(_real_part == 0 or _imaginary_part == 0)
 	if _imaginary_part != 0:
-		return Enums.value.imaginary
+		return Enums.Value.Imaginary
 	else:
-		return Enums.value.real
+		return Enums.Value.Real
 
 func _to_string() -> String:
 	var s := ""

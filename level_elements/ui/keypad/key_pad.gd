@@ -6,13 +6,13 @@ const KEY := preload("res://level_elements/keys/key.tscn")
 const KEY_START := Vector2i(20, 20)
 const KEY_DIFF := Vector2i(204, 68) - KEY_START
 const KEY_COLORS := [
-	Enums.colors.white, Enums.colors.master,
-	Enums.colors.orange, Enums.colors.pure,
-	Enums.colors.purple, Enums.colors.brown,
-	Enums.colors.pink, Enums.colors.red,
-	Enums.colors.cyan, Enums.colors.green,
-	Enums.colors.black, Enums.colors.blue,
-	Enums.colors.stone, Enums.colors.glitch
+	Enums.Colors.White, Enums.Colors.Master,
+	Enums.Colors.Orange, Enums.Colors.Pure,
+	Enums.Colors.Purple, Enums.Colors.Brown,
+	Enums.Colors.Pink, Enums.Colors.Red,
+	Enums.Colors.Cyan, Enums.Colors.Green,
+	Enums.Colors.Black, Enums.Colors.Blue,
+	Enums.Colors.Stone, Enums.Colors.Glitch
 ]
 @onready var keys: Node2D = %Keys
 @onready var sound: AudioStreamPlayer = %Sound
@@ -44,7 +44,7 @@ func generate_keys() -> void:
 			key.data = KeyData.new()
 			key.data.color = KEY_COLORS[y * 2 + x]
 			key.data.amount = ComplexNumber.new_with(1, 0)
-			key.data.type = Enums.key_types.add
+			key.data.type = Enums.KeyTypes.Add
 			key.hide_shadow = true
 			key.ignore_position = true
 			keys.add_child(key)

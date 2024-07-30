@@ -64,7 +64,7 @@ var has_goal := true:
 		title = val
 		changed.emit()
 
-## Short label for the level, used for the warp rod. [br]
+## Short (if you want) label for the level, used for the warp rod. [br]
 ## If it's empty, it won't be included in the warp rod
 @export var label := "":
 	set(val):
@@ -72,7 +72,6 @@ var has_goal := true:
 		label = val
 		changed.emit()
 
-## DEPRECATED
 ## KEPT FOR COMPATIBILITY (for now?)
 @export var author := "":
 	set(val):
@@ -138,6 +137,22 @@ func regen_collision_system() -> void:
 		id = collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
 		elem_to_collision_system_id[tile_coord] = id
 	assert(PerfManager.end("LevelData::regen_collision_system"))
+
+static func get_element_type(elem: Variant) -> Enums.LevelElementTypes:
+	if elem is StringName:
+		if elem == &"player_spawn":
+			return Enums.LevelElementTypes.PlayerSpawn
+		if elem == &"goal":
+			return Enums.LevelElementTypes.Goal
+	if elem is Vector2i:
+		return Enums.LevelElementTypes.Tile
+	return elem.level_element_type
+
+static func get_element_grid_size(type: Enums.LevelElementTypes) -> Vector2i:
+	if type == Enums.LevelElementTypes.Tile:
+		return Vector2i(32, 32)
+	else:
+		return Vector2i(16, 16)
 
 ## Deletes stuff outside the level boundary
 func clear_outside_things() -> void:
@@ -247,7 +262,7 @@ func get_screenshot() -> Image:
 	
 	var lvl: Level = preload("res://level_elements/level.tscn").instantiate()
 	lvl.exclude_player = true
-	lvl.pack_data = LevelPackData.make_from_level(duplicate())
+	lvl.level_data = duplicated()
 	viewport.add_child(lvl)
 	
 	await RenderingServer.frame_post_draw 

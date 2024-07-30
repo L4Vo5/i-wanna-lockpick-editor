@@ -1,4 +1,5 @@
 extends CanvasLayer
+class_name LevelUI
 
 @onready var level: Level = get_parent()
 @onready var key_pad: KeyPad = $KeyPad
@@ -19,11 +20,11 @@ func _ready() -> void:
 	assert(level)
 	key_pad.level = level
 	(func():
-		warp_rod.pack_data = level.gameplay_manager.pack_data
+		warp_rod.gameplay_manager = level.gameplay_manager
 	).call_deferred()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not Global.is_playing:
+	if not visible:
 		return
 	if event.is_echo():
 		return

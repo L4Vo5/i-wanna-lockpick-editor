@@ -1,0 +1,52 @@
+[gd_scene load_steps=4 format=3 uid="uid://d2o2rhr3ry21d"]
+
+[ext_resource type="Script" path="res://editor/misc/selection_outline.gd" id="1_5x8i0"]
+[ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="2_ioe1d"]
+
+[sub_resource type="GDScript" id="GDScript_y404o"]
+script/source = "extends Node2D
+
+@onready var selection_outline: SelectionOutline = %SelectionOutline
+@onready var tile_map: TileMap = %TileMap
+
+func _ready() -> void:
+	selection_outline.clear()
+	PerfManager.start(\"add tiles\")
+	var tiles := tile_map.get_used_cells(0)
+	for tile in tiles:
+		var rect := Rect2i(tile * 32, Vector2i(32, 32))
+		selection_outline.add_rect(rect)
+		for x in 10:
+			for y in 10:
+				rect.position.x += x * 22 * 32
+				rect.position.y += y * 16 * 32
+				selection_outline.add_rect(rect)
+	PerfManager.end(\"add tiles\")
+	await get_tree().create_timer(1).timeout
+	PerfManager.start(\"remove tiles\")
+	for tile in tiles:
+		var rect := Rect2i(tile * 32, Vector2i(32, 32))
+		selection_outline.remove_rect(rect)
+		for x in 10:
+			for y in 10:
+				rect.position.x += x * 22 * 32
+				rect.position.y += y * 16 * 32
+				selection_outline.remove_rect(rect)
+	PerfManager.end(\"remove tiles\")
+"
+
+[node name="Node2D" type="Node2D"]
+unique_name_in_owner = true
+
+[node name="SelectionOutline" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("1_5x8i0")
+
+[node name="TileMap" type="TileMap" parent="."]
+unique_name_in_owner = true
+tile_set = ExtResource("2_ioe1d")
+format = 2
+layer_0/tile_data = PackedInt32Array(196611, 65537, 1, 262147, 65537, 1, 262149, 65537, 1, 262151, 65537, 1, 262153, 65537, 1, 262155, 65537, 1, 196619, 65537, 1, 131083, 65537, 1, 327689, 65537, 1, 393225, 65537, 1, 458761, 65537, 1, 393229, 65537, 1, 458765, 65537, 1, 524301, 65537, 1, 589837, 65537, 1, 524289, 65537, 1, 589829, 65537, 1, 589830, 65537, 1, 393221, 65537, 1, 327685, 65537, 1, 327681, 65537, 1, 262145, 65537, 1, 196609, 65537, 1, 131073, 65537, 1, 131074, 65537, 1, 65538, 65537, 1, 65539, 65537, 1, 65540, 65537, 1, 65541, 65537, 1, 65542, 65537, 1, 65543, 65537, 1, 131079, 65537, 1, 196615, 65537, 1, 12, 65537, 1, 11, 65537, 1, 10, 65537, 1, 65546, 65537, 1, 65545, 65537, 1, 131081, 65537, 1, 262157, 65537, 1, 327697, 65537, 1, 262161, 65537, 1, 393233, 65537, 1, 655369, 65537, 1, 589833, 65537, 1, 589834, 65537, 1, 589832, 65537, 1, 655363, 65537, 1, 589827, 65537, 1, 458751, 65537, 1, 589839, 65537, 1, 14, 65537, 1, 15, 65537, 1, 16, 65537, 1, 65552, 65537, 1, 131088, 65537, 1, 131087, 65537, 1, 65551, 65537, 1, 65547, 65537, 1, 655360, 65537, 1, 720896, 65537, 1, 131075, 65537, 1, 131077, 65537, 1, 196613, 65537, 1, 327683, 65537, 1, 458755, 65537, 1, 589825, 65537, 1, 524291, 65537, 1, 458757, 65537, 1, 393223, 65537, 1, 524293, 65537, 1, 589828, 65537, 1, 655362, 65537, 1, 655364, 65537, 1, 524295, 65537, 1, 524297, 65537, 1, 524299, 65537, 1, 589835, 65537, 1, 655368, 65537, 1, 589836, 65537, 1, 524303, 65537, 1, 655371, 65537, 1, 589838, 65537, 1, 524304, 65537, 1, 458768, 65537, 1, 458767, 65537, 1, 393231, 65537, 1, 327695, 65537, 1, 196624, 65537, 1, 196623, 65537, 1, 262159, 65537, 1, 196625, 65537, 1, 196621, 65537, 1, 196617, 65537, 1, 65544, 65537, 1, 65549, 65537, 1, 13, 65537, 1, 131085, 65537, 1, 327693, 65537, 1, 327691, 65537, 1, 393227, 65537, 1, 458763, 65537, 1, 327687, 65537, 1, 393219, 65537, 1, 458759, 65537, 1, 393217, 65537, 1, 458753, 65537, 1, 589831, 65537, 1)
+
+[node name="Director" type="Node2D" parent="."]
+script = SubResource("GDScript_y404o")

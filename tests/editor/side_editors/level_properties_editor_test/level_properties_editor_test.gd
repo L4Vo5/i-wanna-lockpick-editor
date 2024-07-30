@@ -14,6 +14,7 @@ var level_pack: LevelPackData
 func before_test() -> void:
 	editor = LEVEL_PROPERTIES_EDITOR.instantiate()
 	add_child(editor)
+	await await_idle_frame()
 
 func test_add_level() -> void:
 	editor._create_new_level()
@@ -59,7 +60,7 @@ func test_change_third_level_properties() -> void:
 	var lvl_name := "Level name!"
 	var author := "Somebody"
 	var title := "The First"
-	var level := editor._level_pack_data.levels[2]
+	var level := editor._level_pack_data.get_level_by_position(2)
 	var size := Vector2i(32*121, 32*109)
 	
 	assert_str(level.name).is_not_equal(lvl_name)
@@ -88,11 +89,11 @@ func test_change_third_level_properties() -> void:
 func test_deleted_level_so_properties_changed() -> void:
 	# [name, title, author, size (square)]
 	var properties := [
-		["First level", "1-1", "Me", 32*100],
-		["SECOND level", "1-2", "Who knows", 32*103],
-		["THIS IS THE THIRD", "1-3", "L4Vo6", 32*105]
+		["First level", "1-1", "Me", 32*100.0],
+		["SECOND level", "1-2", "Who knows", 32*103.0],
+		["THIS IS THE THIRD", "1-3", "L4Vo6", 32*105.0]
 	]
-	var pack_data := LevelPackData.get_default_level_pack()
+	var pack_data := editor._level_pack_data
 	for i in properties.size():
 		var props = properties[i]
 		var lvl := LevelData.get_default_level()
@@ -101,9 +102,8 @@ func test_deleted_level_so_properties_changed() -> void:
 		lvl.author = props[2]
 		lvl.size = Vector2i.ONE * props[3]
 		pack_data.add_level(lvl, i)
-	pack_data.delete_level(3)
-	editor._level_pack_data = pack_data
-	editor._level_data = pack_data.levels[0]
+	pack_data.delete_level_by_position(3)
+	editor._set_level_number(0)
 	
 	for arr in [[0, 1], [1, 2]]:
 		var i: int = arr[0]
@@ -132,23 +132,32 @@ func test_delete_last_level() -> void:
 	editor._delete_current_level()
 	editor._set_level_number(1)
 	
-	var levels := editor._level_pack_data.levels
+	var levels := editor._level_pack_data.get_levels_ordered()
 	assert_array(levels).has_size(2)
 	var first_level := levels[0]
 	var second_level := levels[1]
-	assert_object(editor._level_data).is_equal(second_level)
-	assert_object(editor._level_data).is_not_equal(first_level)
+	assert_object(first_level).is_not_same(second_level)
+	assert_object(editor._level_data).is_same(second_level)
+	assert_object(editor._level_data).is_not_same(first_level)
+	
 	editor._delete_current_level()
-	await await_idle_frame()
-	assert_object(editor._level_data).is_equal(first_level)
-	assert_object(editor._level_data).is_not_equal(second_level)
-	levels = editor._level_pack_data.levels
+	assert_object(editor._level_data).is_same(first_level)
+	assert_object(editor._level_data).is_not_same(second_level)
+	levels = editor._level_pack_data.get_levels_ordered()
 	assert_array(levels).has_size(1)
-	assert_object(levels[0]).is_equal(first_level)
+	assert_object(levels[0]).is_same(first_level)
 
 func test_delete_only_level() -> void:
-	assert_array(editor._level_pack_data.levels).has_size(1)
+	assert_array(editor._level_pack_data.get_levels_ordered())\
+		.has_size(1)
 	var level := editor._level_data
 	editor._delete_current_level()
-	assert_object(editor._level_data).is_not_equal(level)
+	assert_object(editor._level_data).is_not_same(level)
 
+func test_delete_then_add() -> void:
+	editor._delete_current_level()
+	editor._delete_current_level()
+	editor._delete_current_level()
+	editor._create_new_level()
+	assert_int(editor._level_pack_data.levels.size()).is_equal(2)
+	assert_array(editor._level_pack_data.levels.keys()).contains_exactly([3, 4])

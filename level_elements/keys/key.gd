@@ -5,7 +5,7 @@ class_name KeyElement
 ## Key lol
 
 signal picked_up
-static var level_element_type := Enums.level_element_types.key
+static var level_element_type := Enums.LevelElementTypes.Key
 
 @export var data: KeyData:
 	set(val):
@@ -27,7 +27,6 @@ static var level_element_type := Enums.level_element_types.key
 @onready var symbol: Sprite2D = %Symbol
 @onready var symbol_inf: Sprite2D = %SymbolInf
 @onready var collision: Area2D = %Collision
-#@onready var input_grabber: Control = $GuiInputGrabber
 
 var level: Level = null:
 	set(val):
@@ -43,24 +42,15 @@ func _ready() -> void:
 		shadow.hide()
 	collision.area_entered.connect(on_collide)
 	update_visual()
-	
-#	input_grabber.gui_input.connect(_gui_input)
-#	input_grabber.mouse_entered.connect(_on_mouse_entered)
-#	input_grabber.mouse_exited.connect(_on_mouse_exited)
-
-func _on_mouse_entered() -> void:
-	mouse_entered.emit()
-func _on_mouse_exited() -> void:
-	mouse_exited.emit()
 
 func disconnect_level() -> void:
 	if not is_instance_valid(level): return
 
 func connect_level() -> void:
 	if not is_instance_valid(level): return
-	_on_changed_glitch_color()
+	update_glitch_color()
 
-func _on_changed_glitch_color() -> void:
+func update_glitch_color() -> void:
 	if not is_instance_valid(data): return
 	data.update_glitch_color(level.logic.glitch_color)
 	update_visual()
@@ -80,7 +70,7 @@ func _disconnect_data() -> void:
 
 func _process(_delta: float) -> void:
 	if !data: return
-	if data.color in [Enums.colors.master, Enums.colors.pure]:
+	if data.color in [Enums.Colors.Master, Enums.Colors.Pure]:
 		var frame := floori(Global.time / Rendering.SPECIAL_ANIM_DURATION) % 4
 		if frame == 3:
 			frame = 1
@@ -92,15 +82,15 @@ func _resolve_collision_mode() -> void:
 	else:
 		collision.process_mode = Node.PROCESS_MODE_INHERIT
 
-func set_special_texture(color: Enums.colors) -> void:
+func set_special_texture(color: Enums.Colors) -> void:
 	match color:
-		Enums.colors.stone:
+		Enums.Colors.Stone:
 			special.texture = preload("res://level_elements/keys/spr_key_stone.png")
 			special.vframes = 2
-		Enums.colors.master:
+		Enums.Colors.Master:
 			special.texture = preload("res://level_elements/keys/spr_key_master.png")
 			special.vframes = 4
-		Enums.colors.pure:
+		Enums.Colors.Pure:
 			special.texture = preload("res://level_elements/keys/spr_key_pure.png")
 			special.vframes = 4
 
@@ -117,9 +107,9 @@ func update_visual() -> void:
 	symbol_inf.hide()
 	# get the outline / shadow / fill
 	var spr_frame = {
-		Enums.key_types.exact: 1,
-		Enums.key_types.star: 2,
-		Enums.key_types.unstar: 3,
+		Enums.KeyTypes.Exact: 1,
+		Enums.KeyTypes.Star: 2,
+		Enums.KeyTypes.Unstar: 3,
 	}.get(data.type)
 	if spr_frame == null: spr_frame = 0
 	shadow.frame = spr_frame
@@ -128,15 +118,15 @@ func update_visual() -> void:
 	special.frame = spr_frame
 	glitch.frame = spr_frame
 	symbol_inf.visible = data.is_infinite
-	if data.color == Enums.colors.master and data.type == Enums.key_types.add:
+	if data.color == Enums.Colors.Master and data.type == Enums.KeyTypes.Add:
 		shadow.frame = 4
-	if data.color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
+	if data.color in [Enums.Colors.Master, Enums.Colors.Pure, Enums.Colors.Stone]:
 		special.show()
 		set_special_texture(data.color)
-	elif data.color == Enums.colors.glitch:
+	elif data.color == Enums.Colors.Glitch:
 		glitch.show()
-		if is_instance_valid(level) and level.logic.glitch_color != Enums.colors.glitch:
-			if level.logic.glitch_color in [Enums.colors.master, Enums.colors.pure, Enums.colors.stone]:
+		if is_instance_valid(level) and level.logic.glitch_color != Enums.Colors.Glitch:
+			if level.logic.glitch_color in [Enums.Colors.Master, Enums.Colors.Pure, Enums.Colors.Stone]:
 				special.show()
 				set_special_texture(level.logic.glitch_color)
 				special.frame = special.frame % 4 + 4 * (special.vframes - 1)
@@ -151,7 +141,7 @@ func update_visual() -> void:
 	
 	
 	# draw the number
-	if data.type == Enums.key_types.add or data.type == Enums.key_types.exact:
+	if data.type == Enums.KeyTypes.Add or data.type == Enums.KeyTypes.Exact:
 		number.show()
 		number.text = str(data.amount)
 		if number.text == "1":
@@ -164,9 +154,9 @@ func update_visual() -> void:
 	# or the symbol
 	else:
 		var frame = {
-			Enums.key_types.flip: 0,
-			Enums.key_types.rotor: 1,
-			Enums.key_types.rotor_flip: 2,
+			Enums.KeyTypes.Flip: 0,
+			Enums.KeyTypes.Rotor: 1,
+			Enums.KeyTypes.RotorFlip: 2,
 		}.get(data.type)
 		if frame != null:
 			symbol.frame = frame
@@ -203,21 +193,18 @@ func on_pickup() -> void:
 	picked_up.emit()
 	
 	snd_pickup.pitch_scale = 1
-	if data.color == Enums.colors.master:
+	if data.color == Enums.Colors.Master:
 		snd_pickup.stream = preload("res://level_elements/keys/master_pickup.wav")
 		if data.amount.is_negative():
 			snd_pickup.pitch_scale = 0.82
-	elif data.type in [Enums.key_types.flip, Enums.key_types.rotor, Enums.key_types.rotor_flip]:
+	elif data.type in [Enums.KeyTypes.Flip, Enums.KeyTypes.Rotor, Enums.KeyTypes.RotorFlip]:
 		snd_pickup.stream = preload("res://level_elements/keys/signflip_pickup.wav")
-	elif data.type == Enums.key_types.star:
+	elif data.type == Enums.KeyTypes.Star:
 		snd_pickup.stream = preload("res://level_elements/keys/star_pickup.wav")
-	elif data.type == Enums.key_types.unstar:
+	elif data.type == Enums.KeyTypes.Unstar:
 		snd_pickup.stream = preload("res://level_elements/keys/unstar_pickup.wav")
 	elif data.amount.is_negative():
 		snd_pickup.stream = preload("res://level_elements/keys/negative_pickup.wav")
 	else:
 		snd_pickup.stream = preload("res://level_elements/keys/key_pickup.wav")
 	snd_pickup.play()
-
-#func get_rect() -> Rect2:
-#	return input_grabber.get_global_rect()

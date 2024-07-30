@@ -18,15 +18,32 @@ func before_test() -> void:
 		[3, [1, 4, 4]],
 		[4, [4, 0]],
 	]
-	pack_data.levels = make_levels_from_data(levels_data)
+	make_levels_from_data(levels_data)
 	verify_levels_integrity()
 
+func test_get_levels_ordered() -> void:
+	var order = [1, 4, 3, 0, 2]
+	var levels = pack_data.get_levels_ordered()
+	for i in order.size():
+		var l1 = levels[i]
+		var l2 = pack_data.levels[order[i]]
+		assert_object(l1)\
+			.is_not_same(l2)
+	pack_data.level_order = order.duplicate()
+	levels = pack_data.get_levels_ordered()
+	for i in order.size():
+		var l1 = levels[i]
+		var l2 = pack_data.levels[order[i]]
+		assert_object(l1)\
+			.append_failure_message("i = %s. %s != %s" % [i, l1.get_meta("label"), l2.get_meta("label")])\
+			.is_same(l2)
+
 func test_duplicate_level() -> void:
-	pack_data.duplicate_level(1) # label: 1
+	pack_data.duplicate_level_by_position(1) # label: 1
 	set_level_data(2, "N", [1, 2])
 	verify_levels_integrity()
 	verify_level_labels([0, 1, "N", 2, 3, 4])
-	pack_data.duplicate_level(4) # label: 3
+	pack_data.duplicate_level_by_position(4) # label: 3
 	set_level_data(5, "O", [1, 4, 4])
 	verify_levels_integrity()
 	verify_level_labels([0, 1, "N", 2, 3, "O", 4])
@@ -47,7 +64,7 @@ func test_swap_levels() -> void:
 
 @warning_ignore("unused_parameter")
 func test_delete_level(data, test_parameters := [
-	[[[3, 0], [3, 0], [2, 1], [1, 0], [0, 0]]],
+	[[[3, 0], [3, 0], [2, 1], [1, 0]]],
 	[[[4, 2], [1, 4], [2, 1], [1, 0]]],
 	[[[1, 2]]],
 	[[[2, 1]]],
@@ -56,7 +73,7 @@ func test_delete_level(data, test_parameters := [
 	for deletion in data:
 		var id_to_delete = deletion[0]
 		var expected_invalid_entries = deletion[1]
-		pack_data.delete_level(id_to_delete)
+		pack_data.delete_level_by_position(id_to_delete)
 		verify_levels_integrity(expected_invalid_entries)
 		labels.remove_at(deletion[0])
 		verify_level_labels(labels)
@@ -64,25 +81,24 @@ func test_delete_level(data, test_parameters := [
 func test_duplicate_delete_swap() -> void:
 	# this test should be unnecessary, but whatever
 	
-	pack_data.duplicate_level(1)
+	pack_data.duplicate_level_by_position(1)
 	set_level_data(2, "N", [1, 2])
 	verify_levels_integrity()
 	verify_level_labels([0, 1, "N", 2, 3, 4])
 	
-	pack_data.delete_level(3)
+	pack_data.delete_level_by_position(3)
 	verify_levels_integrity(2)
 	verify_level_labels([0, 1, "N", 3, 4])
-	
 	pack_data.swap_levels(0, 2)
 	verify_levels_integrity(2)
 	verify_level_labels(["N", 1, 0, 3, 4])
 	
 	var level := LevelData.new()
-	for leads_to in [0, 2]:
+	for leads_to in [5, 0]:
 		var entry := EntryData.new()
 		entry.leads_to = leads_to
 		level.entries.push_back(entry)
-	pack_data.add_level(level, pack_data.levels.size())
+	pack_data.add_level(level)
 	set_level_data(5, "E", ["N", 0])
 	verify_levels_integrity(2)
 	verify_level_labels(["N", 1, 0, 3, 4, "E"])
@@ -91,11 +107,11 @@ func test_duplicate_delete_swap() -> void:
 	verify_levels_integrity(2)
 	verify_level_labels([1, "N", 0, 3, 4, "E"])
 	
-	pack_data.delete_level(1)
+	pack_data.delete_level_by_position(1)
 	verify_levels_integrity(2)
 	verify_level_labels([1, 0, 3, 4, "E"])
 	
-	pack_data.delete_level(1)
+	pack_data.delete_level_by_position(1)
 	verify_levels_integrity(4)
 	verify_level_labels([1, 3, 4, "E"])
 
@@ -103,8 +119,7 @@ func test_duplicate_delete_swap() -> void:
 # where "level data" is [label, entries]
 # label can be anything. entries is an array of labels it leads to
 # this is used to initialize the array, so labels are integers and correspond to level id (i'm lazy to make a super complicated perfect system lol)
-func make_levels_from_data(levels_data: Array) -> Array[LevelData]:
-	var arr: Array[LevelData] = []
+func make_levels_from_data(levels_data: Array) -> void:
 	for level_data in levels_data:
 		var level := LevelData.new()
 		level.set_meta("label", level_data[0])
@@ -115,15 +130,16 @@ func make_levels_from_data(levels_data: Array) -> Array[LevelData]:
 			entry.set_meta("leads_to_label", entry_goal)
 			entry.set_meta("self", entry)
 			level.entries.push_back(entry)
-		arr.push_back(level)
-	return arr
+		pack_data.add_level(level)
 
 # sets level label, and points entries to the indicated labels (without modifying leads_to).
-func set_level_data(level_id: int, label: Variant, leads_to: Array) -> void:
-	var level := pack_data.levels[level_id]
+func set_level_data(level_position: int, label: Variant, leads_to: Array) -> void:
+	var level := pack_data.get_level_by_position(level_position)
 	# in case duplicating levels keeps their meta (currently, it doesn't)
 	if level.has_meta("self"):
-		assert_object(level.get_meta("self")).is_not_same(level)
+		assert_object(level.get_meta("self"))\
+			.append_failure_message("level label is %s" % level.get_meta("label"))\
+			.is_not_same(level)
 	level.set_meta("label", label)
 	level.set_meta("self", level)
 	assert_int(level.entries.size()).is_equal(leads_to.size())
@@ -137,7 +153,7 @@ func set_level_data(level_id: int, label: Variant, leads_to: Array) -> void:
 		entry.set_meta("self", entry)
 
 func verify_levels_integrity(expected_invalid_entries := 0) -> void:
-	var levels := pack_data.levels
+	var levels := pack_data.get_levels_ordered()
 	# check that there are no repeated labels
 	var labels := {}
 	for level in levels:
@@ -153,24 +169,24 @@ func verify_levels_integrity(expected_invalid_entries := 0) -> void:
 		for entry in level.entries:
 			assert_object(entry.get_meta("self")).is_same(entry)
 			var leads_to_label = entry.get_meta("leads_to_label")
-			if entry.leads_to == -1:
+			if not pack_data.levels.has(entry.leads_to):
 				assert_bool(labels.has(leads_to_label)).is_false()
 				invalid_entries += 1
 			else:
-				var l := levels[entry.leads_to]
+				var l: LevelData = pack_data.levels[entry.leads_to]
 				var label = l.get_meta("label")
 				assert_that(label)\
-				.append_failure_message("stack: " + str(get_stack()[1]))\
 				.is_equal(leads_to_label)
 	assert_int(invalid_entries)\
-		.append_failure_message(str(get_stack()[1]))\
 		.is_equal(expected_invalid_entries)
 
 func verify_level_labels(labels: Array) -> void:
-	var levels := pack_data.levels
+	var levels := pack_data.get_levels_ordered()
 	for i in levels.size():
 		var level := levels[i]
 		assert_bool(level.has_meta("label")).is_true()
-		assert_that(level.get_meta("label"))\
-			.append_failure_message("i: %d. stack: " % i + str(get_stack()[1]))\
-			.is_equal(labels[i])
+		var meta = level.get_meta("label")
+		assert_int(typeof(meta)).is_equal(typeof(labels[i]))
+		if typeof(meta) == typeof(labels[i]):
+			assert_that(level.get_meta("label"))\
+				.is_equal(labels[i])

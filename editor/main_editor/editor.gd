@@ -8,16 +8,15 @@ class_name LockpickEditor
 @export var door_editor: DoorEditor
 @export var key_editor: KeyEditor
 @export var tile_editor: Control
-@export var level_properties_editor: LevelPropertiesEditor
 @export var level_pack_properties_editor: LevelPackPropertiesEditor
 @export var entry_editor: EntryEditor
 @export var salvage_point_editor: SalvagePointEditor
 
 @onready var level_element_editors: Dictionary = {
-	Enums.level_element_types.door: door_editor,
-	Enums.level_element_types.key: key_editor,
-	Enums.level_element_types.entry: entry_editor,
-	Enums.level_element_types.salvage_point: salvage_point_editor,
+	Enums.LevelElementTypes.Door: door_editor,
+	Enums.LevelElementTypes.Key: key_editor,
+	Enums.LevelElementTypes.Entry: entry_editor,
+	Enums.LevelElementTypes.SalvagePoint: salvage_point_editor,
 }
 
 @export var level_container: LevelContainer
@@ -54,12 +53,6 @@ var drag_and_drop_web: DragAndDropWeb = null
 
 var data := EditorData.new()
 
-func _enter_tree() -> void:
-	Global.in_level_editor = true
-
-func _exit_tree() -> void:
-	Global.in_level_editor = false
-
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("play"):
 		_on_play_pressed()
@@ -70,8 +63,6 @@ func _ready() -> void:
 	DirAccess.make_dir_absolute("user://level_saves")
 	file_dialog.current_dir = "levels"
 	Global.set_mode(Global.Modes.EDITOR)
-	side_tabs.set_current_tab_index(Global.settings.current_editor_tab)
-	_update_mode()
 	
 	data.gameplay = gameplay
 	data.level = level
@@ -94,7 +85,6 @@ func _ready() -> void:
 	door_editor.editor_data = data
 	data.key_editor = key_editor
 	data.tile_editor = tile_editor
-	data.level_properties_editor = level_properties_editor
 	data.level_pack_properties_editor = level_pack_properties_editor
 	data.entry_editor = entry_editor
 	data.salvage_point_editor = salvage_point_editor
@@ -102,7 +92,6 @@ func _ready() -> void:
 	data.level_element_editors = level_element_editors
 	
 	level_container.editor_data = data
-	level_properties_editor.editor_data = data
 	level_pack_properties_editor.editor_data = data
 	entry_editor.editor_data = data
 	salvage_point_editor.editor_data = data
@@ -145,6 +134,9 @@ func _ready() -> void:
 	else:
 		# drag and drop on desktop
 		get_window().files_dropped.connect(_on_files_dropped)
+	
+	side_tabs.set_current_tab_index(Global.settings.current_editor_tab)
+	_update_mode()
 
 func _on_files_dropped(files: PackedStringArray) -> void:
 	if files.is_empty():
@@ -188,32 +180,20 @@ func resolve_visibility() -> void:
 func _update_mode() -> void:
 	Global.settings.current_editor_tab = side_tabs.get_current_tab_index()
 	var current_tab := side_tabs.get_current_tab_control()
-	data.tilemap_edit = current_tab == tile_editor
-	data.level_elements = false
-	for type in Enums.level_element_types.values():
-		if current_tab == level_element_editors[type]:
-			data.level_elements = true
-			data.level_element_type = type
-			break
-	data.level_properties = current_tab == level_properties_editor
-	data.editing_settings = current_tab.name == "Settings"
-	data.multiple_selection = current_tab.name == "MultipleSelection"
+	data.current_tab = current_tab
 
 func _on_play_pressed() -> void:
 	if Global.settings.should_save_on_play and not data.is_playing:
-		if SaveLoad.is_path_valid(data.level_pack_data.file_path):
+		if SaveLoad.is_path_valid_for_saving(data.level_pack_data.file_path):
 			save_level()
 	if data.is_playing:
-		data.level_pack_data.state_data.save()
+		data.pack_state.save()
 	data.is_playing = not data.is_playing
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
 	level.allow_ui = data.is_playing
 	level.load_output_points = data.is_playing
 	right_dock.visible = not data.disable_editing
-	data.danger_highlight.stop_adapting()
-	data.hover_highlight.stop_adapting()
-	data.selected_highlight.stop_adapting()
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
 	gameplay.reset()
@@ -230,7 +210,7 @@ func save_level() -> void:
 			if path == "":
 				path = data.level_pack_data.resource_path
 			var ext := path.get_extension()
-			data.level_pack_data.state_data.save()
+			data.pack_state.save()
 			if ext in ["res", "tres"]:
 				# Allow saving res and tres anywhere when testing
 				if not Global.is_exported:
@@ -280,18 +260,20 @@ func finish_loading_level() -> void:
 		var fixable_problems := new_level_pack.get_fixable_invalid_reasons()
 		var unfixable_problems := new_level_pack.get_unfixable_invalid_reasons()
 		if fixable_problems.is_empty() and unfixable_problems.is_empty():
-			data.level_pack_data = new_level_pack
-			_update_level_path_display()
+			_actually_finish_loading_level()
 		else:
 			invalid_level_dialog.appear(fixable_problems, unfixable_problems)
 
 func _on_load_fixed() -> void:
 	new_level_pack.check_valid(true)
-	data.level_pack_data = new_level_pack
-	_update_level_path_display()
+	_actually_finish_loading_level()
 
 func _on_load_unfixed() -> void:
-	data.level_pack_data = new_level_pack
+	_actually_finish_loading_level()
+
+func _actually_finish_loading_level() -> void:
+	var new_pack_state := LevelPackStateData.find_state_file_for_pack_or_create_new(new_level_pack)
+	data.set_pack_and_state(new_level_pack, new_pack_state)
 	_update_level_path_display()
 
 func _update_level_path_display() -> void:
@@ -309,7 +291,7 @@ func _on_save_as_pressed() -> void:
 	file_dialog.clear_filters()
 	file_dialog.add_filter("*.lvl", "Level file")
 	file_dialog.add_filter("*.png", "Level file (image)")
-	if Global.danger_override:
+	if Global.settings.allow_resource_files:
 		file_dialog.add_filter("*.res", "Binary Resource")
 		file_dialog.add_filter("*.tres", "Text Resource")
 	if data.level_pack_data.file_path == "":
@@ -324,10 +306,9 @@ func _on_save_as_pressed() -> void:
 
 
 func _on_save_pressed() -> void:
-	# Allow saving .res, .tres, and levels in res:// when testing
-	if Global.danger_override:
+	if Global.settings.allow_resource_files:
 		save_level()
-	elif SaveLoad.is_path_valid(data.level_pack_data.file_path):
+	elif SaveLoad.is_path_valid_for_saving(data.level_pack_data.file_path):
 		save_level()
 	else:
 		# "Save As" logic will assign a new path
@@ -339,7 +320,7 @@ func _on_load_pressed() -> void:
 	file_dialog.clear_filters()
 	file_dialog.add_filter("*.lvl", "Level file")
 	file_dialog.add_filter("*.png", "Level file (image)")
-	if Global.danger_override:
+	if Global.settings.allow_resource_files:
 		file_dialog.add_filter("*.res", "Binary Resource")
 		file_dialog.add_filter("*.tres", "Text Resource")
 	
