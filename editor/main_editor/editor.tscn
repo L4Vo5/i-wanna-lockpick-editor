@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=31 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/main_editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/main_editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -23,11 +23,18 @@
 [ext_resource type="PackedScene" uid="uid://ccum746wsrcl8" path="res://editor/side_editors/settings_editor/settings_editor.tscn" id="24_hjg5q"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vegpn"]
-bg_color = Color(0, 1, 1, 0.25098)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
+bg_color = Color(0, 0.648438, 1, 0.25098)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uch22"]
+bg_color = Color(1, 0, 0, 0.25098)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 
 [sub_resource type="Resource" id="Resource_4pfn0"]
 script = ExtResource("9_0kc5k")
@@ -217,6 +224,8 @@ inner_container = NodePath("LevelContainerInner")
 gameplay = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay")
 level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport")
 editor = NodePath("../../..")
+expand_selection_style_box = SubResource("StyleBoxFlat_vegpn")
+shrink_selection_style_box = SubResource("StyleBoxFlat_uch22")
 
 [node name="Panel" type="Panel" parent="HSplitContainer/LeftSide/LevelContainer"]
 layout_mode = 1
@@ -299,7 +308,6 @@ width = 2.0
 unique_name_in_owner = true
 visible = false
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_vegpn")
 
 [node name="EditorCamera" type="Camera2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport"]
 unique_name_in_owner = true

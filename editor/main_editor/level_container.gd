@@ -36,7 +36,7 @@ var hover_highlight: HoverHighlight:
 
 @onready var ghost_displayer: GhostDisplayer = %GhostDisplayer
 @onready var selection_outline: SelectionOutline = %SelectionOutline
-@onready var selection_box: Control = %SelectionBox
+@onready var selection_box: Panel = %SelectionBox
 @onready var danger_outline: SelectionOutline = %DangerOutline
 
 @onready var editor_camera: Camera2D = %EditorCamera
@@ -82,6 +82,8 @@ var drag_state := Drag.None
 enum Drag { None = 0, Left, Right }
 
 var new_selection_candidates := {} # idk how else to name it...
+@export var expand_selection_style_box: StyleBox
+@export var shrink_selection_style_box: StyleBox
 
 var currently_adding: NewLevelElementInfo
 # Key: collision system id (returned by level). Value: nothing
@@ -180,6 +182,7 @@ func _handle_left_click() -> bool:
 				finish_expanding_selection()
 			drag_start = level.get_local_mouse_position()
 			drag_state = Drag.Left
+			selection_box[&"theme_override_styles/panel"] = expand_selection_style_box
 			expand_selection()
 			handled = true
 		Tool.DragLevel:
@@ -219,6 +222,7 @@ func _handle_right_click() -> bool:
 				finish_expanding_selection()
 			drag_start = level.get_local_mouse_position()
 			drag_state = Drag.Right
+			selection_box[&"theme_override_styles/panel"] = shrink_selection_style_box
 			expand_selection()
 			handled = true
 	return handled
@@ -370,13 +374,25 @@ func expand_selection() -> void:
 	selection_box.size = rect.size
 	selection_box.show()
 	var ids := collision_system.get_rects_intersecting_rect_in_grid(rect)
-	for id in new_selection_candidates:
-		if id not in ids:
-			remove_from_selection(id)
-	for id in ids:
-		if id not in selection:
-			new_selection_candidates[id] = true
-			add_to_selection(id)
+	match drag_state:
+		Drag.Left:
+			for id in new_selection_candidates:
+				if id not in ids:
+					remove_from_selection(id)
+			for id in ids:
+				if id not in selection:
+					new_selection_candidates[id] = true
+					add_to_selection(id)
+		Drag.Right:
+			for id in new_selection_candidates:
+				if id not in ids:
+					add_to_selection(id)
+			for id in ids:
+				if id in selection:
+					new_selection_candidates[id] = true
+					remove_from_selection(id)
+		Drag.None:
+			assert(false)
 
 func finish_expanding_selection() -> void:
 	if drag_state == Drag.None: return
