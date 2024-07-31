@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=32 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/main_editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/main_editor/scroll_container_improver.gd" id="2_jw8xc"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/side_editors/key_editor/key_editor.tscn" id="12_cr7ft"]
 [ext_resource type="Script" path="res://editor/misc/selection_outline.gd" id="13_621va"]
 [ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
+[ext_resource type="PackedScene" uid="uid://otoxbao0xxux" path="res://editor/side_editors/tile_editor/tile_editor.tscn" id="15_2sg2v"]
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/main_editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/side_editors/entry_editor/entry_editor.tscn" id="17_ncfu0"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
@@ -330,18 +331,9 @@ visible = false
 layout_mode = 2
 data = SubResource("Resource_k26ni")
 
-[node name="Tiles" type="MarginContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer"]
+[node name="Tiles" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("15_2sg2v")]
 visible = false
 layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/RightDock/BookmarkTabContainer/Tiles"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="HSplitContainer/RightDock/BookmarkTabContainer/Tiles/VBoxContainer"]
-layout_mode = 2
-text = "Nothing here (yet?), but you still need to select this tab to edit tiles."
-horizontal_alignment = 1
-autowrap_mode = 3
 
 [node name="Entries" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("17_ncfu0")]
 visible = false

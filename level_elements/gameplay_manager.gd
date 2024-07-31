@@ -46,14 +46,15 @@ func win() -> void:
 	win_animation("Congratulations!")
 
 func can_exit() -> bool:
-	if pack_state.exit_levels.is_empty():
-		return false
-	var exit: int = pack_state.exit_levels[-1]
-	if not pack_data.levels.has(exit):
-		pack_state.exit_levels.clear()
-		pack_state.exit_positions.clear()
-		return false
-	return true
+	while not pack_state.exit_levels.is_empty():
+		var exit: int = pack_state.exit_levels[-1]
+		if not pack_data.levels.has(exit):
+			# Skip non-existent levels instead of trimming the stack
+			pack_state.exit_levels.remove_at(pack_state.exit_levels.size() - 1)
+			pack_state.exit_positions.pop_back()
+		else:
+			return true
+	return false
 
 func exit_level() -> void:
 	if not can_exit():

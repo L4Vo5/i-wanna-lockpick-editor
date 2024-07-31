@@ -128,6 +128,7 @@ func _center_level() -> void:
 	editor_camera.position = - (size - OBJ_SIZE) / 2
 
 func _on_changed_level_data() -> void:
+	clear_selection()
 	pass
 	# TODO: figure out what goes here
 	#selection_system.level_container = self
@@ -315,6 +316,7 @@ func update_currently_adding() -> void:
 	var info := NewLevelElementInfo.new()
 	if editor_data.current_tab.name == &"Tiles":
 		info.type = Enums.LevelElementTypes.Tile
+		info.data = editor_data.current_tab.tile_type
 	elif editor_data.current_tab.name == &"LevelPack":
 		info.type = editor_data.current_tab.placing
 	elif editor_data.current_tab.name in [&"Doors", &"Keys", &"Entries", &"SalvagePoints"]:

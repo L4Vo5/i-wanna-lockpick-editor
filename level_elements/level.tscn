@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_ynu1q"]
 [ext_resource type="Script" path="res://level_elements/level_logic.gd" id="2_ufm7h"]
-[ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/w1_tileset.tres" id="2_xwsq2"]
+[ext_resource type="TileSet" uid="uid://56svi3hkvtjv" path="res://rendering/tiles/tileset.tres" id="3_2r2ci"]
 [ext_resource type="Texture2D" uid="uid://btuot74j1fbp4" path="res://editor/icons/player_spawnpoint.png" id="3_rk3yr"]
 [ext_resource type="AudioStream" uid="uid://boradxidfn753" path="res://level_elements/keys/signflip_pickup.wav" id="4_un4ju"]
 [ext_resource type="AudioStream" uid="uid://gfisy8ng12wn" path="res://level_elements/snd_camera.wav" id="5_b6b0w"]
@@ -26,7 +26,7 @@ script = ExtResource("2_ufm7h")
 
 [node name="TileMap" type="TileMap" parent="."]
 unique_name_in_owner = true
-tile_set = ExtResource("2_xwsq2")
+tile_set = ExtResource("3_2r2ci")
 format = 2
 
 [node name="Doors" type="Node2D" parent="."]

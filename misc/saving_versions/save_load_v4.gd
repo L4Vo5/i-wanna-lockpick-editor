@@ -32,10 +32,22 @@ static func _save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_u32(level.player_spawn_position.y)
 	# Tiles
 	# Make sure there aren't *checks notes* 2^32 - 1, or, 4294967295 tiles. Meaning the level size is constrained to about, uh, 2097120x2097120
-	data.store_u32(level.tiles.size())
-	for key in level.tiles:
+	for key: Vector2i in level.tiles:
+		var tile_type: int = level.tiles[key]
+		var other_pos := key + Vector2i.LEFT
+		if level.tiles.has(other_pos) and (level.tiles[other_pos] as int) == tile_type:
+			# either already handled or will be handled
+			continue
+		data.store_u8(tile_type)
 		data.store_u32(key.x)
 		data.store_u32(key.y)
+		var w := 1
+		other_pos = key + Vector2i.RIGHT
+		while level.tiles.has(other_pos) and (level.tiles[other_pos] as int) == tile_type:
+			w += 1
+			other_pos.x += 1
+		data.store_u32(w)
+	data.store_u8(0)
 	# Keys
 	data.store_u32(level.keys.size())
 	for key in level.keys:
@@ -151,11 +163,16 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	level.player_spawn_position = Vector2i(data.get_u32(), data.get_u32())
 	if SaveLoad.PRINT_LOAD: print("loaded player pos: %s" % str(level.player_spawn_position))
 	
-	var tile_amount := data.get_u32()
-	if SaveLoad.PRINT_LOAD: print("tile count is %d" % tile_amount)
-	for _i in tile_amount:
+	while true:
 		if data.reached_eof(): return
-		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = true
+		var tile_type := data.get_u8()
+		if tile_type == 0:
+			break
+		var x := data.get_u32()
+		var y := data.get_u32()
+		var w := data.get_u32()
+		for i in w:
+			level.tiles[Vector2i(x + i, y)] = tile_type
 	
 	var key_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("key count is %d" % key_amount)
