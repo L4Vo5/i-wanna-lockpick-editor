@@ -30,9 +30,18 @@ var collision_system: CollisionSystem:
 @export var editor: LockpickEditor
 var editor_data: EditorData: set = set_editor_data
 
-var hover_highlight: HoverHighlight:
-	get:
-		return level.hover_highlight
+@onready var hover_highlight: HoverHighlight = %HoverHighlight
+var hovering_over := -1
+@onready var mouseover: MouseoverText = %Mouseover
+
+@export var allow_hovering := true:
+	set(val):
+		if allow_hovering == val: return
+		allow_hovering = val
+		hover_highlight.visible = allow_hovering
+		if not allow_hovering:
+			hovering_over = -1
+		update_hover()
 
 @onready var ghost_displayer: GhostDisplayer = %GhostDisplayer
 @onready var selection_outline: SelectionOutline = %SelectionOutline
@@ -102,6 +111,7 @@ func _adjust_inner_container_dimensions() -> void:
 func _ready() -> void:
 	resized.connect(_adjust_inner_container_dimensions)
 	mouse_entered.connect(update_currently_adding)
+	level.level_elements_changed.connect(update_hover)
 
 func set_editor_data(data: EditorData) -> void:
 	assert(editor_data == null, "This should only really run once.")
@@ -121,6 +131,8 @@ func _on_changed_is_playing() -> void:
 	_adjust_inner_container_dimensions()
 	if not editor_data.is_playing:
 		editor_camera.make_current()
+	else:
+		clear_selection()
 	_update_preview()
 
 # could be more sophisticated now that bigger level sizes are supported.
@@ -149,7 +161,10 @@ func _input(event: InputEvent) -> void:
 			_handle_middle_unclick()
 
 func _gui_input(event: InputEvent) -> void:
-	if editor_data.disable_editing: return
+	if editor_data.disable_editing:
+		if event is InputEventMouseMotion:
+			update_hover()
+		return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed: 
 			if _handle_left_click():
@@ -168,8 +183,8 @@ func _handle_left_click() -> bool:
 	var handled := false
 	match current_tool:
 		Tool.Pencil:
-			if level.hovering_over != -1:
-				select_thing(level.hovering_over)
+			if hovering_over != -1:
+				select_thing(hovering_over)
 				handled = true
 			elif not selection.is_empty():
 				clear_selection()
@@ -289,6 +304,7 @@ func _handle_mouse_movement() -> bool:
 				var offset := new_pos - drag_start
 				drag_start = new_pos
 				editor_camera.position -= offset as Vector2
+	update_hover()
 	return handled
 
 func _try_place_currently_adding() -> bool:
@@ -387,11 +403,15 @@ func select_thing(id: int) -> void:
 		current_tool = Tool.DragSelection
 		var elem = collision_system.get_rect_data(id)
 		var type := LevelData.get_element_type(elem)
+		var editor_control = editor_data.level_element_editors[type]
 		if type in Enums.NODE_LEVEL_ELEMENTS:
-			var editor_control = editor_data.level_element_editors[type]
 			editor_control.data = elem.duplicated()
-			editor_data.side_tabs.set_current_tab_control(editor_control)
-			update_currently_adding()
+		elif type == Enums.LevelElementTypes.Tile:
+			editor_control.tile_type = editor_data.level_data.tiles[elem]
+		elif type in [Enums.LevelElementTypes.PlayerSpawn, Enums.LevelElementTypes.Goal]:
+			editor_control.placing = type
+		editor_data.side_tabs.set_current_tab_control(editor_control)
+		update_currently_adding()
 	else:
 		current_tool = Tool.DragSelection
 
@@ -468,7 +488,7 @@ func set_tool(tool: Tool) -> void:
 				danger_outline.add_rect(currently_adding.get_rect())
 			update_currently_adding_position()
 			_update_preview()
-	level.allow_hovering = current_tool == Tool.Pencil
+	allow_hovering = current_tool == Tool.Pencil
 
 func decide_tool() -> void:
 	if current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -484,7 +504,7 @@ func decide_tool() -> void:
 
 # Updates the ghost and the danger preview
 func _update_preview() -> void:
-	if not currently_adding or is_instance_valid(level.hover_highlight.current_obj):
+	if editor_data.is_playing or not currently_adding or is_instance_valid(hover_highlight.current_obj):
 		ghost_displayer.hide()
 		danger_outline.hide()
 		return
@@ -511,3 +531,32 @@ func _place_danger_obj() -> void:
 		#maybe_pos -= round_coord(drag_start, GRID_SIZE)
 	#obj.position = maybe_pos
 	#danger_obj = obj
+
+func update_mouseover() -> void:
+	assert(PerfManager.start("Level::update_mouseover"))
+	mouseover.hide()
+	var obj := hover_highlight.current_obj
+	if obj and allow_hovering:
+		mouseover.text = obj.get_mouseover_text()
+		mouseover.show()
+	assert(PerfManager.end("Level::update_mouseover"))
+
+func update_hover():
+	print("updating hover")
+	assert(PerfManager.start("level::update_hover"))
+	if not allow_hovering:
+		hovering_over = -1
+		hover_highlight.hide()
+		update_mouseover()
+		assert(PerfManager.end("level::update_hover"))
+		return
+	var pos := level.get_local_mouse_position()
+	var id := level.get_visible_element_at_pos(pos)
+	hovering_over = id
+	var node: Node = null
+	if id != -1:
+		node = level.get_node_by_id(id)
+		hover_highlight.show()
+	hover_highlight.adapt_to(node)
+	update_mouseover()
+	assert(PerfManager.end("level::update_hover"))

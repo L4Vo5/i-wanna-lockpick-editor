@@ -17,6 +17,9 @@ class_name LockpickEditor
 	Enums.LevelElementTypes.Key: key_editor,
 	Enums.LevelElementTypes.Entry: entry_editor,
 	Enums.LevelElementTypes.SalvagePoint: salvage_point_editor,
+	Enums.LevelElementTypes.Tile: tile_editor,
+	Enums.LevelElementTypes.Goal: level_pack_properties_editor,
+	Enums.LevelElementTypes.PlayerSpawn: level_pack_properties_editor,
 }
 
 @export var level_container: LevelContainer

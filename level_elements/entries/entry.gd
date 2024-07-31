@@ -49,7 +49,7 @@ func _ready() -> void:
 
 # called by kid.gd
 func player_touching() -> void:
-	assert(is_instance_valid(gameplay_manager))
+	if not is_instance_valid(gameplay_manager): return
 	if pack_data.levels.has(data.leads_to):
 		arrow.show()
 	level_name.show()
@@ -62,7 +62,7 @@ func player_touching() -> void:
 
 # called by kid.gd
 func player_stopped_touching() -> void:
-	assert(is_instance_valid(gameplay_manager))
+	if not is_instance_valid(gameplay_manager): return
 	arrow.hide()
 	#level_name.hide()
 	if name_tween: name_tween.kill()

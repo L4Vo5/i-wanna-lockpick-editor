@@ -29,14 +29,7 @@ var level_data: LevelData = null:
 		allow_ui = val
 		ui.visible = allow_ui
 
-@export var allow_hovering := true:
-	set(val):
-		if allow_hovering == val: return
-		allow_hovering = val
-		hover_highlight.visible = allow_hovering
-		if not allow_hovering:
-			hovering_over = -1
-		update_mouseover()
+signal level_elements_changed
 
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
@@ -61,10 +54,6 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var camera: Camera2D = %LevelCamera
 @onready var ui: LevelUI = %UI
 
-
-@onready var hover_highlight: HoverHighlight = %HoverHighlight
-var hovering_over: int = -1
-@onready var mouseover: Node2D = %Mouseover
 
 var collision_system: CollisionSystem:
 	get:
@@ -108,20 +97,18 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_EXIT_TREE:
 		remove_all_pooled()
 	if what == NOTIFICATION_WM_MOUSE_EXIT:
-		hover_highlight.stop_adapting()
+		level_elements_changed.emit()
 
 func _ready() -> void:
 	logic.level = self
 	reset()
 	_update_player_spawn_position()
-	hover_highlight.adapted_to.connect(_on_hover_adapted_to)
-	hover_highlight.stopped_adapting.connect(_on_hover_adapted_to.bind(null))
 
 var last_camera_pos := Vector2.ZERO
 func _process(_delta: float) -> void:
 	if camera.position != last_camera_pos:
 		last_camera_pos = camera.position
-		update_hover()
+		level_elements_changed.emit()
 
 func _physics_process(_delta: float) -> void:
 	adjust_camera()
@@ -129,11 +116,7 @@ func _physics_process(_delta: float) -> void:
 	var mouse_pos := get_local_mouse_position()
 	var camera_rect := Rect2(camera.position, camera.get_viewport_rect().size)
 	if not camera_rect.has_point(mouse_pos):
-		hover_highlight.stop_adapting()
-
-func _input(event: InputEvent):
-	if event is InputEventMouseMotion:
-		update_hover()
+		level_elements_changed.emit()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey:
@@ -170,7 +153,7 @@ func undo() -> void:
 	undo_sound.pitch_scale = 0.6
 	undo_sound.play()
 	logic.undo()
-	update_mouseover()
+	level_elements_changed.emit()
 
 ## Resets the current level (when pressing r)
 ## Also used for starting it for the first time
@@ -227,7 +210,7 @@ func reset() -> void:
 	
 	logic.reset()
 	
-	update_mouseover()
+	level_elements_changed.emit()
 	
 	assert(PerfManager.end("Level::reset"))
 
@@ -285,19 +268,6 @@ func _update_goal_position() -> void:
 			id = level_data.elem_to_collision_system_id[&"goal"]
 			level_data.elem_to_collision_system_id.erase(&"goal")
 			collision_system.remove_rect(id)
-
-func update_hover():
-	assert(PerfManager.start("level::update_hover"))
-	var pos := get_local_mouse_position()
-	var id := get_visible_element_at_pos(pos)
-	hovering_over = id
-	var node: Node = null
-	if hovering_over != -1:
-		var data = collision_system.get_rect_data(hovering_over)
-		if original_data_to_node.has(data):
-			node = original_data_to_node[data]
-	hover_highlight.adapt_to(node)
-	assert(PerfManager.end("level::update_hover"))
 
 ## Makes a Node element physically appear (doesn't check collisions)
 func _spawn_node_element(data) -> Node:
@@ -378,25 +348,13 @@ func get_visible_element_at_pos(pos: Vector2i) -> int:
 
 # TODO: remove these and do it in logic?
 func on_door_opened(_door: Door) -> void:
-	update_mouseover()
+	level_elements_changed.emit()
 
 func _on_door_changed_curse(_door: Door) -> void:
-	update_mouseover()
+	level_elements_changed.emit()
 
 func _on_key_picked_up(_key: KeyElement) -> void:
-	update_mouseover()
-
-func _on_hover_adapted_to(_what: Node) -> void:
-	update_mouseover()
-
-func update_mouseover() -> void:
-	assert(PerfManager.start("Level::update_mouseover"))
-	mouseover.hide()
-	var obj := hover_highlight.current_obj
-	if obj and allow_hovering:
-		mouseover.text = obj.get_mouseover_text()
-		mouseover.show()
-	assert(PerfManager.end("Level::update_mouseover"))
+	level_elements_changed.emit()
 
 func add_debris_child(debris: Node) -> void:
 	debris_parent.add_child(debris)
@@ -473,7 +431,7 @@ func add_element(element: NewLevelElementInfo) -> int:
 		_:
 			assert(false)
 	if id != -1:
-		update_hover()
+		level_elements_changed.emit()
 	return id
 
 func _place_tile(pos: Vector2i, tile_type := 1, custom_id := -1) -> int:
@@ -497,7 +455,7 @@ func _add_node_element(data) -> int:
 	var id := collision_system.add_rect(data.get_rect(), data)
 	level_data.elem_to_collision_system_id[data] = id
 	level_data.emit_changed()
-	var node := _spawn_node_element(data)
+	_spawn_node_element(data)
 	return id
 
 func _place_player_spawn(coord: Vector2i) -> int:
@@ -516,11 +474,7 @@ func _place_goal(coord: Vector2i) -> bool:
 
 ## Returns the node associated by the given id. Mostly used for testing.
 func get_node_by_id(id: int) -> Node:
-	var element = collision_system.get_rect_data(id)
-	var type := level_data.get_element_type(element)
-	if type not in [Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint]:
-		return null
-	return original_data_to_node[element]
+	return original_data_to_node.get(collision_system.get_rect_data(id))
 
 
 ## Removes whatever's at the given position. Returns the id on success or -1 otherwise.
@@ -539,7 +493,7 @@ func remove_element(id: int) -> void:
 			_remove_node_element(element)
 		_:
 			assert(false)
-	update_hover()
+	level_elements_changed.emit()
 
 func _remove_node_element(original_data) -> void:
 	var type: Enums.LevelElementTypes = original_data.level_element_type

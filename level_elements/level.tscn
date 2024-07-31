@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=14 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_ynu1q"]
 [ext_resource type="Script" path="res://level_elements/level_logic.gd" id="2_ufm7h"]
@@ -11,9 +11,7 @@
 [ext_resource type="Script" path="res://level_elements/level_ui.gd" id="8_7sh3o"]
 [ext_resource type="Texture2D" uid="uid://b5mtdgi8eorra" path="res://level_elements/autorun_on.png" id="8_n158d"]
 [ext_resource type="AudioStream" uid="uid://yukdfqp7sr3g" path="res://level_elements/autorun.wav" id="9_mj2a5"]
-[ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="10_b7dph"]
 [ext_resource type="PackedScene" uid="uid://wkjs6v6a35d" path="res://level_elements/ui/keypad/key_pad.tscn" id="10_hapwe"]
-[ext_resource type="PackedScene" uid="uid://db8xfne3exmq5" path="res://rendering/mouseover_text.tscn" id="11_j0wdo"]
 [ext_resource type="PackedScene" uid="uid://co2cgujysw6ei" path="res://level_elements/ui/warp_rod/warp_rod.tscn" id="11_pc6n5"]
 
 [node name="Level" type="Node2D"]
@@ -106,20 +104,11 @@ visible = false
 unique_name_in_owner = true
 stream = ExtResource("9_mj2a5")
 
-[node name="HoverHighlight" parent="." instance=ExtResource("10_b7dph")]
-unique_name_in_owner = true
-color = Color(1, 1, 1, 0.74902)
-
 [node name="PlayerParent" type="Node2D" parent="."]
 unique_name_in_owner = true
 
 [node name="GoalParent" type="Node2D" parent="."]
 unique_name_in_owner = true
-
-[node name="Mouseover" parent="." instance=ExtResource("11_j0wdo")]
-unique_name_in_owner = true
-process_priority = 1
-visible = false
 
 [node name="LevelCamera" type="Camera2D" parent="."]
 unique_name_in_owner = true
