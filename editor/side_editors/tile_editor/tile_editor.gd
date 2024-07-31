@@ -1,8 +1,7 @@
-@tool
 extends MarginContainer
 class_name TileEditor
 
-static var tile_set: TileSet = load("res://rendering/tiles/tileset.tres")
+const tile_set: TileSet = preload("res://rendering/tiles/tileset.tres")
 
 @onready var tile_choice: ObjectGridChooser = %TileChoice
 
