@@ -65,6 +65,8 @@ var current_tool := Tool.Pencil:
 	set = set_tool
 
 enum Tool {
+	# (used only when playing the level)
+	None,
 	# Left click: place and select, or just select if can't place (overriding previous selection). If something selected, transitions to DragSelection. Right click: remove under mouse. If nothing to remove, clear selection.
 	Pencil,
 	# Left click: place (even with mouse movement). Right click: remove (even with mouse movement).
@@ -122,6 +124,7 @@ func _on_changed_is_playing() -> void:
 	if not editor_data.is_playing:
 		editor_camera.make_current()
 	_update_preview()
+	decide_tool()
 
 # could be more sophisticated now that bigger level sizes are supported.
 func _center_level() -> void:
@@ -444,11 +447,15 @@ func set_tool(tool: Tool) -> void:
 	selection_box.hide()
 	danger_outline.hide()
 	phantom_grid.hide()
+	if current_tool == Tool.None:
+		selection_outline.show()
 	
 	current_tool = tool
 	
 	# Enter new tool
 	match current_tool:
+		Tool.None:
+			selection_outline.hide()
 		Tool.DragSelection:
 			# Always entered from a left click.
 			drag_state = Drag.Left
@@ -463,10 +470,12 @@ func set_tool(tool: Tool) -> void:
 				danger_outline.add_rect(currently_adding.get_rect())
 			update_currently_adding_position()
 			_update_preview()
-	level.allow_hovering = current_tool in [Tool.Pencil, Tool.Brush]
+	level.allow_hovering = current_tool in [Tool.Pencil, Tool.Brush, Tool.None]
 
 func decide_tool() -> void:
-	if current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	if editor_data.is_playing:
+		current_tool = Tool.None
+	elif current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		pass # don't change it
 	elif Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE) or Input.is_key_pressed(KEY_ALT):
 		current_tool = Tool.DragLevel
@@ -479,7 +488,7 @@ func decide_tool() -> void:
 
 # Updates the ghost and the danger preview
 func _update_preview() -> void:
-	if not currently_adding or (is_instance_valid(level.hover_highlight.current_obj) and level.allow_hovering):
+	if current_tool == Tool.None or not currently_adding or (is_instance_valid(level.hover_highlight.current_obj) and level.allow_hovering):
 		ghost_displayer.hide()
 		danger_outline.hide()
 		return
