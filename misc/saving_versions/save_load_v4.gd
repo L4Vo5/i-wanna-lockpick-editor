@@ -268,7 +268,7 @@ static func save_pack_state(data: ByteAccess, state: LevelPackStateData) -> void
 	var level_count := state.completed_levels.size()
 	data.store_u32(level_count)
 	for x in state.completed_levels:
-		data.store_u8(x)
+		data.store_u16(x)
 	
 	data.store_u32(state.exit_levels.size())
 	assert(state.exit_levels.size() == state.exit_positions.size())
@@ -296,11 +296,10 @@ static func load_pack_state(data: ByteAccess) -> LevelPackStateData:
 	state.current_level = data.get_u32()
 	var level_count := data.get_u32()
 	if level_count > MAX_ARRAY_SIZE: return
-	state.completed_levels.resize(level_count)
 	
 	for i in level_count:
 		if data.reached_eof(): return
-		state.completed_levels[i] = data.get_u8()
+		state.completed_levels[i] = data.get_u16()
 	
 	var exit_count := data.get_u32()
 	state.exit_levels.resize(exit_count)

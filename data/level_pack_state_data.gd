@@ -14,7 +14,7 @@ var pack_data: LevelPackData
 
 ## An array with the ids of completed levels, in no particular order.
 ## A level is completed when you reach the goal.
-@export var completed_levels: PackedByteArray
+@export var completed_levels := {}
 
 ## The salvaged doors. Their origin doesn't matter.
 @export var salvaged_doors: Array[DoorData] = []
@@ -41,7 +41,7 @@ func get_current_level_position() -> int:
 
 static func make_from_pack_data(pack: LevelPackData) -> LevelPackStateData:
 	var state := LevelPackStateData.new()
-	state.completed_levels = []
+	state.completed_levels = {}
 	state.exit_levels = []
 	state.exit_positions = []
 	state.pack_id = pack.pack_id
@@ -70,9 +70,7 @@ func get_salvaged_doors_count() -> int:
 	, 0)
 
 func _on_deleted_level(level_id: int, index: int) -> void:
-	var pos := completed_levels.find(level_id)
-	if pos != -1:
-		completed_levels.remove_at(pos)
+	completed_levels.erase(level_id)
 	if current_level == level_id:
 		index = clampi(index, 0, pack_data.levels.size() - 1)
 		current_level = pack_data.level_order[index]
@@ -93,12 +91,6 @@ func save() -> void:
 
 func check_and_fix() -> void:
 	# TODO: maybe improve (what if there's extra salvages? etc)
-	var pack_level_count := pack_data.levels.size()
-	# hack but this is the easiest way to make sure they all have the appropiate size i guess
-	var current_level_count := completed_levels.size()
-	if current_level_count != pack_level_count:
-		printerr("state is keeping track of %d levels, but level pack has %d, resizing." % [current_level_count, pack_level_count])
-		completed_levels.resize(pack_level_count)
 	if not pack_data.levels.has(current_level):
 		printerr("State's current level isn't in the pack: current level = ",
 			current_level)

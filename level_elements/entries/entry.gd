@@ -104,7 +104,7 @@ func update_status() -> void:
 	else:
 		sprite.texture = ENTRY_WORLD
 		sprite.position.y = -36
-	if gameplay_manager.pack_state.completed_levels[data.leads_to]:
+	if gameplay_manager.pack_state.completed_levels.has(data.leads_to):
 		completion.visible = true
 	else:
 		completion.visible = false
@@ -116,6 +116,7 @@ func _disconnect_data() -> void:
 func _connect_data() -> void:
 	if not is_instance_valid(data): return
 	data.changed.connect(update_position)
+	update_name()
 	update_position()
 	update_status()
 

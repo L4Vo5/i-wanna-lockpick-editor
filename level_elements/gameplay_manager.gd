@@ -39,7 +39,7 @@ func reset() -> void:
 
 func win() -> void:
 	if not has_won_current_level():
-		pack_state.completed_levels.push_back(pack_state.current_level)
+		pack_state.completed_levels[pack_state.current_level] = true
 		pack_state.save()
 	win_animation("Congratulations!")
 
