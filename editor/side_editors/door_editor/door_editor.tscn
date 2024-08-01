@@ -95,6 +95,7 @@ theme_override_constants/margin_top = 16
 
 [node name="Door" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer/TheDoor/MarginContainer" instance=ExtResource("5_c2ium")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 ignore_position = true
 data = SubResource("Resource_ip43t")
@@ -175,7 +176,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 min_value = 32.0
-max_value = 800.0
+max_value = 8000.0
 step = 32.0
 value = 32.0
 alignment = 1
@@ -193,7 +194,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 min_value = 32.0
-max_value = 800.0
+max_value = 8000.0
 step = 32.0
 value = 32.0
 alignment = 1
