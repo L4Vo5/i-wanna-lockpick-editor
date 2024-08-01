@@ -508,10 +508,13 @@ func _place_player_spawn(coord: Vector2i) -> int:
 	return id
 
 func _place_goal(coord: Vector2i) -> int:
-	var id: int = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
+	var id: int = level_data.elem_to_collision_system_id.get(Enums.LevelElementTypes.Goal, -1)
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}):
 		return -1
 	level_data.goal_position = coord
+	# setting goal_position will call _update_goal_position() and make the id valid if it wasn't
+	if id == -1:
+		id = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
 	return id
 
 

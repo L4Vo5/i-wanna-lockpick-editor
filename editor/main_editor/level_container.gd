@@ -324,7 +324,7 @@ func _try_place_currently_adding() -> bool:
 	if not currently_adding:
 		return false
 	if currently_adding.type in [Enums.LevelElementTypes.Goal, Enums.LevelElementTypes.PlayerSpawn]:
-		remove_from_selection(level.level_data.elem_to_collision_system_id[currently_adding.type])
+		remove_from_selection(level.level_data.elem_to_collision_system_id.get(currently_adding.type, -1))
 	var id := level.add_element(currently_adding)
 	if id != -1:
 		if current_tool == Tool.Pencil:
@@ -390,6 +390,7 @@ func add_to_selection(id: int) -> void:
 	)
 
 func remove_from_selection(id: int) -> void:
+	if id == -1: return
 	selection.erase(id)
 	var rect := collision_system.get_rect(id)
 	rect.position -= selection_outline.position as Vector2i
