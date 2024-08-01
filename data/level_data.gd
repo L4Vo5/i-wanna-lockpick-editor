@@ -115,11 +115,11 @@ func regen_collision_system() -> void:
 	elem_to_collision_system_id.clear()
 	var id: int
 	assert(PerfManager.start("LevelData::regen_collision_system"))
-	id = collision_system.add_rect(Rect2i(player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)), &"player_spawn")
-	elem_to_collision_system_id[&"player_spawn"] = id
+	id = collision_system.add_rect(Rect2i(player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)), Enums.LevelElementTypes.PlayerSpawn)
+	elem_to_collision_system_id[Enums.LevelElementTypes.PlayerSpawn] = id
 	if has_goal:
-		id = collision_system.add_rect(Rect2i(goal_position, Vector2i(32, 32)), &"goal")
-		elem_to_collision_system_id[&"goal"] = id
+		id = collision_system.add_rect(Rect2i(goal_position, Vector2i(32, 32)), Enums.LevelElementTypes.Goal)
+		elem_to_collision_system_id[Enums.LevelElementTypes.Goal] = id
 	for door in doors:
 		id = collision_system.add_rect(door.get_rect(), door)
 		elem_to_collision_system_id[door] = id
@@ -139,11 +139,8 @@ func regen_collision_system() -> void:
 	assert(PerfManager.end("LevelData::regen_collision_system"))
 
 static func get_element_type(elem: Variant) -> Enums.LevelElementTypes:
-	if elem is StringName:
-		if elem == &"player_spawn":
-			return Enums.LevelElementTypes.PlayerSpawn
-		if elem == &"goal":
-			return Enums.LevelElementTypes.Goal
+	if elem is Enums.LevelElementTypes:
+		return elem
 	if elem is Vector2i:
 		return Enums.LevelElementTypes.Tile
 	return elem.level_element_type

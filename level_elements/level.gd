@@ -258,7 +258,7 @@ func _update_player_spawn_position() -> void:
 	if not level_data: return
 	player_spawn_point.visible = Global.current_mode == Global.Modes.EDITOR
 	player_spawn_point.position = level_data.player_spawn_position
-	var id: int = level_data.elem_to_collision_system_id[&"player_spawn"]
+	var id: int = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.PlayerSpawn]
 	collision_system.change_rect(id, Rect2i(level_data.player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)))
 
 func _update_goal_position() -> void:
@@ -272,18 +272,18 @@ func _update_goal_position() -> void:
 			goal.queue_free()
 	# Wow this relatively straight forward thing looks way more complicated than it should. It's basically "update or add it if it should be there, otherwise remove it if it's there"
 	var id := -1
-	if level_data.elem_to_collision_system_id.has(&"goal"):
-		id = level_data.elem_to_collision_system_id[&"goal"]
+	if level_data.elem_to_collision_system_id.has(Enums.LevelElementTypes.Goal):
+		id = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
 	if level_data.has_goal:
 		if id != -1:
 			collision_system.change_rect(id, Rect2i(level_data.goal_position, Vector2i(32, 32)))
 		else:
-			id = collision_system.add_rect(Rect2i(level_data.goal_position, Vector2i(32, 32)), &"goal")
-			level_data.elem_to_collision_system_id[&"goal"] = id
+			id = collision_system.add_rect(Rect2i(level_data.goal_position, Vector2i(32, 32)), Enums.LevelElementTypes.Goal)
+			level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal] = id
 	else:
 		if id != -1:
-			id = level_data.elem_to_collision_system_id[&"goal"]
-			level_data.elem_to_collision_system_id.erase(&"goal")
+			id = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
+			level_data.elem_to_collision_system_id.erase(Enums.LevelElementTypes.Goal)
 			collision_system.remove_rect(id)
 
 func update_hover():
@@ -501,18 +501,18 @@ func _add_node_element(data) -> int:
 	return id
 
 func _place_player_spawn(coord: Vector2i) -> int:
-	var id: int = level_data.elem_to_collision_system_id[&"player_spawn"]
+	var id: int = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.PlayerSpawn]
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}):
 		return -1
 	level_data.player_spawn_position = coord + Vector2i(14, 32)
 	return id
 
-func _place_goal(coord: Vector2i) -> bool:
-	var id: int = level_data.elem_to_collision_system_id[&"goal"]
+func _place_goal(coord: Vector2i) -> int:
+	var id: int = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}):
-		return false
+		return -1
 	level_data.goal_position = coord
-	return true
+	return id
 
 
 ## Removes whatever's at the given position. Returns the id on success or -1 otherwise.

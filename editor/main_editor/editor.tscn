@@ -214,7 +214,7 @@ editable = false
 expand_to_text_length = true
 context_menu_enabled = false
 
-[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "gameplay", "level_viewport", "editor")]
+[node name="LevelContainer" type="Control" parent="HSplitContainer/LeftSide" node_paths=PackedStringArray("inner_container", "gameplay", "editor")]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -223,7 +223,6 @@ mouse_filter = 1
 script = ExtResource("2_kqd34")
 inner_container = NodePath("LevelContainerInner")
 gameplay = NodePath("LevelContainerInner/SubViewportContainer/SubViewport/Gameplay")
-level_viewport = NodePath("LevelContainerInner/SubViewportContainer/SubViewport")
 editor = NodePath("../../..")
 expand_selection_style_box = SubResource("StyleBoxFlat_vegpn")
 shrink_selection_style_box = SubResource("StyleBoxFlat_uch22")
@@ -258,6 +257,7 @@ unique_name_in_owner = true
 [node name="PhantomGrid" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay" instance=ExtResource("6_i4nvv")]
 unique_name_in_owner = true
 visible = false
+modulate = Color(1, 1, 1, 0.501961)
 
 [node name="LevelOutline" type="Node2D" parent="HSplitContainer/LeftSide/LevelContainer/LevelContainerInner/SubViewportContainer/SubViewport/Gameplay"]
 script = ExtResource("9_r4glf")
