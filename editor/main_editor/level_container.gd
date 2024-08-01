@@ -114,6 +114,7 @@ func set_editor_data(data: EditorData) -> void:
 	_on_changed_level_data()
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_on_changed_is_playing, CONNECT_DEFERRED)
+	inner_container.resized.connect(clamp_editor_camera)
 	
 	editor_camera.make_current()
 	_on_changed_is_playing()
@@ -127,14 +128,27 @@ func _on_changed_is_playing() -> void:
 	decide_tool()
 	# Fix for, idk, the camera? the Control nodes? the mouse position?
 	# Not updating properly until next frame
-	#await get_tree().process_frame
-	#level.update_hover()
+	await get_tree().process_frame
+	level.update_hover()
 
 # could be more sophisticated now that bigger level sizes are supported.
 func _center_level() -> void:
 	editor_camera.position = - (size - OBJ_SIZE) / 2
+	clamp_editor_camera()
 
+func clamp_editor_camera() -> void:
+	var min_pos := - inner_container.size
+	var max_pos := level.level_data.size
+	editor_camera.position = editor_camera.position.clamp(min_pos, max_pos)
+
+# kept only for connections
+var __level_data: LevelData
 func _on_changed_level_data() -> void:
+	if __level_data:
+		__level_data.changed_size.disconnect(clamp_editor_camera)
+	__level_data = level.level_data
+	__level_data.changed_size.connect(clamp_editor_camera)
+	clamp_editor_camera()
 	pass
 	# TODO: figure out what goes here
 	#selection_system.level_container = self
@@ -303,6 +317,7 @@ func _handle_mouse_movement() -> bool:
 				var offset := new_pos - drag_start
 				drag_start = new_pos
 				editor_camera.position -= offset as Vector2
+				clamp_editor_camera()
 	return handled
 
 func _try_place_currently_adding() -> bool:
