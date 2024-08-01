@@ -16,12 +16,18 @@ script = ExtResource("1_86jih")
 shape = SubResource("CircleShape2D_shx3d")
 
 [node name="Particles" type="Node2D" parent="."]
+unique_name_in_owner = true
 
-[node name="Sprite" type="Sprite2D" parent="."]
+[node name="SpriteParent" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Sprite" type="Sprite2D" parent="SpriteParent"]
+unique_name_in_owner = true
 texture = ExtResource("2_ry2y7")
 hframes = 4
 frame = 1
 
 [node name="Win" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
 stream = ExtResource("3_1r06c")
 bus = &"Sfx"

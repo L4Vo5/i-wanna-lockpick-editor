@@ -266,7 +266,7 @@ func _update_goal_position() -> void:
 	if level_data.has_goal:
 		if not is_instance_valid(goal):
 			_spawn_goal()
-		goal.position = level_data.goal_position + Vector2i(16, 16)
+		goal.custom_pos = level_data.goal_position + Vector2i(16, 16)
 	else:
 		if is_instance_valid(goal):
 			goal.queue_free()
@@ -361,7 +361,7 @@ func _spawn_goal() -> void:
 	if not level_data.has_goal:
 		return
 	goal = GOAL.instantiate()
-	goal.position = level_data.goal_position + Vector2i(16, 16)
+	goal.custom_pos = level_data.goal_position + Vector2i(16, 16)
 	goal.level = self
 	goal_parent.add_child(goal)
 

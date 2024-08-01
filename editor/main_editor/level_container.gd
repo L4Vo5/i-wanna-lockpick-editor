@@ -226,6 +226,8 @@ func _handle_left_click() -> bool:
 	return handled
 
 func _handle_left_unclick() -> void:
+	if level.goal:
+		level.goal.stop_funny_animation()
 	match current_tool:
 		Tool.DragSelection:
 			decide_tool()
@@ -398,12 +400,14 @@ func remove_from_selection(id: int) -> void:
 	# TODO: This won't update selection_grid_size...
 
 func select_thing(id: int) -> void:
+	var elem = collision_system.get_rect_data(id)
+	var type := LevelData.get_element_type(elem)
+	if type == Enums.LevelElementTypes.Goal:
+		level.goal.start_funny_animation()
 	if id not in selection: 
 		clear_selection()
 		add_to_selection(id)
 		current_tool = Tool.DragSelection
-		var elem = collision_system.get_rect_data(id)
-		var type := LevelData.get_element_type(elem)
 		if type in Enums.NODE_LEVEL_ELEMENTS:
 			var editor_control = editor_data.level_element_editors[type]
 			editor_control.data = elem.duplicated()
