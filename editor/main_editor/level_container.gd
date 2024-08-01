@@ -125,6 +125,10 @@ func _on_changed_is_playing() -> void:
 		editor_camera.make_current()
 	_update_preview()
 	decide_tool()
+	# Fix for, idk, the camera? the Control nodes? the mouse position?
+	# Not updating properly until next frame
+	#await get_tree().process_frame
+	#level.update_hover()
 
 # could be more sophisticated now that bigger level sizes are supported.
 func _center_level() -> void:

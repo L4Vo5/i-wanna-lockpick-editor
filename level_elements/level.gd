@@ -227,7 +227,7 @@ func reset() -> void:
 	
 	logic.reset()
 	
-	update_mouseover()
+	update_hover()
 	
 	assert(PerfManager.end("Level::reset"))
 
