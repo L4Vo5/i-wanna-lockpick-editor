@@ -497,7 +497,7 @@ func _add_node_element(data) -> int:
 	var id := collision_system.add_rect(data.get_rect(), data)
 	level_data.elem_to_collision_system_id[data] = id
 	level_data.emit_changed()
-	var node := _spawn_node_element(data)
+	_spawn_node_element(data)
 	return id
 
 func _place_player_spawn(coord: Vector2i) -> int:
@@ -615,7 +615,6 @@ func _move_node_element(original_data, new_position: Vector2i) -> void:
 	node.position = new_position
 	original_data.position = new_position
 	node.data.position = new_position
-	var rect := Rect2i(new_position, original_data.get_rect().size)
 	
 	var id: int = level_data.elem_to_collision_system_id[original_data]
 	collision_system.change_rect(id, original_data.get_rect())

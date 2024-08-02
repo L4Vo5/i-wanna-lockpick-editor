@@ -3,7 +3,7 @@ class_name NewLevelElementInfo
 
 signal changed_position
 
-var type: Enums.LevelElementTypes = -1
+var type: Enums.LevelElementTypes = Enums.LevelElementTypes.None
 # will be preferred over the data's position
 var position: Vector2i:
 	set(val):
@@ -12,11 +12,11 @@ var position: Vector2i:
 # data, if any (one of the Data classes)
 var data
 
-static func new_from_data(data) -> NewLevelElementInfo:
+static func new_from_data(_data) -> NewLevelElementInfo:
 	var e = NewLevelElementInfo.new()
-	e.type = data.level_element_type
-	e.data = data
-	e.position = data.position
+	e.type = _data.level_element_type
+	e.data = _data
+	e.position = _data.position
 	return e
 
 func get_rect() -> Rect2i:
