@@ -71,15 +71,8 @@ func _ready() -> void:
 	level.load_output_points = false
 	if FileAccess.file_exists(Global.settings.current_editor_pack):
 		load_level(Global.settings.current_editor_pack)
-	elif Global.is_exported:
-		_on_new_level_button_pressed()
 	else:
-		const p := "user://levels/testing.tres"
-		if FileAccess.file_exists(p):
-			load_level(p)
-		else:
-			print("Couldn't find %s. Starting on new level." % p)
-			_on_new_level_button_pressed()
+		_on_new_level_button_pressed()
 	
 	data.door_editor = door_editor
 	door_editor.editor_data = data
