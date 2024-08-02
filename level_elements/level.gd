@@ -517,6 +517,9 @@ func _place_goal(coord: Vector2i) -> int:
 		id = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
 	return id
 
+## Returns the node associated by the given id. Mostly used for testing.
+func get_node_by_id(id: int) -> Node:
+	return original_data_to_node.get(collision_system.get_rect_data(id))
 
 ## Removes whatever's at the given position. Returns the id on success or -1 otherwise.
 func remove_element(id: int) -> void:

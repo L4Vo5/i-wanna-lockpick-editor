@@ -12,7 +12,7 @@ var position: Vector2i:
 # data, if any (one of the Data classes)
 var data
 
-func new_from_data(data) -> NewLevelElementInfo:
+static func new_from_data(data) -> NewLevelElementInfo:
 	var e = NewLevelElementInfo.new()
 	e.type = data.level_element_type
 	e.data = data
