@@ -1,4 +1,4 @@
-#@tool
+@tool
 extends Area2D
 class_name LevelGoal
 
@@ -47,6 +47,10 @@ func _physics_process(_delta: float) -> void:
 		spawn_particle()
 	sprite.position.y = (3 * sin(deg_to_rad(fmod(time + 2.5, 360))))
 	time += 1
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EDITOR_PRE_SAVE:
+		sprite.position = Vector2.ZERO
 
 func win(visual_only: bool) -> void:
 	if not visual_only:

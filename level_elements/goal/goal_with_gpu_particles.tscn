@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://dqyg4flqd65n7"]
+
+[ext_resource type="Material" uid="uid://cm2torqy5d0uk" path="res://level_elements/goal/goal_particles.tres" id="1_5x7ln"]
+[ext_resource type="Texture2D" uid="uid://bfiax44upowp4" path="res://level_elements/goal/particle.png" id="1_vcbvv"]
+[ext_resource type="Texture2D" uid="uid://5je7lc0xwrl8" path="res://level_elements/goal/goal_sprites.png" id="2_g6pmj"]
+
+[node name="GoalWithGPUParticles" type="Node2D"]
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+amount = 10
+amount_ratio = 0.9666
+process_material = ExtResource("1_5x7ln")
+texture = ExtResource("1_vcbvv")
+lifetime = 1.2
+preprocess = 1.2
+fixed_fps = 50
+draw_order = 2
+
+[node name="Sprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+texture = ExtResource("2_g6pmj")
+hframes = 4
+frame = 1
