@@ -99,15 +99,6 @@ func reset() -> void:
 	undo_redo.clear_history()
 	active_salvage = null
 	
-	# TODO: Change how this is handled (output collision)
-	if level.load_output_points:
-		for salvage_point: SalvagePoint in level.salvage_points.get_children():
-			salvage_point.prep_output_step_1()
-		for salvage_point: SalvagePoint in level.salvage_points.get_children():
-			salvage_point.prep_output_step_2()
-		for salvage_point: SalvagePoint in level.salvage_points.get_children():
-			salvage_point.prep_output_step_3()
-	
 	# set up the undo in the start position
 	if is_instance_valid(player): 
 		last_player_undo = player.get_undo_action()

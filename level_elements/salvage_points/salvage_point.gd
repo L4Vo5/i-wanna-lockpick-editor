@@ -21,10 +21,6 @@ var level_pack_state: LevelPackStateData:
 			return level.gameplay_manager.pack_state
 		return null
 
-var door: Door = null
-var door_error = false
-var door_error_size = false
-
 @export var ignore_position := false
 @export var hide_number := false:
 	set(val):
@@ -42,63 +38,6 @@ func _ready() -> void:
 	collision.area_entered.connect(_on_touched)
 	update_visual()
 	number.visible = not hide_number
-
-func prep_output_step_1() -> void:
-	if not data.is_output:
-		return
-	if not level_pack_state:
-		return
-	var sid := data.sid
-	if sid < 0 or sid >= level_pack_state.salvaged_doors.size():
-		door = null
-		return
-	var new_door_data := level_pack_state.salvaged_doors[sid]
-	if new_door_data == null:
-		return
-	new_door_data = new_door_data.duplicated()
-	
-	var new_position := Vector2()
-	new_position.x = position.x + 16 - new_door_data.size.x / 2
-	new_position.y = position.y + 32 - new_door_data.size.y
-
-	new_door_data.position = new_position
-	new_door_data.glitch_color = Enums.Colors.Glitch
-	# TODO: output points could have their own ammount?
-	#new_door_data.amount.set_to(1, 0)
-	new_door_data.sid = sid
-	
-	# Make sure the door has collision
-	# This is not very ideal
-	# TODO: Better solution
-	var id := level.level_data.collision_system.add_rect(new_door_data.get_rect(), new_door_data)
-	level.level_data.elem_to_collision_system_id[new_door_data] = id
-	
-	# TODO: Don't use a function starting with _, it's supposed to be "private"!
-	door = level._spawn_node_element(new_door_data)
-	door_error = false
-
-func prep_output_step_2() -> void:
-	if not data.is_output:
-		return
-	if door != null and level.is_salvage_blocked(door.data.get_rect(), door):
-		door_error = true
-		door_error_size = door.data.size
-
-func prep_output_step_3() -> void:
-	if not data.is_output:
-		return
-	#if door != null and door_error:
-		#level.remove_element(door)
-		#door = null
-	#if door != null:
-		#hide()
-
-func remove_door() -> void:
-	#if door != null:
-		#level.remove_element(door)
-		#door = null
-	door_error = false
-	show()
 
 func _on_touched(_who: Node2D) -> void:
 	if not is_instance_valid(level): return
@@ -135,12 +74,11 @@ func update_visual() -> void:
 	var mod: Color
 	outline.hide()
 	if data.is_output:
-		if door_error:
+		if data.error_rect != Rect2i():
 			sprite.frame = 2
 			mod = Rendering.salvage_point_error_output_color
-			outline.position.x = 16 - door_error_size.x / 2
-			outline.position.y = 32 - door_error_size.y
-			outline.size = door_error_size
+			outline.position = data.error_rect.position
+			outline.size = data.error_rect.size
 			outline.show()
 		else:
 			sprite.frame = 1
@@ -166,4 +104,4 @@ func _notification(what: int) -> void:
 			outline.modulate = mod
 
 func get_mouseover_text() -> String:
-	return data.get_mouseover_text(door_error)
+	return data.get_mouseover_text()

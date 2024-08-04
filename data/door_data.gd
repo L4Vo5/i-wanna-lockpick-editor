@@ -31,7 +31,8 @@ static var level_element_type := Enums.LevelElementTypes.Door
 			lock.glitch_color = glitch_color
 		changed.emit()
 
-@export var sid := -1
+# Will only be something while in the level
+var sid := -1
 
 func add_lock(lock: LockData) -> void:
 	locks.push_back(lock)

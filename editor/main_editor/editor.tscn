@@ -68,7 +68,6 @@ _curses = {
 3: false
 }
 glitch_color = 13
-sid = -1
 
 [sub_resource type="Resource" id="Resource_guq2r"]
 script = ExtResource("9_0kc5k")

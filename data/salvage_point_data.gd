@@ -22,14 +22,19 @@ static var level_element_type := Enums.LevelElementTypes.SalvagePoint
 		position = val
 		emit_changed()
 
+# Assigned on level start to output points
+# Will only have non-zero size if there's an error
+var error_rect := Rect2i()
+
 func duplicated() -> SalvagePointData:
 	var dupe := SalvagePointData.new()
 	dupe.sid = sid
 	dupe.is_output = is_output
 	dupe.position = position
+	dupe.error_rect = error_rect
 	return dupe
 
-func get_mouseover_text(door_error) -> String:
+func get_mouseover_text() -> String:
 	var s := ""
 	if is_output:
 		s += "Output Point"
@@ -37,7 +42,7 @@ func get_mouseover_text(door_error) -> String:
 		s += "Input Point"
 	s += "\n\n"
 	s += "SID: " + str(sid)
-	if is_output and door_error:
+	if is_output and error_rect != Rect2i():
 		s += "\n!!! Not Enough Space !!!"
 	return s
 

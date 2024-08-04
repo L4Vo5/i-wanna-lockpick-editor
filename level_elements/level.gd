@@ -20,8 +20,8 @@ var level_data: LevelData = null:
 		exclude_player = val
 		_spawn_player()
 
-## If true, output points' doors will be loaded, if available.
-@export var load_output_points := true
+## If true, salvaged doors will be loaded, if available.
+@export var load_salvaged_doors := true
 
 @export var allow_ui := true:
 	set(val):
@@ -180,17 +180,56 @@ func reset() -> void:
 	assert(PerfManager.start("Level::reset"))
 	level_data.regen_collision_system()
 	
-	for salvage_point: SalvagePoint in salvage_points.get_children():
-		salvage_point.remove_door()
+	# start by resolving the salvage points
+	if load_salvaged_doors:
+		var sp_door_datas := {}
+		var sp_collision_system := CollisionSystem.new(16)
+		var sp_door_ids := {}
+		# get the door datas and build up the collision system
+		for salvage_point: SalvagePointData in level_data.salvage_points:
+			if not salvage_point.is_output: continue
+			salvage_point.error_rect = Rect2i()
+			# get the door data or continue if none
+			var sid := salvage_point.sid
+			# TODO: change salvaged_doors to a dict I guess
+			if sid >= gameplay_manager.pack_state.salvaged_doors.size() or gameplay_manager.pack_state.salvaged_doors[sid] == null:
+				continue
+			var door_data := gameplay_manager.pack_state.salvaged_doors[sid].duplicated()
+			
+			door_data.position.x = salvage_point.position.x + 16 - door_data.size.x / 2
+			door_data.position.y = salvage_point.position.y + 32 - door_data.size.y
+			door_data.sid = sid
+			
+			sp_door_datas[salvage_point] = door_data
+			var id := sp_collision_system.add_rect(door_data.get_rect())
+			sp_door_ids[salvage_point] = id
+		
+		# the ones with no collisions in either collision system get added to level_data's doors array
+		for salvage_point: SalvagePointData in sp_door_datas:
+			var door_data: DoorData = sp_door_datas[salvage_point]
+			var rect := door_data.get_rect()
+			var sp_id: int = level_data.elem_to_collision_system_id[salvage_point]
+			var door_id: int = sp_door_ids[salvage_point]
+			var collision_found := collision_system.rect_has_collision_in_grid_excluding_1(rect, sp_id) or sp_collision_system.rect_has_collision_in_grid_excluding_1(rect, door_id)
+			if collision_found:
+				salvage_point.error_rect = rect
+				continue
+			# fully replace SP with door
+			level_data.salvage_points.erase(salvage_point)
+			collision_system.remove_rect(sp_id)
+			level_data.elem_to_collision_system_id.erase(salvage_point)
+			
+			level_data.doors.push_back(door_data)
+			var id := collision_system.add_rect(rect, door_data)
+			level_data.elem_to_collision_system_id[door_data] = id
 	
-	# This initial stuff looks ugly for optimization's sake
-	# (yes, it makes a measurable impact, specially on big levels)
+	
 	for type in Enums.NODE_LEVEL_ELEMENTS:
 		assert(PerfManager.start("Level::reset (" + Enums.LevelElementTypes.find_key(type) + ")"))
-
+		
 		var list: Array = level_element_type_to_level_data_array[type]
 		var container: Node2D = level_element_type_to_container[type]
-
+		
 		var needed := list.size()
 		var current := container.get_child_count()
 		# redo the current ones

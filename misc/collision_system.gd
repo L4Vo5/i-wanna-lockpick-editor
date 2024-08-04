@@ -97,6 +97,20 @@ func rect_has_collision_in_grid(rect: Rect2i) -> bool:
 				return true
 	return false
 
+## Returns true if the given rect has a collision with a rect in the system, UNLESS that collision is the excluded rect.
+# (the _1 is because it's only 1 exclusion. potentially could add one that takes many exclusions through a dict)
+func rect_has_collision_in_grid_excluding_1(rect: Rect2i, exclusion: int) -> bool:
+	var tile_iter := _get_rect_tile_iter(rect)
+	
+	for x in range(tile_iter.position.x, tile_iter.end.x):
+		for y in range(tile_iter.position.y, tile_iter.end.y):
+			var arr = _tile_to_rects.get(Vector2i(x, y))
+			if arr is PackedInt64Array:
+				for id in arr:
+					if id != exclusion:
+						return true
+	return false
+
 ## Returns true if the given point has a collision with a rect in the system.
 func point_has_collision_in_grid(point: Vector2i) -> bool:
 	var tile_pos := Vector2i((point * inv_tile_size).floor())

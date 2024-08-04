@@ -68,7 +68,7 @@ func _ready() -> void:
 	data.level = level
 	level.exclude_player = true
 	level.allow_ui = false
-	level.load_output_points = false
+	level.load_salvaged_doors = false
 	if FileAccess.file_exists(Global.settings.current_editor_pack):
 		load_level(Global.settings.current_editor_pack)
 	else:
@@ -185,7 +185,7 @@ func _on_play_pressed() -> void:
 	data.disable_editing = data.is_playing
 	level.exclude_player = not data.is_playing
 	level.allow_ui = data.is_playing
-	level.load_output_points = data.is_playing
+	level.load_salvaged_doors = data.is_playing
 	right_dock.visible = not data.disable_editing
 	play_button.text = ["Play", "Stop"][data.is_playing as int]
 	
