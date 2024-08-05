@@ -27,16 +27,7 @@ var _level_pack_data: LevelPackData:
 		_level_pack_data = val
 		_connect_pack_data()
 
-var placing := Enums.LevelElementTypes.Goal:
-	set(val):
-		if placing == val: return
-		placing = val
-		if placing == Enums.LevelElementTypes.PlayerSpawn:
-			what_to_place.selected_object = place_player_spawn
-		elif placing == Enums.LevelElementTypes.Goal:
-			what_to_place.selected_object = place_goal
-		else:
-			assert(false, "Can only place player spawn or goal")
+var placing := Enums.LevelElementTypes.Goal
 
 @onready var search: LineEdit = %Search
 @onready var level_list: LevelList = %LevelList

@@ -23,8 +23,6 @@ var _level_pack_data: LevelPackData:
 		_connect_pack_data()
 
 var placing: Enums.LevelElementTypes:
-	set(val):
-		level_properties_editor.placing = val
 	get:
 		return level_properties_editor.placing
 
