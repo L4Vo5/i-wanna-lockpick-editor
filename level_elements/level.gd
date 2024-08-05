@@ -227,7 +227,7 @@ func reset() -> void:
 	
 	logic.reset()
 	
-	update_mouseover()
+	update_hover()
 	
 	assert(PerfManager.end("Level::reset"))
 
@@ -266,7 +266,7 @@ func _update_goal_position() -> void:
 	if level_data.has_goal:
 		if not is_instance_valid(goal):
 			_spawn_goal()
-		goal.position = level_data.goal_position + Vector2i(16, 16)
+		goal.custom_pos = level_data.goal_position + Vector2i(16, 16)
 	else:
 		if is_instance_valid(goal):
 			goal.queue_free()
@@ -361,7 +361,7 @@ func _spawn_goal() -> void:
 	if not level_data.has_goal:
 		return
 	goal = GOAL.instantiate()
-	goal.position = level_data.goal_position + Vector2i(16, 16)
+	goal.custom_pos = level_data.goal_position + Vector2i(16, 16)
 	goal.level = self
 	goal_parent.add_child(goal)
 
@@ -497,7 +497,7 @@ func _add_node_element(data) -> int:
 	var id := collision_system.add_rect(data.get_rect(), data)
 	level_data.elem_to_collision_system_id[data] = id
 	level_data.emit_changed()
-	var node := _spawn_node_element(data)
+	_spawn_node_element(data)
 	return id
 
 func _place_player_spawn(coord: Vector2i) -> int:
@@ -508,20 +508,18 @@ func _place_player_spawn(coord: Vector2i) -> int:
 	return id
 
 func _place_goal(coord: Vector2i) -> int:
-	var id: int = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
+	var id: int = level_data.elem_to_collision_system_id.get(Enums.LevelElementTypes.Goal, -1)
 	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}):
 		return -1
 	level_data.goal_position = coord
+	# setting goal_position will call _update_goal_position() and make the id valid if it wasn't
+	if id == -1:
+		id = level_data.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
 	return id
 
 ## Returns the node associated by the given id. Mostly used for testing.
 func get_node_by_id(id: int) -> Node:
-	var element = collision_system.get_rect_data(id)
-	var type := level_data.get_element_type(element)
-	if type not in [Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint]:
-		return null
-	return original_data_to_node[element]
-
+	return original_data_to_node.get(collision_system.get_rect_data(id))
 
 ## Removes whatever's at the given position. Returns the id on success or -1 otherwise.
 func remove_element(id: int) -> void:
@@ -619,7 +617,6 @@ func _move_node_element(original_data, new_position: Vector2i) -> void:
 	node.position = new_position
 	original_data.position = new_position
 	node.data.position = new_position
-	var rect := Rect2i(new_position, original_data.get_rect().size)
 	
 	var id: int = level_data.elem_to_collision_system_id[original_data]
 	collision_system.change_rect(id, original_data.get_rect())

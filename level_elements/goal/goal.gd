@@ -1,31 +1,38 @@
-#@tool
+@tool
 extends Area2D
 class_name LevelGoal
 
 var has_won := false
-var child_inside := false
+var funny_animation := false
 var time := 0
 var win_time := 0
-var child_inside_time := 0
+var funny_animation_time := 0
 var level: Level
 const PART := preload("res://level_elements/goal/goal_particle.tscn")
-@onready var particles_parent: Node2D = $Particles
-@onready var sprite: Sprite2D = $Sprite
-@onready var snd_win: AudioStreamPlayer = $Win
+@onready var particles_parent: Node2D = %Particles
+@onready var sprite: Sprite2D = %Sprite
+@onready var sprite_parent: Node2D = %SpriteParent
+@onready var snd_win: AudioStreamPlayer = %Win
+
+var custom_pos: Vector2: set = set_pos
+func set_pos(pos: Vector2) -> void:
+	custom_pos = pos
+	if is_node_ready():
+		sprite_parent.position = custom_pos
 
 func _ready() -> void:
+	sprite_parent.position = custom_pos
 	area_entered.connect(_on_body_entered)
-	area_exited.connect(_on_body_exited)
 	if level and level.gameplay_manager and level.gameplay_manager.has_won_current_level():
 		win(true)
 	preprocess(58)
 
 func _physics_process(_delta: float) -> void:
 	# Should create particle on first step
-	var step = 3 if child_inside else 6
+	var step = 3 if funny_animation else 6
 	
-	if child_inside:
-		var time_since := time - child_inside_time
+	if funny_animation:
+		var time_since := time - funny_animation_time
 		time_since %= 120
 		time_since += 1
 		if time_since in [80, 100, 120]:
@@ -40,6 +47,10 @@ func _physics_process(_delta: float) -> void:
 		spawn_particle()
 	sprite.position.y = (3 * sin(deg_to_rad(fmod(time + 2.5, 360))))
 	time += 1
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EDITOR_PRE_SAVE:
+		sprite.position = Vector2.ZERO
 
 func win(visual_only: bool) -> void:
 	if not visual_only:
@@ -59,11 +70,12 @@ func undo_win() -> void:
 func spawn_particle(put_first := true) -> Node2D:
 	# Spawn particle
 	var part := PART.instantiate()
+	part.position = sprite_parent.position
 	if has_won:
 		part.hue = 60
-		if child_inside:
-			part.set_meta(&"fast", true)
-			part.velocity *= 10
+	if funny_animation:
+		part.set_meta(&"fast", true)
+		part.velocity *= 10
 	# TODO: This more effectively?
 	particles_parent.add_child(part)
 	if put_first:
@@ -72,24 +84,19 @@ func spawn_particle(put_first := true) -> Node2D:
 
 func _on_body_entered(_body: Node2D) -> void:
 	win(false)
-	child_inside = true
-	child_inside_time = time + 60
+
+func start_funny_animation() -> void:
+	if funny_animation: return
+	funny_animation = true
+	funny_animation_time = time + 60
 	
 	for child in particles_parent.get_children():
 		if child.has_meta(&"fast"): continue
 		child.set_meta(&"fast", true)
 		child.velocity *= 10
-		var new := PART.instantiate()
-		new.set_meta(&"fast", true)
-		new.velocity = child.velocity.rotated(deg_to_rad(randf() * 360))
-		new._scale = child._scale
-		new.hue = child.hue
-		new.sat = child.sat
-		new.mode = child.mode
-		child.add_sibling(new)
 
-func _on_body_exited(_body: Node2D) -> void:
-	child_inside = false
+func stop_funny_animation() -> void:
+	funny_animation = false
 
 func preprocess(amount: int) -> void:
 	assert(PerfManager.start("Goal::preprocess (%d)" % amount))

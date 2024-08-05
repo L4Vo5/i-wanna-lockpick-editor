@@ -28,6 +28,7 @@ var pack_data: LevelPackData:
 @onready var completion: Sprite2D = %Completion
 @onready var arrow: AnimatedSprite2D = %Arrow
 @onready var level_name: Node2D = %Name
+@onready var area_2d: Area2D = %Area2D
 
 const ENTRY_CLOSED = preload("res://level_elements/entries/textures/simple/entry_closed.png")
 const ENTRY_ERR = preload("res://level_elements/entries/textures/simple/entry_err.png")
@@ -46,6 +47,7 @@ func _ready() -> void:
 	level_name.modulate.a = 0
 	update_name()
 	update_status()
+	resolve_collision_mode()
 
 # called by kid.gd
 func player_touching() -> void:
@@ -119,6 +121,14 @@ func _connect_data() -> void:
 	update_name()
 	update_position()
 	update_status()
+	resolve_collision_mode()
+
+func resolve_collision_mode() -> void:
+	if not is_inside_tree(): return
+	if not gameplay_manager:
+		area_2d.process_mode = Node.PROCESS_MODE_DISABLED
+	else:
+		area_2d.process_mode = Node.PROCESS_MODE_INHERIT
 
 func get_mouseover_text() -> String:
 	update_name()

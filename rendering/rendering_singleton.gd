@@ -113,7 +113,7 @@ func get_lock_arrangement(_level_data: LevelData, lock_count: int, option: int):
 	else:
 		use_level = true
 	#var options = level_data.custom_lock_arrangements.get(lock_count) if use_level and is_instance_valid(level_data) else LOCK_ARRANGEMENTS.get(lock_count)
-	var options = LOCK_ARRANGEMENTS.get(lock_count)
+	var options = null if use_level else LOCK_ARRANGEMENTS.get(lock_count)
 	assert(PerfManager.end("Rendering::get_lock_arrangement"))
 	if options == null or option >= options.size(): return null # remember option starts at 0 but size at 1
 	return options[option]

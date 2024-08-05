@@ -71,8 +71,7 @@ func get_salvaged_doors_count() -> int:
 	, 0)
 
 func _on_deleted_level(level_id: int, index: int) -> void:
-	if completed_levels.has(level_id):
-		completed_levels.erase(level_id)
+	completed_levels.erase(level_id)
 	if current_level == level_id:
 		index = clampi(index, 0, pack_data.levels.size() - 1)
 		current_level = pack_data.level_order[index]

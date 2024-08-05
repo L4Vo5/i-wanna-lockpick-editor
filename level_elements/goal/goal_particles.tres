@@ -1,0 +1,39 @@
+[gd_resource type="ParticleProcessMaterial" load_steps=7 format=3 uid="uid://cm2torqy5d0uk"]
+
+[sub_resource type="Gradient" id="Gradient_muq4q"]
+colors = PackedColorArray(0.89, 1, 0.89, 1, 0.21, 1, 0.21, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_685tm"]
+gradient = SubResource("Gradient_muq4q")
+width = 32
+
+[sub_resource type="Curve" id="Curve_epegl"]
+min_value = 10.0
+max_value = 20.0
+_data = [Vector2(0, 10), 0.0, 0.0, 0, 0, Vector2(0.32766, 10), 0.0, 0.0, 0, 0, Vector2(0.33617, 20), 103.297, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_aghj7"]
+width = 32
+texture_mode = 1
+curve = SubResource("Curve_epegl")
+
+[sub_resource type="Curve" id="Curve_r5uut"]
+max_value = 0.4
+_data = [Vector2(0, 0.04), 0.0, 3.09201, 0, 0, Vector2(0.32766, 0.4), 0.140063, -0.594937, 0, 1, Vector2(1, 0), -0.594937, 0.0, 1, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_6hxdm"]
+curve = SubResource("Curve_r5uut")
+
+[resource]
+direction = Vector3(0, 0, 1)
+spread = 0.0
+initial_velocity_min = 122.14
+initial_velocity_max = 1000.0
+radial_velocity_min = 1.0
+radial_velocity_max = 1.0
+radial_velocity_curve = SubResource("CurveTexture_aghj7")
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_6hxdm")
+color_ramp = SubResource("GradientTexture1D_685tm")

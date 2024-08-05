@@ -65,6 +65,8 @@ var current_tool := Tool.Pencil:
 	set = set_tool
 
 enum Tool {
+	# (used only when playing the level)
+	None,
 	# Left click: place and select, or just select if can't place (overriding previous selection). If something selected, transitions to DragSelection. Right click: remove under mouse. If nothing to remove, clear selection.
 	Pencil,
 	# Left click: place (even with mouse movement). Right click: remove (even with mouse movement).
@@ -112,6 +114,7 @@ func set_editor_data(data: EditorData) -> void:
 	_on_changed_level_data()
 	# deferred: fixes the door staying at the old mouse position (since the level pos moves when the editor kicks in)
 	editor_data.changed_is_playing.connect(_on_changed_is_playing, CONNECT_DEFERRED)
+	inner_container.resized.connect(clamp_editor_camera)
 	
 	editor_camera.make_current()
 	_on_changed_is_playing()
@@ -122,13 +125,30 @@ func _on_changed_is_playing() -> void:
 	if not editor_data.is_playing:
 		editor_camera.make_current()
 	_update_preview()
+	decide_tool()
+	# Fix for, idk, the camera? the Control nodes? the mouse position?
+	# Not updating properly until next frame
+	await get_tree().process_frame
+	level.update_hover()
 
 # could be more sophisticated now that bigger level sizes are supported.
 func _center_level() -> void:
 	editor_camera.position = - (size - OBJ_SIZE) / 2
+	clamp_editor_camera()
 
+func clamp_editor_camera() -> void:
+	var min_pos := - inner_container.size
+	var max_pos := level.level_data.size
+	editor_camera.position = editor_camera.position.clamp(min_pos, max_pos)
+
+# kept only for connections
+var __level_data: LevelData
 func _on_changed_level_data() -> void:
-	clear_selection()
+	if __level_data:
+		__level_data.changed_size.disconnect(clamp_editor_camera)
+	__level_data = level.level_data
+	__level_data.changed_size.connect(clamp_editor_camera)
+	clamp_editor_camera()
 	pass
 	# TODO: figure out what goes here
 	#selection_system.level_container = self
@@ -211,6 +231,8 @@ func _handle_left_click() -> bool:
 	return handled
 
 func _handle_left_unclick() -> void:
+	if level.goal:
+		level.goal.stop_funny_animation()
 	match current_tool:
 		Tool.DragSelection:
 			decide_tool()
@@ -302,13 +324,14 @@ func _handle_mouse_movement() -> bool:
 				var offset := new_pos - drag_start
 				drag_start = new_pos
 				editor_camera.position -= offset as Vector2
+				clamp_editor_camera()
 	return handled
 
 func _try_place_currently_adding() -> bool:
 	if not currently_adding:
 		return false
-	if currently_adding.type == Enums.LevelElementTypes.PlayerSpawn or (currently_adding.type == Enums.LevelElementTypes.Goal and level.level_data.has_goal):
-		remove_from_selection(level.level_data.elem_to_collision_system_id[currently_adding.type])
+	if currently_adding.type in [Enums.LevelElementTypes.Goal, Enums.LevelElementTypes.PlayerSpawn]:
+		remove_from_selection(level.level_data.elem_to_collision_system_id.get(currently_adding.type, -1))
 	var id := level.add_element(currently_adding)
 	if id != -1:
 		if current_tool == Tool.Pencil:
@@ -381,8 +404,8 @@ func add_to_selection(id: int) -> void:
 	)
 
 func remove_from_selection(id: int) -> void:
-	if not selection.erase(id):
-		return
+	if id == -1: return
+	selection.erase(id)
 	var rect := collision_system.get_rect(id)
 	var type := LevelData.get_element_type(collision_system.get_rect_data(id))
 	var grid_size := LevelData.get_element_grid_size(type)
@@ -402,14 +425,16 @@ func update_grid_size() -> void:
 		)
 
 func select_thing(id: int) -> void:
+	var elem = collision_system.get_rect_data(id)
+	var type := LevelData.get_element_type(elem)
+	if type == Enums.LevelElementTypes.Goal:
+		level.goal.start_funny_animation()
 	if id in selection:
 		current_tool = Tool.DragSelection
 		return
 	clear_selection()
 	add_to_selection(id)
 	current_tool = Tool.DragSelection
-	var elem = collision_system.get_rect_data(id)
-	var type := LevelData.get_element_type(elem)
 	var editor_control = editor_data.level_element_editors.get(type)
 	if editor_control == null:
 		return
@@ -475,11 +500,15 @@ func set_tool(tool: Tool) -> void:
 	selection_box.hide()
 	danger_outline.hide()
 	phantom_grid.hide()
+	if current_tool == Tool.None:
+		selection_outline.show()
 	
 	current_tool = tool
 	
 	# Enter new tool
 	match current_tool:
+		Tool.None:
+			selection_outline.hide()
 		Tool.DragSelection:
 			# Always entered from a left click.
 			drag_state = Drag.Left
@@ -494,10 +523,12 @@ func set_tool(tool: Tool) -> void:
 				danger_outline.add_rect(currently_adding.get_rect())
 			update_currently_adding_position()
 			_update_preview()
-	level.allow_hovering = current_tool in [Tool.Pencil, Tool.Brush]
+	level.allow_hovering = current_tool in [Tool.Pencil, Tool.Brush, Tool.None]
 
 func decide_tool() -> void:
-	if current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	if editor_data.is_playing:
+		current_tool = Tool.None
+	elif current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		pass # don't change it
 	elif Input.is_action_pressed(&"drag_camera"):
 		current_tool = Tool.DragLevel
@@ -510,7 +541,7 @@ func decide_tool() -> void:
 
 # Updates the ghost and the danger preview
 func _update_preview() -> void:
-	if not currently_adding or (is_instance_valid(level.hover_highlight.current_obj) and level.allow_hovering):
+	if current_tool == Tool.None or not currently_adding or (is_instance_valid(level.hover_highlight.current_obj) and level.allow_hovering):
 		ghost_displayer.hide()
 		danger_outline.hide()
 		return

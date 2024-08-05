@@ -58,6 +58,7 @@ enum LockTypes {
 }
 
 enum LevelElementTypes {
+	None,
 	Door,
 	Key,
 	Entry,
