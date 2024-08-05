@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://ddjn4lk6mcp3k"]
+[gd_scene load_steps=33 format=3 uid="uid://ddjn4lk6mcp3k"]
 
 [ext_resource type="Script" path="res://editor/main_editor/editor.gd" id="1_n4qnf"]
 [ext_resource type="Script" path="res://editor/main_editor/scroll_container_improver.gd" id="2_jw8xc"]
