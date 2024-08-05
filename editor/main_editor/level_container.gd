@@ -307,7 +307,7 @@ func _handle_mouse_movement() -> bool:
 func _try_place_currently_adding() -> bool:
 	if not currently_adding:
 		return false
-	if currently_adding.type in [Enums.LevelElementTypes.Goal, Enums.LevelElementTypes.PlayerSpawn]:
+	if currently_adding.type == Enums.LevelElementTypes.PlayerSpawn or (currently_adding.type == Enums.LevelElementTypes.Goal and level.level_data.has_goal):
 		remove_from_selection(level.level_data.elem_to_collision_system_id[currently_adding.type])
 	var id := level.add_element(currently_adding)
 	if id != -1:
@@ -503,7 +503,7 @@ func decide_tool() -> void:
 		current_tool = Tool.DragLevel
 	elif Input.is_key_pressed(KEY_CTRL):
 		current_tool = Tool.ModifySelection
-	elif Input.is_key_pressed(KEY_SHIFT) != (currently_adding.type == Enums.LevelElementTypes.Tile):
+	elif Input.is_key_pressed(KEY_SHIFT) != (currently_adding and currently_adding.type == Enums.LevelElementTypes.Tile):
 		current_tool = Tool.Brush
 	else:
 		current_tool = Tool.Pencil

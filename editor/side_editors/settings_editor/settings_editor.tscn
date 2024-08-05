@@ -1,7 +1,111 @@
-[gd_scene load_steps=3 format=3 uid="uid://ccum746wsrcl8"]
+[gd_scene load_steps=22 format=3 uid="uid://ccum746wsrcl8"]
 
 [ext_resource type="Script" path="res://editor/side_editors/settings_editor/settings_editor.gd" id="1_kbdlw"]
 [ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/misc/horizontal_separator.tscn" id="2_yvels"]
+[ext_resource type="PackedScene" uid="uid://cfjmlqowudf8o" path="res://editor/side_editors/settings_editor/key_rebinding.tscn" id="3_s815v"]
+[ext_resource type="Script" path="res://editor/side_editors/settings_editor/key_rebind_action.gd" id="4_wjcpr"]
+
+[sub_resource type="Resource" id="Resource_m4066"]
+script = ExtResource("4_wjcpr")
+action_name = &"left"
+label = "Left"
+tooltip = "Hold to move left."
+
+[sub_resource type="Resource" id="Resource_6a3ri"]
+script = ExtResource("4_wjcpr")
+action_name = &"right"
+label = "Right"
+tooltip = "Hold to move right."
+
+[sub_resource type="Resource" id="Resource_j2fup"]
+script = ExtResource("4_wjcpr")
+action_name = &"jump"
+label = "Jump"
+tooltip = "Press to jump. Hold to jump higher."
+
+[sub_resource type="Resource" id="Resource_ov8hd"]
+script = ExtResource("4_wjcpr")
+action_name = &"fast"
+label = "Run"
+tooltip = "Hold to move faster."
+
+[sub_resource type="Resource" id="Resource_tldh4"]
+script = ExtResource("4_wjcpr")
+action_name = &"slow"
+label = "Walk"
+tooltip = "Hold to move slower."
+
+[sub_resource type="Resource" id="Resource_iqrs4"]
+script = ExtResource("4_wjcpr")
+action_name = &"autorun"
+label = "Auto-Run"
+tooltip = "Press to toggle Auto-Run."
+
+[sub_resource type="Resource" id="Resource_2bcgp"]
+script = ExtResource("4_wjcpr")
+action_name = &"undo"
+label = "Undo"
+tooltip = "Press to undo one action."
+
+[sub_resource type="Resource" id="Resource_yqb70"]
+script = ExtResource("4_wjcpr")
+action_name = &"savestate"
+label = "Savestate"
+tooltip = "Press to create a savestate you can undo to. Useful for long walks with branching paths."
+
+[sub_resource type="Resource" id="Resource_507j6"]
+script = ExtResource("4_wjcpr")
+action_name = &"restart"
+label = "Restart"
+tooltip = "Press to restart the level."
+
+[sub_resource type="Resource" id="Resource_xhgdx"]
+script = ExtResource("4_wjcpr")
+action_name = &"exit_level"
+label = "Exit Level"
+tooltip = "Press to exit the current level."
+
+[sub_resource type="Resource" id="Resource_dt8u6"]
+script = ExtResource("4_wjcpr")
+action_name = &"enter_level"
+label = "Enter Level"
+tooltip = "Press near a level entry to enter a level."
+
+[sub_resource type="Resource" id="Resource_qnmhk"]
+script = ExtResource("4_wjcpr")
+action_name = &"master"
+label = "Master Mode"
+tooltip = "Press to toggle master key mode."
+
+[sub_resource type="Resource" id="Resource_i41lw"]
+script = ExtResource("4_wjcpr")
+action_name = &"i-view"
+label = "I-View"
+tooltip = "Press to toggle I-View."
+
+[sub_resource type="Resource" id="Resource_ba7cn"]
+script = ExtResource("4_wjcpr")
+action_name = &"keypad"
+label = "Keypad"
+tooltip = "Hold to show the key counts."
+
+[sub_resource type="Resource" id="Resource_biedm"]
+script = ExtResource("4_wjcpr")
+action_name = &"warp_rod"
+label = "Warp Rod"
+tooltip = "Press to show the warp menu."
+
+[sub_resource type="Resource" id="Resource_x54qa"]
+script = ExtResource("4_wjcpr")
+action_name = &"fullscreen"
+label = "Fullscreen"
+tooltip = "Press to toggle fullscreen."
+
+[sub_resource type="Resource" id="Resource_4n7hd"]
+script = ExtResource("4_wjcpr")
+action_name = &"play"
+label = "Play"
+tooltip = "Shortcut for playing the level pack."
 
 [node name="SettingsEditor" type="MarginContainer"]
 offset_right = 324.0
@@ -63,3 +167,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Cacophony"
+
+[node name="KeyRebinding" parent="ScrollContainer/VBoxContainer" instance=ExtResource("3_s815v")]
+layout_mode = 2
+actions = Array[ExtResource("4_wjcpr")]([SubResource("Resource_m4066"), SubResource("Resource_6a3ri"), SubResource("Resource_j2fup"), SubResource("Resource_ov8hd"), SubResource("Resource_tldh4"), SubResource("Resource_iqrs4"), SubResource("Resource_2bcgp"), SubResource("Resource_yqb70"), SubResource("Resource_507j6"), SubResource("Resource_xhgdx"), SubResource("Resource_dt8u6"), SubResource("Resource_qnmhk"), SubResource("Resource_i41lw"), SubResource("Resource_ba7cn"), SubResource("Resource_biedm"), SubResource("Resource_x54qa"), SubResource("Resource_4n7hd")])

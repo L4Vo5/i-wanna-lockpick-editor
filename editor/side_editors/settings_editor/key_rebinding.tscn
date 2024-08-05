@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://cfjmlqowudf8o"]
+
+[ext_resource type="Script" path="res://editor/side_editors/settings_editor/key_rebinding.gd" id="1_grijs"]
+
+[node name="KeyRebinding" type="VBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_grijs")
+
+[node name="ResetKeybinds" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reset all keybinds to default"

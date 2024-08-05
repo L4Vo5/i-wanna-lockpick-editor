@@ -55,6 +55,9 @@ signal changed
 		current_editor_pack = val
 		queue_save()
 
+# key rebinds: String -> InputEvent
+var key_rebinds: Dictionary = {}
+
 const PATH := "user://settings.cfg"
 var _config_file := ConfigFile.new()
 
@@ -80,6 +83,11 @@ func _init() -> void:
 		var section = arr[1]
 		if _config_file.has_section_key(section, variable_name):
 			set(variable_name, _config_file.get_value(section, variable_name))
+	if _config_file.has_section("Keybinds"):
+		var keys := _config_file.get_section_keys("Keybinds")
+		for key in keys:
+			key_rebinds[key] = _config_file.get_value("Keybinds", key) as InputEvent
+	print(key_rebinds)
 
 var is_changed_queued := false
 func queue_emit_changed() -> void:
@@ -114,7 +122,8 @@ func _save() -> void:
 		var variable_name = arr[0]
 		var section = arr[1]
 		_config_file.set_value(section, variable_name, get(variable_name))
-	
+	for key: String in key_rebinds:
+		_config_file.set_value("Keybinds", key, key_rebinds[key])
 	_config_file.save(PATH)
 	is_save_queued = false
 
