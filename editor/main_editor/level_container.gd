@@ -381,19 +381,23 @@ func update_grid_size() -> void:
 		)
 
 func select_thing(id: int) -> void:
-	if id not in selection: 
-		clear_selection()
-		add_to_selection(id)
+	if id in selection:
 		current_tool = Tool.DragSelection
-		var elem = collision_system.get_rect_data(id)
-		var type := LevelData.get_element_type(elem)
-		if type in Enums.NODE_LEVEL_ELEMENTS:
-			var editor_control = editor_data.level_element_editors[type]
-			editor_control.data = elem.duplicated()
-			editor_data.side_tabs.set_current_tab_control(editor_control)
-			update_currently_adding()
-	else:
-		current_tool = Tool.DragSelection
+		return
+	clear_selection()
+	add_to_selection(id)
+	current_tool = Tool.DragSelection
+	var elem = collision_system.get_rect_data(id)
+	var type := LevelData.get_element_type(elem)
+	var editor_control = editor_data.level_element_editors.get(type)
+	if editor_control == null:
+		return
+	if type in Enums.NODE_LEVEL_ELEMENTS:
+		editor_control.data = elem.duplicated()
+	elif type == Enums.LevelElementTypes.Tile:
+		editor_control.tile_type = editor_data.level_data.tiles[elem]
+	editor_data.side_tabs.set_current_tab_control(editor_control)
+	update_currently_adding()
 
 func relocate_selection() -> void:
 	if editor_data.disable_editing: return
@@ -473,11 +477,11 @@ func set_tool(tool: Tool) -> void:
 func decide_tool() -> void:
 	if current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		pass # don't change it
-	elif Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE) or Input.is_key_pressed(KEY_ALT):
+	elif Input.is_action_pressed(&"drag_camera"):
 		current_tool = Tool.DragLevel
 	elif Input.is_key_pressed(KEY_CTRL):
 		current_tool = Tool.ModifySelection
-	elif Input.is_key_pressed(KEY_SHIFT):
+	elif Input.is_key_pressed(KEY_SHIFT) != (currently_adding.type == Enums.LevelElementTypes.Tile):
 		current_tool = Tool.Brush
 	else:
 		current_tool = Tool.Pencil
@@ -495,19 +499,3 @@ func _update_preview() -> void:
 	else:
 		ghost_displayer.show()
 		danger_outline.hide()
-
-# places the danger obj only. this overrides the ghosts obvs
-func _place_danger_obj() -> void:
-	pass
-	#if not editor_data.is_placing_level_element or editor_data.is_playing:
-		#return
-	#var type := editor_data.level_element_type
-	#var obj: Node = ghosts[type]
-	#
-	#obj.data = editor_data.level_element_editors[type].data
-		#
-	#var maybe_pos := get_mouse_coord(GRID_SIZE)
-	#if is_dragging:
-		#maybe_pos -= round_coord(drag_start, GRID_SIZE)
-	#obj.position = maybe_pos
-	#danger_obj = obj
