@@ -147,6 +147,8 @@ func _input(event: InputEvent) -> void:
 			_handle_right_unclick()
 		if event.button_index == MOUSE_BUTTON_MIDDLE and not event.pressed:
 			_handle_middle_unclick()
+	elif event.is_action(&"remove_selected") and event.is_pressed():
+		delete_selected_elements()
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
@@ -324,6 +326,12 @@ func _try_remove_at_mouse() -> bool:
 		_update_preview()
 		return true
 	return false
+
+func delete_selected_elements() -> void:
+	for id in selection.keys():
+		remove_from_selection(id)
+		level.remove_element(id)
+	_update_preview()
 
 func update_currently_adding() -> void:
 	var info := NewLevelElementInfo.new()
