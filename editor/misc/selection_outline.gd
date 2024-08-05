@@ -29,7 +29,10 @@ func add_rect(rect: Rect2i) -> void:
 	for y in range(tile_iter.position.y, tile_iter.end.y):
 		for x in range(tile_iter.position.x, tile_iter.end.x):
 			var coord := Vector2i(x, y)
-			tiles[coord] = true
+			if tiles.has(coord):
+				tiles[coord] += 1
+			else:
+				tiles[coord] = 1
 			outline_tiles.erase(coord)
 	
 	var outline_iter := tile_iter.grow(1)
@@ -82,7 +85,10 @@ func remove_rect(rect: Rect2i) -> void:
 	for y in range(tile_iter.position.y, tile_iter.end.y):
 		for x in range(tile_iter.position.x, tile_iter.end.x):
 			var coord := Vector2i(x, y)
-			tiles.erase(coord)
+			assert(tiles.has(coord))
+			tiles[coord] -= 1
+			if tiles[coord] <= 0:
+				tiles.erase(coord)
 	# New potential outline tiles: the inner edges of the removed rect
 	for x in range(tile_iter.position.x, tile_iter.end.x):
 		var top := Vector2i(x, tile_iter.position.y)

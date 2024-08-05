@@ -128,6 +128,7 @@ func _center_level() -> void:
 	editor_camera.position = - (size - OBJ_SIZE) / 2
 
 func _on_changed_level_data() -> void:
+	clear_selection()
 	pass
 	# TODO: figure out what goes here
 	#selection_system.level_container = self
@@ -146,6 +147,8 @@ func _input(event: InputEvent) -> void:
 			_handle_right_unclick()
 		if event.button_index == MOUSE_BUTTON_MIDDLE and not event.pressed:
 			_handle_middle_unclick()
+	elif event.is_action(&"remove_selected") and event.is_pressed():
+		delete_selected_elements()
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
@@ -169,6 +172,9 @@ func _handle_left_click() -> bool:
 		Tool.Pencil:
 			if level.hovering_over != -1:
 				select_thing(level.hovering_over)
+				handled = true
+			elif not selection.is_empty():
+				clear_selection()
 				handled = true
 			else:
 				handled = _try_place_currently_adding()
@@ -321,10 +327,17 @@ func _try_remove_at_mouse() -> bool:
 		return true
 	return false
 
+func delete_selected_elements() -> void:
+	for id in selection.keys():
+		remove_from_selection(id)
+		level.remove_element(id)
+	_update_preview()
+
 func update_currently_adding() -> void:
 	var info := NewLevelElementInfo.new()
 	if editor_data.current_tab == editor_data.tile_editor:
 		info.type = Enums.LevelElementTypes.Tile
+		info.data = editor_data.current_tab.tile_type
 	elif editor_data.current_tab is LevelPackPropertiesEditor:
 		info.type = editor_data.current_tab.level_properties_editor.placing
 	elif editor_data.current_tab.name in [&"Doors", &"Keys", &"Entries", &"SalvagePoints"]:
@@ -368,26 +381,44 @@ func add_to_selection(id: int) -> void:
 	)
 
 func remove_from_selection(id: int) -> void:
-	selection.erase(id)
+	if not selection.erase(id):
+		return
 	var rect := collision_system.get_rect(id)
+	var type := LevelData.get_element_type(collision_system.get_rect_data(id))
+	var grid_size := LevelData.get_element_grid_size(type)
 	rect.position -= selection_outline.position as Vector2i
 	selection_outline.remove_rect(rect)
-	# TODO: This won't update selection_grid_size...
+	if selection_grid_size.x <= grid_size.x or selection_grid_size.y <= grid_size.y:
+		update_grid_size()
+
+func update_grid_size() -> void:
+	selection_grid_size = Vector2i.ONE
+	for id in selection:
+		var type := LevelData.get_element_type(collision_system.get_rect_data(id))
+		var grid_size := LevelData.get_element_grid_size(type)
+		selection_grid_size = Vector2i(
+			maxi(selection_grid_size.x, grid_size.x),
+			maxi(selection_grid_size.y, grid_size.y)
+		)
 
 func select_thing(id: int) -> void:
-	if id not in selection: 
-		clear_selection()
-		add_to_selection(id)
+	if id in selection:
 		current_tool = Tool.DragSelection
-		var elem = collision_system.get_rect_data(id)
-		var type := LevelData.get_element_type(elem)
-		if type in Enums.NODE_LEVEL_ELEMENTS:
-			var editor_control = editor_data.level_element_editors[type]
-			editor_control.data = elem.duplicated()
-			editor_data.side_tabs.set_current_tab_control(editor_control)
-			update_currently_adding()
-	else:
-		current_tool = Tool.DragSelection
+		return
+	clear_selection()
+	add_to_selection(id)
+	current_tool = Tool.DragSelection
+	var elem = collision_system.get_rect_data(id)
+	var type := LevelData.get_element_type(elem)
+	var editor_control = editor_data.level_element_editors.get(type)
+	if editor_control == null:
+		return
+	if type in Enums.NODE_LEVEL_ELEMENTS:
+		editor_control.data = elem.duplicated()
+	elif type == Enums.LevelElementTypes.Tile:
+		editor_control.tile_type = editor_data.level_data.tiles[elem]
+	editor_data.side_tabs.set_current_tab_control(editor_control)
+	update_currently_adding()
 
 func relocate_selection() -> void:
 	if editor_data.disable_editing: return
@@ -468,11 +499,11 @@ func set_tool(tool: Tool) -> void:
 func decide_tool() -> void:
 	if current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		pass # don't change it
-	elif Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE) or Input.is_key_pressed(KEY_ALT):
+	elif Input.is_action_pressed(&"drag_camera"):
 		current_tool = Tool.DragLevel
 	elif Input.is_key_pressed(KEY_CTRL):
 		current_tool = Tool.ModifySelection
-	elif Input.is_key_pressed(KEY_SHIFT):
+	elif Input.is_key_pressed(KEY_SHIFT) != (currently_adding.type == Enums.LevelElementTypes.Tile):
 		current_tool = Tool.Brush
 	else:
 		current_tool = Tool.Pencil

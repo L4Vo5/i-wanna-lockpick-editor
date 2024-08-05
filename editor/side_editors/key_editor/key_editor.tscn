@@ -81,7 +81,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="VBoxContainer/ScrollContainer/Editors/Color" instance=ExtResource("5_2af2f")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 60)
+custom_minimum_size = Vector2(20, 420)
 layout_mode = 2
 size_flags_horizontal = 3
 lock_size = 20

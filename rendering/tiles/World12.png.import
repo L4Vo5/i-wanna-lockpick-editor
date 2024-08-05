@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dh8e2lmw3mn68"
-path="res://.godot/imported/entry_world.png-67346d2a9c8e59ce604de77028e3e95b.ctex"
+uid="uid://u1qbx2iafgoy"
+path="res://.godot/imported/World12.png-e0902781079bf8bf825ccd8c65deb170.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://level_elements/entries/textures/world/entry_world.png"
-dest_files=["res://.godot/imported/entry_world.png-67346d2a9c8e59ce604de77028e3e95b.ctex"]
+source_file="res://rendering/tiles/World12.png"
+dest_files=["res://.godot/imported/World12.png-e0902781079bf8bf825ccd8c65deb170.ctex"]
 
 [params]
 

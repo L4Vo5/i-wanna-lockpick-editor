@@ -69,6 +69,7 @@ func set_level_pack_data(pack: LevelPackData) -> void:
 	level_pack_data = pack
 	Global.settings.current_editor_pack = level_pack_data.file_path
 	if not _setting_pack_and_state:
+		pack_state = LevelPackStateData.make_from_pack_data(pack)
 		assert(pack_state.pack_data == level_pack_data)
 		changed_level_pack_data.emit()
 

@@ -1,7 +1,7 @@
 class_name AutoTiling
 
 # Given a tile's position in the grid, returns the corresponding atlas_coords for that tile.
-static func get_tile(tile_coord: Vector2i, level_data: LevelData) -> Vector2i:
+static func get_tile(tile_coord: Vector2i, tile_type: int, level_data: LevelData) -> Vector2i:
 	assert(PerfManager.start(&"AutoTiling::get_tile"))
 	var level_width: int = level_data.size.x / 32
 	var level_height: int = level_data.size.y / 32
@@ -11,10 +11,10 @@ static func get_tile(tile_coord: Vector2i, level_data: LevelData) -> Vector2i:
 	var vec: Vector2i
 	for i in TILE_LOOKUP_ORDER.size():
 		vec = TILE_LOOKUP_ORDER[i] + tile_coord
-		if tiles.get(vec) or vec.x < 0 or vec.y < 0 or vec.x >= level_width or vec.y >= level_height:
+		if (tiles.has(vec) and (tiles[vec] as int) == tile_type) or vec.x < 0 or vec.y < 0 or vec.x >= level_width or vec.y >= level_height:
 			bits |= 1 << i
 	assert(PerfManager.end(&"AutoTiling::get_tile"))
-	return tiling_lookup[bits] 
+	return tiling_lookups[tile_type][bits]
 
 # Internal stuff
 
@@ -40,13 +40,20 @@ const TILE_LOOKUP_ORDER: Array = [
 	Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
 ]
 
-static var tiling_lookup := create_tiling_lookup()
+static var tiling_lookup_w1 := create_tiling_lookup_w1()
+static var tiling_lookup_w6 := create_tiling_lookup_w6()
 
-static func create_tiling_lookup() -> PackedVector2Array:
+static var tiling_lookups := {
+	1: tiling_lookup_w1, # world 1
+	2: tiling_lookup_w1, # world 12
+	3: tiling_lookup_w6, # world 6
+}
+
+static func create_tiling_lookup_w1() -> PackedVector2Array:
 	var array := PackedVector2Array()
 	array.resize(256)
 	for i in 256:
-		var what_tile := get_autotiling_tile_for_bits(i)
+		var what_tile := get_autotiling_tile_for_bits_w1(i)
 		array[i] = Vector2(what_tile)
 	return array
 
@@ -59,7 +66,7 @@ static func count_tiles_bits(tiles: Array, bits: int) -> int:
 		bit *= 2
 	return count
 
-static func get_autotiling_tile_for_bits(bits: int) -> Vector2i:
+static func get_autotiling_tile_for_bits_w1(bits: int) -> Vector2i:
 	var what_tile := Vector2i(1,1)
 	var all_count := count_tiles_bits(NEIGHBORS_ALL, bits)
 	var h_count := count_tiles_bits(NEIGHBORS_H, bits)
@@ -83,3 +90,15 @@ static func get_autotiling_tile_for_bits(bits: int) -> Vector2i:
 			if count_tiles_bits(NEIGHBORS_R, bits) != 3:
 				what_tile = Vector2i(1, 1)
 	return what_tile
+
+# sorry, I couldn't find the pattern lol
+static func create_tiling_lookup_w6() -> PackedVector2Array:
+	return generic_create_lookup_base64("MzMjIzMzIyMyMmUiMjJlIjAwZGQwMCAgMTFRUjExUCEzMyMjMzMjIzIyZSIyMmUiMDBkZDAwICAxMVFSMTFQIQMDExMDAxMTVVUVJVVVFSVUVBQUVFQkJEFBQyZBQQZTAwMTEwMDExMCAgUSAgIFElRUFBRUVCQkQkI2YUJCVjQzMyMjMzMjIzIyZSIyMmUiMDBkZDAwICAxMVFSMTFQITMzIyMzMyMjMjJlIjIyZSIwMGRkMDAgIDExUVIxMVAhAwMTEwMDExNVVRUlVVUVJQAABAQAABAQQEAWRkBAYjUDAxMTAwMTEwICBRICAgUSAAAEBAAAEBABAWNEAQFFEQ==")
+
+static func generic_create_lookup_base64(base64_str: String) -> PackedVector2Array:
+	var bytes := Marshalls.base64_to_raw(base64_str)
+	var array := PackedVector2Array()
+	array.resize(256)
+	for i in 256:
+		array[i] = Vector2(bytes[i] & 0xF, bytes[i] >> 4)
+	return array

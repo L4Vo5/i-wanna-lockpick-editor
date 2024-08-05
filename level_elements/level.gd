@@ -335,11 +335,11 @@ func _remove_element(node: Node) -> void:
 
 func update_tile(tile_coord: Vector2i) -> void:
 	var layer := 0
-	if not level_data.tiles.get(tile_coord):
+	if not level_data.tiles.has(tile_coord):
 		tile_map.erase_cell(layer, tile_coord)
 		return
-	var id := 1
-	var what_tile := AutoTiling.get_tile(tile_coord, level_data)
+	var id: int = clampi(level_data.tiles.get(tile_coord), 1, 3)
+	var what_tile := AutoTiling.get_tile(tile_coord, id, level_data)
 	tile_map.set_cell(layer, tile_coord, id, what_tile)
 
 func _spawn_player() -> void:
@@ -466,7 +466,7 @@ func add_element(element: NewLevelElementInfo) -> int:
 		Enums.LevelElementTypes.Goal:
 			id = _place_goal(element.position)
 		Enums.LevelElementTypes.Tile:
-			id = _place_tile(element.position)
+			id = _place_tile(element.position, element.data)
 		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
 			element.data.position = element.position
 			id = _add_node_element(element.data.duplicated())
@@ -476,11 +476,11 @@ func add_element(element: NewLevelElementInfo) -> int:
 		update_hover()
 	return id
 
-func _place_tile(pos: Vector2i, custom_id := -1) -> int:
+func _place_tile(pos: Vector2i, tile_type := 1, custom_id := -1) -> int:
 	var tile_coord := pos / 32
 	if is_space_occupied(Rect2i(pos, Vector2i(32, 32))):
 		return -1
-	level_data.tiles[tile_coord] = true
+	level_data.tiles[tile_coord] = clampi(tile_type, 1, 3)
 	update_tile_and_neighbors(tile_coord)
 	var id := collision_system.add_rect(Rect2i(pos, Vector2i(32, 32)), tile_coord, custom_id)
 	level_data.elem_to_collision_system_id[tile_coord] = id
@@ -513,6 +513,14 @@ func _place_goal(coord: Vector2i) -> int:
 		return -1
 	level_data.goal_position = coord
 	return id
+
+## Returns the node associated by the given id. Mostly used for testing.
+func get_node_by_id(id: int) -> Node:
+	var element = collision_system.get_rect_data(id)
+	var type := level_data.get_element_type(element)
+	if type not in [Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint]:
+		return null
+	return original_data_to_node[element]
 
 
 ## Removes whatever's at the given position. Returns the id on success or -1 otherwise.
@@ -584,18 +592,20 @@ func move_elements(ids: Dictionary, relative_pos: Vector2i) -> bool:
 			Enums.LevelElementTypes.Goal:
 				_place_goal(new_pos)
 			Enums.LevelElementTypes.Tile:
-				_remove_tile(old_pos)
 				tiles.push_back(id)
 				tiles.push_back(new_pos.x)
 				tiles.push_back(new_pos.y)
+				tiles.push_back(level_data.tiles[data])
+				_remove_tile(old_pos)
 			Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
 				_move_node_element(data, new_pos)
 			_:
 				assert(false)
-	for i in range(0, tiles.size(), 3):
+	for i in range(0, tiles.size(), 4):
 		var id := tiles[i]
 		var new_pos := Vector2i(tiles[i+1], tiles[i+2])
-		_place_tile(new_pos, id)
+		var tile_type = tiles[i + 3]
+		_place_tile(new_pos, tile_type, id)
 	return true
 
 # Moves the element. Doesn't check for collisions beforehand!

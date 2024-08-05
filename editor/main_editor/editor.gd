@@ -7,7 +7,7 @@ class_name LockpickEditor
 @export var side_tabs: BookmarkTabContainer
 @export var door_editor: DoorEditor
 @export var key_editor: KeyEditor
-@export var tile_editor: Control
+@export var tile_editor: TileEditor
 @export var level_pack_properties_editor: LevelPackPropertiesEditor
 @export var entry_editor: EntryEditor
 @export var salvage_point_editor: SalvagePointEditor
@@ -17,6 +17,7 @@ class_name LockpickEditor
 	Enums.LevelElementTypes.Key: key_editor,
 	Enums.LevelElementTypes.Entry: entry_editor,
 	Enums.LevelElementTypes.SalvagePoint: salvage_point_editor,
+	Enums.LevelElementTypes.Tile: tile_editor,
 }
 
 @export var level_container: LevelContainer
@@ -337,8 +338,8 @@ func _on_file_selected(path: String) -> void:
 			load_level(path)
 
 func _on_new_level_button_pressed() -> void:
-	data.level_pack_data = LevelPackData.get_default_level_pack()
-	_update_level_path_display()
+	new_level_pack = LevelPackData.get_default_level_pack()
+	_actually_finish_loading_level()
 
 func _on_open_files_location_pressed() -> void:
 	OS.shell_open(SaveLoad.LEVELS_PATH)

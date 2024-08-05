@@ -19,8 +19,8 @@ func test_bigger_lock_bug() -> void:
 	lock_data_1.size = Vector2i(20, 1000)
 	door_data_1.size = Vector2i(32, 128)
 	door_data_1.add_lock(lock_data_1)
-	var door_1: Door = level.add_element(door_data_1)
-	level.remove_element(door_1)
+	var door_1_id: int = level.add_element(NewLevelElementInfo.new_from_data(door_data_1))
+	level.remove_element(door_1_id)
 	
 	print("adding door 2")
 	var door_data_2 := DoorData.new()
@@ -29,7 +29,8 @@ func test_bigger_lock_bug() -> void:
 	lock_data_2.size = Vector2i(20, 20)
 	door_data_2.size = Vector2i(32, 32)
 	door_data_2.add_lock(lock_data_2)
-	var door_2: Door = level.add_element(door_data_2)
+	var door_2_id: int = level.add_element(NewLevelElementInfo.new_from_data(door_data_2))
+	var door_2: Door = level.get_node_by_id(door_2_id)
 	var lock_2: Lock = door_2.lock_holder.get_child(0)
 	var lock_2_size := lock_2.size
 	assert_vector(lock_2_size).is_equal(Vector2(20, 20))
