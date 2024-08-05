@@ -9,5 +9,5 @@ offset_left = 7.0
 offset_top = 7.0
 offset_right = 43.0
 offset_bottom = 43.0
-mouse_filter = 1
+mouse_filter = 2
 script = ExtResource("1_tp0hg")

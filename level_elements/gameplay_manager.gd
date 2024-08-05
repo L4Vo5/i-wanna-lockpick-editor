@@ -9,8 +9,6 @@ var pack_state: LevelPackStateData
 
 @onready var transition: Transition = %Transition
 
-@onready var debug_collision_diagram: TextureRect = %DebugCollisionDiagram
-
 func _ready() -> void:
 	level.gameplay_manager = self
 

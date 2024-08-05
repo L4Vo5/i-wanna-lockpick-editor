@@ -5,7 +5,6 @@ class_name LevelContainer
 
 @export var inner_container: Control
 @export var gameplay: GameplayManager
-@export var level_viewport: SubViewport
 
 var door_editor: DoorEditor:
 	get:
@@ -38,6 +37,7 @@ var hover_highlight: HoverHighlight:
 @onready var selection_outline: SelectionOutline = %SelectionOutline
 @onready var selection_box: Panel = %SelectionBox
 @onready var danger_outline: SelectionOutline = %DangerOutline
+@onready var phantom_grid: CanvasGroup = %PhantomGrid
 
 @onready var editor_camera: Camera2D = %EditorCamera
 
@@ -176,10 +176,18 @@ func _handle_left_click() -> bool:
 				handled = true
 			else:
 				handled = _try_place_currently_adding()
+				if not handled:
+					clear_selection()
 		Tool.Brush:
 			drag_start = currently_adding.position
 			drag_state = Drag.Left
 			handled = _try_place_currently_adding()
+			phantom_grid.grid_size = currently_adding.get_rect().size
+			phantom_grid.show()
+			phantom_grid.offset = drag_start
+			if handled:
+				level.allow_hovering = false
+			clear_selection()
 		Tool.ModifySelection:
 			if drag_state == Drag.Right:
 				finish_expanding_selection()
@@ -208,6 +216,9 @@ func _handle_left_unclick() -> void:
 		match current_tool:
 			Tool.ModifySelection:
 				finish_expanding_selection()
+			Tool.Brush:
+				level.allow_hovering = true
+				phantom_grid.hide()
 		drag_state = Drag.None
 
 func _handle_right_click() -> bool:
@@ -218,9 +229,9 @@ func _handle_right_click() -> bool:
 			if not handled:
 				clear_selection()
 		Tool.Brush:
-			drag_start = currently_adding.position
 			drag_state = Drag.Right
 			handled = _try_remove_at_mouse()
+			clear_selection()
 		Tool.ModifySelection:
 			if drag_state == Drag.Left:
 				finish_expanding_selection()
@@ -294,10 +305,12 @@ func _handle_mouse_movement() -> bool:
 func _try_place_currently_adding() -> bool:
 	if not currently_adding:
 		return false
+	if currently_adding.type in [Enums.LevelElementTypes.Goal, Enums.LevelElementTypes.PlayerSpawn]:
+		remove_from_selection(level.level_data.elem_to_collision_system_id[currently_adding.type])
 	var id := level.add_element(currently_adding)
-	if id != -1 and current_tool == Tool.Pencil:
-		# just annoying, makes you move something that you probably already placed correctly
-		#select_thing(id)
+	if id != -1:
+		if current_tool == Tool.Pencil:
+			select_thing(id)
 		return true
 	return false
 
@@ -314,11 +327,11 @@ func _try_remove_at_mouse() -> bool:
 
 func update_currently_adding() -> void:
 	var info := NewLevelElementInfo.new()
-	if editor_data.current_tab.name == &"Tiles":
+	if editor_data.current_tab == editor_data.tile_editor:
 		info.type = Enums.LevelElementTypes.Tile
 		info.data = editor_data.current_tab.tile_type
-	elif editor_data.current_tab.name == &"LevelPack":
-		info.type = editor_data.current_tab.placing
+	elif editor_data.current_tab is LevelPackPropertiesEditor:
+		info.type = editor_data.current_tab.level_properties_editor.placing
 	elif editor_data.current_tab.name in [&"Doors", &"Keys", &"Entries", &"SalvagePoints"]:
 		info.type = editor_data.current_tab.data.level_element_type
 		info.data = editor_data.current_tab.data.duplicated()
@@ -453,6 +466,7 @@ func set_tool(tool: Tool) -> void:
 	ghost_displayer.hide()
 	selection_box.hide()
 	danger_outline.hide()
+	phantom_grid.hide()
 	
 	current_tool = tool
 	
@@ -472,7 +486,7 @@ func set_tool(tool: Tool) -> void:
 				danger_outline.add_rect(currently_adding.get_rect())
 			update_currently_adding_position()
 			_update_preview()
-	level.allow_hovering = current_tool == Tool.Pencil
+	level.allow_hovering = current_tool in [Tool.Pencil, Tool.Brush]
 
 func decide_tool() -> void:
 	if current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -488,7 +502,7 @@ func decide_tool() -> void:
 
 # Updates the ghost and the danger preview
 func _update_preview() -> void:
-	if not currently_adding or is_instance_valid(level.hover_highlight.current_obj):
+	if not currently_adding or (is_instance_valid(level.hover_highlight.current_obj) and level.allow_hovering):
 		ghost_displayer.hide()
 		danger_outline.hide()
 		return

@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://csr3jfybky0mf"]
+
+[ext_resource type="Shader" path="res://editor/misc/distance_fade.gdshader" id="1_nccmt"]
+[ext_resource type="Script" path="res://editor/misc/phantom_grid.gd" id="2_c80n1"]
+[ext_resource type="Script" path="res://editor/misc/phantom_grid_draw.gd" id="3_eawvh"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7jdsh"]
+shader = ExtResource("1_nccmt")
+shader_parameter/dist_mult = null
+shader_parameter/center = null
+
+[node name="PhantomGrid" type="CanvasGroup"]
+material = SubResource("ShaderMaterial_7jdsh")
+fit_margin = 0.0
+clear_margin = 0.0
+script = ExtResource("2_c80n1")
+
+[node name="DistanceGridDraw" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_eawvh")
