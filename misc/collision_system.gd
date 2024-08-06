@@ -73,6 +73,10 @@ func change_rect(id: int, new_rect: Rect2i) -> void:
 	remove_rect(id)
 	add_rect(new_rect, data, id)
 
+## DON'T MODIFY THE RETURN VALUE
+func get_rects() -> Dictionary:
+	return _rects
+
 func get_rect(id: int) -> Rect2i:
 	return _rects[id]
 

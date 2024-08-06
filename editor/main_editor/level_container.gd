@@ -23,7 +23,7 @@ var level: Level:
 		return gameplay.level
 var collision_system: CollisionSystem:
 	get:
-		return level.level_data.collision_system
+		return level.collision_system
 
 
 @export var editor: LockpickEditor
@@ -326,7 +326,7 @@ func _try_place_currently_adding() -> bool:
 	if not currently_adding:
 		return false
 	if currently_adding.type in [Enums.LevelElementTypes.Goal, Enums.LevelElementTypes.PlayerSpawn]:
-		remove_from_selection(level.level_data.elem_to_collision_system_id.get(currently_adding.type, -1))
+		remove_from_selection(level.elem_to_collision_system_id.get(currently_adding.type, -1))
 	var id := level.add_element(currently_adding)
 	if id != -1:
 		if current_tool == Tool.Pencil:

@@ -79,8 +79,6 @@ var has_goal := true:
 		author = val
 		changed.emit()
 
-var collision_system := CollisionSystem.new(16)
-
 func _init() -> void:
 	changed_player_spawn_position.connect(emit_changed)
 	changed_goal_position.connect(emit_changed)
@@ -101,7 +99,6 @@ func duplicated() -> LevelData:
 		dupe.entries.push_back(entry.duplicated())
 	for salvage_point in salvage_points:
 		dupe.salvage_points.push_back(salvage_point.duplicated())
-	dupe.regen_collision_system()
 	return dupe
 
 static func get_default_level() -> LevelData:
@@ -109,34 +106,35 @@ static func get_default_level() -> LevelData:
 	level.resource_path = ""
 	return level
 
-var elem_to_collision_system_id := {}
-func regen_collision_system() -> void:
-	collision_system.clear()
-	elem_to_collision_system_id.clear()
-	var id: int
-	assert(PerfManager.start("LevelData::regen_collision_system"))
-	id = collision_system.add_rect(Rect2i(player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)), Enums.LevelElementTypes.PlayerSpawn)
-	elem_to_collision_system_id[Enums.LevelElementTypes.PlayerSpawn] = id
+func get_container_for_elem_type(type: Enums.LevelElementTypes):
+	match type:
+		Enums.LevelElementTypes.Door: return doors
+		Enums.LevelElementTypes.Key: return keys
+		Enums.LevelElementTypes.SalvagePoint: return salvage_points
+		Enums.LevelElementTypes.Entry: return entries
+		Enums.LevelElementTypes.Tile: return tiles
+		_: return null
+
+## Builds up a collision system based on the data.
+func get_collision_system() -> CollisionSystem:
+	var collision_system := CollisionSystem.new(16)
+	assert(PerfManager.start("LevelData::get_collision_system"))
+	collision_system.add_rect(Rect2i(player_spawn_position - Vector2i(14, 32), Vector2i(32, 32)), Enums.LevelElementTypes.PlayerSpawn)
 	if has_goal:
-		id = collision_system.add_rect(Rect2i(goal_position, Vector2i(32, 32)), Enums.LevelElementTypes.Goal)
-		elem_to_collision_system_id[Enums.LevelElementTypes.Goal] = id
+		collision_system.add_rect(Rect2i(goal_position, Vector2i(32, 32)), Enums.LevelElementTypes.Goal)
 	for door in doors:
-		id = collision_system.add_rect(door.get_rect(), door)
-		elem_to_collision_system_id[door] = id
+		collision_system.add_rect(door.get_rect(), door)
 	for key in keys:
-		id = collision_system.add_rect(key.get_rect(), key)
-		elem_to_collision_system_id[key] = id
+		collision_system.add_rect(key.get_rect(), key)
 	for entry in entries:
-		id = collision_system.add_rect(entry.get_rect(), entry)
-		elem_to_collision_system_id[entry] = id
+		collision_system.add_rect(entry.get_rect(), entry)
 	for salvage_point in salvage_points:
-		id = collision_system.add_rect(salvage_point.get_rect(), salvage_point)
-		elem_to_collision_system_id[salvage_point] = id
+		collision_system.add_rect(salvage_point.get_rect(), salvage_point)
 	for tile_coord in tiles.keys():
 		# Bad idea to store just a Vector2i without identifying it as a tile, perhaps?
-		id = collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
-		elem_to_collision_system_id[tile_coord] = id
-	assert(PerfManager.end("LevelData::regen_collision_system"))
+		collision_system.add_rect(Rect2i(tile_coord * 32, Vector2i(32, 32)), tile_coord)
+	assert(PerfManager.end("LevelData::get_collision_system"))
+	return collision_system
 
 static func get_element_type(elem: Variant) -> Enums.LevelElementTypes:
 	if elem is Enums.LevelElementTypes:
