@@ -238,7 +238,6 @@ func reset() -> void:
 			elem_to_collision_system_id[door_data] = id
 		assert(PerfManager.end("Level::reset (salvaged doors)"))
 	
-	
 	for type in Enums.NODE_LEVEL_ELEMENTS:
 		assert(PerfManager.start("Level::reset (" + Enums.LevelElementTypes.find_key(type) + ")"))
 		
@@ -247,6 +246,11 @@ func reset() -> void:
 		
 		var needed := list.size()
 		var current := container.get_child_count()
+		# shave off the unneeded ones
+		if current > needed:
+			for _i in current - needed:
+				var node := container.get_child(-1)
+				_remove_element(node)
 		# redo the current ones
 		for i in mini(needed, current):
 			var node := container.get_child(i)
@@ -254,13 +258,8 @@ func reset() -> void:
 			node_to_original_data[node] = original_data
 			original_data_to_node[original_data] = node
 			node.data = original_data.duplicated()
-		# shave off the rest
-		if current > needed:
-			for _i in current - needed:
-				var node := container.get_child(-1)
-				_remove_element(node)
 		# or add them
-		else:
+		if current <= needed:
 			for i in range(current, needed):
 				_spawn_node_element(list[i])
 		assert(PerfManager.end("Level::reset (" + Enums.LevelElementTypes.find_key(type) + ")"))

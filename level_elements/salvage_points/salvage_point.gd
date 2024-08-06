@@ -77,7 +77,7 @@ func update_visual() -> void:
 		if data.error_rect != Rect2i():
 			sprite.frame = 2
 			mod = Rendering.salvage_point_error_output_color
-			outline.position = data.error_rect.position
+			outline.position = data.error_rect.position as Vector2 - position
 			outline.size = data.error_rect.size
 			outline.show()
 		else:
