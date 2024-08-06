@@ -12,7 +12,7 @@ static var SHOULD_PRINT := false
 ## The actual pack data
 var pack_data: LevelPackData
 
-## An array with the ids of completed levels, in no particular order.
+## Key: the id of a completed levels. Value: true
 ## A level is completed when you reach the goal.
 @export var completed_levels := {}
 
