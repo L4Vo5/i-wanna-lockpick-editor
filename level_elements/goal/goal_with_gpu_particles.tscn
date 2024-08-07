@@ -21,3 +21,14 @@ unique_name_in_owner = true
 texture = ExtResource("2_g6pmj")
 hframes = 4
 frame = 1
+
+[node name="Label" type="Label" parent="."]
+offset_left = -227.0
+offset_top = 44.0
+offset_right = 230.0
+offset_bottom = 145.0
+text = "WAITING4GODOT:
+https://github.com/godotengine/godot/issues/95042
+(basically if you move this around it looks ugly)
+(not necessary for gameplay, but it is for the funny effect...)"
+horizontal_alignment = 1
