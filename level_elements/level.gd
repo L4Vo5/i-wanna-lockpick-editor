@@ -423,12 +423,14 @@ func get_visible_element_at_pos(pos: Vector2i) -> int:
 
 # TODO: remove these and do it in logic?
 func on_door_opened(_door: Door) -> void:
+	update_hover()
 	update_mouseover()
 
 func _on_door_changed_curse(_door: Door) -> void:
 	update_mouseover()
 
 func _on_key_picked_up(_key: KeyElement) -> void:
+	update_hover()
 	update_mouseover()
 
 func _on_hover_adapted_to(_what: Node) -> void:
