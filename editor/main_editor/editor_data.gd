@@ -43,6 +43,7 @@ var level_pack_properties_editor: LevelPackPropertiesEditor
 var entry_editor: EntryEditor
 var salvage_point_editor: SalvagePointEditor
 var level_element_editors: Dictionary = {}
+var level_container: LevelContainer
 
 ## Emitted when the currently edited thing changes (either the type itself changed or the inner data was edited)
 signal changed_side_editor_data

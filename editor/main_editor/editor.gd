@@ -83,6 +83,7 @@ func _ready() -> void:
 	data.salvage_point_editor = salvage_point_editor
 	data.side_tabs = side_tabs
 	data.level_element_editors = level_element_editors
+	data.level_container = level_container
 	
 	level_container.editor_data = data
 	level_pack_properties_editor.editor_data = data

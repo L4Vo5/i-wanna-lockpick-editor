@@ -226,7 +226,7 @@ func _handle_left_click() -> bool:
 	return handled
 
 func _handle_left_unclick() -> void:
-	if level.goal:
+	if is_instance_valid(level.goal):
 		level.goal.stop_funny_animation()
 	match current_tool:
 		Tool.DragSelection:
@@ -393,6 +393,7 @@ func add_to_selection(id: int) -> void:
 
 func remove_from_selection(id: int) -> void:
 	if id == -1: return
+	if not id in selection: return
 	selection.erase(id)
 	var rect := collision_system.get_rect(id)
 	rect.position -= selection_outline.position as Vector2i
@@ -523,3 +524,9 @@ func _update_preview() -> void:
 	else:
 		ghost_displayer.show()
 		danger_outline.hide()
+
+func remove_goal() -> void:
+	if not level.level_data.has_goal: return
+	var id: int = level.elem_to_collision_system_id[Enums.LevelElementTypes.Goal]
+	remove_from_selection(id)
+	level.level_data.has_goal = false

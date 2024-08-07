@@ -196,7 +196,7 @@ func _set_level_number(level_index: int) -> void:
 
 func _on_remove_goal_button_pressed() -> void:
 	if _setting_to_data: return
-	_level_data.has_goal = false
+	editor_data.level_container.remove_goal()
 
 func _on_changed_exitable() -> void:
 	if _setting_to_data: return
