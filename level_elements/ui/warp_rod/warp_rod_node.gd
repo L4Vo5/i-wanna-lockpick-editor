@@ -30,6 +30,7 @@ const FONT = preload("res://fonts/ms_ui_gothic.fnt")
 @onready var outline: NinePatchRect = %Outline
 @onready var node_dragger: NodeDragger = %NodeDragger
 
+# tip: can make it @export when testing
 var connects_to: Array[WarpRodNode] = []
 
 func _init() -> void:

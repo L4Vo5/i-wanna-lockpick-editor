@@ -32,8 +32,8 @@ func _draw() -> void:
 			var pos2 := node2.get_center()
 			if not test_vecs(pos1, pos2): continue
 			#print("Drawing line between %s and %s" % [pos1, pos2])
-			var shadow_angle := pos2.angle_to(pos1)
-			var shadow_offset := Vector2.DOWN.rotated(shadow_angle) * 4
+			var shadow_angle := pos2.angle_to_point(pos1)
+			var shadow_offset := Vector2.DOWN.rotated(shadow_angle) * 2
 			if shadow_offset.y < 0:
 				shadow_offset = -shadow_offset
 			draw_line(pos1 + shadow_offset, pos2 + shadow_offset, Color(0, 0, 0, 0.25), 2)
