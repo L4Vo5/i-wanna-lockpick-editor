@@ -1,0 +1,6 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://dghukqveb6af5"]
+
+[ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="1_8kurv"]
+
+[resource]
+font = ExtResource("1_8kurv")

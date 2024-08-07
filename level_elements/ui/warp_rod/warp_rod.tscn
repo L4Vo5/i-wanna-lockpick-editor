@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://co2cgujysw6ei"]
+[gd_scene load_steps=13 format=3 uid="uid://co2cgujysw6ei"]
 
 [ext_resource type="Script" path="res://level_elements/ui/warp_rod/warp_rod.gd" id="1_ipkf8"]
 [ext_resource type="Texture2D" uid="uid://cxg0mv4k2jhsc" path="res://level_elements/ui/warp_rod/warp_rod_ninepatch.png" id="2_0f83x"]
@@ -6,6 +6,12 @@
 [ext_resource type="Script" path="res://level_elements/ui/warp_rod/warp_rod_screen.gd" id="4_5l1i2"]
 [ext_resource type="Script" path="res://misc/node_dragger.gd" id="4_5p2ky"]
 [ext_resource type="AudioStream" uid="uid://c5yw36qvx5ons" path="res://level_elements/ui/warp_rod/snd_select_beep.wav" id="4_ra311"]
+[ext_resource type="StyleBox" uid="uid://c37kxstdliekl" path="res://level_elements/ui/warp_rod/warp_rod_unfocused_tab_stylebox.tres" id="6_0mma0"]
+[ext_resource type="ButtonGroup" uid="uid://14evwxbf52s" path="res://level_elements/ui/warp_rod/warp_rod_tab_button_group.tres" id="7_0t6gm"]
+[ext_resource type="LabelSettings" uid="uid://dghukqveb6af5" path="res://level_elements/ui/warp_rod/warp_rod_tab_label_settings.tres" id="8_tv2lt"]
+[ext_resource type="Script" path="res://rendering/outline_text.gd" id="9_u5wll"]
+[ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="10_su85u"]
+[ext_resource type="StyleBox" uid="uid://dw0n1n35m8r66" path="res://level_elements/ui/warp_rod/warp_rod_focused_tab_stylebox.tres" id="11_vd85u"]
 
 [node name="WarpRod" type="NinePatchRect"]
 offset_left = 115.0
@@ -18,6 +24,7 @@ patch_margin_top = 20
 patch_margin_right = 20
 patch_margin_bottom = 20
 script = ExtResource("1_ipkf8")
+button_group = ExtResource("7_0t6gm")
 
 [node name="Sound" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
@@ -31,32 +38,149 @@ stream = ExtResource("4_ra311")
 pitch_scale = 0.8
 bus = &"Sfx"
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="Buttons" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = -35.0
+offset_bottom = 20.0
+grow_horizontal = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Buttons"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Levels" type="MarginContainer" parent="Buttons/HBoxContainer"]
+layout_mode = 2
+
+[node name="LevelsButton" type="Button" parent="Buttons/HBoxContainer/Levels"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/normal = ExtResource("6_0mma0")
+theme_override_styles/hover = ExtResource("6_0mma0")
+theme_override_styles/pressed = ExtResource("11_vd85u")
+toggle_mode = true
+button_pressed = true
+action_mode = 0
+button_group = ExtResource("7_0t6gm")
+
+[node name="MarginContainer" type="MarginContainer" parent="Buttons/HBoxContainer/Levels"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="LevelsOutlineText" type="Node2D" parent="Buttons/HBoxContainer/Levels/MarginContainer"]
+unique_name_in_owner = true
+position = Vector2(18, 37)
+script = ExtResource("9_u5wll")
+text = "Levels"
+font = ExtResource("10_su85u")
+center_horizontally = false
+
+[node name="Label" type="Label" parent="Buttons/HBoxContainer/Levels/MarginContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+text = "Levels"
+label_settings = ExtResource("8_tv2lt")
+
+[node name="History" type="MarginContainer" parent="Buttons/HBoxContainer"]
+layout_mode = 2
+
+[node name="HistoryButton" type="Button" parent="Buttons/HBoxContainer/History"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/normal = ExtResource("6_0mma0")
+theme_override_styles/hover = ExtResource("6_0mma0")
+theme_override_styles/pressed = ExtResource("11_vd85u")
+toggle_mode = true
+action_mode = 0
+button_group = ExtResource("7_0t6gm")
+
+[node name="MarginContainer" type="MarginContainer" parent="Buttons/HBoxContainer/History"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="HistoryOutlineText" type="Node2D" parent="Buttons/HBoxContainer/History/MarginContainer"]
+unique_name_in_owner = true
+position = Vector2(18, 37)
+script = ExtResource("9_u5wll")
+text = "History"
+font = ExtResource("10_su85u")
+center_horizontally = false
+
+[node name="Label" type="Label" parent="Buttons/HBoxContainer/History/MarginContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+text = "History"
+label_settings = ExtResource("8_tv2lt")
+
+[node name="Screen" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="ScreenDragger" type="Control" parent="MarginContainer" node_paths=PackedStringArray("node")]
+[node name="Levels" type="MarginContainer" parent="Screen"]
 unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ScreenDragger" type="Control" parent="Screen/Levels" node_paths=PackedStringArray("node")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_5p2ky")
 input_action = &"drag_warp_rod"
-node = NodePath("../ScreenContainer/WarpRodScreen")
+node = NodePath("../ScreenContainer/LevelsScreen")
 
-[node name="ScreenContainer" type="Control" parent="MarginContainer"]
+[node name="ScreenContainer" type="Control" parent="Screen/Levels"]
 clip_contents = true
 layout_mode = 2
 mouse_filter = 2
 
-[node name="WarpRodScreen" type="Control" parent="MarginContainer/ScreenContainer"]
+[node name="LevelsScreen" type="Control" parent="Screen/Levels/ScreenContainer"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_5l1i2")
+
+[node name="History" type="MarginContainer" parent="Screen"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ScreenDragger" type="Control" parent="Screen/History" node_paths=PackedStringArray("node")]
+layout_mode = 2
+mouse_filter = 1
+script = ExtResource("4_5p2ky")
+input_action = &"drag_warp_rod"
+node = NodePath("../../Levels/ScreenContainer/LevelsScreen")
+
+[node name="ScreenContainer" type="Control" parent="Screen/History"]
+clip_contents = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HistoryScreen" type="Control" parent="Screen/History/ScreenContainer"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15

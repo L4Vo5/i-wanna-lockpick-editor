@@ -1,0 +1,12 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://c37kxstdliekl"]
+
+[ext_resource type="Texture2D" uid="uid://8qs8mecy360x" path="res://level_elements/ui/warp_rod/warp_rod_tab_unfocused.png" id="1_y2aqo"]
+
+[resource]
+texture = ExtResource("1_y2aqo")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 22.0
+texture_margin_bottom = 14.0
+expand_margin_left = 10.0
+expand_margin_right = 10.0

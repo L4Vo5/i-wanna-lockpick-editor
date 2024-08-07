@@ -5,7 +5,17 @@ class_name WarpRod
 const WARP_ROD_NODE = preload("res://level_elements/ui/warp_rod/warp_rod_node.tscn")
 
 @onready var sound: AudioStreamPlayer = %Sound
-@onready var warp_rod_screen: Control = %WarpRodScreen
+@onready var levels_screen: Control = %LevelsScreen
+@onready var history_screen: Control = %HistoryScreen
+
+@onready var levels_button: Button = %LevelsButton
+@onready var history_button: Button = %HistoryButton
+@onready var levels_container: MarginContainer = %Levels
+@onready var history_container: MarginContainer = %History
+@onready var levels_outline_text: OutlineText = %LevelsOutlineText
+@onready var history_outline_text: OutlineText = %HistoryOutlineText
+
+@export var button_group: ButtonGroup
 
 var pack_data: LevelPackData:
 	get:
@@ -18,21 +28,24 @@ var state_data: LevelPackStateData:
 var gameplay_manager: GameplayManager:
 	set(val):
 		gameplay_manager = val
-		regen_nodes()
+		regen_level_nodes()
 
 func _ready() -> void:
-	# Kinda useless to do it this way but just making sure.
-	var margin_container: MarginContainer = $MarginContainer as MarginContainer
-	margin_container.add_theme_constant_override("margin_top", patch_margin_top)
-	margin_container.add_theme_constant_override("margin_bottom", patch_margin_bottom)
-	margin_container.add_theme_constant_override("margin_left", patch_margin_left)
-	margin_container.add_theme_constant_override("margin_right", patch_margin_right)
+	button_group.pressed.connect(_update_visible_tab.unbind(1))
+	_update_visible_tab()
+
+func _update_visible_tab() -> void:
+	levels_container.visible = button_group.get_pressed_button() == levels_button
+	history_container.visible = button_group.get_pressed_button() == history_button
+	# xd it works
+	levels_outline_text.position.y = 35 if levels_container.visible else 37
+	history_outline_text.position.y = 35 if history_container.visible else 37
 
 func show_warp_rod() -> void:
 	show()
 	sound.pitch_scale = 1.5
 	sound.play()
-	regen_nodes()
+	regen_level_nodes()
 
 func hide_warp_rod() -> void:
 	hide()
@@ -42,10 +55,11 @@ func hide_warp_rod() -> void:
 var level_to_node := {}
 var node_to_level := {}
 
-func regen_nodes() -> void:
+func regen_level_nodes() -> void:
 	if not gameplay_manager: return
-	var connections := {}
-	for child in warp_rod_screen.get_children():
+	print(gameplay_manager.pack_state.exit_levels)
+	
+	for child in levels_screen.get_children():
 		child.free()
 		level_to_node.clear()
 		node_to_level.clear()
@@ -54,13 +68,13 @@ func regen_nodes() -> void:
 		var level: LevelData = pack_data.levels[level_id]
 		var warp_title := level.name if level.name else level.title if level.title else "Untitled"
 		var pos := Vector2.ZERO
-		pos.x = floorf(randf() * warp_rod_screen.size.x)
-		pos.y = floorf(randf() * warp_rod_screen.size.y)
+		pos.x = floorf(randf() * levels_screen.size.x)
+		pos.y = floorf(randf() * levels_screen.size.y)
 		var node := WARP_ROD_NODE.instantiate()
 		level_to_node[level] = node
 		node_to_level[node] = level
 		node.text = warp_title
-		warp_rod_screen.add_child(node)
+		levels_screen.add_child(node)
 		node.position = pos
 		node.state = node.State.Available
 		if state_data.current_level == level_id:
@@ -76,4 +90,4 @@ func regen_nodes() -> void:
 			# Must store connection both ways for the strategy that's used to avoid drawing the same connection twice
 			node.connects_to.push_back(level_to_node[other_level])
 			level_to_node[other_level].connects_to.push_back(node)
-	warp_rod_screen.queue_redraw()
+	levels_screen.queue_redraw()
