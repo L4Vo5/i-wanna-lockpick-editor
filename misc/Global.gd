@@ -246,3 +246,7 @@ static func distance_between_rects(r1: Rect2, r2: Rect2) -> Vector2:
 	var rect_diff := r1.merge(r2)
 	rect_diff.size -= r1.size + r2.size
 	return rect_diff.size.clamp(Vector2.ZERO, Vector2.INF)
+
+func release_gui_focus() -> void:
+	if get_viewport().gui_get_focus_owner():
+		get_viewport().gui_get_focus_owner().release_focus()

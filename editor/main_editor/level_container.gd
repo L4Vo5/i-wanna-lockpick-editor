@@ -185,6 +185,7 @@ func _gui_input(event: InputEvent) -> void:
 			accept_event()
 
 func _handle_left_click() -> bool:
+	Global.release_gui_focus()
 	var handled := false
 	match current_tool:
 		Tool.Pencil:
@@ -241,6 +242,7 @@ func _handle_left_unclick() -> void:
 		drag_state = Drag.None
 
 func _handle_right_click() -> bool:
+	Global.release_gui_focus()
 	var handled := false
 	match current_tool:
 		Tool.Pencil:

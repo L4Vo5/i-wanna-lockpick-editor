@@ -177,6 +177,7 @@ func _update_mode() -> void:
 	data.current_tab = current_tab
 
 func _on_play_pressed() -> void:
+	Global.release_gui_focus()
 	if Global.settings.should_save_on_play and not data.is_playing:
 		if SaveLoad.is_path_valid_for_saving(data.level_pack_data.file_path):
 			save_level()
