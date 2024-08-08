@@ -1,4 +1,4 @@
-@tool
+#@tool
 extends NinePatchRect
 class_name WarpRod
 
@@ -67,8 +67,8 @@ func regen_level_nodes() -> void:
 		var level: LevelData = pack_data.levels[level_id]
 		var warp_title := level.name if level.name else level.title if level.title else "Untitled"
 		var pos := Vector2.ZERO
-		pos.x = floorf(randf() * levels_screen.size.x)
-		pos.y = floorf(randf() * levels_screen.size.y)
+		#pos.x = floorf(randf() * pack_data.levels.size() * 40)
+		#pos.y = floorf(randf() * pack_data.levels.size() * 40)
 		var node := WARP_ROD_NODE.instantiate()
 		level_to_node[level] = node
 		node_to_level[node] = level
