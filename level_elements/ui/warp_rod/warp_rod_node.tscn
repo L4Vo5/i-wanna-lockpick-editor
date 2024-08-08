@@ -20,7 +20,6 @@ patch_margin_top = 12
 patch_margin_right = 12
 patch_margin_bottom = 13
 script = ExtResource("2_hsq32")
-can_be_dragged = null
 
 [node name="Outline" type="NinePatchRect" parent="."]
 unique_name_in_owner = true

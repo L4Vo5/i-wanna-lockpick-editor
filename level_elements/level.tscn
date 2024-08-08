@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=17 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_ynu1q"]
 [ext_resource type="Script" path="res://level_elements/level_logic.gd" id="2_ufm7h"]
@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://wkjs6v6a35d" path="res://level_elements/ui/keypad/key_pad.tscn" id="10_hapwe"]
 [ext_resource type="PackedScene" uid="uid://db8xfne3exmq5" path="res://rendering/mouseover_text.tscn" id="11_j0wdo"]
 [ext_resource type="PackedScene" uid="uid://co2cgujysw6ei" path="res://level_elements/ui/warp_rod/warp_rod.tscn" id="11_pc6n5"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_gtwjn"]
 
 [node name="Level" type="Node2D"]
 process_priority = -10
@@ -101,6 +103,7 @@ visible = false
 
 [node name="WarpRod" parent="UI" instance=ExtResource("11_pc6n5")]
 visible = false
+button_group = SubResource("ButtonGroup_gtwjn")
 
 [node name="Autorun" type="AudioStreamPlayer" parent="UI"]
 unique_name_in_owner = true

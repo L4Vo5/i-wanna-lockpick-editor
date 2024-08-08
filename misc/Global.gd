@@ -241,3 +241,8 @@ func _on_window_focused() -> void:
 	
 	var viewport_rid := get_tree().root.get_viewport_rid()
 	RenderingServer.viewport_set_update_mode(viewport_rid, RenderingServer.VIEWPORT_UPDATE_WHEN_VISIBLE)
+
+static func distance_between_rects(r1: Rect2, r2: Rect2) -> Vector2:
+	var rect_diff := r1.merge(r2)
+	rect_diff.size -= r1.size + r2.size
+	return rect_diff.size.clamp(Vector2.ZERO, Vector2.INF)

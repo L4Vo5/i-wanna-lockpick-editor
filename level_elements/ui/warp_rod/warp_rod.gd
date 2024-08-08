@@ -57,7 +57,6 @@ var node_to_level := {}
 
 func regen_level_nodes() -> void:
 	if not gameplay_manager: return
-	print(gameplay_manager.pack_state.exit_levels)
 	
 	for child in levels_screen.get_children():
 		child.free()
@@ -90,4 +89,3 @@ func regen_level_nodes() -> void:
 			# Must store connection both ways for the strategy that's used to avoid drawing the same connection twice
 			node.connects_to.push_back(level_to_node[other_level])
 			level_to_node[other_level].connects_to.push_back(node)
-	levels_screen.queue_redraw()
