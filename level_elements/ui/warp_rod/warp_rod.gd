@@ -69,7 +69,7 @@ func _on_history_clicked(node: WarpRodNode) -> void:
 	var i: int = node_to_history_index[node]
 	gameplay_manager.exit_until(i)
 
-var history_index_to_node := {}
+var history_index_to_node: Array[WarpRodNode] = []
 var node_to_history_index := {}
 func regen_history_nodes() -> void:
 	if not gameplay_manager: return
@@ -77,34 +77,35 @@ func regen_history_nodes() -> void:
 	history_index_to_node.clear()
 	for child in history_screen.get_children():
 		child.free()
-	# TODO: I should properly include the current level lol.
-	if state_data.exit_levels.size() == 0: return
+	
 	var base_pos := Vector2.ZERO
 	base_pos.x = history_screen.size.x / 2
 	var last_y := (state_data.exit_levels.size() - 1) * 32
 	if last_y > history_screen.size.y - 32:
 		base_pos.y = history_screen.size.y - state_data.exit_levels.size() * 32
 	
-	for i in state_data.exit_levels.size():
-		var level_id := state_data.exit_levels[i]
+	# last iteration goes though the current level
+	for i in state_data.exit_levels.size() + 1:
+		var level_id := state_data.exit_levels[i] if i < state_data.exit_levels.size() else state_data.current_level
 		var level: LevelData = pack_data.levels[level_id]
 		var warp_title := level.name if level.name else level.title if level.title else "Untitled"
 		var pos := base_pos
 		pos.y += i * 32
 		var node := WARP_ROD_NODE.instantiate()
-		history_index_to_node[i] = node
+		history_index_to_node.push_back(node)
 		node_to_history_index[node] = i
 		node.text = warp_title
 		history_screen.add_child(node)
 		node.position = pos
 		node.position.x -= node.size.x / 2
 		node.state = node.State.Available
-	history_index_to_node[state_data.exit_levels.size()-1].state = WarpRodNode.State.Current
+	history_index_to_node[-1].state = WarpRodNode.State.Current
 	for node: WarpRodNode in node_to_history_index.keys():
 		var i: int = node_to_history_index[node]
 		if i != 0:
 			node.connects_to.push_back(history_index_to_node[i-1])
-		if i != state_data.exit_levels.size()-1:
+		# remember history_index_to_node has an extra node (the current level)
+		if i < state_data.exit_levels.size():
 			node.connects_to.push_back(history_index_to_node[i+1])
 
 func update_history_nodes() -> void:

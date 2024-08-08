@@ -66,6 +66,7 @@ func _ready() -> void:
 	
 	data.gameplay = gameplay
 	data.level = level
+	gameplay.is_editing = true
 	if FileAccess.file_exists(Global.settings.current_editor_pack):
 		load_level(Global.settings.current_editor_pack)
 	else:
