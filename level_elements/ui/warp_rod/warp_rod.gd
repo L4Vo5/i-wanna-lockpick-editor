@@ -30,6 +30,8 @@ var gameplay_manager: GameplayManager:
 		gameplay_manager = val
 		gameplay_manager.pack_data_changed.connect(regen_level_nodes)
 		gameplay_manager.pack_data_changed.connect(regen_history_nodes)
+		gameplay_manager.entered_level.connect(update_level_nodes)
+		gameplay_manager.entered_level.connect(update_history_nodes)
 		regen_level_nodes()
 		regen_history_nodes()
 
@@ -71,7 +73,8 @@ var history_index_to_node := {}
 var node_to_history_index := {}
 func regen_history_nodes() -> void:
 	if not gameplay_manager: return
-	
+	node_to_history_index.clear()
+	history_index_to_node.clear()
 	for child in history_screen.get_children():
 		child.free()
 	# TODO: I should properly include the current level lol.
@@ -103,6 +106,10 @@ func regen_history_nodes() -> void:
 			node.connects_to.push_back(history_index_to_node[i-1])
 		if i != state_data.exit_levels.size()-1:
 			node.connects_to.push_back(history_index_to_node[i+1])
+
+func update_history_nodes() -> void:
+	# I guess it could do something more optimized, but, meh for now
+	regen_history_nodes()
 
 var level_to_node := {}
 var node_to_level := {}
@@ -141,3 +148,10 @@ func regen_level_nodes() -> void:
 			# Must store connection both ways for the strategy that's used to avoid drawing the same connection twice
 			node.connects_to.push_back(level_to_node[other_level])
 			level_to_node[other_level].connects_to.push_back(node)
+
+func update_level_nodes() -> void:
+	for level_id in pack_data.levels:
+		var node: WarpRodNode = level_to_node[pack_data.levels[level_id]]
+		node.state = node.State.Available
+		if state_data.current_level == level_id:
+			node.state = node.State.Current

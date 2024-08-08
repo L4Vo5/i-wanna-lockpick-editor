@@ -6,6 +6,9 @@ signal pack_data_changed
 var pack_data: LevelPackData
 var pack_state: LevelPackStateData
 
+# Emitted when a new level is entered
+signal entered_level
+
 # if true, level won't have some features available
 var is_editing := false
 
@@ -36,6 +39,7 @@ func set_current_level(id: int) -> void:
 	var level_data := pack_state.get_current_level()
 	level.level_data = level_data
 	reset()
+	entered_level.emit()
 	assert(PerfManager.end("GameplayManager::set_current_level (%d)" % id))
 
 func has_won_current_level() -> bool:
