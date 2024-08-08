@@ -1,5 +1,5 @@
 @tool
-extends Area2D
+extends Node2D
 class_name LevelGoal
 
 var has_won := false
@@ -13,6 +13,7 @@ const PART := preload("res://level_elements/goal/goal_particle.tscn")
 @onready var sprite: Sprite2D = %Sprite
 @onready var sprite_parent: Node2D = %SpriteParent
 @onready var snd_win: AudioStreamPlayer = %Win
+@onready var area_2d: Area2D = %Area2D
 
 var custom_pos: Vector2: set = set_pos
 func set_pos(pos: Vector2) -> void:
@@ -22,7 +23,7 @@ func set_pos(pos: Vector2) -> void:
 
 func _ready() -> void:
 	sprite_parent.position = custom_pos
-	area_entered.connect(_on_body_entered)
+	area_2d.area_entered.connect(_on_body_entered)
 	if level and level.gameplay_manager and level.gameplay_manager.has_won_current_level():
 		win(true)
 	preprocess(58)

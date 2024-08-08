@@ -7,19 +7,23 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_shx3d"]
 radius = 16.0
 
-[node name="goal" type="Area2D"]
-collision_layer = 0
-collision_mask = 16
+[node name="goal" type="Node2D"]
 script = ExtResource("1_86jih")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_shx3d")
 
 [node name="Particles" type="Node2D" parent="."]
 unique_name_in_owner = true
 
 [node name="SpriteParent" type="Node2D" parent="."]
 unique_name_in_owner = true
+
+[node name="Area2D" type="Area2D" parent="SpriteParent"]
+unique_name_in_owner = true
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpriteParent/Area2D"]
+visible = false
+shape = SubResource("CircleShape2D_shx3d")
 
 [node name="Sprite" type="Sprite2D" parent="SpriteParent"]
 unique_name_in_owner = true
