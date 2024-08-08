@@ -73,9 +73,7 @@ func exit_immediately() -> void:
 ## Exits until the i-th entry in the exit stack
 func exit_until(i: int) -> void:
 	transition.world_enter_animation()
-	transition.finished_animation.connect(exit_until_immediately.bind(i), CONNECT_ONE_SHOT)
-
-func exit_until_immediately(i: int) -> void:
+	await transition.finished_animation
 	var exit_pos: Vector2i = pack_state.exit_positions[i]
 	var exit_lvl: int = pack_state.exit_levels[i]
 	pack_state.exit_positions.resize(i)
@@ -98,6 +96,16 @@ func enter_level(id: int, exit_position: Vector2i) -> void:
 		pack_state.exit_levels.clear()
 		pack_state.exit_positions.clear()
 	
+	var _new_level_data: LevelData = pack_data.levels[id]
+	var target_level_name := _new_level_data.name
+	var target_level_title := _new_level_data.title
+	transition.level_enter_animation(target_level_name, target_level_title)
+	await transition.finished_animation
+	set_current_level(id)
+
+func enter_level_new_stack(id: int) -> void:
+	pack_state.exit_levels.clear()
+	pack_state.exit_positions.clear()
 	var _new_level_data: LevelData = pack_data.levels[id]
 	var target_level_name := _new_level_data.name
 	var target_level_title := _new_level_data.title

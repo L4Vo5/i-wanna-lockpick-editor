@@ -58,7 +58,9 @@ func hide_warp_rod() -> void:
 
 func _on_level_clicked(node: WarpRodNode) -> void:
 	if node.state == WarpRodNode.State.Current: return
-	pass
+	var level: LevelData = node_to_level[node]
+	var id: int = pack_data.levels.find_key(level)
+	gameplay_manager.enter_level_new_stack(id)
 
 func _on_history_clicked(node: WarpRodNode) -> void:
 	if node.state == WarpRodNode.State.Current: return
@@ -72,7 +74,8 @@ func regen_history_nodes() -> void:
 	
 	for child in history_screen.get_children():
 		child.free()
-	
+	# TODO: I should properly include the current level lol.
+	if state_data.exit_levels.size() == 0: return
 	var base_pos := Vector2.ZERO
 	base_pos.x = history_screen.size.x / 2
 	var last_y := (state_data.exit_levels.size() - 1) * 32
