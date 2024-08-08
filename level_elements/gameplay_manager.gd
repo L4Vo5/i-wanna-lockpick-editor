@@ -6,12 +6,17 @@ signal pack_data_changed
 var pack_data: LevelPackData
 var pack_state: LevelPackStateData
 
+# if true, level won't have some features available
+var is_editing := false
+
 @onready var level: Level = %Level
 
 @onready var transition: Transition = %Transition
 
 func _ready() -> void:
 	level.gameplay_manager = self
+	transition.started_animation.connect(_on_transition_started)
+	transition.finished_animation.connect(_on_transition_finished)
 
 func load_level_pack(pack: LevelPackData, state: LevelPackStateData) -> void:
 	assert(PerfManager.start("GameplayManager::load_level_pack"))
@@ -37,6 +42,9 @@ func has_won_current_level() -> bool:
 	return pack_state.current_level in pack_state.completed_levels
 
 func reset() -> void:
+	level.exclude_player = is_editing
+	level.allow_ui = not is_editing
+	level.load_salvaged_doors = not is_editing
 	level.reset()
 
 func win() -> void:
@@ -95,20 +103,19 @@ func enter_level(id: int, exit_position: Vector2i) -> void:
 	else:
 		pack_state.exit_levels.clear()
 		pack_state.exit_positions.clear()
-	
-	var _new_level_data: LevelData = pack_data.levels[id]
-	var target_level_name := _new_level_data.name
-	var target_level_title := _new_level_data.title
-	transition.level_enter_animation(target_level_name, target_level_title)
-	await transition.finished_animation
-	set_current_level(id)
+	_enter_level(id)
 
 func enter_level_new_stack(id: int) -> void:
 	pack_state.exit_levels.clear()
 	pack_state.exit_positions.clear()
+	_enter_level(id)
+
+func _enter_level(id: int) -> void:
 	var _new_level_data: LevelData = pack_data.levels[id]
 	var target_level_name := _new_level_data.name
 	var target_level_title := _new_level_data.title
+	if target_level_name.is_empty():
+		target_level_name = "Untitled"
 	transition.level_enter_animation(target_level_name, target_level_title)
 	await transition.finished_animation
 	set_current_level(id)
@@ -116,3 +123,9 @@ func enter_level_new_stack(id: int) -> void:
 func win_animation(text: String) -> void:
 	transition.win_animation(text)
 	transition.finished_animation.connect(exit_or_reset, CONNECT_ONE_SHOT)
+
+func _on_transition_started() -> void:
+	level.allow_ui = false
+
+func _on_transition_finished() -> void:
+	level.allow_ui = not is_editing

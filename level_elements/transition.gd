@@ -36,6 +36,7 @@ var can_finish_early: bool = true
 var fade_out_length := 0.0
 
 signal finished_animation
+signal started_animation
 
 func cancel() -> void:
 	background.modulate.a = 0
@@ -73,6 +74,7 @@ func start_animation(name_str: String, title: String = "", contributor: String =
 	animation_timer = 0
 	text_offset = -500
 	show()
+	started_animation.emit()
 
 func win_animation(text: String):
 	set_timings(1.2, 0, 1.6, 1.6, true, 0.7)
