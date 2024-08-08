@@ -4,6 +4,7 @@ class_name WarpRodNode
 
 signal hovered
 signal unhovered
+signal clicked
 
 @export var state := State.Unavailable: set = set_state
 enum State {
@@ -16,7 +17,7 @@ enum State {
 		text = val
 		custom_minimum_size = FONT.get_string_size(text) + Vector2(16, 16)
 		queue_redraw()
-@export var can_be_dragged := true:
+var can_be_dragged := true:
 	set(val):
 		can_be_dragged = val
 		if node_dragger:
@@ -49,6 +50,12 @@ func _on_mouse_entered() -> void:
 func _on_mouse_exited() -> void:
 	outline.hide()
 	unhovered.emit()
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			clicked.emit()
+			accept_event()
 
 func set_state(val: State) -> void:
 	state = val

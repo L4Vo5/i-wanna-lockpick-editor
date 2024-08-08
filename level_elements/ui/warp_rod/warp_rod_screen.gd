@@ -2,7 +2,8 @@
 extends Control
 class_name WarpRodScreen
 
-@export var can_drag_nodes := true:
+signal node_clicked(node: WarpRodNode)
+@export var can_drag_nodes := false:
 	set(val):
 		can_drag_nodes = val
 		for node in get_children():
@@ -105,13 +106,14 @@ func _physics_process(delta: float) -> void:
 	avg_position /= get_child_count()
 	# avg_position MUST be centered...
 	var avg_position_offset = size / 2 - avg_position
-	#for node in get_children():
-		#node.position += avg_position_offset
+	for node in get_children():
+		node.position += avg_position_offset
 	assert(PerfManager.end("WarpRodScreen::physics"))
 
 func _on_node_added(node: WarpRodNode) -> void:
 	node.hovered.connect(_on_node_hovered.bind(node))
 	node.item_rect_changed.connect(_on_node_moved.bind(node))
+	node.clicked.connect(_on_node_clicked.bind(node))
 	node.can_be_dragged = can_drag_nodes
 	var id := collision_system.add_rect(node.get_rect() as Rect2i, node)
 	node_to_id[node] = id
@@ -120,6 +122,7 @@ func _on_node_added(node: WarpRodNode) -> void:
 func _on_node_removed(node: WarpRodNode) -> void:
 	node.hovered.disconnect(_on_node_hovered.bind(node))
 	node.item_rect_changed.disconnect(_on_node_moved.bind(node))
+	node.clicked.disconnect(_on_node_clicked.bind(node))
 	collision_system.remove_rect(node_to_id[node])
 	node_to_id.erase(node)
 	connection_draw.queue_redraw()
@@ -134,3 +137,5 @@ func _on_node_moved(node: WarpRodNode) -> void:
 	collision_system.change_rect(id, node.get_rect() as Rect2i)
 	connection_draw.queue_redraw()
 
+func _on_node_clicked(node: WarpRodNode) -> void:
+	node_clicked.emit(node)

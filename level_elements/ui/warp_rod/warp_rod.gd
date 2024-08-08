@@ -35,6 +35,8 @@ var gameplay_manager: GameplayManager:
 
 func _ready() -> void:
 	button_group.pressed.connect(_update_visible_tab.unbind(1))
+	levels_screen.node_clicked.connect(_on_level_clicked)
+	history_screen.node_clicked.connect(_on_history_clicked)
 	_update_visible_tab()
 
 func _update_visible_tab() -> void:
@@ -53,6 +55,15 @@ func hide_warp_rod() -> void:
 	hide()
 	sound.pitch_scale = 1
 	sound.play()
+
+func _on_level_clicked(node: WarpRodNode) -> void:
+	if node.state == WarpRodNode.State.Current: return
+	pass
+
+func _on_history_clicked(node: WarpRodNode) -> void:
+	if node.state == WarpRodNode.State.Current: return
+	var i: int = node_to_history_index[node]
+	gameplay_manager.exit_until(i)
 
 var history_index_to_node := {}
 var node_to_history_index := {}

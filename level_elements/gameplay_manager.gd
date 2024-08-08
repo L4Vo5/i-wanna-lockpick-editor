@@ -70,6 +70,19 @@ func exit_immediately() -> void:
 	set_current_level(exit_lvl)
 	level.player.position = exit_pos
 
+## Exits until the i-th entry in the exit stack
+func exit_until(i: int) -> void:
+	transition.world_enter_animation()
+	transition.finished_animation.connect(exit_until_immediately.bind(i), CONNECT_ONE_SHOT)
+
+func exit_until_immediately(i: int) -> void:
+	var exit_pos: Vector2i = pack_state.exit_positions[i]
+	var exit_lvl: int = pack_state.exit_levels[i]
+	pack_state.exit_positions.resize(i)
+	pack_state.exit_levels.resize(i)
+	set_current_level(exit_lvl)
+	level.player.position = exit_pos
+
 func exit_or_reset() -> void:
 	if can_exit():
 		exit_immediately()
