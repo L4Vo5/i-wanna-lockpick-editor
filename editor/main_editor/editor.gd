@@ -188,10 +188,6 @@ func _on_play_pressed() -> void:
 	gameplay.is_editing = not data.is_playing
 	gameplay.reset()
 	resolve_visibility()
-	# fix for things staying focused when playing
-	set_focus_mode(Control.FOCUS_ALL)
-	grab_focus()
-	set_focus_mode(Control.FOCUS_NONE)
 
 func save_level() -> void:
 	if not Global.in_editor:
