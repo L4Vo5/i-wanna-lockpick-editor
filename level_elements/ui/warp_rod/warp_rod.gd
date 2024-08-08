@@ -28,7 +28,10 @@ var state_data: LevelPackStateData:
 var gameplay_manager: GameplayManager:
 	set(val):
 		gameplay_manager = val
+		gameplay_manager.pack_data_changed.connect(regen_level_nodes)
+		gameplay_manager.pack_data_changed.connect(regen_history_nodes)
 		regen_level_nodes()
+		regen_history_nodes()
 
 func _ready() -> void:
 	button_group.pressed.connect(_update_visible_tab.unbind(1))
@@ -45,12 +48,47 @@ func show_warp_rod() -> void:
 	show()
 	sound.pitch_scale = 1.5
 	sound.play()
-	regen_level_nodes()
 
 func hide_warp_rod() -> void:
 	hide()
 	sound.pitch_scale = 1
 	sound.play()
+
+var history_index_to_node := {}
+var node_to_history_index := {}
+func regen_history_nodes() -> void:
+	if not gameplay_manager: return
+	
+	for child in history_screen.get_children():
+		child.free()
+	
+	var base_pos := Vector2.ZERO
+	base_pos.x = history_screen.size.x / 2
+	var last_y := (state_data.exit_levels.size() - 1) * 32
+	if last_y > history_screen.size.y - 32:
+		base_pos.y = history_screen.size.y - state_data.exit_levels.size() * 32
+	
+	for i in state_data.exit_levels.size():
+		var level_id := state_data.exit_levels[i]
+		var level: LevelData = pack_data.levels[level_id]
+		var warp_title := level.name if level.name else level.title if level.title else "Untitled"
+		var pos := base_pos
+		pos.y += i * 32
+		var node := WARP_ROD_NODE.instantiate()
+		history_index_to_node[i] = node
+		node_to_history_index[node] = i
+		node.text = warp_title
+		history_screen.add_child(node)
+		node.position = pos
+		node.position.x -= node.size.x / 2
+		node.state = node.State.Available
+	history_index_to_node[state_data.exit_levels.size()-1].state = WarpRodNode.State.Current
+	for node: WarpRodNode in node_to_history_index.keys():
+		var i: int = node_to_history_index[node]
+		if i != 0:
+			node.connects_to.push_back(history_index_to_node[i-1])
+		if i != state_data.exit_levels.size()-1:
+			node.connects_to.push_back(history_index_to_node[i+1])
 
 var level_to_node := {}
 var node_to_level := {}
@@ -67,8 +105,8 @@ func regen_level_nodes() -> void:
 		var level: LevelData = pack_data.levels[level_id]
 		var warp_title := level.name if level.name else level.title if level.title else "Untitled"
 		var pos := Vector2.ZERO
-		#pos.x = floorf(randf() * pack_data.levels.size() * 40)
-		#pos.y = floorf(randf() * pack_data.levels.size() * 40)
+		pos.x = floorf(randf() * pack_data.levels.size() * 40)
+		pos.y = floorf(randf() * pack_data.levels.size() * 40)
 		var node := WARP_ROD_NODE.instantiate()
 		level_to_node[level] = node
 		node_to_level[node] = level

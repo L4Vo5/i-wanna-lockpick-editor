@@ -11,7 +11,7 @@ class_name WarpRodScreen
 @onready var beep: AudioStreamPlayer = %Beep
 var connection_draw: WarpRodConnectionDraw
 
-var use_physics := true
+@export var use_physics := false
 
 func _init() -> void:
 	connection_draw = WarpRodConnectionDraw.new()
@@ -105,8 +105,8 @@ func _physics_process(delta: float) -> void:
 	avg_position /= get_child_count()
 	# avg_position MUST be centered...
 	var avg_position_offset = size / 2 - avg_position
-	for node in get_children():
-		node.position += avg_position_offset
+	#for node in get_children():
+		#node.position += avg_position_offset
 	assert(PerfManager.end("WarpRodScreen::physics"))
 
 func _on_node_added(node: WarpRodNode) -> void:

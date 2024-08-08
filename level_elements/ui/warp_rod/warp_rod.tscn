@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://co2cgujysw6ei"]
+[gd_scene load_steps=13 format=3 uid="uid://co2cgujysw6ei"]
 
 [ext_resource type="Script" path="res://level_elements/ui/warp_rod/warp_rod.gd" id="1_ipkf8"]
 [ext_resource type="Texture2D" uid="uid://cxg0mv4k2jhsc" path="res://level_elements/ui/warp_rod/warp_rod_ninepatch.png" id="2_0f83x"]
@@ -8,12 +8,10 @@
 [ext_resource type="AudioStream" uid="uid://c5yw36qvx5ons" path="res://level_elements/ui/warp_rod/snd_select_beep.wav" id="4_ra311"]
 [ext_resource type="StyleBox" uid="uid://c37kxstdliekl" path="res://level_elements/ui/warp_rod/warp_rod_unfocused_tab_stylebox.tres" id="6_0mma0"]
 [ext_resource type="ButtonGroup" uid="uid://14evwxbf52s" path="res://level_elements/ui/warp_rod/warp_rod_tab_button_group.tres" id="7_0t6gm"]
-[ext_resource type="PackedScene" uid="uid://sn7s10qp37vo" path="res://level_elements/ui/warp_rod/warp_rod_node.tscn" id="7_rtwqq"]
 [ext_resource type="LabelSettings" uid="uid://dghukqveb6af5" path="res://level_elements/ui/warp_rod/warp_rod_tab_label_settings.tres" id="8_tv2lt"]
 [ext_resource type="Script" path="res://rendering/outline_text.gd" id="9_u5wll"]
 [ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="10_su85u"]
 [ext_resource type="StyleBox" uid="uid://dw0n1n35m8r66" path="res://level_elements/ui/warp_rod/warp_rod_focused_tab_stylebox.tres" id="11_vd85u"]
-[ext_resource type="Texture2D" uid="uid://yyhvwt8q4ae0" path="res://level_elements/ui/warp_rod/node_available.png" id="14_btou1"]
 
 [node name="WarpRod" type="NinePatchRect"]
 offset_left = 115.0
@@ -165,114 +163,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_5l1i2")
-
-[node name="WarpRodNode" parent="Screen/Levels/ScreenContainer/LevelsScreen" node_paths=PackedStringArray("connects_to") instance=ExtResource("7_rtwqq")]
-custom_minimum_size = Vector2(102, 32)
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 141.0
-offset_top = 71.0
-offset_right = 243.0
-offset_bottom = 103.0
-grow_horizontal = 1
-grow_vertical = 1
-texture = ExtResource("14_btou1")
-state = 1
-text = "Wasdfasdfa"
-can_be_dragged = true
-connects_to = [NodePath("../WarpRodNode3"), NodePath("../WarpRodNode2")]
-
-[node name="WarpRodNode2" parent="Screen/Levels/ScreenContainer/LevelsScreen" node_paths=PackedStringArray("connects_to") instance=ExtResource("7_rtwqq")]
-custom_minimum_size = Vector2(56, 32)
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 72.0
-offset_top = 114.0
-offset_right = 128.0
-offset_bottom = 146.0
-grow_horizontal = 1
-grow_vertical = 1
-texture = ExtResource("14_btou1")
-state = 1
-text = "wewe"
-can_be_dragged = true
-connects_to = [NodePath("../WarpRodNode6"), NodePath("../WarpRodNode3"), NodePath("../WarpRodNode")]
-
-[node name="WarpRodNode3" parent="Screen/Levels/ScreenContainer/LevelsScreen" node_paths=PackedStringArray("connects_to") instance=ExtResource("7_rtwqq")]
-custom_minimum_size = Vector2(72, 32)
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 156.0
-offset_top = 114.0
-offset_right = 228.0
-offset_bottom = 146.0
-grow_horizontal = 1
-grow_vertical = 1
-texture = ExtResource("14_btou1")
-state = 1
-text = "ipipipipi"
-can_be_dragged = true
-connects_to = [NodePath("../WarpRodNode"), NodePath("../WarpRodNode2")]
-
-[node name="WarpRodNode4" parent="Screen/Levels/ScreenContainer/LevelsScreen" node_paths=PackedStringArray("connects_to") instance=ExtResource("7_rtwqq")]
-custom_minimum_size = Vector2(98, 32)
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 152.0
-offset_top = 171.0
-offset_right = 250.0
-offset_bottom = 203.0
-grow_horizontal = 1
-grow_vertical = 1
-texture = ExtResource("14_btou1")
-state = 1
-text = "Waoooo ee"
-can_be_dragged = true
-connects_to = [NodePath("../WarpRodNode5")]
-
-[node name="WarpRodNode5" parent="Screen/Levels/ScreenContainer/LevelsScreen" node_paths=PackedStringArray("connects_to") instance=ExtResource("7_rtwqq")]
-custom_minimum_size = Vector2(106, 32)
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 257.0
-offset_top = 82.0
-offset_right = 363.0
-offset_bottom = 114.0
-grow_horizontal = 1
-grow_vertical = 1
-texture = ExtResource("14_btou1")
-state = 1
-text = "111 2 11 12"
-can_be_dragged = true
-connects_to = [NodePath("../WarpRodNode4"), NodePath("../WarpRodNode6")]
-
-[node name="WarpRodNode6" parent="Screen/Levels/ScreenContainer/LevelsScreen" node_paths=PackedStringArray("connects_to") instance=ExtResource("7_rtwqq")]
-custom_minimum_size = Vector2(193, 32)
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 46.0
-offset_top = 201.0
-offset_right = 239.0
-offset_bottom = 233.0
-grow_horizontal = 1
-grow_vertical = 1
-texture = ExtResource("14_btou1")
-state = 1
-text = "{}ñññññ{}!!!![2}{123#\"%\"#"
-can_be_dragged = true
-connects_to = [NodePath("../WarpRodNode5"), NodePath("../WarpRodNode2")]
+use_physics = true
 
 [node name="History" type="MarginContainer" parent="Screen"]
 unique_name_in_owner = true

@@ -2,6 +2,7 @@ extends Node2D
 class_name GameplayManager
 ## Manages a Level, and handles the progression and transition between levels in a LevelPack
 
+signal pack_data_changed
 var pack_data: LevelPackData
 var pack_state: LevelPackStateData
 
@@ -19,6 +20,7 @@ func load_level_pack(pack: LevelPackData, state: LevelPackStateData) -> void:
 	var level_data := state.get_current_level()
 	level.level_data = level_data
 	reset()
+	pack_data_changed.emit()
 	assert(PerfManager.end("GameplayManager::load_level_pack"))
 
 ## Sets the current level to the given level id within the pack and loads it.
