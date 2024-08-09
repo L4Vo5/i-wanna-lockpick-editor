@@ -48,7 +48,7 @@ func set_curse(curse: Enums.Curse, val: bool) -> void:
 		return
 	if curse == Enums.Curse.Brown:
 		for lock in locks:
-			lock.is_cursed = true
+			lock.is_cursed = val
 	_curses[curse] = val
 	changed.emit()
 
