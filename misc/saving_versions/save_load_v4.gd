@@ -145,6 +145,8 @@ static func _load_level(data: ByteAccess) -> LevelData:
 	var flags := data.get_u8()
 	if flags & 1:
 		level.goal_position = Vector2i(data.get_u32(), data.get_u32())
+	else:
+		level.has_goal = false
 	level.exitable = (flags & 2) as bool
 	level.player_spawn_position = Vector2i(data.get_u32(), data.get_u32())
 	if SaveLoad.PRINT_LOAD: print("loaded player pos: %s" % str(level.player_spawn_position))
