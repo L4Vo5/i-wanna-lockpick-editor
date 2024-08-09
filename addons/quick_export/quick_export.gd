@@ -1,15 +1,17 @@
 @tool
 extends EditorPlugin
 var BUTLER := ""
-const BASE_EXPORT_DIR := "../../Compiled/Lockpick Editor/"
+var BASE_EXPORT_DIR := ""
+var ORIGINAL_EXPORT_DIR := "res://meta/Temp Exports/"
 
 func _enter_tree() -> void:
-	add_tool_menu_item("Quick Export", quick_export)
+	add_tool_menu_item("Move Exports", move_exports)
 	add_tool_menu_item("Quick Publish", quick_publish)
 	BUTLER = FileAccess.get_file_as_string("res://meta/butler_path.txt").split("\n")[0]
+	BASE_EXPORT_DIR = FileAccess.get_file_as_string("res://meta/export_dir_path.txt").split("\n")[0]
 
 func _exit_tree() -> void:
-	remove_tool_menu_item("Quick Export")
+	remove_tool_menu_item("Move Export")
 	remove_tool_menu_item("Quick Publish")
 
 const TARGETS: Array[String] = ["Windows", "Linux", "Web"]
@@ -30,45 +32,19 @@ var targets := [
 	"Web",
 ]
 
-var is_exporting := false
-func quick_export() -> void:
+var is_moving_exports := false
+func move_exports() -> void:
 	game_version = ProjectSettings.get_setting("application/config/version")
 	assert(DirAccess.dir_exists_absolute(BASE_EXPORT_DIR), "base dir doesn't exist!")
-	
-	if is_exporting:
+	if is_moving_exports:
 		if Input.is_physical_key_pressed(KEY_CTRL):
-			print("Overriding the fact that is_exporting is true")
+			print("Overriding the fact that is_moving_exports is true")
 		else:
-			print("Already exporting!")
+			print("Already moving exports!")
 			return
-	print("quick_export called")
-	is_exporting = true
-	
-	var threads: Array[Thread] = []
+	is_moving_exports = true
 	for target in targets:
-		var thread := Thread.new()
-		var err := thread.start(_export_to_target.bind(target))
-		if err == OK:
-			threads.push_back(thread)
-		else:
-			print("Error creating thread for target %s" % target)
-	var finished := []
-	print("Exporting to %d targets" % threads.size())
-	
-	while not threads.is_empty() and is_inside_tree():
-		for thread in threads:
-			if not thread.is_alive():
-				var ret = thread.wait_to_finish()
-				if not ret is String:
-					print("ret isn't string wtf? ret is: %s" % str(ret))
-				print("Thread finished: %s" % ret)
-				finished.push_back(thread)
-		for thread in finished:
-			threads.erase(thread)
-		finished.clear()
-		await get_tree().process_frame
-	print("Finished quick export")
-	is_exporting = false
+		await move_export(target)
 
 var is_publishing := false
 func quick_publish() -> void:
@@ -148,65 +124,80 @@ func get_paths_for_target(target: String) -> Dictionary:
 		zip_export_path = zip_export_path,
 	}
 
-func _export_to_target(target: String) -> String:
-	var do_godot_export := true
-	var return_message := "%s export:\n" % target
-	if not target in ["Windows", "Linux", "Web"]:
-		return "Error: target not recognized"
-	
-	var res := []
-	var args := []
-	var paths := get_paths_for_target(target)
-	var base_export_dir: String = paths.base_export_dir
-	var zip_export_path: String = paths.zip_export_path
-	if not DirAccess.dir_exists_absolute(base_export_dir):
-		return "Error: path %s doesn't exist" % base_export_dir
-	var used_export_path := zip_export_path
-	
-	if FileAccess.file_exists(zip_export_path):
-		return_message += "File '%s' already exists.\n" % zip_export_path
-		do_godot_export = false
-	var tmp_dir := ""
-	if target == "Web":
-		tmp_dir = base_export_dir.path_join("tmp")
-		DirAccess.make_dir_absolute(tmp_dir)
-		used_export_path = tmp_dir.path_join("Lockpick Editor (%s) v%s.html" % [target, game_version])
-	args.push_back("--path")
-	args.push_back(ProjectSettings.globalize_path("res://"))
-	args.push_back("--headless")
-	args.push_back("--export-release")
-	args.push_back(target)
-	args.push_back(used_export_path)
-	if do_godot_export:
-		return_message += "Doing Godot export...\n"
-		OS.execute(OS.get_executable_path(), args, res, true)
-		if not FileAccess.file_exists(used_export_path):
-			return_message += "Seemingly failed to create %s\n" % used_export_path
-			#return_message += "Godot export output: %s\n" % res
-			return return_message
-		if target == "Web":
-			DirAccess.rename_absolute(used_export_path, tmp_dir.path_join("index.html"))
-			var zip := ZIPPacker.new()
-			zip.open(zip_export_path)
-			if DirAccess.get_directories_at(tmp_dir).size() != 0:
-				return "Error: web export has directories! aborting"
-			for file in DirAccess.get_files_at(tmp_dir):
-				var path := tmp_dir.path_join(file)
-				zip.start_file(file)
-				zip.write_file(FileAccess.get_file_as_bytes(path))
-				zip.close_file()
-				DirAccess.remove_absolute(path)
-			zip.close()
-			var err := DirAccess.remove_absolute(tmp_dir)
-			if err != OK:
-				return "Error: couldn't delete temp folder"
-		return_message += "Successfully exported to %s at %s\n" % [target, zip_export_path]
-	
-	if not FileAccess.file_exists(zip_export_path):
-		return_message += "Error: %s doesn't actually exist\n" % zip_export_path
-		return return_message
-	
-	return return_message
+func move_export(target: String) -> void:
+	# The awaits are to not hang up the engine as much, and let print statements through.
+	print("Moving export for target: %s" % target)
+	var path := ORIGINAL_EXPORT_DIR.path_join(target)
+	path = ProjectSettings.globalize_path(path)
+	if not DirAccess.dir_exists_absolute(path):
+		print(path, " doesn't exist")
+	var base_name := "Lockpick Editor (%s)" % target
+	var new_name := "Lockpick Editor (%s) v%s" % [target, game_version.replace(".","_")]
+	var files := DirAccess.get_files_at(path)
+	var expected_endings: Array = {
+		"Windows": [".pck", ".exe"],
+		"Linux": [".pck", ".x86_64"],
+		"Web": [".html",".worker.js",".wasm",
+".png",".pck",".js",".icon.png",".audio.worklet.js",".apple-touch-icon.png",]
+	}[target]
+	var not_found := []
+	for ending: String in expected_endings:
+		var expected_file_name := base_name + ending
+		var found := false
+		for file_name in files:
+			if file_name == expected_file_name:
+				found = true
+				break
+		if not found:
+			not_found.push_back(expected_file_name)
+	if not not_found.is_empty():
+		print("Couldn't find the following files: ", not_found)
+		return
+	if not files.size() == expected_endings.size():
+		print("Expected ", expected_endings.size(), " files, but found ", files.size())
+		return
+	await get_tree().process_frame
+	var zip_export_path: String = get_paths_for_target(target).zip_export_path
+	var zip := ZIPPacker.new()
+	zip.open(zip_export_path)
+	print("Creating zip at ", zip_export_path)
+	var err: int
+	for ending: String in expected_endings:
+		var file_name := base_name + ending
+		var file_path := path.path_join(file_name)
+		var new_file_name := new_name + ending
+		if file_name.get_extension() == "html":
+			new_file_name = "index.html"
+		var new_file_path := path.path_join(new_file_name)
+		print(file_name, " -> ", new_file_name)
+		await get_tree().process_frame
+		err = zip.start_file(new_file_name)
+		assert(err == OK)
+		err = zip.write_file(FileAccess.get_file_as_bytes(file_path))
+		assert(err == OK)
+		err = zip.close_file()
+		assert(err == OK)
+	print("closing zip")
+	await get_tree().process_frame
+	err = zip.close()
+	assert(err == OK)
+	assert(FileAccess.file_exists(zip_export_path))
+	var zip_file := FileAccess.open(zip_export_path, FileAccess.READ)
+	var size_in_bytes := zip_file.get_length()
+	zip_file.close()
+	var size_in_megabytes := size_in_bytes / 1024.0 / 1024.0
+	assert(size_in_megabytes > (6 if target == "Web" else 20))
+	assert(size_in_megabytes < 100)
+	print(zip_export_path, " created (", snappedf(size_in_megabytes, 0.01), "MB)")
+	print("Deleting temp files...")
+	await get_tree().process_frame
+	for ending: String in expected_endings:
+		var file_name := base_name + ending
+		var file_path := path.path_join(file_name)
+		err = DirAccess.remove_absolute(file_path)
+		assert(err == OK)
+		await get_tree().process_frame
+	assert(DirAccess.get_files_at(path).is_empty())
 
 # Butler time.
 # reference:
