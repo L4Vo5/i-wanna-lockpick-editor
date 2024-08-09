@@ -19,7 +19,7 @@ boot_splash/show_image=false
 boot_splash/fullsize=false
 config/icon="res://icon.png"
 config/windows_native_icon="res://ico.ico"
-config/game_version="0.5.1.0"
+config/game_version="0.6.0.0"
 
 [autoload]
 
