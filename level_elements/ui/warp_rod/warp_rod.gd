@@ -75,14 +75,15 @@ func regen_history_nodes() -> void:
 	if not gameplay_manager: return
 	node_to_history_index.clear()
 	history_index_to_node.clear()
+	history_screen.position = Vector2.ZERO
 	for child in history_screen.get_children():
 		child.free()
 	
 	var base_pos := Vector2.ZERO
 	base_pos.x = history_screen.size.x / 2
-	var last_y := (state_data.exit_levels.size() - 1) * 32
+	var last_y := state_data.exit_levels.size() * 32
 	if last_y > history_screen.size.y - 32:
-		base_pos.y = history_screen.size.y - state_data.exit_levels.size() * 32
+		base_pos.y = history_screen.size.y - (state_data.exit_levels.size() + 1) * 32
 	
 	# last iteration goes though the current level
 	for i in state_data.exit_levels.size() + 1:
@@ -118,6 +119,7 @@ var node_to_level := {}
 func regen_level_nodes() -> void:
 	if not gameplay_manager: return
 	
+	levels_screen.position = Vector2.ZERO
 	for child in levels_screen.get_children():
 		child.free()
 		level_to_node.clear()
