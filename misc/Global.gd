@@ -11,7 +11,7 @@ var is_in_test := ("res://addons/gdUnit4/src/core/GdUnitRunner.tscn" in OS.get_c
 
 var settings: LockpickSettings
 
-var game_version: String = ProjectSettings.get_setting("application/config/game_version")
+var game_version: String = ProjectSettings.get_setting("application/config/version")
 
 @onready var safe_error_dialog: AcceptDialog = %SafeError
 @onready var http_request: HTTPRequest = $HTTPRequest
