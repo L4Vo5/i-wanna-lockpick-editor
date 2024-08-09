@@ -323,7 +323,9 @@ func _on_file_selected(path: String) -> void:
 			load_level(path)
 
 func _on_new_level_button_pressed() -> void:
-	data.level_pack_data = LevelPackData.get_default_level_pack()
+	var pack := LevelPackData.get_default_level_pack()
+	var state := LevelPackStateData.make_from_pack_data(pack)
+	data.set_pack_and_state(pack, state)
 	_update_level_path_display()
 
 func _on_open_files_location_pressed() -> void:
