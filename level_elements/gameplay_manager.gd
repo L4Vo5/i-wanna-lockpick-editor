@@ -15,6 +15,7 @@ var is_editing := false
 @onready var level: Level = %Level
 
 @onready var transition: Transition = %Transition
+var in_transition := false
 
 func _ready() -> void:
 	level.gameplay_manager = self
@@ -52,6 +53,7 @@ func reset() -> void:
 	level.reset()
 
 func win() -> void:
+	if in_transition: return
 	if not has_won_current_level():
 		pack_state.completed_levels[pack_state.current_level] = true
 		pack_state.save()
@@ -68,6 +70,7 @@ func can_exit() -> bool:
 	return true
 
 func exit_level() -> void:
+	if in_transition: return
 	if not can_exit():
 		return
 	transition.world_enter_animation()
@@ -84,6 +87,7 @@ func exit_immediately() -> void:
 
 ## Exits until the i-th entry in the exit stack
 func exit_until(i: int) -> void:
+	if in_transition: return
 	transition.world_enter_animation()
 	await transition.finished_animation
 	var exit_pos: Vector2i = pack_state.exit_positions[i]
@@ -100,6 +104,7 @@ func exit_or_reset() -> void:
 		reset()
 
 func enter_level(id: int, exit_position: Vector2i) -> void:
+	if in_transition: return
 	# push onto exit stack
 	if pack_data.levels[id].exitable:
 		pack_state.exit_levels.push_back(pack_state.current_level)
@@ -110,6 +115,7 @@ func enter_level(id: int, exit_position: Vector2i) -> void:
 	_enter_level(id)
 
 func enter_level_new_stack(id: int) -> void:
+	if in_transition: return
 	pack_state.exit_levels.clear()
 	pack_state.exit_positions.clear()
 	_enter_level(id)
@@ -125,11 +131,14 @@ func _enter_level(id: int) -> void:
 	set_current_level(id)
 
 func win_animation(text: String) -> void:
+	if in_transition: return
 	transition.win_animation(text)
 	transition.finished_animation.connect(exit_or_reset, CONNECT_ONE_SHOT)
 
 func _on_transition_started() -> void:
 	level.allow_ui = false
+	in_transition = true
 
 func _on_transition_finished() -> void:
 	level.allow_ui = not is_editing
+	in_transition = false
