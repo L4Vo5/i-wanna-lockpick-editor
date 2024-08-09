@@ -43,6 +43,9 @@ func _on_cacophony_toggled(toggled_on: bool) -> void:
 	else:
 		if all_sounds.is_empty():
 			load_all_sounds()
+		if all_sounds.is_empty():
+			cacophony.hide()
+			return
 		assert(AudioServer.get_bus_index(&"Sfx") != -1)
 		for _i in 8:
 			var node := AudioStreamPlayer.new()
@@ -62,6 +65,7 @@ func load_all_sounds() -> void:
 		for new_dir in DirAccess.get_directories_at(dir):
 			dirs.push_back(dir.path_join(new_dir))
 		for file_name in DirAccess.get_files_at(dir):
-			if file_name.get_extension() == "wav":
+			# WAITING4GODOT: ...really...?
+			if file_name.get_extension() in ["wav", "sample"]:
 				var sound = load(dir.path_join(file_name))
 				all_sounds.push_back(sound)

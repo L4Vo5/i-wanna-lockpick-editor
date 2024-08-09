@@ -146,6 +146,7 @@ func _export_to_target(target: String) -> String:
 		return_message += "Error: %s doesn't actually exist\n" % zip_export_path
 		return return_message
 	
+	return return_message
 	# Butler time.
 	# reference:
 	# butler push "Linux/Lockpick Editor (Linux) v0_3_0_2.zip" l4vo5/i-wanna-lockpick-editor:linux --userversion 0.3.0.2 --if-changed
