@@ -24,7 +24,7 @@ config/windows_native_icon="res://ico.ico"
 
 [autoload]
 
-Global="*res://misc/Global.tscn"
+Global="*res://misc/global.tscn"
 Rendering="*res://rendering/rendering_singleton.tscn"
 PerfManager="*res://misc/perf_manager.gd"
 NodePool="*res://misc/node_pool.gd"
