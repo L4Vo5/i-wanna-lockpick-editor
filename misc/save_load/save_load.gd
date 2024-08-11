@@ -1,29 +1,20 @@
 class_name SaveLoad
 
 const PRINT_LOAD := false
-const LATEST_FORMAT := 4
-const V1 := preload("res://misc/saving_versions/save_load_v1.gd")
-const V2 := preload("res://misc/saving_versions/save_load_v2.gd")
-const V3 := preload("res://misc/saving_versions/save_load_v3.gd")
-const V4 := preload("res://misc/saving_versions/save_load_v4.gd")
-const VERSIONS: Dictionary = {
-	1: V1,
-	2: V2,
-	3: V3,
-	4: V4
-}
+#const LATEST_FORMAT := 5
 ## A reference to the current save/load version
-const VC := V4
+#const VC := SaveLoadVersionLVL.V5
+static var LVL_LOADER := SaveLoadVersionLVL.CURRENT
+static var STATE_LOADER := SaveLoadVersionLVLST.CURRENT
 const LEVEL_EXTENSIONS := ["res", "tres", "lvl", "png"]
 static var LEVELS_PATH := ProjectSettings.globalize_path("user://levels/")
 static var SAVES_PATH := ProjectSettings.globalize_path("user://level_saves/")
 
 ## Given a LevelPack, gets the byte data to save it as the current format version.
 static func get_data(level_pack: LevelPackData) -> PackedByteArray:
-	var header := make_header(LATEST_FORMAT, Global.game_version)
-	var byte_access := VC.make_byte_access(header, header.size())
-	VC.save(level_pack, byte_access)
-	return byte_access.data
+	var data := make_header(LVL_LOADER.LATEST_FORMAT, Global.game_version)
+	LVL_LOADER.save(level_pack, data, data.size())
+	return data
 
 ## Given a LevelPack, gets the Image to save it as the current format version.
 static func get_image(level_pack: LevelPackData) -> Image:
@@ -70,27 +61,23 @@ static func load_pack_state_from_path(path: String) -> LevelPackStateData:
 		return null
 
 static func load_pack_state_from_buffer(data: PackedByteArray) -> LevelPackStateData:
-	# All versions must respect this initial structure
-	var version := data.decode_u16(0)
-	var len := data.decode_u32(2)
-	var bytes := data.slice(6, 6 + len)
-	var original_editor_version := bytes.get_string_from_utf8()
+	var header := get_header(data)
+	var version: int = header.version
+	var offset: int = header.version
+	var original_editor_version: String = header.editor_version
 	
-	if not VERSIONS.has(version):
+	if not STATE_LOADER.VERSIONS.has(version):
 		printerr("Invalid level pack state version: %d (%s)" % [version, original_editor_version])
 		return null
-	if version <= 3:
-		printerr("Version doesn't support pack states: %d (%s)" % [version, original_editor_version])
-		return null
-	var load_script: Script = VERSIONS[version]
-	var byte_access = load_script.make_byte_access(data, 6 + len)
-	var state_data: LevelPackStateData = load_script.load_pack_state(byte_access)
+	var loader = STATE_LOADER.VERSIONS[version]
+	var state_data: LevelPackStateData = loader.load_from_bytes(data, offset)
 	return state_data
 
+## Given a LevelPackStateData, gets the byte data to save it as the current format version.
 static func get_pack_state_data(state: LevelPackStateData) -> PackedByteArray:
-	var byte_access = VC.make_byte_access([])
-	VC.save_pack_state(byte_access, state)
-	return byte_access.data
+	var data := make_header(LVL_LOADER.LATEST_FORMAT, Global.game_version)
+	STATE_LOADER.save(state, data, data.size())
+	return data
 
 static func save_pack_state_to_path(state: LevelPackStateData, path: String) -> void:
 	var file := FileAccess.open(path, FileAccess.WRITE)
@@ -150,32 +137,24 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	
 	print("Loading from %s. format version is %d. editor version was %s" % [path, version, original_editor_version])
 	
-	if not VERSIONS.has(version):
+	if not LVL_LOADER.VERSIONS.has(version):
 		var error_text := \
 	"""This level was made in editor version %s and uses the saving format N°%d.
 	You're on version %s, which supports up to the saving format N°%d.
 	Consider updating the editor to a newer version.
-	Loading cancelled.""" % [original_editor_version, version, Global.game_version, LATEST_FORMAT]
+	Loading cancelled.""" % [original_editor_version, version, Global.game_version, LVL_LOADER.LATEST_FORMAT]
 		Global.safe_error(error_text, Vector2i(700, 100))
 		return null
 	
 	var original_version := version
-	var load_script: Script = VERSIONS[version]
+	var loader = LVL_LOADER.VERSIONS[version]
 	
-	while not load_script.has_method("load"):
-		var new_version: int = load_script.conversion_version
-		print("Nevermind, first converting to V%d..." % new_version)
-		assert(PerfManager.start("SaveLoad -> V%d::convert_to_newer_version" % version))
-		var new_data: PackedByteArray = load_script.convert_to_newer_version(data, offset)
-		assert(PerfManager.end("SaveLoad -> V%d::convert_to_newer_version" % version))
-		version = new_version
-		load_script = VERSIONS[version]
-		data = new_data
-		offset = 0
+	var lvl_pack_data: LevelPackData
 	
-	assert(PerfManager.start("SaveLoad -> V%d::load" % version))
-	var lvl_pack_data: LevelPackData = load_script.load(data, offset)
-	assert(PerfManager.end("SaveLoad -> V%d::load" % version))
+	assert(PerfManager.start("SaveLoad -> V%d::load_from_bytes" % version))
+	lvl_pack_data = loader.load_from_bytes(data, offset)
+	assert(PerfManager.end("SaveLoad -> V%d::load_from_bytes" % version))
+	
 	# V3 and earlier didn't support pack id. Calculate a consistent one to allow save data.
 	if not lvl_pack_data:
 		return lvl_pack_data
@@ -189,6 +168,7 @@ static func load_from_buffer(data: PackedByteArray, path: String) -> LevelPackDa
 	
 	lvl_pack_data.file_path = path
 	return lvl_pack_data
+
 
 ## Returns {version: int, editor_version: String, offset: int}
 static func get_header(data: PackedByteArray) -> Dictionary:

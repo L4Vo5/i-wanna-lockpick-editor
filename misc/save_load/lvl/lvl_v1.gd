@@ -1,98 +1,103 @@
-const conversion_version := 3
+extends SaveLoadVersionLVL
 
-## Fully converts V1 bytes into V3, not including the header
-static func convert_to_newer_version(raw_data: PackedByteArray, offset: int) -> PackedByteArray:
-	var new_data := SaveLoad.V3.make_byte_access([], 0)
-	var data := make_byte_access(raw_data, offset)
-	
-	# actual V1 data being turned to V3
-	# level name and author saved as pack name and author
-	new_data.store_string(data.get_string())
-	new_data.store_string(data.get_string())
-	# level count = 1
-	new_data.store_u32(1)
-	# level title + name
-	new_data.store_string("\n")
-	# level size
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	# custom lock arrangements
-	var custom_lock_arranements = data.get_var()
-	new_data.store_var(custom_lock_arranements)
-	# goal pos, player spawn pos
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	
-	# tiles
-	var tile_count := data.get_u32()
-	new_data.store_u32(tile_count)
-	for i in tile_count:
-		# x and y of each tile
-		new_data.store_u32(data.get_u32())
-		new_data.store_u32(data.get_u32())
-	
-	# keys
-	var key_count := data.get_u32()
-	new_data.store_u32(key_count)
-	for _i in key_count:
-		_convert_key(data, new_data)
-	
-	# doors
-	var door_count := data.get_u32()
-	new_data.store_u32(door_count)
-	for _i in door_count:
-		_convert_door(data, new_data)
-	
-	# entries, of which there are zero
-	new_data.store_u32(0)
-	
-	new_data.compress()
-	return new_data.data
+static func load_from_bytes(raw_data: PackedByteArray, offset: int) -> LevelPackData:
+	var data := ByteAccess.new(raw_data, offset)
+	var dict := load_level(data)
+	return V2.load_from_dict(V2.convert_dict(dict))
 
-static func _convert_key(data: ByteAccess, new_data: SaveLoad.V3.ByteAccess) -> void:
-	# key amount
-	_convert_complex(data, new_data)
-	# key position
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	# pretty sure this byte can stay as-is? is_infinite should already be 0
-	new_data.store_u8(data.get_u8())
+static func load_level(data: ByteAccess) -> Dictionary:
+	var level := {}
+	level._type = &"LevelData"
+	level._inspect = ["keys", "doors"]
+	level.name = data.get_string()
+	level.author = data.get_string()
+	level.size = Vector2i(data.get_u32(), data.get_u32())
+	
+	var _custom_lock_arrangements = data.get_var()
+	level.goal_position = Vector2i(data.get_u32(), data.get_u32())
+	level.player_spawn_position = Vector2i(data.get_u32(), data.get_u32())
+	
+	var tile_amount := data.get_u32()
+	level.tiles = {}
+	for _i in tile_amount:
+		level.tiles[Vector2i(data.get_u32(), data.get_u32())] = true
+	
+	var key_amount := data.get_u32()
+	level.keys = []
+	level.keys.resize(key_amount)
+	for i in key_amount:
+		level.keys[i] = load_key(data)
+	
+	var door_amount := data.get_u32()
+	level.doors = []
+	level.doors.resize(door_amount)
+	for i in door_amount:
+		level.doors[i] = load_door(data)
+	return level
 
-static func _convert_door(data: ByteAccess, new_data: SaveLoad.V3.ByteAccess) -> void:
-	# door amount
-	_convert_complex(data, new_data)
-	# position and size
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	# pretty sure this byte can stay as-is? door curses
-	new_data.store_u8(data.get_u8())
-	var lock_count := data.get_u16()
-	new_data.store_u16(lock_count)
-	for _i in lock_count:
-		_convert_lock(data, new_data)
+static func load_key(data: ByteAccess) -> Dictionary:
+	var key := {}
+	key._type = &"KeyData"
+	key.amount = load_complex(data)
+	key.position = Vector2i(data.get_u32(), data.get_u32())
+	var type_and_color := data.get_u8()
+	key.color = type_and_color & 0b1111
+	key.type = type_and_color >> 4
+	
+	return key
 
-static func _convert_lock(data: ByteAccess, new_data: SaveLoad.V3.ByteAccess) -> void:
-	# position and size
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	new_data.store_u32(data.get_u32())
-	# lock arrangement and magnitude
-	new_data.store_u16(data.get_u16())
-	new_data.store_s64(data.get_s64())
-	# pretty sure this can stay as-is? sign, value type, dont_show_lock, color, and lock_type
-	new_data.store_u16(data.get_u16())
+static func load_door(data: ByteAccess) -> Dictionary:
+	var door := {}
+	door._type = &"DoorData"
+	door._inspect = ["locks"]
+	
+	door.amount = load_complex(data)
+	door.position = Vector2i(data.get_u32(), data.get_u32())
+	door.size = Vector2i(data.get_u32(), data.get_u32())
+	
+	var curses_color := data.get_u8()
+	# bits are, x1234444, 1 = ice, 2 = erosion, 3 = paint, 4 = color
+	door._curses = {}
+	# 0 = ice, 1 = erosion, 2 = paint, 3 = brown
+	door._curses[0] = curses_color & (1<<6) != 0
+	door._curses[1] = curses_color & (1<<5) != 0
+	door._curses[2] = curses_color & (1<<4) != 0
+	door._curses[3] = false
+	door.outer_color = curses_color & 0b1111
+	
+	var lock_amount := data.get_u16()
+	door.locks = []
+	door.locks.resize(lock_amount)
+	for i in lock_amount:
+		door.locks[i] = load_lock(data)
+	return door
 
-static func _convert_complex(data: ByteAccess, new_data: SaveLoad.V3.ByteAccess) -> void:
-	new_data.store_s64(data.get_s64())
-	new_data.store_s64(data.get_s64())
+static func load_lock(data: ByteAccess) -> Dictionary:
+	var lock := {}
+	lock._type = &"LockData"
+	lock.position = Vector2i(data.get_u32(), data.get_u32())
+	lock.size = Vector2i(data.get_u32(), data.get_u32())
+	lock.lock_arrangement = data.get_u16()
+	lock.magnitude = data.get_s64()
+	var bit_data := data.get_u16()
+	lock.sign = bit_data & 0b1
+	bit_data >>= 1
+	lock.value_type = bit_data & 0b1
+	bit_data >>= 1
+	lock.dont_show_lock = bit_data & 0b1
+	bit_data >>= 1
+	lock.color = bit_data & 0b1111
+	bit_data >>= 4
+	lock.lock_type = bit_data
+	
+	return lock
 
-static func make_byte_access(data: PackedByteArray, offset := 0) -> ByteAccess:
-	return ByteAccess.new(data, offset)
+static func load_complex(data: ByteAccess) -> Dictionary:
+	return {
+		_type = &"ComplexNumber",
+		real_part = data.get_s64(),
+		imaginary_part = data.get_s64(),
+	}
 
 class ByteAccess:
 	extends RefCounted

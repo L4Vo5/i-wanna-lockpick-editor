@@ -37,6 +37,9 @@ enum Modes {
 	GAMEPLAY, EDITOR
 }
 
+## Registered global classes, the key is the name, the value is the script (ready to call .new())
+var classes := {}
+
 func _init() -> void:
 	if ClassDB.class_exists(&"ClipboardImageCopier"):
 		image_copier = ClassDB.instantiate(&"ClipboardImageCopier")
@@ -44,6 +47,10 @@ func _init() -> void:
 		settings = LockpickSettings.new()
 
 func _ready() -> void:
+	for dict in ProjectSettings.get_global_class_list():
+		if not dict.path.begins_with("res://addons/"):
+			# Using StringName because that's what ClassDB uses, idk
+			classes[StringName(dict.class)] = load(dict.path)
 	set_mode(current_mode)
 	
 	_setup_unfocus()
