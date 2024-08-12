@@ -44,26 +44,9 @@ static func dict_keys_to_object(dict: Dictionary, object: Object) -> void:
 ## If there's a "_type" key, an optional "_inspect" key (could be an array or dict, as "in" will be what's used on it) dictates inner Array or Dictionary variables that should be inspected, and if their elements/keys/values contain dictionaries, they'll be fed into this fuction and replaced with the result.
 ## All other keys are fed into the object, except Dictionaries that aren't in _inspect: those are passed into this function first.
 ## (To be clear, inspecting a dictionary is meant for when it's actually a dictionary, and its keys and/or values can be objects. a dictionary with _type will always be an object)
-static var is_in := false
-static var indent_level := ""
-static func increase_indent():
-	if is_in:
-		indent_level = "--" + indent_level
-	else:
-		indent_level = ">"
-		is_in = true
-static func decrease_indent():
-	if indent_level == ">":
-		is_in = false
-	else:
-		indent_level = indent_level.right(-2)
 static func dict_into_variable(dict: Dictionary):
-	increase_indent()
-	print(indent_level + "dict_into_variable")
 	var type: StringName = dict.get(&"_type", &"")
-	print(indent_level, "type is " , type)
 	if type == &"":
-		decrease_indent()
 		return dict
 	else:
 		var inspect = dict.get(&"_inspect", [])
@@ -76,7 +59,6 @@ static func dict_into_variable(dict: Dictionary):
 		for key in dict:
 			if key == &"_type" or key == &"_inspect": continue
 			var value = dict[key]
-			print(indent_level, "moving on to ", key)
 			if key in inspect:
 				value = _inspect(value)
 			elif value is Dictionary:
@@ -87,25 +69,15 @@ static func dict_into_variable(dict: Dictionary):
 				obj.get(key).append_array(value)
 			else:
 				obj.set(key, value)
-			print(indent_level,"set ", key, " to ", value)
-			print(indent_level,"just to make sure... ", obj.get(key))
-		print(indent_level, " obj is ", obj)
-		decrease_indent()
 		return obj
 
 static func _inspect(thing):
-	increase_indent()
-	print(indent_level, "inspecting thing")
 	if thing is Array:
-		print(indent_level, "thing is array")
 		for i in thing.size():
 			if thing[i] is Dictionary:
 				thing[i] = dict_into_variable(thing[i])
-		print(indent_level, "array thing is now ", thing)
-		decrease_indent()
 		return thing
 	elif thing is Dictionary:
-		print(indent_level, "thing is dictionary")
 		var new_dict := {}
 		for key in thing:
 			var value = thing[key]
@@ -114,8 +86,6 @@ static func _inspect(thing):
 			if key is Dictionary:
 				key = dict_into_variable(key)
 			new_dict[key] = value
-		print(indent_level, "dictionary thing is now ", thing)
-		decrease_indent()
 		return new_dict
 	else:
 		assert(false, "I can't inspect this!")
