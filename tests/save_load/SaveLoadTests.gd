@@ -39,3 +39,4 @@ func test_versions() -> void:
 			assert_array(data)\
 				.override_failure_message("Re-saving level causes different data")\
 				.is_equal(new_data)
+	PerfManager.print_report()

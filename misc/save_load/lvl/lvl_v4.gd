@@ -34,8 +34,8 @@ static func load_from_bytes(raw_data: PackedByteArray, offset: int):
 static func load_level_pack(raw_data: PackedByteArray, offset: int) -> Dictionary:
 	var data := ByteAccess.new(raw_data, offset)
 	var level_pack := {}
-	level_pack._type = &"LevelPackData"
-	level_pack._inspect = ["levels"]
+	level_pack["@class_name"] = &"LevelPackData"
+	level_pack["@inspect"] = ["levels"]
 	level_pack.name = data.get_string()
 	level_pack.author = data.get_string()
 	level_pack.pack_id = data.get_s64()
@@ -57,8 +57,8 @@ static func load_level_pack(raw_data: PackedByteArray, offset: int) -> Dictionar
 
 static func load_level(data: ByteAccess) -> Dictionary:
 	var level := {}
-	level._type = &"LevelData"
-	level._inspect = ["keys", "doors", "entries", "salvage_points"]
+	level["@class_name"] = &"LevelData"
+	level["@inspect"] = ["keys", "doors", "entries", "salvage_points"]
 	var title_name := data.get_string().split("\n")
 	assert(title_name.size() == 2)
 	level.title = title_name[0]
@@ -119,8 +119,8 @@ static func load_key(data: ByteAccess) -> Dictionary:
 # Largely the same as V1 still, but it has early exit on error.
 static func load_door(data: ByteAccess) -> Dictionary:
 	var door := {}
-	door._type = &"DoorData"
-	door._inspect = ["locks"]
+	door["@class_name"] = &"DoorData"
+	door["@inspect"] = ["locks"]
 	
 	door.amount = load_complex(data)
 	door.position = Vector2i(data.get_u32(), data.get_u32())
@@ -150,7 +150,7 @@ static func load_lock(data: ByteAccess) -> Dictionary:
 
 static func load_entry(data: ByteAccess) -> Dictionary:
 	var entry := {}
-	entry._type = &"EntryData"
+	entry["@class_name"] = &"EntryData"
 	entry.position = Vector2i(data.get_u32(), data.get_u32())
 	entry.skin = data.get_u8()
 	entry.leads_to = data.get_u16()
@@ -158,7 +158,7 @@ static func load_entry(data: ByteAccess) -> Dictionary:
 
 static func load_salvage_point(data: ByteAccess) -> Dictionary:
 	var salvage_point := {}
-	salvage_point._type = &"SalvagePointData"
+	salvage_point["@class_name"] = &"SalvagePointData"
 	salvage_point.position = Vector2i(data.get_u32(), data.get_u32())
 	salvage_point.is_output = data.get_u8() != 0
 	salvage_point.sid = data.get_s32()

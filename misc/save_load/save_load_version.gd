@@ -40,24 +40,21 @@ static func dict_keys_to_object(dict: Dictionary, object: Object) -> void:
 	for key in dict:
 		object.set(key, dict[key])
 
-## Takes a dict and instantiates it as an object, as long as it has a "_type" key, otherwise returns the dict. _type should ideally be a StringName
-## If there's a "_type" key, an optional "_inspect" key (could be an array or dict, as "in" will be what's used on it) dictates inner Array or Dictionary variables that should be inspected, and if their elements/keys/values contain dictionaries, they'll be fed into this fuction and replaced with the result.
-## All other keys are fed into the object, except Dictionaries that aren't in _inspect: those are passed into this function first.
-## (To be clear, inspecting a dictionary is meant for when it's actually a dictionary, and its keys and/or values can be objects. a dictionary with _type will always be an object)
+## Takes a dict and instantiates it as an object, as long as it has a "@class_name" key, otherwise returns the dict. @class_name should ideally be a StringName
+## If there's a @class_name key, an optional @inspect key (could be an array or dict, as "in" will be what's used on it) dictates inner Array or Dictionary variables that should be inspected, and if their elements/keys/values contain dictionaries, they'll be fed into this fuction and replaced with the result.
+## All other keys are fed into the object, except Dictionaries that aren't in @inspect: those are passed into this function first.
+## (To be clear, inspecting a dictionary is meant for when it's actually a dictionary, and its keys and/or values can be objects. A dictionary with @class_name will always be an object)
 static func dict_into_variable(dict: Dictionary):
-	var type: StringName = dict.get(&"_type", &"")
+	var type: StringName = dict.get("@class_name", &"")
 	if type == &"":
 		return dict
 	else:
-		var inspect = dict.get(&"_inspect", [])
+		var inspect = dict.get("@inspect", [])
 		var obj
-		if type in Global.classes:
-			obj = Global.classes[type].new()
-		elif ClassDB.class_exists(type):
-			obj = ClassDB.instantiate(type)
+		obj = Global.classes[type].new()
 		assert(obj)
 		for key in dict:
-			if key == &"_type" or key == &"_inspect": continue
+			if key.begins_with("@"): continue
 			var value = dict[key]
 			if key in inspect:
 				value = _inspect(value)

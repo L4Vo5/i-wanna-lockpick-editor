@@ -10,8 +10,8 @@ static func convert_dict(dict: Dictionary) -> Dictionary:
 	for key in dict.keys:
 		key.is_infinite = false
 	var new_dict := {}
-	new_dict._type = &"LevelPackData"
-	new_dict._inspect = ["levels"]
+	new_dict["@class_name"] = &"LevelPackData"
+	new_dict["@inspect"] = ["levels"]
 	new_dict.levels = [dict]
 	new_dict.name = dict.name
 	new_dict.author = dict.author
@@ -25,8 +25,8 @@ static func load_from_dict(dict: Dictionary):
 static func load_from_bytes(raw_data: PackedByteArray, offset: int):
 	var data := ByteAccess.new(raw_data, offset)
 	var level_pack := {}
-	level_pack._type = &"LevelPackData"
-	level_pack._inspect = ["levels"]
+	level_pack["@class_name"] = &"LevelPackData"
+	level_pack["@inspect"] = ["levels"]
 	level_pack.name = data.get_string()
 	level_pack.author = data.get_string()
 	
@@ -39,8 +39,8 @@ static func load_from_bytes(raw_data: PackedByteArray, offset: int):
 
 static func load_level(data: ByteAccess) -> Dictionary:
 	var level := {}
-	level._type = &"LevelData"
-	level._inspect = ["keys", "doors", "entries"]
+	level["@class_name"] = &"LevelData"
+	level["@inspect"] = ["keys", "doors", "entries"]
 	var title_name := data.get_string().split("\n")
 	assert(title_name.size() == 2)
 	level.title = title_name[0]
@@ -77,7 +77,7 @@ static func load_level(data: ByteAccess) -> Dictionary:
 
 static func load_key(data: ByteAccess) -> Dictionary:
 	var key := {}
-	key._type = &"KeyData"
+	key["@class_name"] = &"KeyData"
 	key.amount = load_complex(data)
 	key.position = Vector2i(data.get_u32(), data.get_u32())
 	var inf_type_color := data.get_u8()
@@ -92,7 +92,7 @@ static func load_door(data: ByteAccess) -> Dictionary:
 
 static func load_entry(data: ByteAccess) -> Dictionary:
 	var entry := {}
-	entry._type = &"EntryData"
+	entry["@class_name"] = &"EntryData"
 	entry.position = Vector2i(data.get_u32(), data.get_u32())
 	entry.skin = data.get_u32()
 	entry.leads_to = data.get_u32()

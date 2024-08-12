@@ -7,8 +7,8 @@ static func load_from_bytes(raw_data: PackedByteArray, offset: int) -> LevelPack
 
 static func load_level(data: ByteAccess) -> Dictionary:
 	var level := {}
-	level._type = &"LevelData"
-	level._inspect = ["keys", "doors"]
+	level["@class_name"] = &"LevelData"
+	level["@inspect"] = ["keys", "doors"]
 	level.name = data.get_string()
 	level.author = data.get_string()
 	level.size = Vector2i(data.get_u32(), data.get_u32())
@@ -37,7 +37,7 @@ static func load_level(data: ByteAccess) -> Dictionary:
 
 static func load_key(data: ByteAccess) -> Dictionary:
 	var key := {}
-	key._type = &"KeyData"
+	key["@class_name"] = &"KeyData"
 	key.amount = load_complex(data)
 	key.position = Vector2i(data.get_u32(), data.get_u32())
 	var type_and_color := data.get_u8()
@@ -48,8 +48,8 @@ static func load_key(data: ByteAccess) -> Dictionary:
 
 static func load_door(data: ByteAccess) -> Dictionary:
 	var door := {}
-	door._type = &"DoorData"
-	door._inspect = ["locks"]
+	door["@class_name"] = &"DoorData"
+	door["@inspect"] = ["locks"]
 	
 	door.amount = load_complex(data)
 	door.position = Vector2i(data.get_u32(), data.get_u32())
@@ -74,7 +74,7 @@ static func load_door(data: ByteAccess) -> Dictionary:
 
 static func load_lock(data: ByteAccess) -> Dictionary:
 	var lock := {}
-	lock._type = &"LockData"
+	lock["@class_name"] = &"LockData"
 	lock.position = Vector2i(data.get_u32(), data.get_u32())
 	lock.size = Vector2i(data.get_u32(), data.get_u32())
 	lock.lock_arrangement = data.get_u16()
