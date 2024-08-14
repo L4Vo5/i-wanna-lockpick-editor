@@ -75,7 +75,7 @@ static func load_pack_state_from_buffer(data: PackedByteArray) -> LevelPackState
 
 ## Given a LevelPackStateData, gets the byte data to save it as the current format version.
 static func get_pack_state_data(state: LevelPackStateData) -> PackedByteArray:
-	var data := make_header(LVL_LOADER.LATEST_FORMAT, Global.game_version)
+	var data := make_header(STATE_LOADER.LATEST_FORMAT, Global.game_version)
 	STATE_LOADER.save(state, data, data.size())
 	return data
 
