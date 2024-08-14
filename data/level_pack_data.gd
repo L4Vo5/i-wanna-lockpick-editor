@@ -18,7 +18,7 @@ var _next_level_id: int = 0
 @export var name: String
 ## Author or authors, important to know who made things!
 @export var author: String
-## Description of the level pack, displayed in level selection
+## Description of the level pack, displayed in level selection (eventually)
 @export var description: String
 ## Pack id, this SHOULD be unique.
 # "& ~(1<<63)" ensures it's not negative

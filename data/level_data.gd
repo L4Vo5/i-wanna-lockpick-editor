@@ -72,8 +72,13 @@ var has_goal := true:
 		label = val
 		changed.emit()
 
-## KEPT FOR COMPATIBILITY (for now?)
 @export var author := "":
+	set(val):
+		if author == val: return
+		author = val
+		changed.emit()
+
+@export var description := "":
 	set(val):
 		if author == val: return
 		author = val

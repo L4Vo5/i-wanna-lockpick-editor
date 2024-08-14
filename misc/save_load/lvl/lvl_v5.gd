@@ -1,7 +1,9 @@
 extends SaveLoadVersionLVL
 
 # Differences from V4:
-# None at the time of writing
+# Level title and name are stored separately
+# Level author, description, and label are stored
+# Level pack description is stored
 
 static func convert_dict(dict: Dictionary) -> Dictionary:
 	# Nothing to do yet!
@@ -15,10 +17,11 @@ static func load_from_dict(dict: Dictionary):
 static func load_from_bytes(raw_data: PackedByteArray, offset: int):
 	return load_level_pack(raw_data, offset)
 
-static func save(level_pack, raw_data: PackedByteArray, offset: int) -> void:
+static func save(level_pack: LevelPackData, raw_data: PackedByteArray, offset: int) -> void:
 	var data := ByteAccess.new(raw_data, offset)
 	data.store_string(level_pack.name)
 	data.store_string(level_pack.author)
+	data.store_string(level_pack.description)
 	data.store_s64(level_pack.pack_id)
 	
 	data.store_u32(level_pack.levels.size())
@@ -32,7 +35,11 @@ static func save(level_pack, raw_data: PackedByteArray, offset: int) -> void:
 	data.compress()
 
 static func save_level(level: LevelData, data: ByteAccess) -> void:
-	data.store_string(level.title + "\n" + level.name)
+	data.store_string(level.name)
+	data.store_string(level.title)
+	data.store_string(level.label)
+	data.store_string(level.author)
+	data.store_string(level.description)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
 	
@@ -134,6 +141,7 @@ static func load_level_pack(raw_data: PackedByteArray, offset: int) -> LevelPack
 	var level_pack := LevelPackData.new()
 	level_pack.name = data.get_string()
 	level_pack.author = data.get_string()
+	level_pack.description = data.get_string()
 	level_pack.pack_id = data.get_s64()
 	if SaveLoad.PRINT_LOAD: print("Loading level pack %s by %s" % [level_pack.name, level_pack.author])
 	
@@ -152,10 +160,10 @@ static func load_level_pack(raw_data: PackedByteArray, offset: int) -> LevelPack
 
 static func load_level(data: ByteAccess) -> LevelData:
 	var level := LevelData.new()
-	var title_name := data.get_string().split("\n")
-	assert(title_name.size() == 2)
-	level.title = title_name[0]
-	level.name = title_name[1]
+	level.title = data.get_string()
+	level.name = data.get_string()
+	level.label = data.get_string()
+	level.author = data.get_string()
 	if SaveLoad.PRINT_LOAD: print("Loading level %s" % level.name)
 	level.size = Vector2i(data.get_u32(), data.get_u32())
 	var flags := data.get_u8()
