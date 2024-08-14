@@ -84,7 +84,7 @@ static func load_lock(data: ByteAccess) -> Dictionary:
 	bit_data >>= 1
 	lock.value_type = bit_data & 0b1
 	bit_data >>= 1
-	lock.dont_show_lock = bit_data & 0b1
+	lock.dont_show_lock = bit_data & 0b1 as bool
 	bit_data >>= 1
 	lock.color = bit_data & 0b1111
 	bit_data >>= 4
@@ -94,9 +94,9 @@ static func load_lock(data: ByteAccess) -> Dictionary:
 
 static func load_complex(data: ByteAccess) -> Dictionary:
 	return {
-		_type = &"ComplexNumber",
-		real_part = data.get_s64(),
-		imaginary_part = data.get_s64(),
+		"@class_name" = &"ComplexNumber",
+		_real_part = data.get_s64(),
+		_imaginary_part = data.get_s64(),
 	}
 
 class ByteAccess:

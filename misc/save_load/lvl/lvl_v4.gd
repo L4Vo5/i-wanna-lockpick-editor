@@ -11,14 +11,14 @@ extends SaveLoadVersionLVL
 
 static func convert_dict(dict: Dictionary) -> Dictionary:
 	var new_levels := {}
-	dict.level_order = []
+	dict.level_order = PackedInt32Array()
 	for i: int in dict.levels.size():
 		var id := i
 		new_levels[id] = dict.levels[i]
+		new_levels[id].salvage_points = []
 		dict.level_order.push_back(i)
 	dict.levels = new_levels
 	dict.pack_id = 0
-	dict.salvage_points = {}
 	
 	#assert(false, "Unfinished!")
 	return dict
@@ -44,7 +44,7 @@ static func load_level_pack(raw_data: PackedByteArray, offset: int) -> Dictionar
 	
 	# Load all levels
 	if level_count > MAX_ARRAY_SIZE: return {}
-	level_pack.level_order = []
+	level_pack.level_order = PackedInt32Array()
 	level_pack.levels = {}
 	level_pack.level_order.resize(level_count)
 	for i in level_count:

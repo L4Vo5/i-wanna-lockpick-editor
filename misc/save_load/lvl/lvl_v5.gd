@@ -251,7 +251,7 @@ static func load_lock(data: ByteAccess) -> LockData:
 	bit_data >>= 1
 	lock.value_type = bit_data & 0b1
 	bit_data >>= 1
-	lock.dont_show_lock = bit_data & 0b1
+	lock.dont_show_lock = bit_data & 0b1 as bool
 	bit_data >>= 1
 	lock.color = bit_data & 0b1111
 	bit_data >>= 4
