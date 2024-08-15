@@ -284,4 +284,144 @@ static func load_salvage_point(data: ByteAccess) -> SalvagePointData:
 static func load_complex(data: ByteAccess) -> ComplexNumber:
 	return ComplexNumber.new_with(data.get_s64(), data.get_s64())
 
+static var SCHEMA := {
+	"LevelPackData": {
+		"@type": Type.Class,
+		"@class_name": "LevelPackData",
+		"name": {"@type": Type.Str},
+		"author": {"@type": Type.Str},
+		"description": {"@type": Type.Str},
+		"pack_id": {
+			"@type": Type.Int,
+			"@is_natural": true,
+		},
+		# here the custom functions shine, so I don't have to store level_order!
+		"levels": {
+			"@type": Type.Arr,
+			"@amount": {
+				"@type": Type.Int,
+				"@bits": [4, 6, 8, 64],
+			},
+			"@custom_getter": _pack_data_levels_getter,
+			"@keys": "#level_id"
+		},
+		"@custom_deserialize": _pack_data_custom_deserialize
+	},
+	"#level_id": {
+		"@type": Type.Int,
+		"@is_natural": true,
+		"@diff": DiffKind.IntGuaranteedDifference,
+		# I think level ids, MOST of the time, will either be small or have a small
+		# consecutive difference. even tho reordering them is possible, it may not be THAT common
+		# to end up with a mess that makes this schema not worth it
+		# it seems fine to try 3 smaller bit values, and otherwise just give up
+		"@bits": [2, 4, 8, 64],
+	},
+}
+
+static func _pack_data_levels_getter(pack_data):
+	var levels := {}
+	for id in pack_data.level_order:
+		levels[id] = pack_data.levels[id]
+	return levels
+
+static func _pack_data_custom_deserialize(__, pack_data):
+	pack_data.level_order = []
+	pack_data.level_order.append_array(pack_data.levels.keys())
+	return pack_data
+
+# How the schema works:
+# The schema itself is a series of "type descriptions", where the key is the type name.
+# These are the "global" types.
+
+# A "type description" is a dictionary that describes how a type
+# should be stored and retrieved.
+
+# When a type description is expected, it could be declared in-place, nesting types.
+# Or, it could be a String referring to another type declared further up.
+# All types can have a "@types", a dict declaring common types, which will be caught
+# before any same-named type "further up" the chain (global types are the furthest up)
+# Only non-implicit types can be named.
+
+# the main key is the "@type", containing a field of the Type enum.
+# other keys are settings for the type. 
+
+# Type.Class will have a @class_name which should correspond to a real class that will be instantiated
+# (or not, when the output is a dictionary), as well as its fields and their types.
+# Type.Bool and Type.Str have no further arguments.
+
+# Type.Int is, when you get down to it, the main type. So it has all these arguments:
+# - @bits: how many bits it should be stored as. this can be an int on an array (size should be a
+# power of two). if it's for example a 4-member array [2, 4, 8, 32], 2 bits will be used to express
+# which of the 4 bit counts was used, meaning it'll take a minimum of 4 and a maximum of 34 bits.
+# (default 64)
+# - @is_natural: if true, the value can't be negative (default false)
+# - @small_infinity: if you expect infinity to be a somewhat regular value (such as with
+# door counts), +/- infinity will take few bits instead of the maximum (but this'll slightly
+# displace other values) (default false)
+# - @div: the number will be divided by this before being stored (usually 16 or 32 for grid-snapped stuff). default 1
+# In the special case that @bits are 64 and is_natural is true, the extra bit will be taken advantage of. no bit wasted.
+
+# Type.Arr's main argument is "@arr_type" (another dictionary), OR an array "@arr_types" if there's many possible types.
+# But they can have "@amount" which can be a fixed number, or another type declaration (should be int),
+# to specify how it should be stored.
+
+# Type.Dict will have "@keys" and "@values" type declarations, as well as "@amount".
+# both keys and values could also be arrays of types....
+# ArrayLikeDict is a special type of dict where the keys are consecutive integers starting from 0. Intended use is dicts where the keys are enums. They have the same arguments as Arr.
+
+# Type.FieldDict is a dictionary with fixed keys (the fields). It'll be declared like a class.
+
+# Type.BuiltIn will be a built-in type like Vector2i.
+# Idk how to instantiate them just based on a string,
+# so you're forced to include a "@default" argument.
+# Otherwise, the fields are declared just like in a FieldDict.
+
+# All types except Bool have another important field: "@diff".
+# If @diff is present, then when that type is stored, a single bit will be used to see
+# if it has the same value as the previous instance of that type.
+# The main value is DiffKind.Default, which it'll have if the value is "true"
+# but if it's DiffKind.IntDifference, then if the value is of type Int, the difference between
+# this and the previous value will be stored
+# (usually, this'll reserve an extra bit in the case of the largest @bits representation,
+# in case the difference literally can not be expressed)
+# (the difference is post-applying the corrections to take @small_infinity into account)
+# (the difference is always a signed number, even if @is_natural is used)
+# (but otherwise it uses the same bit counts as @bits)
+# DiffKind.IntGuaranteedDifference will always assume there's a difference, saving the diff bit.
+# sadly the value "0" for the diff amount won't be saved in either IntDifference kind :(
+# DiffKind.GuaranteedSameGlobal guarantees all instances of this field will have the same value, globally
+
+# Type.Simile will have a "@simile" field, which is the name of a type further up the chain that it will
+# imitate, but it's "legally distinct" for the purposes of @diff.
+
+# "@custom_getter" is a Callable that'll be called instead of reading this attribute, with the object to read
+# it from as an argument. it should return the desired value. only used for serialization
+# "@custom_deserialize" is a Callable that'll be called right before setting the final value for
+# this attribute, with two arguments: the object being deserialized that owns this type,
+# and the to-be value as an argument. 
+# it should return the new value. Only used for deserialization
+# "the object being deserialized" will be null at the topmost level (when the type is THE type
+# you want to deserialize), please ignore it
+
+enum Type {
+	Simile,
+	Class,
+	BuiltIn,
+	Bool,
+	Str,
+	Int,
+	Arr,
+	Dict,
+	FieldDict,
+}
+
+enum DiffKind {
+	Default,
+	IntDifference,
+	IntGuaranteedDifference,
+	GuaranteedSameGlobal,
+}
+
+
 const ByteAccess := V4.ByteAccess
