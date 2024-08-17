@@ -370,7 +370,7 @@ static var SCHEMA := {
 		},
 		"has_goal": "bool",
 		"goal_position": {
-			"@inherit": "elem_pos",
+			"@inherit": "#elem_pos",
 			"%MaxXFunc": _elem_get_max_pos.bind(-2, 0),
 			"%MaxYFunc": _elem_get_max_pos.bind(-2, 1),
 		},
@@ -664,6 +664,7 @@ static func get_lock_max_size(context, vector_component: int):
 # A "type description" is a dictionary that describes how a type
 # should be stored and retrieved.
 # settings start with "@"
+# anything that starts with "+" is private/hidden, so don't use it.
 
 # Types can have template arguments, declared at the end of the type within <> triangle brackets
 # Their names can't have any special characters or spaces.
@@ -825,29 +826,226 @@ class SchemaSaver:
 	var data: SchemaByteAccess
 	var all_types := {}
 	func _init(_schema: Dictionary):
-		if not _schema.has("+flattened"):
-			_schema = flatten_schema(_schema)
+		if not _schema.has("+compiled"):
+			_schema = compile_schema(_schema)
 		schema = _schema
 	
-	static func flatten_schema(schema_to_compile: Dictionary) -> Dictionary:
+	# A compiled schema is ready to be used properly
+	static func compile_schema(schema_to_compile: Dictionary) -> Dictionary:
 		assert(PerfManager.start("compile_schema"))
 		var new_schema := {}
-		new_schema["+flattened"] = true
-		var pending_type_names = schema_to_compile.keys()
-		var pending_types = schema_to_compile.values()
-		while not pending_types.is_empty():
-			var type_name: String = pending_type_names.pop_back() as String
-			var type: Dictionary = pending_types.pop_back() as Dictionary
+		new_schema["+compiled"] = true
+		# First, register the global types
+		for type_name in schema_to_compile.keys():
+			var type: Dictionary = schema_to_compile[type_name]
+			# @ for easy class_name
 			if type_name.begins_with("@"):
 				type_name = type_name.right(-1)
 				if not type.has("@type"):
 					type["@type"] = Type.Class
 				if not type.has("@class_name"):
 					type["@class_name"] = type_name
+			type_name = handle_type_name_arguments(type, type_name)
 			new_schema[type_name] = type
+		
+		# Now, resolve inner types
+		var pending_type_names = new_schema.keys()
+		var pending_types = new_schema.values()
+		while not pending_types.is_empty():
+			var type_name: String = pending_type_names.pop_back() as String
+			if type_name.begins_with("+"):
+				pending_types.pop_back()
+				continue
+			var type: Dictionary = pending_types.pop_back() as Dictionary
+			
+			if type.has("@types"):
+				var types: Dictionary = type["@types"]
+				for new_type_name: String in types:
+					var value: Dictionary = types[new_type_name]
+					new_type_name = type_name + ":" + new_type_name
+					assert(not new_schema.has(new_type_name))
+					if value.has("@inherit"):
+						var base_type_name: String = value["@inherit"]
+						var base_type: Dictionary = new_schema[base_type_name]
+						assert(not base_type.has("@inherit"))
+						value.merge(base_type) # overwrite is false
+						value.erase("@inherit")
+					new_schema[new_type_name] = value
+					pending_type_names.push_back(new_type_name)
+					pending_types.push_back(value)
+					
+				type.erase("@types")
+			
+			# Process the fields AND arguments
+			var keys := type.keys()
+			for key_name in keys:
+				var value = type[key_name]
+				if key_name is String and key_name.begins_with("+"):
+					pass
+				else:
+					# if it's String, should be a type. find it.
+					if value is String and not value.is_empty():
+						# handle template arguments to make a new type
+						var argument_start: int = value.find("<")
+						if argument_start != -1:
+							# new type. find the base
+							var base_type_name: String = value.left(argument_start)
+							if not new_schema.has(base_type_name):
+								print("missing base type: ", base_type_name)
+								continue
+							var base_type: Dictionary = new_schema[base_type_name]
+							var new_type := base_type.duplicate()
+							
+							# come up with a unique new name
+							var new_type_name := type_name + ":" + base_type_name
+							if new_schema.has(new_type_name):
+								var new_type_name_base := new_type_name
+								var i := 0
+								while new_schema.has(new_type_name):
+									new_type_name = new_type_name_base + ":" + str(i)
+									i += 1
+							
+							# extract the arguments
+							var arguments_str: String = value.substr(argument_start+1,value.length()-argument_start-2)
+							var arguments := arguments_str.split(",")
+							var positional_arguments = base_type["+positional_arguments"]
+							var using_named_arguments := arguments[0].contains("=")
+							for i in arguments.size():
+								var argument := arguments[i]
+								assert(argument.contains("=") == using_named_arguments, "Can't mix named and positional arguments")
+								if using_named_arguments:
+									var arr := argument.split("=")
+									assert(arr.size() == 2)
+									var argument_name := arr[0].strip_edges()
+									var argument_value := arr[1].strip_edges()
+									new_type["%" + argument_name] = argument_value
+								else:
+									var argument_name: String = positional_arguments[i]
+									new_type["%" + argument_name] = argument
+							# just add it, there's nothing further to process in it... i think? hmm
+							new_schema[new_type_name] = new_type
+							type[key_name] = new_type_name
+							value = new_type_name
+						if not value.begins_with("%"):
+							value = find_type_contextually(new_schema, type_name, value)
+							if not new_schema.has(value):
+								print("missing type: ", value)
+					if value is Dictionary:
+						# new type
+						var new_type_name := type_name + ":" + str(key_name)
+						assert(not new_schema.has(new_type_name))
+						if value.has("@inherit"):
+							var base_type_name: String = value["@inherit"]
+							base_type_name = find_type_contextually(new_schema, type_name, base_type_name)
+							var base_type: Dictionary = new_schema[base_type_name]
+							assert(not base_type.has("@inherit"))
+							value.merge(base_type) # overwrite is false
+							value.erase("@inherit")
+						new_schema[new_type_name] = value
+						pending_type_names.push_back(new_type_name)
+						pending_types.push_back(value)
+			new_schema[type_name] = type
+		
+		# Now that it's been flattened, replace all arguments with their values
+		for type_name: String in new_schema.keys():
+			var type = new_schema[type_name]
+			if not type is Dictionary: continue
+			for key in type:
+				var value = type[key]
+				if value is String:
+					var new_value: String = value
+					var pos := new_value.find("%")
+					if pos != -1:
+						var was_non_string := false
+						while pos != -1:
+							assert(new_value.substr(pos+1,1) == "[")
+							var end := new_value.find("]", pos)
+							assert(end != -1)
+							var argument_name := new_value.substr(pos + 2, end - 2 - pos)
+							var argument_value = find_argument_contextually(new_schema, type_name, argument_name)
+							if not argument_value is String:
+								type[key] = argument_value
+								was_non_string = true
+								break
+							new_value = new_value.left(pos) + argument_value + new_value.right(-end-1)
+							
+							pos = new_value.find("%")
+						if not was_non_string:
+							type[key] = new_value
+		# get rid of all arguments
+		for type_name: String in new_schema.keys():
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = new_schema[type_name]
+			for key in type.keys():
+				if key is String and key.begins_with("%"):
+					type.erase(key)
+		
+		# remove incomplete types
+		for type_name: String in new_schema.keys():
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = new_schema[type_name]
+			for value in type.values():
+				if value is String:
+					if not new_schema.has(value):
+						new_schema.erase(type_name)
+		# assert that remaining types do work
+		for type_name: String in new_schema.keys():
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = new_schema[type_name]
+			for value in type.values():
+				if value is String:
+					assert(new_schema.has(value))
+		
+		
 		assert(PerfManager.end("compile_schema"))
-		print(JSON.stringify(new_schema, " "))
+		#print(JSON.stringify(new_schema, "\t"))
+		DisplayServer.clipboard_set(JSON.stringify(new_schema, "\t"))
 		return new_schema
+	
+	## Modifies [type] and returns a new type_name
+	static func handle_type_name_arguments(type: Dictionary, type_name: String) -> String:
+		if type_name.contains("<"):
+			assert(type_name.ends_with(">"))
+			var arguments := []
+			var pos := type_name.find("<")
+			var arguments_str := type_name.substr(pos + 1, type_name.length() - pos - 2)
+			var arguments_arr := arguments_str.split(",")
+			for argument: String in arguments_arr:
+				var sp := argument.split("=")
+				assert(sp.size() <= 2)
+				var argument_name = sp[0].strip_edges()
+				arguments.push_back(argument_name)
+				if not type.has("%"+argument_name):
+					var argument_value = ""
+					if sp.size() == 2:
+						argument_value = sp[1].strip_edges()
+					type["%"+argument_name] = argument_value
+			type_name = type_name.left(pos)
+			type["+positional_arguments"] = arguments
+		return type_name
+	
+	# find the existing type that's closest to the current context/namespace
+	static func find_type_contextually(schema: Dictionary, current_namespace: String, type_name: String) -> String:
+		assert(not current_namespace.ends_with(":"))
+		var candidate_type_name := current_namespace + ":" + type_name
+		while not schema.has(candidate_type_name):
+			var next_namespace := current_namespace.rfind(":")
+			if next_namespace == -1:
+				return type_name
+			current_namespace = current_namespace.left(next_namespace)
+			candidate_type_name = current_namespace + ":" + type_name
+		return candidate_type_name
+	# return the value of an argument, which may be at a higher scope
+	static func find_argument_contextually(schema: Dictionary, type_name: String, argument_name: String):
+		assert(not type_name.ends_with(":"))
+		argument_name = "%" + argument_name
+		while not schema[type_name].has(argument_name):
+			var next_namespace := type_name.rfind(":")
+			if next_namespace == -1:
+				return schema[argument_name]
+			type_name = type_name.left(next_namespace)
+		return schema[type_name][argument_name]
+		
 	
 	func get_object_bits(object_type: String, object) -> PackedByteArray:
 		assert(schema.has(object_type))
