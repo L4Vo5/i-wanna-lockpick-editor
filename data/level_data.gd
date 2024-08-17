@@ -9,11 +9,12 @@ class_name LevelData
 
 @export var salvage_points: Array[SalvagePointData] = []
 
+# TODO: these two
 ## This array refers to other levels in the level pack, that are required for this level to be unlocked.
-@export var required_levels := PackedInt32Array()
+#@export var required_levels := PackedInt32Array()
 
 ## How many levels from required_levels need to be completed for this level to be unlocked.
-@export var min_required_level_count := 0
+#@export var min_required_level_count := 0
 
 ## Whether you can exit this level.
 @export var exitable := true
