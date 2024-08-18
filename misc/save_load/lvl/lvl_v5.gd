@@ -805,6 +805,7 @@ enum Type {
 }
 
 enum DiffKind {
+	None,
 	Default,
 	IntDifference,
 	IntGuaranteedDifference,
@@ -1071,7 +1072,9 @@ class SchemaSaver:
 		
 		data = SchemaByteAccess.new([])
 		encode_object_bits(object_type, object)
+		data.finish()
 		assert(PerfManager.end("SchemaSaver::get_object_bits"))
+		print("total bytes: ", data.data.size())
 		return data.data
 	
 	func encode_object_bits(type_name, object) -> void:
@@ -1083,6 +1086,18 @@ class SchemaSaver:
 		stack.push_back(object)
 		var type_schema: Dictionary = schema[type_name]
 		var type: Type = maybe_call(type_schema["@type"])
+		var diff_kind: int = type_schema.get("@diff", DiffKind.None)
+		assert(diff_kind != DiffKind.Inherited, "Unimplemented")
+		match diff_kind:
+			DiffKind.Default, DiffKind.IntDifference:
+				if type_schema.has("+last_value"):
+					if type_schema["+last_value"] == object:
+						data.store_bool(false)
+						stack.pop_back()
+						return
+					else:
+						data.store_bool(true)
+		type_schema["+last_value"] = object
 		
 		# encode based on the type
 		if type == Type.Null:
@@ -1206,9 +1221,16 @@ class SchemaSaver:
 				bytes_offset += 1
 			return val
 		
+		func store_bool(v: bool) -> void:
+			store_bit(v as int)
+		
+		func get_bool() -> bool:
+			return get_bit() == 1
+		
 		func finish() -> void:
 			if individual_byte_pos != -1:
 				data.encode_u8(individual_byte_pos, individual_byte)
+			compress()
 		
 
 const ByteAccess := V4.ByteAccess
