@@ -930,6 +930,7 @@ class SchemaSaver:
 							value = find_type_contextually(new_schema, type_name, value)
 							if not new_schema.has(value):
 								print("missing type: ", value)
+							type[key_name] = value
 					if value is Dictionary:
 						# new type
 						var new_type_name := type_name + ":" + str(key_name)
@@ -941,7 +942,9 @@ class SchemaSaver:
 							assert(not base_type.has("@inherit"))
 							value.merge(base_type) # overwrite is false
 							value.erase("@inherit")
+						print("adding new type: ", new_type_name)
 						new_schema[new_type_name] = value
+						type[key_name] = new_type_name
 						pending_type_names.push_back(new_type_name)
 						pending_types.push_back(value)
 			new_schema[type_name] = type
@@ -980,26 +983,32 @@ class SchemaSaver:
 				if key is String and key.begins_with("%"):
 					type.erase(key)
 		
-		# remove incomplete types
+		# remove incomplete types + get rid of the trash
 		for type_name: String in new_schema.keys():
 			if type_name.begins_with("+"): continue
 			var type: Dictionary = new_schema[type_name]
-			for value in type.values():
+			for key in type.keys():
+				if key is String and key == "+positional_arguments":
+					type.erase(key)
+					continue
+				var value = type[key]
 				if value is String:
 					if not new_schema.has(value):
 						new_schema.erase(type_name)
+						break
 		# assert that remaining types do work
 		for type_name: String in new_schema.keys():
 			if type_name.begins_with("+"): continue
 			var type: Dictionary = new_schema[type_name]
 			for value in type.values():
 				if value is String:
-					assert(new_schema.has(value))
+					assert(new_schema.has(value), "type not found: " + str(value))
 		
 		
 		assert(PerfManager.end("compile_schema"))
 		#print(JSON.stringify(new_schema, "\t"))
-		DisplayServer.clipboard_set(JSON.stringify(new_schema, "\t"))
+		#DisplayServer.clipboard_set(JSON.stringify(new_schema, "\t"))
+		#DisplayServer.clipboard_set(JSON.stringify(schema_to_compile, "\t"))
 		return new_schema
 	
 	## Modifies [type] and returns a new type_name
