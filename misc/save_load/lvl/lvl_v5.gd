@@ -320,7 +320,7 @@ static var SCHEMA := {
 		},
 		# here the custom functions shine, so I don't have to store level_order!
 		"levels": {
-			"@type": Type.Arr,
+			"@type": Type.Dict,
 			"@amount": {
 				"@type": Type.Int,
 				"@bits": [4, 6, 8, 64],
@@ -371,8 +371,9 @@ static var SCHEMA := {
 		"has_goal": "bool",
 		"goal_position": {
 			"@inherit": "#elem_pos",
-			"%MaxXFunc": _elem_get_max_pos.bind(-2, 0),
-			"%MaxYFunc": _elem_get_max_pos.bind(-2, 1),
+			# -1 is the int, -2 the goal position, -3 the level pack data
+			"%MaxXFunc": _elem_get_max_pos.bind(-3, 0),
+			"%MaxYFunc": _elem_get_max_pos.bind(-3, 1),
 		},
 		"doors": "#element_array<DoorData>",
 		"keys": "#element_array<KeyData>",
@@ -390,9 +391,9 @@ static var SCHEMA := {
 		},
 	},
 	"#elem_pos<MaxXFunc, MaxYFunc>": {
-		# For most elements: -1 is the Vector2i, -2 is the element, -3 is the element array, -4 is the desired LevelData
-		"%MaxXFunc": _elem_get_max_pos.bind(-4, 0),
-		"%MaxYFunc": _elem_get_max_pos.bind(-4, 1),
+		# For most elements: -1 is the int, -2 is the Vector2i, -3 is the element, -4 is the element array, -5 is the desired LevelData
+		"%MaxXFunc": _elem_get_max_pos.bind(-5, 0),
+		"%MaxYFunc": _elem_get_max_pos.bind(-5, 1),
 		"@type": Type.BuiltIn,
 		"@default": Vector2i(0, 0),
 		"x": {
@@ -415,13 +416,14 @@ static var SCHEMA := {
 		"@keys": {
 			"@type": Type.BuiltIn,
 			"@default": Vector2i.ZERO,
+			# -1 is the int, -2 the vector2, -3 the tiles dict, -4 the level
 			"x": {
 				"@inherit": "#tile_coord",
-				"@max": _tile_get_max_pos.bind(-2, 0),
+				"@max": _tile_get_max_pos.bind(-4, 0),
 			},
 			"y": {
 				"@inherit": "#tile_coord",
-				"@max": _tile_get_max_pos.bind(-2, 1),
+				"@max": _tile_get_max_pos.bind(-4, 1),
 			},
 		},
 		"@types": {
@@ -446,7 +448,7 @@ static var SCHEMA := {
 			# I can spare the extra bit for levels that do.
 			"@bits": [7, 32],
 		},
-		"@values": "%[Class]",
+		"@arr_type": "%[Class]",
 	},
 	"@DoorData": {
 		"amount": "ComplexNumber",
@@ -488,16 +490,16 @@ static var SCHEMA := {
 		"color": "#color",
 		"lock_type": "u2",
 		"value_type": {
-			"@type": (func(context): return Type.Null if context[-1].lock_type >= 2 else Type.Int),
+			"@type": (func(context): return Type.Null if context[-2].lock_type >= 2 else Type.Int),
 			"@bits": 1,
 		},
 		"sign": {
-			"@type": (func(context): return Type.Null if context[-1].lock_type >= 2 else Type.Int),
+			"@type": (func(context): return Type.Null if context[-2].lock_type >= 2 else Type.Int),
 			"@bits": 1,
 		},
 		"lock_arrangement": {
 			# only for Normal locks
-			"@type": (func(context): return Type.Null if context[-1].lock_type >= 1 else Type.Int),
+			"@type": (func(context): return Type.Null if context[-2].lock_type >= 1 else Type.Int),
 			"@bits": [1, 2, 16],
 			"@bits_strategy": BitsStrategy.IndexAsConsecutiveZeroes,
 		},
@@ -512,7 +514,7 @@ static var SCHEMA := {
 			"y": {
 				"@type": Type.Int,
 				"@min": 0,
-				"@max": get_lock_max_pos.bind(0),
+				"@max": get_lock_max_pos.bind(1),
 			},
 		},
 		"size": {
@@ -526,7 +528,7 @@ static var SCHEMA := {
 			"y": {
 				"@type": Type.Int,
 				"@min": 1,
-				"@max": get_lock_max_size.bind(0),
+				"@max": get_lock_max_size.bind(1),
 			},
 		},
 	},
@@ -541,7 +543,7 @@ static var SCHEMA := {
 		},
 		"amount": {
 			# only if Add or Exact
-			"@type": (func(context): return Type.Class if context[-1].type <= 1 else Type.Null),
+			"@type": (func(context): return Type.Class if context[-2].type <= 1 else Type.Null),
 			"@class_name": "ComplexNumber",
 			"_real_part": "#component",
 			"_imaginary_part": "#component",
@@ -635,19 +637,19 @@ static func _elem_get_max_pos(context, level_data_index: int, vector_component: 
 	return context[level_data_index].size[vector_component] - 32
 
 static func _get_door_data_max_size(context, vector_component: int):
-	var door = context[-2]
-	var level = context[-4]
+	var door = context[-3]
+	var level = context[-5]
 	return level.size[vector_component] - door.position[vector_component]
 
 # not using minimum lock sizes because that'd be hard
 static func get_lock_max_pos(context, vector_component: int):
-	# -1 is the Vector2i, -2 is the lock, -3 the locks array, -4 the door
-	return context[-4].size[vector_component]
+	# -1 is the int, -2 is the Vector2i, -3 is the lock, -4 the locks array, -5 the door
+	return context[-5].size[vector_component]
 
 # not using minimum lock sizes because that'd be hard
 static func get_lock_max_size(context, vector_component: int):
-	# -1 is the Vector2i, -2 is the lock, -3 the locks array, -4 the door
-	return context[-4].size[vector_component] - context[-2].position[vector_component]
+	# -1 is the int, -2 is the Vector2i, -3 is the lock, -4 the locks array, -5 the door
+	return context[-5].size[vector_component] - context[-3].position[vector_component]
 
 # How the schema works:
 # The schema itself is a series of "type descriptions", where the key is the type name.
@@ -696,8 +698,8 @@ static func get_lock_max_size(context, vector_component: int):
 # whenever a setting value is expected, you can optionally pass a Callable
 # (except for the settings that already take Callables anyway)
 # this Callable will take as an argument the context that the current instance of the type is 
-# in (an array where the last element is the owner of the type, the previous to last the owner
-# of that owner, etc.)
+# in (an array where the previous to last element is the owner of the type, the one before that the owner
+# of that owner, etc. the last element will be the element being encoded, or null when decoding)
 # in both serialization and deseralization what'll be passed is the real object.
 # make sure any fiels of that object you wanna rely on were declared BEFORE whenever this is being
 # called.
@@ -735,7 +737,7 @@ static func get_lock_max_size(context, vector_component: int):
 # - @min / @max: the range of values the integer can have, before @div is applied. can shave some bits off if you overestimated them, and MAYBE "fractional bits" could be used.
 # In the special case that @bits are 64 and is_natural is true, the extra bit will be taken advantage of. no bit wasted.
 
-# Type.Arr's main setting is "@arr_type" (another dictionary), OR an array "@arr_types" if there's many possible types.
+# Type.Arr's main setting is "@arr_type" (another dictionary)
 # But they can have "@amount" which can be a fixed number, or another type declaration (should be int),
 # to specify how it should be stored. if it's a typed declaration, it'll by default have
 # is_natural set to true, bits set to 64, and be an Int.
@@ -824,7 +826,8 @@ static func schema_to_bits(schema: Dictionary, object, object_type: String, raw_
 class SchemaSaver:
 	var schema: Dictionary
 	var data: SchemaByteAccess
-	var all_types := {}
+	var type_values := {}
+	var stack := []
 	func _init(_schema: Dictionary):
 		if not _schema.has("+compiled"):
 			_schema = compile_schema(_schema)
@@ -983,31 +986,36 @@ class SchemaSaver:
 				if key is String and key.begins_with("%"):
 					type.erase(key)
 		
-		# remove incomplete types + get rid of the trash
+		# remove incomplete types + get rid of the trash + group fields in +fields
 		for type_name: String in new_schema.keys():
 			if type_name.begins_with("+"): continue
 			var type: Dictionary = new_schema[type_name]
+			var fields := {}
 			for key in type.keys():
 				if key is String and key == "+positional_arguments":
 					type.erase(key)
 					continue
 				var value = type[key]
+				if not (key is String and (key.begins_with("+") or key.begins_with("@"))):
+					fields[key] = value
+					type.erase(key)
 				if value is String:
 					if not new_schema.has(value):
 						new_schema.erase(type_name)
 						break
+			type["+fields"] = fields
 		# assert that remaining types do work
 		for type_name: String in new_schema.keys():
 			if type_name.begins_with("+"): continue
 			var type: Dictionary = new_schema[type_name]
-			for value in type.values():
+			for value in type["+fields"].values():
 				if value is String:
 					assert(new_schema.has(value), "type not found: " + str(value))
 		
 		
 		assert(PerfManager.end("compile_schema"))
 		#print(JSON.stringify(new_schema, "\t"))
-		#DisplayServer.clipboard_set(JSON.stringify(new_schema, "\t"))
+		DisplayServer.clipboard_set(JSON.stringify(new_schema, "\t"))
 		#DisplayServer.clipboard_set(JSON.stringify(schema_to_compile, "\t"))
 		return new_schema
 	
@@ -1054,19 +1062,75 @@ class SchemaSaver:
 				return schema[argument_name]
 			type_name = type_name.left(next_namespace)
 		return schema[type_name][argument_name]
-		
 	
 	func get_object_bits(object_type: String, object) -> PackedByteArray:
+		assert(PerfManager.start("SchemaSaver::get_object_bits"))
 		assert(schema.has(object_type))
-		all_types.clear()
+		type_values.clear()
+		stack.clear()
+		
 		data = SchemaByteAccess.new([])
-		var stack := []
-		
-		
+		encode_object_bits(object_type, object)
+		assert(PerfManager.end("SchemaSaver::get_object_bits"))
 		return data.data
 	
-	func encode_object_bits(type: String, object) -> void:
-		pass
+	func encode_object_bits(type_name, object) -> void:
+		assert(not type_name is Callable)
+		type_name = maybe_call(type_name)
+		if not type_name is String:
+			# Must've passed a constant
+			return
+		stack.push_back(object)
+		var type_schema: Dictionary = schema[type_name]
+		var type: Type = maybe_call(type_schema["@type"])
+		
+		# encode based on the type
+		if type == Type.Null:
+			pass
+		elif type == Type.Str:
+			assert(object is String)
+			data.store_string(object)
+		elif type == Type.Int:
+			assert(object is int)
+			data.store_s64(object)
+		elif type == Type.Arr:
+			assert(object is Array)
+			encode_object_bits(type_schema["@amount"], object.size())
+			for val in object:
+				encode_object_bits(type_schema["@arr_type"], val)
+		elif type == Type.Dict:
+			assert(object is Dictionary)
+			encode_object_bits(type_schema["@amount"], object.size())
+			for key in object:
+				encode_object_bits(type_schema["@keys"], key)
+			for value in object.values():
+				encode_object_bits(type_schema["@values"], value)
+		elif type == Type.Bool:
+			data.store_bool(object)
+		elif type == Type.Class or type == Type.FieldDict or type == Type.BuiltIn:
+			pass
+		else:
+			assert(false)
+		
+		# encode further fields.
+		var fields: Dictionary = type_schema["+fields"]
+		for field_name in fields:
+			var field_type_name = fields[field_name]
+			if not field_type_name is String:
+				# It's a constant, no need to store it.
+				pass
+			else:
+				var field_type = schema[field_type_name]
+				var value = object[field_name]
+				encode_object_bits(field_type_name, value)
+			
+		var popped = stack.pop_back()
+		assert(popped == object)
+	
+	func maybe_call(value):
+		if value is Callable:
+			value = value.call(stack)
+		return value
 	
 	class SchemaByteAccess:
 		extends ByteAccess
