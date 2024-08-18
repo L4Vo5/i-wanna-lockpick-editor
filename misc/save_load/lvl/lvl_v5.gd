@@ -591,7 +591,7 @@ static var SCHEMA := {
 		"@type": Type.Int,
 		"@min": -1_000_000_000_000_000_000,
 		"@max": 1_000_000_000_000_000_000,
-		"@small_infinity": true,
+		"@has_infinity": true,
 		# the smallest values are -1, -inf, 0, inf, 1, which will also be the most common.
 		# 2, 1 can represent 6 different values. with IndexAsConsecutiveZeroes, these small values will
 		# take 3 bits. so small ComplexNumbers will take 7 bits 
@@ -727,11 +727,8 @@ static func get_lock_max_size(context, vector_component: int):
 # of bits used are [2, 4, 7, 12, 21, 38, 71]. with the IndexAsInt strategy it'd be [4, 5, 7...]
 # meaning, if mostly 1 or 2 bits are used, this strategy will be more efficient. and for bigger bit
 # counts, the extra bits are proportionally small anyway.
-# - @small_infinity: if you expect infinity to be a somewhat regular value (such as with
-# door counts), +/- infinity will take few bits instead of the maximum (but this'll slightly
-# displace other values) (default false). this is also needed if you set a min or max that don't
-# cover infinity.
-# to be specific, 2 will represent infinity, -2 -infinity. then, 3 will represent 2, and so on.
+# - @has_infinity: infinity support, off by default.
+# if true,2 will represent infinity, -2 -infinity. then, 3 will represent 2, and so on.
 # -1, 0, and 1 are left untouched. this is because they're generally even more common values than infinity
 # - @div: the number will be divided by this before being stored (usually 16 or 32 for grid-snapped stuff). default 1
 # - @min / @max: the range of values the integer can have, before @div is applied. can shave some bits off if you overestimated them, and MAYBE "fractional bits" could be used.
@@ -770,7 +767,7 @@ static func get_lock_max_size(context, vector_component: int):
 # this and the previous value will be stored
 # (usually, this'll reserve an extra bit in the case of the largest @bits representation,
 # in case the difference literally can not be expressed)
-# (the difference is post-applying the corrections to take @small_infinity into account)
+# (the difference is post-applying the corrections to take @has_infinity into account)
 # (the difference is always a signed number)
 # (but otherwise it uses the same bit counts as @bits)
 # DiffKind.IntGuaranteedDifference will always assume there's a difference, omitting the diff bit.
@@ -880,6 +877,10 @@ class SchemaSaver:
 					
 				type.erase("@types")
 			
+			var amount_default := {
+				"@type": Type.Int,
+				"@min": 0,
+			}
 			# Process the fields AND arguments
 			var keys := type.keys()
 			for key_name in keys:
@@ -946,6 +947,8 @@ class SchemaSaver:
 							assert(not base_type.has("@inherit"))
 							value.merge(base_type) # overwrite is false
 							value.erase("@inherit")
+						if key_name == "@amount":
+							value.merge(amount_default)
 						print("adding new type: ", new_type_name)
 						new_schema[new_type_name] = value
 						type[key_name] = new_type_name
@@ -1005,6 +1008,29 @@ class SchemaSaver:
 						new_schema.erase(type_name)
 						break
 			type["+fields"] = fields
+		# add default value to most settings on all types
+		var defaults := {
+			"@type": Type.Null,
+			"@bits": 64,
+			"@bits_strategy": BitsStrategy.IndexAsInt,
+			"@has_infinity": false,
+			"@min": -1_000_000_000_000_000_000,
+			"@max": 1_000_000_000_000_000_000,
+			"@div": 1,
+			"@diff": false,
+			"@diff_kind": DiffKind.IntDifference,
+		}
+		for type_name: String in new_schema.keys():
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = new_schema[type_name]
+			type.merge(defaults)
+		
+		# add @default to all types
+		for type_name: String in new_schema.keys():
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = new_schema[type_name]
+			type["@default"] = get_default_for_type(type, new_schema)
+		
 		# assert that remaining types do work
 		for type_name: String in new_schema.keys():
 			if type_name.begins_with("+"): continue
@@ -1019,6 +1045,49 @@ class SchemaSaver:
 		DisplayServer.clipboard_set(JSON.stringify(new_schema, "\t"))
 		#DisplayServer.clipboard_set(JSON.stringify(schema_to_compile, "\t"))
 		return new_schema
+	
+	static func get_default_for_type(type: Dictionary, used_schema: Dictionary):
+		if type.has("@default"):
+			return type["@default"]
+		var default
+		match type["@type"]:
+			Type.Int:
+				default = 0
+				var min = type["@min"]
+				var max = type["@max"]
+				if min is int and default < min:
+					default = min
+				elif max is int and default > max:
+					default = max
+			Type.Str:
+				default = ""
+			Type.Class:
+				default = null
+			Type.BuiltIn, Type.Null, Type.Constant:
+				assert(false)
+			Type.Bool:
+				default = false
+			Type.Arr:
+				default = []
+				var amount = type["@amount"]
+				if amount is String:
+					amount = get_default_for_type(used_schema[amount], used_schema)
+				default.resize(amount)
+				var default_val = get_default_for_type(used_schema[type["@arr_type"]], used_schema)
+				default.fill(default_val)
+			Type.Dict:
+				default = {}
+			Type.FieldDict:
+				default = {}
+				var fields: Dictionary = type["+fields"]
+				for field in fields:
+					var value_type = fields[field]
+					# catch int defaults, etc.
+					var default_value = value_type
+					if value_type is String:
+						default_value = get_default_for_type(used_schema[value_type], used_schema)
+					default[field] = default_value
+		return default
 	
 	## Modifies [type] and returns a new type_name
 	static func handle_type_name_arguments(type: Dictionary, type_name: String) -> String:
@@ -1069,6 +1138,10 @@ class SchemaSaver:
 		assert(schema.has(object_type))
 		type_values.clear()
 		stack.clear()
+		for type_name in schema:
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = schema[type_name]
+			type["+last_value"] = type["@default"]
 		
 		data = SchemaByteAccess.new([])
 		encode_object_bits(object_type, object)
@@ -1090,13 +1163,13 @@ class SchemaSaver:
 		assert(diff_kind != DiffKind.Inherited, "Unimplemented")
 		match diff_kind:
 			DiffKind.Default, DiffKind.IntDifference:
-				if type_schema.has("+last_value"):
-					if type_schema["+last_value"] == object:
-						data.store_bool(false)
-						stack.pop_back()
-						return
-					else:
-						data.store_bool(true)
+				assert(type_schema.has("+last_value"))
+				if type_schema["+last_value"] == object:
+					data.store_bool(false)
+					stack.pop_back()
+					return
+				else:
+					data.store_bool(true)
 		type_schema["+last_value"] = object
 		
 		# encode based on the type
