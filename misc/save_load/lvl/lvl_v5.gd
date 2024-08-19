@@ -490,16 +490,19 @@ static var SCHEMA := {
 		"color": "#color",
 		"lock_type": "u2",
 		"value_type": {
-			"@type": (func(context): return Type.Null if context[-2].lock_type >= 2 else Type.Int),
+			"@skip": (func(context): return context[-1].lock_type >= 2),
+			"@type": Type.Int,
 			"@bits": 1,
 		},
 		"sign": {
-			"@type": (func(context): return Type.Null if context[-2].lock_type >= 2 else Type.Int),
+			"@skip": (func(context): return context[-1].lock_type >= 2),
+			"@type": Type.Int,
 			"@bits": 1,
 		},
 		"lock_arrangement": {
 			# only for Normal locks
-			"@type": (func(context): return Type.Null if context[-2].lock_type >= 1 else Type.Int),
+			"@skip": (func(context): return context[-1].lock_type >= 1),
+			"@type": Type.Int,
 			"@bits": [1, 2, 16],
 			"@bits_strategy": BitsStrategy.IndexAsConsecutiveZeroes,
 		},
@@ -542,8 +545,9 @@ static var SCHEMA := {
 			"@max": 6,
 		},
 		"amount": {
-			# only if Add or Exact
-			"@type": (func(context): return Type.Class if context[-2].type <= 1 else Type.Null),
+			# only present if it's Add or Exact
+			"@skip": (func(context): return context[-1].type > 1),
+			"@type": Type.Class,
 			"@class_name": "ComplexNumber",
 			"_real_part": "#component",
 			"_imaginary_part": "#component",
@@ -605,8 +609,9 @@ static var SCHEMA := {
 	}
 }
 
-static func _pack_data_levels_getter(pack_data):
+static func _pack_data_levels_getter(context):
 	var levels := {}
+	var pack_data = context[-1]
 	for id in pack_data.level_order:
 		levels[id] = pack_data.levels[id]
 	return levels
@@ -616,7 +621,8 @@ static func _pack_data_custom_deserialize(_context, pack_data: LevelPackData):
 	pack_data.level_order.append_array(pack_data.levels.keys())
 	return pack_data
 
-static func _tile_dict_sort(_context, tiles): 
+static func _tile_dict_sort(context): 
+	var tiles: Dictionary = context[-1].tiles
 	var new_tiles := {}
 	var tiles_coords: Array = tiles.keys()
 	# default sort on vectors will leave like-x vectors together
@@ -696,13 +702,18 @@ static func get_lock_max_size(context, vector_component: int):
 
 # the main setting is "@type", containing a field of the Type enum.
 # whenever a setting value is expected, you can optionally pass a Callable
-# (except for the settings that already take Callables anyway)
+# (except for @type, and settings that already take Callables anyway)
 # this Callable will take as an argument the context that the current instance of the type is 
 # in (an array where the previous to last element is the owner of the type, the one before that the owner
 # of that owner, etc. the last element will be the element being encoded, or null when decoding)
 # in both serialization and deseralization what'll be passed is the real object.
 # make sure any fiels of that object you wanna rely on were declared BEFORE whenever this is being
 # called.
+
+# "@skip" will be true if this type should be skipped. this can be a Callable.
+# Since @skip specifically is called before doing anything else with the type, the context won't have
+# the type itself at the end (and won't have null, when deserializing). instead, context[-1]
+# is the owner of this field.
 
 # Type.Class will have a @class_name which should correspond to a real class that will be instantiated
 # (or not, when the output is a dictionary), as well as its fields and their types.
@@ -1019,6 +1030,9 @@ class SchemaSaver:
 			"@div": 1,
 			"@diff": false,
 			"@diff_kind": DiffKind.IntDifference,
+			"@skip": false,
+			"@custom_getter": Callable(),
+			"@custom_deserialize": Callable(),
 		}
 		for type_name: String in new_schema.keys():
 			if type_name.begins_with("+"): continue
@@ -1030,6 +1044,12 @@ class SchemaSaver:
 			if type_name.begins_with("+"): continue
 			var type: Dictionary = new_schema[type_name]
 			type["@default"] = get_default_for_type(type, new_schema)
+		
+		# get the int values sorted out
+		#for type_name: String in new_schema.keys():
+			#if type_name.begins_with("+"): continue
+			#var type: Dictionary = new_schema[type_name]
+			#type["@default"] = get_default_for_type(type, new_schema)
 		
 		# assert that remaining types do work
 		for type_name: String in new_schema.keys():
@@ -1154,11 +1174,11 @@ class SchemaSaver:
 		assert(not type_name is Callable)
 		type_name = maybe_call(type_name)
 		if not type_name is String:
-			# Must've passed a constant
+			# Must've passed a constant.. it's easier to catch it here
 			return
 		stack.push_back(object)
 		var type_schema: Dictionary = schema[type_name]
-		var type: Type = maybe_call(type_schema["@type"])
+		var type: Type = type_schema["@type"]
 		var diff_kind: int = type_schema.get("@diff", DiffKind.None)
 		assert(diff_kind != DiffKind.Inherited, "Unimplemented")
 		match diff_kind:
@@ -1180,7 +1200,10 @@ class SchemaSaver:
 			data.store_string(object)
 		elif type == Type.Int:
 			assert(object is int)
+			#var bits = maybe_call(type["@bits"])
 			data.store_s64(object)
+			#data.store_bits(63, object)
+			
 		elif type == Type.Arr:
 			assert(object is Array)
 			encode_object_bits(type_schema["@amount"], object.size())
@@ -1209,7 +1232,12 @@ class SchemaSaver:
 				pass
 			else:
 				var field_type = schema[field_type_name]
-				var value = object[field_name]
+				if maybe_call(field_type["@skip"]):
+					if not field_type["+fields"].is_empty():
+						print(field_type["+fields"])
+					continue
+				var getter: Callable = field_type["@custom_getter"]
+				var value = getter.call(stack) if not getter.is_null() else object[field_name]
 				encode_object_bits(field_type_name, value)
 			
 		var popped = stack.pop_back()
@@ -1252,6 +1280,7 @@ class SchemaSaver:
 		
 		# will store them UNSIGNED.
 		func store_bits(bit_count: int, val: int) -> void:
+			var original_val = val
 			assert(bit_count < 64)
 			assert(val <= (1 << bit_count) - 1)
 			# store bytes first. least significant bytes are stored first
@@ -1271,7 +1300,25 @@ class SchemaSaver:
 			for i in bit_count:
 				store_bit(val & 1)
 				val >>= 1
-			assert(val == 0)
+			
+			#var v = -99
+			#print("hi")
+			#for i in 10:
+				## investigation time
+				#var s = ""
+				#for bit in 64:
+					#var b = 1 << bit
+					#s += "0" if v & b == 0 else "1"
+				#s = s.reverse()
+				#print(s)
+				#store_u32(v)
+				#curr -= 4
+				#print(get_u32())
+				#curr -= 4
+				##print(String.num_int64(v, 2))
+				#v >>= 1
+			#print("...")
+			assert(val == 0 or val == -1)
 		
 		func get_bits(bit_count: int) -> int:
 			var val := 0
