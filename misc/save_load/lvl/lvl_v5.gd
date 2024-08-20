@@ -1258,16 +1258,12 @@ class SchemaSaver:
 				assert(type_schema.has("+last_value"))
 				assert(type == Type.Int)
 				var last_value = type_schema["+last_value"]
-				if last_value != object:
-					if object is ComplexNumber:
-						print(object, " == " , type_schema["+last_value"])
+				if last_value == object:
 					data.store_bool(false)
 					type_schema["+bits"] += 1
 					stack.pop_back()
 					return
 				else:
-					if object is ComplexNumber:
-						print(object, " != " , type_schema["+last_value"])
 					data.store_bool(true)
 					type_schema["+bits"] += 1
 		type_schema["+last_value"] = object
