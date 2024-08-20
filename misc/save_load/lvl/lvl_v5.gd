@@ -321,6 +321,7 @@ static var SCHEMA := {
 		"pack_id": {
 			"@type": Type.Int,
 			"@min": 0,
+			"@max": 9223372036854775807,
 		},
 		# here the custom functions shine, so I don't have to store level_order!
 		"levels": {
@@ -374,6 +375,7 @@ static var SCHEMA := {
 		},
 		"has_goal": "bool",
 		"goal_position": {
+			"@skip": (func(context): return not context[-1].has_goal),
 			"@inherit": "#elem_pos",
 			# -1 is the int, -2 the goal position, -3 the level data
 			"%MaxXFunc": _elem_get_max_pos.bind(-3, 0),
@@ -404,11 +406,13 @@ static var SCHEMA := {
 			"@type": Type.Int,
 			"@div": 32,
 			"@max": "%[MaxXFunc]",
+			"@min": 0,
 		},
 		"y": {
 			"@type": Type.Int,
 			"@div": 32,
 			"@max": "%[MaxYFunc]",
+			"@min": 0,
 		},
 	},
 	"#level_tiles": {
@@ -1150,6 +1154,15 @@ class SchemaSaver:
 			type["+positional_arguments"] = arguments
 		return type_name
 	
+	# For each power of 2, this stores what power it is
+	# (the one for 64 is a negative number, but that's what nearest_po2 returns anyway, so it works out)
+	static var BIT_POWS := generate_bit_pows()
+	static func generate_bit_pows() -> Dictionary:
+		var bit_pows := {}
+		for bit_count in 64:
+			bit_pows[1 << bit_count] = bit_count
+		return bit_pows
+	
 	# find the existing type that's closest to the current context/namespace
 	static func find_type_contextually(schema: Dictionary, current_namespace: String, type_name: String) -> String:
 		assert(not current_namespace.ends_with(":"))
@@ -1200,12 +1213,18 @@ class SchemaSaver:
 			if type_name.begins_with("+"): continue
 			var type: Dictionary = schema[type_name]
 			type["+last_value"] = type["@default"]
+			type["+bits"] = 0
 		
 		data = SchemaByteAccess.new([])
 		encode_object_bits(object_type, object)
 		data.finish()
 		assert(PerfManager.end("SchemaSaver::get_object_bits"))
 		print("total bytes: ", data.data.size())
+		for type_name in schema:
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = schema[type_name]
+			if type["+bits"] != 0:
+				print("type ", type_name, " accounts for ", type["+bits"], " bits")
 		return data.data
 	
 	func encode_object_bits(type_name, object) -> void:
@@ -1246,16 +1265,52 @@ class SchemaSaver:
 			min /= div
 			max /= div
 			val /= div
+			
+			# squeeze in infinity
+			# won't work well if @max and @min don't allow for -2/2, but that'll never happen, right?
+			if type_schema["@has_infinity"]:
+				assert(max >= 2)
+				assert(min <= -2)
+				min -= 1
+				max += 1
+				if val == Enums.INT_MAX:
+					val = 2
+				elif val == Enums.INT_MIN:
+					val = -2
+				elif val >= 2:
+					val += 1
+				elif val <= -2:
+					val -= 1
+			
+			# Have to do this because Main Hub.lvl has some stuff out of bounds......
+			if val < min:
+				push_warning("val < min. adjusting it.")
+				val = min
+			elif val > max:
+				push_warning("val > max. adjusting it.")
+				val = max
+			assert(min <= max)
+			assert(val >= min)
+			assert(val <= max)
+			if min == max:
+				# No need to store it!
+				breakpoint # but I wanna find out if this happens
+				stack.pop_back()
+				return
 			if not bits is int:
 				bits = bits[-1]
 			if bits is int:
+				# apply bits reduction: how many bits does it *really* take?
+				var range := max - min + 1
+				var nearest := nearest_po2(range)
+				bits = BIT_POWS[nearest]
+				type_schema["+bits"] += bits
 				if bits == 64:
 					data.store_s64(val)
 				else:
 					data.store_bits(bits, val - min)
 			else:
 				data.store_s64(object)
-			#data.store_bits(63, object)
 			
 		elif type == Type.Arr:
 			assert(object is Array)
@@ -1271,6 +1326,7 @@ class SchemaSaver:
 				encode_object_bits(type_schema["@values"], value)
 		elif type == Type.Bool:
 			data.store_bool(object)
+			type_schema["+bits"] += 1
 		elif type == Type.Class or type == Type.FieldDict or type == Type.BuiltIn:
 			pass
 		else:
