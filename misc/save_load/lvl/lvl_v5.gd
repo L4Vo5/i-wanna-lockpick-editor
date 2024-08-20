@@ -905,6 +905,7 @@ class SchemaSaver:
 			var amount_default := {
 				"@type": Type.Int,
 				"@min": 0,
+				"@max": 50_000_000,
 			}
 			# Process the fields AND arguments
 			var keys := type.keys()
@@ -1313,7 +1314,7 @@ class SchemaSaver:
 			assert(val >= min)
 			assert(val <= max)
 			if min == max:
-				# No need to store it!
+				# No need to store it! it's basically a constant
 				breakpoint # but I wanna find out if this happens
 				stack.pop_back()
 				return
