@@ -960,9 +960,6 @@ class SchemaSaver:
 		for type_name: String in new_schema.keys():
 			var type = new_schema[type_name]
 			if not type is Dictionary: continue
-			if type.has("%MaxXFunc"):
-				var bound = type["%MaxXFunc"].get_bound_arguments()
-				#breakpoint
 			for key in type:
 				var value = type[key]
 				if value is String:
@@ -1014,6 +1011,30 @@ class SchemaSaver:
 						new_schema.erase(type_name)
 						break
 			type["+fields"] = fields
+		
+		# for int types lacking min/max, auto assign if the highest bits value isn't 64
+		# (bit counts under 64 will always be auto-assigned as unsigned, so assign them if
+		# you want signed numbers under 64 bits)
+		for type_name: String in new_schema.keys():
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = new_schema[type_name]
+			if not type.get("@type", Type.Null) == Type.Int: continue
+			if not type.has("@bits"): continue
+			var maybe_bits = type["@bits"]
+			var bits: int = maybe_bits if maybe_bits is int else maybe_bits[-1]
+			if bits == 64: continue
+			if type.has("@min") and type.has("@max"): continue
+			if type.has("@max"):
+				var max = type["@max"]
+				if not max is Callable:
+					type["@min"] = type["@max"] - (1 << bits) + 1
+					print("type ", type_name, " had max but no min. min is now ", type["@min"])
+			else:
+				var min = type.get("@min", 0)
+				type["@min"] = min
+				if not min is Callable:
+					type["@max"] = min + (1 << bits) - 1
+		
 		# add default value to most settings on all types
 		var defaults := {
 			"@type": Type.Null,
@@ -1225,7 +1246,8 @@ class SchemaSaver:
 			min /= div
 			max /= div
 			val /= div
-			
+			if not bits is int:
+				bits = bits[-1]
 			if bits is int:
 				if bits == 64:
 					data.store_s64(val)
