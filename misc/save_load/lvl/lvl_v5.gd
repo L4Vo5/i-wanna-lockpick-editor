@@ -1220,11 +1220,14 @@ class SchemaSaver:
 		data.finish()
 		assert(PerfManager.end("SchemaSaver::get_object_bits"))
 		print("total bytes: ", data.data.size())
+		var bits_accounted_for := 0
 		for type_name in schema:
 			if type_name.begins_with("+"): continue
 			var type: Dictionary = schema[type_name]
 			if type["+bits"] != 0:
 				print("type ", type_name, " accounts for ", type["+bits"], " bits")
+			bits_accounted_for += type["+bits"]
+		print("total bytes accounted for: ", (bits_accounted_for+7)/8)
 		return data.data
 	
 	func encode_object_bits(type_name, object) -> void:
@@ -1243,10 +1246,12 @@ class SchemaSaver:
 				assert(type_schema.has("+last_value"))
 				if type_schema["+last_value"] == object:
 					data.store_bool(false)
+					type_schema["+bits"] += 1
 					stack.pop_back()
 					return
 				else:
 					data.store_bool(true)
+					type_schema["+bits"] += 1
 		type_schema["+last_value"] = object
 		
 		# encode based on the type
@@ -1255,6 +1260,7 @@ class SchemaSaver:
 		elif type == Type.Str:
 			assert(object is String)
 			data.store_string(object)
+			type_schema["+bits"] += object.length() + 32
 		elif type == Type.Int:
 			assert(object is int)
 			var bits = type_schema["@bits"]
