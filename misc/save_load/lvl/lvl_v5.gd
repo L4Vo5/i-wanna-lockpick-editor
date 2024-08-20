@@ -459,7 +459,7 @@ static var SCHEMA := {
 		"@arr_type": "%[Class]",
 	},
 	"@DoorData": {
-		"amount": "ComplexNumber",
+		"amount": "#door_amount",
 		"outer_color": "#color",
 		"position": "#elem_pos",
 		"size": {
@@ -557,16 +557,17 @@ static var SCHEMA := {
 			"@skip": (func(context): return context[-1].type > 1),
 			"@type": Type.Class,
 			"@class_name": "ComplexNumber",
-			"_real_part": "#component",
-			"_imaginary_part": "#component",
+			"_real_part": {"@inherit" : "#component"},
+			"_imaginary_part": {"@inherit" : "#component"},
 			"@types": {
 				"#component": {
-				"@type": Type.Int,
-				"@min": -1_000_000_000_000_000_000,
-				"@max": 1_000_000_000_000_000_000,
-				# actually [3, 6, 11, 20, 37, 70]
-				"@bits": [2, 4, 8, 16, 32, 64],
-				"@bits_strategy": BitsStrategy.IndexAsConsecutiveZeroes,
+					"@type": Type.Int,
+					"@min": -1_000_000_000_000_000_000,
+					"@max": 1_000_000_000_000_000_000,
+					# actually [3, 6, 11, 20, 37, 70]
+					"@bits": [2, 4, 8, 16, 32, 64],
+					"@bits_strategy": BitsStrategy.IndexAsConsecutiveZeroes,
+					"@diff": DiffKind.Default,
 				},
 			},
 		},
@@ -590,14 +591,18 @@ static var SCHEMA := {
 			"@bits": [4, 10],
 		},
 	},
-	"@ComplexNumber": {
+	"#door_amount": {
+		"@type": Type.Class,
+		"@class_name": "ComplexNumber",
 		"_real_part": {
 			"@inherit": "#probably_small_amount_int",
+			"@diff": DiffKind.Default,
 		},
 		"_imaginary_part": {
 			"@inherit": "#probably_small_amount_int",
+			"@diff": DiffKind.Default,
 		},
-		"@diff": DiffKind.Default,
+		#"@diff": DiffKind.Default,
 	},
 	"#probably_small_amount_int": {
 		"@type": Type.Int,
@@ -861,7 +866,7 @@ class SchemaSaver:
 		# First, register the global types
 		for type_name in schema_to_compile.keys():
 			var type: Dictionary = schema_to_compile[type_name]
-			# @ for easy class_name
+			# for easy class_name
 			if type_name.begins_with("@"):
 				type_name = type_name.right(-1)
 				if not type.has("@type"):
@@ -893,6 +898,9 @@ class SchemaSaver:
 					pending_types.push_back(value)
 					
 				type.erase("@types")
+			if type.has("@class_name"):
+				type["+class_name"] = type["@class_name"]
+				type.erase("@class_name")
 			
 			var amount_default := {
 				"@type": Type.Int,
@@ -1006,12 +1014,16 @@ class SchemaSaver:
 				if key is String and key == "+positional_arguments":
 					type.erase(key)
 					continue
+				if key is String and key.begins_with("+"):
+					continue
 				var value = type[key]
 				if not (key is String and (key.begins_with("+") or key.begins_with("@"))):
 					fields[key] = value
 					type.erase(key)
 				if value is String:
 					if not new_schema.has(value):
+						print("rip ", type_name, ". u have ", value)
+						print(type)
 						new_schema.erase(type_name)
 						break
 			type["+fields"] = fields
@@ -1244,12 +1256,18 @@ class SchemaSaver:
 		match diff_kind:
 			DiffKind.Default, DiffKind.IntDifference:
 				assert(type_schema.has("+last_value"))
-				if type_schema["+last_value"] == object:
+				assert(type == Type.Int)
+				var last_value = type_schema["+last_value"]
+				if last_value != object:
+					if object is ComplexNumber:
+						print(object, " == " , type_schema["+last_value"])
 					data.store_bool(false)
 					type_schema["+bits"] += 1
 					stack.pop_back()
 					return
 				else:
+					if object is ComplexNumber:
+						print(object, " != " , type_schema["+last_value"])
 					data.store_bool(true)
 					type_schema["+bits"] += 1
 		type_schema["+last_value"] = object
