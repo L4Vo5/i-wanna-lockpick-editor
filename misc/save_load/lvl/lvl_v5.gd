@@ -305,10 +305,14 @@ static var SCHEMA := {
 	"u1": {
 		"@type": Type.Int,
 		"@bits": 1,
+		"@min": 0,
+		"@max": 1,
 	},
 	"u2": {
 		"@type": Type.Int,
-		"@bits": 1,
+		"@bits": 2,
+		"@min": 0,
+		"@max": 3,
 	},
 	"@LevelPackData": {
 		"name": "String",
@@ -371,7 +375,7 @@ static var SCHEMA := {
 		"has_goal": "bool",
 		"goal_position": {
 			"@inherit": "#elem_pos",
-			# -1 is the int, -2 the goal position, -3 the level pack data
+			# -1 is the int, -2 the goal position, -3 the level data
 			"%MaxXFunc": _elem_get_max_pos.bind(-3, 0),
 			"%MaxYFunc": _elem_get_max_pos.bind(-3, 1),
 		},
@@ -701,7 +705,10 @@ static func get_lock_max_size(context, vector_component: int):
 # The third alternative is a constant. For dictionary or string constants, use Type.Constant.
 
 # the main setting is "@type", containing a field of the Type enum.
-# whenever a setting value is expected, you can optionally pass a Callable
+# whenever a setting value is expected, a lot of times you can optionally pass a Callable
+# Exceptions are:
+# - settings that already expect a Callable
+# - @type, @has_infinity, @bits
 # (except for @type, and settings that already take Callables anyway)
 # this Callable will take as an argument the context that the current instance of the type is 
 # in (an array where the previous to last element is the owner of the type, the one before that the owner
@@ -876,12 +883,7 @@ class SchemaSaver:
 					var value: Dictionary = types[new_type_name]
 					new_type_name = type_name + ":" + new_type_name
 					assert(not new_schema.has(new_type_name))
-					if value.has("@inherit"):
-						var base_type_name: String = value["@inherit"]
-						var base_type: Dictionary = new_schema[base_type_name]
-						assert(not base_type.has("@inherit"))
-						value.merge(base_type) # overwrite is false
-						value.erase("@inherit")
+					handle_inherit(new_schema, value, new_type_name, type_name)
 					new_schema[new_type_name] = value
 					pending_type_names.push_back(new_type_name)
 					pending_types.push_back(value)
@@ -910,16 +912,10 @@ class SchemaSaver:
 								print("missing base type: ", base_type_name)
 								continue
 							var base_type: Dictionary = new_schema[base_type_name]
-							var new_type := base_type.duplicate()
+							var new_type := {
+								"@inherit": base_type_name
+							}
 							
-							# come up with a unique new name
-							var new_type_name := type_name + ":" + base_type_name
-							if new_schema.has(new_type_name):
-								var new_type_name_base := new_type_name
-								var i := 0
-								while new_schema.has(new_type_name):
-									new_type_name = new_type_name_base + ":" + str(i)
-									i += 1
 							
 							# extract the arguments
 							var arguments_str: String = value.substr(argument_start+1,value.length()-argument_start-2)
@@ -938,10 +934,9 @@ class SchemaSaver:
 								else:
 									var argument_name: String = positional_arguments[i]
 									new_type["%" + argument_name] = argument
-							# just add it, there's nothing further to process in it... i think? hmm
-							new_schema[new_type_name] = new_type
-							type[key_name] = new_type_name
-							value = new_type_name
+							# let the part that handles Dictionaries do the work of actually adding it.
+							value = new_type
+					if value is String and not value.is_empty():
 						if not value.begins_with("%"):
 							value = find_type_contextually(new_schema, type_name, value)
 							if not new_schema.has(value):
@@ -951,13 +946,7 @@ class SchemaSaver:
 						# new type
 						var new_type_name := type_name + ":" + str(key_name)
 						assert(not new_schema.has(new_type_name))
-						if value.has("@inherit"):
-							var base_type_name: String = value["@inherit"]
-							base_type_name = find_type_contextually(new_schema, type_name, base_type_name)
-							var base_type: Dictionary = new_schema[base_type_name]
-							assert(not base_type.has("@inherit"))
-							value.merge(base_type) # overwrite is false
-							value.erase("@inherit")
+						handle_inherit(new_schema, value, new_type_name, type_name)
 						if key_name == "@amount":
 							value.merge(amount_default)
 						print("adding new type: ", new_type_name)
@@ -971,6 +960,9 @@ class SchemaSaver:
 		for type_name: String in new_schema.keys():
 			var type = new_schema[type_name]
 			if not type is Dictionary: continue
+			if type.has("%MaxXFunc"):
+				var bound = type["%MaxXFunc"].get_bound_arguments()
+				#breakpoint
 			for key in type:
 				var value = type[key]
 				if value is String:
@@ -984,6 +976,9 @@ class SchemaSaver:
 							assert(end != -1)
 							var argument_name := new_value.substr(pos + 2, end - 2 - pos)
 							var argument_value = find_argument_contextually(new_schema, type_name, argument_name)
+							print("for key ", value, " of type ", type_name, " found argument ", argument_name, " with value ", argument_value)
+							if argument_value is Callable:
+								print("bound arguments: ", argument_value.get_bound_arguments())
 							if not argument_value is String:
 								type[key] = argument_value
 								was_non_string = true
@@ -1045,24 +1040,27 @@ class SchemaSaver:
 			var type: Dictionary = new_schema[type_name]
 			type["@default"] = get_default_for_type(type, new_schema)
 		
+		# assert that remaining types do work
+		for type_name: String in new_schema.keys():
+			if type_name.begins_with("+"): continue
+			var type: Dictionary = new_schema[type_name]
+			assert(not type["@type"] is Callable)
+			assert(not type["@has_infinity"] is Callable)
+			assert(not type["@bits"] is Callable)
+			for value in type["+fields"].values():
+				if value is String:
+					assert(new_schema.has(value), "type not found: " + str(value))
+		
 		# get the int values sorted out
 		#for type_name: String in new_schema.keys():
 			#if type_name.begins_with("+"): continue
 			#var type: Dictionary = new_schema[type_name]
 			#type["@default"] = get_default_for_type(type, new_schema)
 		
-		# assert that remaining types do work
-		for type_name: String in new_schema.keys():
-			if type_name.begins_with("+"): continue
-			var type: Dictionary = new_schema[type_name]
-			for value in type["+fields"].values():
-				if value is String:
-					assert(new_schema.has(value), "type not found: " + str(value))
-		
 		
 		assert(PerfManager.end("compile_schema"))
 		#print(JSON.stringify(new_schema, "\t"))
-		DisplayServer.clipboard_set(JSON.stringify(new_schema, "\t"))
+		#DisplayServer.clipboard_set(JSON.stringify(new_schema, "\t"))
 		#DisplayServer.clipboard_set(JSON.stringify(schema_to_compile, "\t"))
 		return new_schema
 	
@@ -1153,6 +1151,25 @@ class SchemaSaver:
 			type_name = type_name.left(next_namespace)
 		return schema[type_name][argument_name]
 	
+	static func handle_inherit(used_schema: Dictionary, new_type: Dictionary, new_type_name: String, new_type_parent: String) -> void:
+		if not new_type.has("@inherit"): return
+		var base_type_name: String = new_type["@inherit"]
+		base_type_name = find_type_contextually(used_schema, new_type_parent, base_type_name)
+		var base_type: Dictionary = used_schema[base_type_name]
+		assert(not base_type.has("@inherit"))
+		new_type.merge(base_type) # overwrite is false
+		new_type.erase("@inherit")
+		
+		# the hard part: inherit sub-types, too.
+		for key in new_type:
+			var value = new_type[key]
+			if value is String:
+				if value.begins_with(base_type_name + ":"):
+					# Thankfully, it's fine to inherit namespaced stuff
+					new_type[key] = {
+						"@inherit": value,
+					}
+	
 	func get_object_bits(object_type: String, object) -> PackedByteArray:
 		assert(PerfManager.start("SchemaSaver::get_object_bits"))
 		assert(schema.has(object_type))
@@ -1200,8 +1217,22 @@ class SchemaSaver:
 			data.store_string(object)
 		elif type == Type.Int:
 			assert(object is int)
-			#var bits = maybe_call(type["@bits"])
-			data.store_s64(object)
+			var bits = type_schema["@bits"]
+			var val: int = object
+			var min: int = maybe_call(type_schema["@min"])
+			var max: int = maybe_call(type_schema["@max"])
+			var div: int = maybe_call(type_schema["@div"])
+			min /= div
+			max /= div
+			val /= div
+			
+			if bits is int:
+				if bits == 64:
+					data.store_s64(val)
+				else:
+					data.store_bits(bits, val - min)
+			else:
+				data.store_s64(object)
 			#data.store_bits(63, object)
 			
 		elif type == Type.Arr:
@@ -1233,13 +1264,10 @@ class SchemaSaver:
 			else:
 				var field_type = schema[field_type_name]
 				if maybe_call(field_type["@skip"]):
-					if not field_type["+fields"].is_empty():
-						print(field_type["+fields"])
 					continue
 				var getter: Callable = field_type["@custom_getter"]
 				var value = getter.call(stack) if not getter.is_null() else object[field_name]
 				encode_object_bits(field_type_name, value)
-			
 		var popped = stack.pop_back()
 		assert(popped == object)
 	
