@@ -441,8 +441,9 @@ static var SCHEMA := {
 				"@type": Type.Int,
 				"@diff": DiffKind.IntDifference,
 				"@min": 0,
-				# pretty efficient packing of tiles that are *right* next to eachother (4 bits per tile)
+				# pretty efficient packing of tiles that are *right* next to eachother (3 bits per tile)
 				"@bits": [1, 4, 8, 32],
+				"@bits_strategy": BitsStrategy.IndexAsConsecutiveZeroes,
 			},
 		},
 		# For the diff to work out, they've gotta have *some* sort of sorting.
@@ -1231,6 +1232,7 @@ class SchemaSaver:
 			var type: Dictionary = schema[type_name]
 			type["+last_value"] = type["@default"]
 			type["+bits"] = 0
+			type["+count"] = 0
 		
 		data = SchemaByteAccess.new([])
 		encode_object_bits(object_type, object)
@@ -1242,7 +1244,7 @@ class SchemaSaver:
 			if type_name.begins_with("+"): continue
 			var type: Dictionary = schema[type_name]
 			if type["+bits"] != 0:
-				print("type ", type_name, " accounts for ", type["+bits"], " bits")
+				print("type ", type_name, " accounts for ", type["+bits"], " bits. and there's ", type["+count"], " of them (", type["+bits"] / (type["+count"] as float), " per)")
 			bits_accounted_for += type["+bits"]
 		print("total bytes accounted for: ", (bits_accounted_for+7)/8)
 		return data.data
@@ -1255,6 +1257,7 @@ class SchemaSaver:
 			return
 		stack.push_back(object)
 		var type_schema: Dictionary = schema[type_name]
+		type_schema["+count"] += 1
 		var type: Type = type_schema["@type"]
 		var diff_kind: int = type_schema.get("@diff", DiffKind.None)
 		assert(diff_kind != DiffKind.Inherited, "Unimplemented")
