@@ -1277,8 +1277,10 @@ class SchemaSaver:
 			pass
 		elif type == Type.Str:
 			assert(object is String)
+			var c1 = data.curr
 			data.store_string(object)
-			type_schema["+bits"] += object.length() + 32
+			var c2 = data.curr
+			type_schema["+bits"] += (c2 - c1) * 8
 		elif type == Type.Int:
 			assert(object is int)
 			var bits = type_schema["@bits"]
@@ -1328,6 +1330,11 @@ class SchemaSaver:
 			var max_bits: int = BIT_POWS[nearest]
 			
 			if bits is Array:
+				# the center value for the representation. basically "0"
+				var center := 0
+				if diff_kind == DiffKind.IntDifference or diff_kind == DiffKind.IntGuaranteedDifference:
+					center = last_value
+					center = clampi(center, min, max)
 				
 				var current_bits: int = bits[0]
 				assert(current_bits != 0)
@@ -1335,9 +1342,9 @@ class SchemaSaver:
 				var possibilities := 1 << current_bits
 				# the lowest and highest values we can encode
 				# - possibilities is guaranteed to be even
-				# - for 1 bit, only 0 and 1 are included
-				var lowest := - possibilities / 2 + 1
-				var highest := possibilities / 2
+				# - for 1 bit, only 0 and 1 are included (if center is 0)
+				var lowest := center - possibilities / 2 + 1
+				var highest := center + possibilities / 2
 				assert(highest - lowest + 1 == possibilities)
 				if lowest < min:
 					var diff := min - lowest
