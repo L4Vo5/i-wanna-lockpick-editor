@@ -419,6 +419,8 @@ static var SCHEMA := {
 		"@type": Type.Dict,
 		"@amount": {
 			"@type": Type.Int,
+			"@bits": [10, 16, 32],
+			"@bits_strategy": BitsStrategy.IndexAsConsecutiveZeroes,
 		},
 		"@values": true, # constant
 		"@keys": {
@@ -452,9 +454,11 @@ static var SCHEMA := {
 		"@amount": {
 			"@type": Type.Int,
 			"@min": 0,
-			# surely most levels won't have more than 127 of any given thing.
-			# I can spare the extra bit for levels that do.
-			"@bits": [7, 32],
+			# some things (such as entries and salvage points) there'll be 0 or very few of
+			# other things are unlikely to exceed 64
+			# actually [3, 8, 19, 36]
+			"@bits": [2, 6, 16, 32],
+			"@bits_strategy": BitsStrategy.IndexAsConsecutiveZeroes,
 		},
 		"@arr_type": "%[Class]",
 	},
@@ -1254,11 +1258,11 @@ class SchemaSaver:
 		var type: Type = type_schema["@type"]
 		var diff_kind: int = type_schema.get("@diff", DiffKind.None)
 		assert(diff_kind != DiffKind.Inherited, "Unimplemented")
+		var last_value = type_schema["+last_value"]
+		type_schema["+last_value"] = object
 		match diff_kind:
 			DiffKind.Default, DiffKind.IntDifference:
-				assert(type_schema.has("+last_value"))
 				assert(type == Type.Int)
-				var last_value = type_schema["+last_value"]
 				if last_value == object:
 					data.store_bool(false)
 					type_schema["+bits"] += 1
@@ -1267,7 +1271,6 @@ class SchemaSaver:
 				else:
 					data.store_bool(true)
 					type_schema["+bits"] += 1
-		type_schema["+last_value"] = object
 		
 		# encode based on the type
 		if type == Type.Null:
@@ -1318,20 +1321,107 @@ class SchemaSaver:
 				breakpoint # but I wanna find out if this happens
 				stack.pop_back()
 				return
-			if not bits is int:
-				bits = bits[-1]
-			if bits is int:
-				# apply bits reduction: how many bits does it *really* take?
-				var range := max - min + 1
-				var nearest := nearest_po2(range)
-				bits = BIT_POWS[nearest]
+			
+			# apply bits reduction: how many bits does it *really* take?
+			var range := max - min + 1
+			var nearest := nearest_po2(range)
+			var max_bits: int = BIT_POWS[nearest]
+			
+			if bits is Array:
+				
+				var current_bits: int = bits[0]
+				assert(current_bits != 0)
+				# there's this many values to encode
+				var possibilities := 1 << current_bits
+				# the lowest and highest values we can encode
+				# - possibilities is guaranteed to be even
+				# - for 1 bit, only 0 and 1 are included
+				var lowest := - possibilities / 2 + 1
+				var highest := possibilities / 2
+				assert(highest - lowest + 1 == possibilities)
+				if lowest < min:
+					var diff := min - lowest
+					lowest += diff
+					highest += diff
+				if highest > max:
+					var diff := highest - max
+					highest -= diff
+					lowest -= diff
+				var first_try := true
+				var prev_lowest := highest + 1
+				var prev_highest := lowest - 1
+				var i := 0
+				while val < lowest or val > highest:
+					first_try = false
+					#print("failed to encode ", val, " with ", current_bits, " bits. between ", lowest, " and ", highest)
+					i += 1
+					# Here, we wanna cover the set [lowest, prev_lowest) U (prev_highest, highest]
+					# which should be "possibilities" in size
+					# (or lower if we already covered every other possibility) 
+					current_bits = min(bits[i], max_bits)
+					possibilities = 1 << current_bits
+					prev_lowest = lowest
+					prev_highest = highest
+					lowest = prev_lowest - possibilities / 2 + 1
+					highest = prev_highest + possibilities / 2
+					if lowest < min:
+						var diff := min - lowest
+						lowest += diff
+						highest += diff
+					if highest > max:
+						var diff := highest - max
+						highest -= diff
+						lowest -= diff
+					# note that if the previous "lowest" was bounded by "min", we'd get for example
+					# [lowest, lowest) as an empty interval, but consequently
+					# (prev_highest, highest] is bigger to still cover "possibilities"
+				
+				assert(val >= lowest and val <= highest)
+				# success!
+				# reconcile the disjointed intervals, mapping 
+				# [lowest, prev_lowest) U (prev_highest, highest]
+				# to
+				# [0, possibilities - 1]
+				# ... unless you're just working with [lowest, highest] because this is your first try.
+				# then, it's way easier
+				if first_try:
+					val -= lowest
+				else:
+					# if it belongs to [lowest, prev_lowest), map such that lowest -> 0 
+					if val < prev_lowest:
+						val -= lowest
+					# else, map such that highest -> possibilities - 1
+					elif val > prev_highest:
+						val += ((possibilities - 1) - highest)
+					else:
+						assert(false)
+				
+				# encode bits according to the strategy
+				var strategy: BitsStrategy = type_schema["@bits_strategy"]
+				if strategy == BitsStrategy.IndexAsInt:
+					var necessary_bits: int = BIT_POWS[nearest_po2(bits.size())]
+					data.store_bits(necessary_bits, i)
+					type_schema["+bits"] += necessary_bits
+				elif strategy == BitsStrategy.IndexAsConsecutiveZeroes:
+					for j in i:
+						data.store_bit(0)
+					data.store_bit(1)
+					type_schema["+bits"] += i + 1
+				else:
+					assert(false)
+				# encode val
+				data.store_bits(current_bits, val)
+				type_schema["+bits"] += current_bits
+				
+			elif bits is int:
+				bits = max_bits
 				type_schema["+bits"] += bits
 				if bits == 64:
 					data.store_s64(val)
 				else:
 					data.store_bits(bits, val - min)
 			else:
-				data.store_s64(object)
+				assert(false)
 			
 		elif type == Type.Arr:
 			assert(object is Array)
@@ -1428,23 +1518,6 @@ class SchemaSaver:
 				store_bit(val & 1)
 				val >>= 1
 			
-			#var v = -99
-			#print("hi")
-			#for i in 10:
-				## investigation time
-				#var s = ""
-				#for bit in 64:
-					#var b = 1 << bit
-					#s += "0" if v & b == 0 else "1"
-				#s = s.reverse()
-				#print(s)
-				#store_u32(v)
-				#curr -= 4
-				#print(get_u32())
-				#curr -= 4
-				##print(String.num_int64(v, 2))
-				#v >>= 1
-			#print("...")
 			assert(val == 0 or val == -1)
 		
 		func get_bits(bit_count: int) -> int:
