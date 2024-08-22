@@ -32,7 +32,8 @@ func test_versions() -> void:
 			assert_str(level_pack.file_path)\
 				.override_failure_message("File path should be '%s' but was '%s'" % [file_path, level_pack.file_path])\
 				.is_equal(file_path)
-			## Back and forth and back strategy as a saving test
+			# Back and forth and back strategy as a saving test
+			# Damn, this actually caught an error.
 			var data := SaveLoad.get_data(level_pack)
 			var new_level_pack := SaveLoad.load_from_buffer(data, "")
 			var new_data := SaveLoad.get_data(new_level_pack)
