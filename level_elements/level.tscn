@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=18 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" path="res://level_elements/level.gd" id="1_ynu1q"]
 [ext_resource type="Script" path="res://level_elements/level_logic.gd" id="2_ufm7h"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://bbwl23eeyrnd7" path="res://level_elements/autorun_off.png" id="7_2dj2b"]
 [ext_resource type="Script" path="res://level_elements/level_ui.gd" id="8_7sh3o"]
 [ext_resource type="Texture2D" uid="uid://b5mtdgi8eorra" path="res://level_elements/autorun_on.png" id="8_n158d"]
+[ext_resource type="AudioStream" uid="uid://lcqkdym8yi06" path="res://level_elements/goal/win.wav" id="8_rx13f"]
 [ext_resource type="AudioStream" uid="uid://yukdfqp7sr3g" path="res://level_elements/autorun.wav" id="9_mj2a5"]
 [ext_resource type="PackedScene" uid="uid://dh01y4njdul08" path="res://level_elements/hover_highlight.tscn" id="10_b7dph"]
 [ext_resource type="PackedScene" uid="uid://wkjs6v6a35d" path="res://level_elements/ui/keypad/key_pad.tscn" id="10_hapwe"]
@@ -68,6 +69,11 @@ unique_name_in_owner = true
 stream = ExtResource("6_tlvk4")
 volume_db = -4.437
 pitch_scale = 0.6
+bus = &"Sfx"
+
+[node name="Win" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("8_rx13f")
 bus = &"Sfx"
 
 [node name="UI" type="CanvasLayer" parent="."]

@@ -58,6 +58,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var i_view_sound_1: AudioStreamPlayer = %IView1
 @onready var i_view_sound_2: AudioStreamPlayer = %IView2
 @onready var undo_sound: AudioStreamPlayer = %Undo
+@onready var snd_win: AudioStreamPlayer = %Win
 @onready var camera: Camera2D = %LevelCamera
 @onready var ui: LevelUI = %UI
 

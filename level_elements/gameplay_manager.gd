@@ -55,6 +55,7 @@ func reset() -> void:
 
 func win() -> void:
 	if in_transition: return
+	level.snd_win.play()
 	if not has_won_current_level():
 		pack_state.completed_levels[pack_state.current_level] = true
 		pack_state.save()

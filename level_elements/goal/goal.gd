@@ -12,7 +12,6 @@ const PART := preload("res://level_elements/goal/goal_particle.tscn")
 @onready var particles_parent: Node2D = %Particles
 @onready var sprite: Sprite2D = %Sprite
 @onready var sprite_parent: Node2D = %SpriteParent
-@onready var snd_win: AudioStreamPlayer = %Win
 @onready var area_2d: Area2D = %Area2D
 
 var custom_pos: Vector2: set = set_pos
@@ -56,7 +55,6 @@ func _notification(what: int) -> void:
 func win(visual_only: bool) -> void:
 	if not visual_only:
 		level.gameplay_manager.win()
-		snd_win.play()
 	has_won = true
 	win_time = time
 	sprite.frame = 2

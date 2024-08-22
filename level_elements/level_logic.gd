@@ -498,7 +498,7 @@ func on_salvaged_door(door: Door) -> void:
 	var door_data := door.data.duplicated()
 	# Unnecessary... but helps in the salvage point editor
 	door_data.amount.set_to(1, 0)
-	level.goal.snd_win.play()
+	level.snd_win.play()
 	level.gameplay_manager.pack_state.salvage_door(sid, door_data)
 	level.gameplay_manager.win_animation("Door Salvaged!")
 
