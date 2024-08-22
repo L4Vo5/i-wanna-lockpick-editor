@@ -8,6 +8,7 @@ var pack_state: LevelPackStateData
 
 # Emitted when a new level is entered
 signal entered_level
+signal started_transition
 
 # if true, level won't have some features available
 var is_editing := false
@@ -138,6 +139,7 @@ func win_animation(text: String) -> void:
 func _on_transition_started() -> void:
 	level.allow_ui = false
 	in_transition = true
+	started_transition.emit()
 
 func _on_transition_finished() -> void:
 	level.allow_ui = not is_editing
