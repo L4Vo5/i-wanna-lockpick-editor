@@ -525,4 +525,3 @@ func undo() -> void:
 	if undo_redo.get_last_action() == -1:
 		undo_redo._last_action = 0
 	update_gates()
-

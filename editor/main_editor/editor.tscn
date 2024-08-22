@@ -330,7 +330,7 @@ visible = false
 layout_mode = 2
 
 [node name="FileDialog" type="FileDialog" parent="."]
-size = Vector2i(356, 154)
+size = Vector2i(356, 175)
 exclusive = false
 popup_window = true
 extend_to_title = true

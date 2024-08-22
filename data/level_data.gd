@@ -269,4 +269,3 @@ func get_screenshot() -> Image:
 	var img := viewport.get_texture().get_image()
 	vpc.free()
 	return img
-
