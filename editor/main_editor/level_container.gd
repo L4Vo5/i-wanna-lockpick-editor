@@ -91,6 +91,10 @@ var currently_adding: NewLevelElementInfo
 # Key: collision system id (returned by level). Value: nothing
 var selection := {}
 var selection_grid_size := Vector2i.ONE
+var grid_size_counts := {
+	Vector2i(16, 16): 0,
+	Vector2i(32, 32): 0,
+}
 
 const OBJ_SIZE := Vector2(800, 608)
 func _adjust_inner_container_dimensions() -> void:
@@ -380,6 +384,8 @@ func clear_selection() -> void:
 	selection.clear()
 	selection_outline.clear()
 	selection_grid_size = Vector2i.ONE
+	for key in grid_size_counts:
+		grid_size_counts[key] = 0
 
 func add_to_selection(id: int) -> void:
 	selection[id] = true
@@ -388,6 +394,7 @@ func add_to_selection(id: int) -> void:
 	selection_outline.add_rect(rect)
 	var type := LevelData.get_element_type(collision_system.get_rect_data(id))
 	var grid_size := LevelData.get_element_grid_size(type)
+	grid_size_counts[grid_size] += 1
 	selection_grid_size = Vector2i(
 		maxi(selection_grid_size.x, grid_size.x),
 		maxi(selection_grid_size.y, grid_size.y)
@@ -398,9 +405,23 @@ func remove_from_selection(id: int) -> void:
 	if not id in selection: return
 	selection.erase(id)
 	var rect := collision_system.get_rect(id)
+	var type := LevelData.get_element_type(collision_system.get_rect_data(id))
+	var grid_size := LevelData.get_element_grid_size(type)
 	rect.position -= selection_outline.position as Vector2i
 	selection_outline.remove_rect(rect)
-	# TODO: This won't update selection_grid_size...
+	grid_size_counts[grid_size] -= 1
+	assert(grid_size_counts[grid_size] >= 0)
+	if grid_size_counts[grid_size] <= 0:
+		if grid_size == Vector2i(32, 32):
+			selection_grid_size = Vector2i(16, 16)
+		# this is the fancy code if grid sizes aren't only 16,16 and 32,32
+		#selection_grid_size = Vector2i.ONE
+		#for possible_grid_size in grid_size_counts:
+			#if grid_size_counts[possible_grid_size] <= 0: continue
+			#selection_grid_size = Vector2i(
+				#maxi(selection_grid_size.x, possible_grid_size.x),
+				#maxi(selection_grid_size.y, possible_grid_size.y)
+			#)
 
 func select_thing(id: int) -> void:
 	var elem = collision_system.get_rect_data(id)
