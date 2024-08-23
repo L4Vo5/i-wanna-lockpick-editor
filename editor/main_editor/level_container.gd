@@ -79,6 +79,13 @@ enum Tool {
 	DragSelection,
 }
 
+# if true, tiles are overriding the tool so that it's brush instead of pencil
+# this stops right click from mass-deleting non-tile elements, lets you
+# click and drag the selection, and removes the grid effect
+# crucially, this *won't* be true if you're on the brush tool because you're
+# pressing shift.
+var tiles_brush_override := false
+
 var drag_start := Vector2i.ZERO
 var drag_state := Drag.None
 enum Drag { None = 0, Left, Right, Middle}
@@ -200,12 +207,18 @@ func _handle_left_click() -> bool:
 				handled = _try_place_currently_adding()
 				if not handled:
 					clear_selection()
+		Tool.Brush when tiles_brush_override and level.hovering_over != -1:
+			select_thing(level.hovering_over)
+			handled = true
+			phantom_grid.hide()
 		Tool.Brush:
 			drag_start = currently_adding.position
 			drag_state = Drag.Left
 			handled = _try_place_currently_adding()
 			phantom_grid.grid_size = currently_adding.get_rect().size
 			phantom_grid.show()
+			if tiles_brush_override:
+				phantom_grid.hide()
 			phantom_grid.offset = drag_start
 			if handled:
 				level.allow_hovering = false
@@ -306,7 +319,14 @@ func _handle_mouse_movement() -> bool:
 					_try_place_currently_adding()
 				elif drag_state == Drag.Right:
 					update_currently_adding_position()
-					_try_remove_at_mouse()
+					if not tiles_brush_override:
+						_try_remove_at_mouse()
+					else:
+						if level.hovering_over != -1:
+							var elem = collision_system.get_rect_data(level.hovering_over)
+							var type := LevelData.get_element_type(elem)
+							if type == Enums.LevelElementTypes.Tile:
+								_try_remove_at_mouse()
 				else:
 					update_currently_adding_position()
 				_update_preview()
@@ -518,9 +538,13 @@ func set_tool(tool: Tool) -> void:
 				danger_outline.add_rect(currently_adding.get_rect())
 			update_currently_adding_position()
 			_update_preview()
+			if current_tool == Tool.Brush:
+				if drag_state == Drag.Left and not tiles_brush_override:
+					phantom_grid.show()
 	level.allow_hovering = current_tool in [Tool.Pencil, Tool.Brush, Tool.None]
 
 func decide_tool() -> void:
+	tiles_brush_override = false
 	if editor_data.is_playing:
 		current_tool = Tool.None
 	elif current_tool == Tool.DragSelection and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -531,8 +555,18 @@ func decide_tool() -> void:
 		current_tool = Tool.ModifySelection
 	elif Input.is_key_pressed(KEY_SHIFT):
 		current_tool = Tool.Brush
+	elif currently_adding and currently_adding.type == Enums.LevelElementTypes.Tile:
+		current_tool = Tool.Brush
+		tiles_brush_override = true
 	else:
 		current_tool = Tool.Pencil
+	# current_tool setter won't run if going between brush and override brush,
+	# so I'll just do this manually here too
+	if current_tool == Tool.Brush:
+		if drag_state == Drag.Left and not tiles_brush_override:
+			phantom_grid.show()
+		else:
+			phantom_grid.hide()
 
 # Updates the ghost and the danger preview
 func _update_preview() -> void:
