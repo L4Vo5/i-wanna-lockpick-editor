@@ -180,6 +180,14 @@ func _input(event: InputEvent) -> void:
 			_handle_middle_unclick()
 	if event.is_action_pressed(&"delete"):
 		delete_selection()
+	if event.is_action_pressed(&"up", true):
+		displace_selection(Vector2i.UP * selection_grid_size)
+	if event.is_action_pressed(&"down", true):
+		displace_selection(Vector2i.DOWN * selection_grid_size)
+	if event.is_action_pressed(&"left", true):
+		displace_selection(Vector2i.LEFT * selection_grid_size)
+	if event.is_action_pressed(&"right", true):
+		displace_selection(Vector2i.RIGHT * selection_grid_size)
 
 func _gui_input(event: InputEvent) -> void:
 	if editor_data.disable_editing: return
@@ -475,13 +483,20 @@ func relocate_selection() -> void:
 	drag_start = (drag_start / selection_grid_size) * selection_grid_size
 	var mouse_pos := ((level.get_local_mouse_position() as Vector2i) / selection_grid_size) * selection_grid_size
 	var relative_pos := mouse_pos - drag_start
-	if level.move_elements(selection, relative_pos):
+	if displace_selection(relative_pos):
 		drag_start = mouse_pos
-		selection_outline.position += relative_pos as Vector2
 		danger_outline.hide()
 	else:
 		danger_outline.show()
 		danger_outline.position = selection_outline.position + (relative_pos as Vector2)
+
+func displace_selection(relative_pos: Vector2i) -> bool:
+	assert(relative_pos.x % selection_grid_size.x == 0)
+	assert(relative_pos.y % selection_grid_size.y == 0)
+	if level.move_elements(selection, relative_pos):
+		selection_outline.position += relative_pos as Vector2
+		return true
+	return false
 
 func expand_selection() -> void:
 	var mouse_pos := level.get_local_mouse_position() as Vector2i
