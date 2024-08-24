@@ -171,6 +171,7 @@ func _on_changed_level_data() -> void:
 func _input(event: InputEvent) -> void:
 	# Don't wanna risk putting these in _gui_input and not receiving the event.
 	decide_tool()
+	if editor_data.is_playing: return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 			_handle_left_unclick()
