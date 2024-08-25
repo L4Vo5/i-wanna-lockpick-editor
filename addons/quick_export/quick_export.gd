@@ -137,7 +137,7 @@ func move_export(target: String) -> void:
 	var expected_endings: Array = {
 		"Windows": [".pck", ".exe"],
 		"Linux": [".pck", ".x86_64"],
-		"Web": [".html",".worker.js",".wasm",
+		"Web": [".html",".wasm",
 ".png",".pck",".js",".icon.png",".audio.worklet.js",".apple-touch-icon.png",]
 	}[target]
 	var not_found := []
