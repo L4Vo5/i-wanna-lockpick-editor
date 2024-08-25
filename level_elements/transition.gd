@@ -39,6 +39,8 @@ signal finished_animation
 signal started_animation
 
 func cancel() -> void:
+	if animation_stage != -1:
+		finished_animation.emit()
 	background.modulate.a = 0
 	text_offset = -500
 	animation_stage = -1

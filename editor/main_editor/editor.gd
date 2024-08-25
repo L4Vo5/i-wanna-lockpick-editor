@@ -167,7 +167,6 @@ func resolve_visibility() -> void:
 	if Global.is_web:
 		for node in hide_on_web:
 			node.hide()
-	gameplay.transition.cancel()
 
 func _update_mode() -> void:
 	Global.settings.current_editor_tab = side_tabs.get_current_tab_index()

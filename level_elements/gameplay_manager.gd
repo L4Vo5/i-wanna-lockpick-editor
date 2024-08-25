@@ -51,6 +51,8 @@ func reset() -> void:
 	level.exclude_player = is_editing
 	level.allow_ui = not is_editing
 	level.load_salvaged_doors = not is_editing
+	if is_editing:
+		transition.cancel()
 	level.reset()
 
 func win() -> void:
