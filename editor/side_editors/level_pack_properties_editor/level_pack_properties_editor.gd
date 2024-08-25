@@ -13,6 +13,7 @@ var editor_data: EditorData:
 		level_properties_editor.editor_data = val
 		editor_data.changed_level_pack_data \
 			.connect(_update_level_pack_data)
+		editor_data.changed_pack_state.connect(_set_to_pack_state)
 		_update_level_pack_data()
 
 var _level_pack_data: LevelPackData:
@@ -74,12 +75,15 @@ func _set_to_level_pack_data() -> void:
 	pack_name.text = _level_pack_data.name
 	pack_author.text = _level_pack_data.author
 	pack_description.text = _level_pack_data.description
+	level_count_label.text = str(_level_pack_data.levels.size())
+	_set_to_pack_state()
+	_setting_to_data = false
+
+func _set_to_pack_state() -> void:
 	var state_data := editor_data.pack_state
 	if state_data:
 		completed_levels_label.text = str(state_data.get_completed_levels_count())
 		salvaged_doors_label.text = str(state_data.get_salvaged_doors_count())
-	level_count_label.text = str(_level_pack_data.levels.size())
-	_setting_to_data = false
 
 func _on_set_pack_name(new_name: String) -> void:
 	if _setting_to_data: return
@@ -115,5 +119,7 @@ func _copy_image_to_clipboard() -> void:
 		Global.copy_image_to_clipboard(level_image_rect.texture.get_image())
 
 func _erase_save_state() -> void:
-	# TODO: this probably no longer works (gameplay manager should reset)
 	editor_data.pack_state.delete_file()
+	var new_state := LevelPackStateData.make_from_pack_data(editor_data.level_pack_data)
+	new_state.current_level = editor_data.pack_state.current_level
+	editor_data.set_pack_and_state(editor_data.level_pack_data, new_state)

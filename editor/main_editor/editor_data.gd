@@ -5,6 +5,7 @@ signal changed_level_pack_data
 var level_pack_data: LevelPackData:
 	set = set_level_pack_data
 
+signal changed_pack_state
 var pack_state: LevelPackStateData:
 	set = set_pack_state
 
@@ -64,6 +65,7 @@ func set_pack_and_state(pack: LevelPackData, state: LevelPackStateData) -> void:
 	if gameplay:
 		gameplay.load_level_pack(level_pack_data, pack_state)
 	changed_level_pack_data.emit()
+	changed_pack_state.emit()
 
 func set_level_pack_data(pack: LevelPackData) -> void:
 	if level_pack_data == pack: return
@@ -81,11 +83,7 @@ func set_pack_state(state: LevelPackStateData) -> void:
 	if pack_state:
 		pack_state.changed_current_level.connect(emit_changed_level_data)
 	if not _setting_pack_and_state:
-		changed_level_pack_data.emit()
-
-func _update_current_level_data() -> void:
-	
-	pass
+		changed_pack_state.emit()
 
 static func new_with_defaults() -> EditorData:
 	var data := EditorData.new()
