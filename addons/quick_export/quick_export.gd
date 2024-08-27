@@ -166,6 +166,12 @@ func move_export(target: String) -> void:
 		var file_name := base_name + ending
 		var file_path := path.path_join(file_name)
 		var new_file_name := new_name + ending
+		if target == "Web":
+			# otherwise it causes errors ad index.html will reference the old names.
+			# web exports aren't meant to be downloaded anyways, so it's fine if
+			# the name doesn't have the version, I think. at least, it's easier
+			# than modifying index.html
+			new_file_name = file_name
 		if file_name.get_extension() == "html":
 			new_file_name = "index.html"
 		var new_file_path := path.path_join(new_file_name)
