@@ -6,13 +6,8 @@
 [ext_resource type="Script" path="res://misc/node_dragger.gd" id="4_nngty"]
 
 [node name="WarpRodNode" type="NinePatchRect"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -775.0
-offset_bottom = -583.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 25.0
+offset_bottom = 25.0
 mouse_filter = 0
 texture = ExtResource("4_ngjbv")
 patch_margin_left = 13
