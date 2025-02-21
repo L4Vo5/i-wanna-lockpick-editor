@@ -114,6 +114,7 @@ button_group = SubResource("ButtonGroup_gtwjn")
 [node name="Autorun" type="AudioStreamPlayer" parent="UI"]
 unique_name_in_owner = true
 stream = ExtResource("9_mj2a5")
+bus = &"Sfx"
 
 [node name="HoverHighlight" parent="." instance=ExtResource("10_b7dph")]
 unique_name_in_owner = true
