@@ -15,6 +15,7 @@ dest_files=["res://.godot/imported/KhmerUI.ttf-5652a67e5c9b490e79be3708e8320b32.
 Rendering=null
 antialiasing=1
 generate_mipmaps=false
+disable_embedded_bitmaps=true
 multichannel_signed_distance_field=false
 msdf_pixel_range=8
 msdf_size=48
