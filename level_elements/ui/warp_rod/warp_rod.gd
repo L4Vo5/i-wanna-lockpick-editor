@@ -17,9 +17,7 @@ const WARP_ROD_NODE = preload("res://level_elements/ui/warp_rod/warp_rod_node.ts
 
 @export var button_group: ButtonGroup
 
-var pack_data: LevelPackData:
-	get:
-		return gameplay_manager.pack_data
+var pack_data: LevelPackData
 
 var state_data: LevelPackStateData:
 	get:
@@ -28,10 +26,13 @@ var state_data: LevelPackStateData:
 var gameplay_manager: GameplayManager:
 	set(val):
 		gameplay_manager = val
+		gameplay_manager.pack_data_changed.connect(on_pack_data_changed)
 		gameplay_manager.pack_data_changed.connect(regen_level_nodes)
 		gameplay_manager.pack_data_changed.connect(regen_history_nodes)
 		gameplay_manager.entered_level.connect(update_level_nodes)
 		gameplay_manager.entered_level.connect(update_history_nodes)
+		pack_data = gameplay_manager.pack_data
+		connect_pack_data()
 		regen_level_nodes()
 		regen_history_nodes()
 
@@ -40,6 +41,29 @@ func _ready() -> void:
 	levels_screen.node_clicked.connect(_on_level_clicked)
 	history_screen.node_clicked.connect(_on_history_clicked)
 	_update_visible_tab()
+
+func connect_pack_data() -> void:
+	if not pack_data: return
+	pack_data.added_level.connect(on_level_added)
+	pack_data.deleted_level.connect(on_level_removed)
+
+func disconnect_pack_data() -> void:
+	if not pack_data: return
+	pack_data.added_level.disconnect(on_level_added)
+	pack_data.deleted_level.disconnect(on_level_removed)
+
+#func connect_level_data(level: LevelData) -> void:
+	#level.changed.connect(on_level_changed)
+#
+#func disconnect_level_data(level: LevelData) -> void:
+	#level.changed.disconnect(on_level_changed)
+
+
+
+func on_pack_data_changed() -> void:
+	disconnect_pack_data()
+	pack_data = gameplay_manager.pack_data
+	connect_pack_data()
 
 func _update_visible_tab() -> void:
 	levels_container.visible = button_group.get_pressed_button() == levels_button
@@ -116,14 +140,36 @@ func update_history_nodes() -> void:
 var level_to_node := {}
 var node_to_level := {}
 
+# Again, could be more sophisticated...
+func on_level_added(level_id: int) -> void:
+	regen_level_nodes()
+
+# Again, could be more sophisticated...
+func on_level_removed(level_id: int, level_index: int) -> void:
+	regen_level_nodes()
+
+# TODO: Actually trigger these....
+# Again, could be more sophisticated...
+func on_entry_added() -> void:
+	regen_level_nodes()
+
+# Again, could be more sophisticated...
+func on_entry_removed() -> void:
+	regen_level_nodes()
+
+# Again, could be more sophisticated...
+# This should trigger when a level changes its name or etc
+func on_level_changed(level: LevelData) -> void:
+	regen_level_nodes()
+
 func regen_level_nodes() -> void:
 	if not gameplay_manager: return
 	
 	levels_screen.position = Vector2.ZERO
 	for child in levels_screen.get_children():
 		child.free()
-		level_to_node.clear()
-		node_to_level.clear()
+	level_to_node.clear()
+	node_to_level.clear()
 	
 	for level_id in pack_data.levels:
 		var level: LevelData = pack_data.levels[level_id]
