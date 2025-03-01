@@ -5,6 +5,9 @@ signal added_level(level_id: int)
 signal deleted_level(level_id: int, level_index: int)
 signal swapped_levels(level_1_index: int, level_2_index: int)
 signal moved_level(from: int, to: int)
+# Relays any level's "changed" signal
+signal level_changed(level_id: int)
+func emit_level_changed(id: int): level_changed.emit(id)
 
 ## levels indexed by id
 @export var levels := {}
@@ -103,6 +106,7 @@ func add_level(new_level: LevelData, position := -1) -> int:
 	if position == -1:
 		position = levels.size()
 	var id := get_next_level_id()
+	new_level.changed.connect(emit_level_changed.bind(id))
 	levels[id] = new_level
 	var err := level_order.insert(position, id)
 	assert(err == OK, error_string(err))
@@ -123,6 +127,7 @@ func delete_level(id: int) -> void:
 	if levels.size() == 1:
 		add_level(LevelData.get_default_level())
 	levels.erase(id)
+	levels[id].changed.disconnect(emit_level_changed.bind(id))
 	var index := level_order.find(id)
 	level_order.remove_at(index)
 	deleted_level.emit(id, index)

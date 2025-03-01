@@ -46,19 +46,19 @@ func connect_pack_data() -> void:
 	if not pack_data: return
 	pack_data.added_level.connect(on_level_added)
 	pack_data.deleted_level.connect(on_level_removed)
+	pack_data.level_changed.connect(on_level_changed)
 
 func disconnect_pack_data() -> void:
 	if not pack_data: return
 	pack_data.added_level.disconnect(on_level_added)
 	pack_data.deleted_level.disconnect(on_level_removed)
+	pack_data.level_changed.connect(on_level_changed)
 
-#func connect_level_data(level: LevelData) -> void:
-	#level.changed.connect(on_level_changed)
-#
-#func disconnect_level_data(level: LevelData) -> void:
-	#level.changed.disconnect(on_level_changed)
+func connect_level_data(level: LevelData) -> void:
+	level.changed.connect(on_level_changed)
 
-
+func disconnect_level_data(level: LevelData) -> void:
+	level.changed.disconnect(on_level_changed)
 
 func on_pack_data_changed() -> void:
 	disconnect_pack_data()
@@ -159,7 +159,7 @@ func on_entry_removed() -> void:
 
 # Again, could be more sophisticated...
 # This should trigger when a level changes its name or etc
-func on_level_changed(level: LevelData) -> void:
+func on_level_changed(level_id: int) -> void:
 	regen_level_nodes()
 
 func regen_level_nodes() -> void:
