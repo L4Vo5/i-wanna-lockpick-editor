@@ -2,7 +2,7 @@ extends SaveLoadVersionLVL
 
 # Differences from V4:
 # Level title and name are stored separately
-# Level author, description, and label are stored
+# Level author, comment, and label are stored
 # Level pack description is stored
 
 static func convert_dict(dict: Dictionary) -> Dictionary:
@@ -39,7 +39,7 @@ static func save_level(level: LevelData, data: ByteAccess) -> void:
 	data.store_string(level.name)
 	data.store_string(level.label)
 	data.store_string(level.author)
-	data.store_string(level.description)
+	data.store_string(level.comment)
 	data.store_u32(level.size.x)
 	data.store_u32(level.size.y)
 	
@@ -165,7 +165,7 @@ static func load_level(data: ByteAccess) -> LevelData:
 	level.name = data.get_string()
 	level.label = data.get_string()
 	level.author = data.get_string()
-	level.description = data.get_string()
+	level.comment = data.get_string()
 	if SaveLoad.PRINT_LOAD: print("Loading level %s" % level.name)
 	level.size = Vector2i(data.get_u32(), data.get_u32())
 	var flags := data.get_u8()

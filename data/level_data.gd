@@ -78,10 +78,10 @@ var has_goal := true:
 		author = val
 		changed.emit()
 
-@export var description := "":
+@export var comment := "":
 	set(val):
-		if author == val: return
-		author = val
+		if comment == val: return
+		comment = val
 		changed.emit()
 
 func _init() -> void:
