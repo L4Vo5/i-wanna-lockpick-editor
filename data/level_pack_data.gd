@@ -126,8 +126,8 @@ func delete_level(id: int) -> void:
 	assert(levels.has(id))
 	if levels.size() == 1:
 		add_level(LevelData.get_default_level())
-	levels.erase(id)
 	levels[id].changed.disconnect(emit_level_changed.bind(id))
+	levels.erase(id)
 	var index := level_order.find(id)
 	level_order.remove_at(index)
 	deleted_level.emit(id, index)
