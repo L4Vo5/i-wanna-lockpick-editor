@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://dda0tpdj42e5g"]
 
-[ext_resource type="Script" path="res://level_elements/doors_locks/debris/door_debris.gd" id="1_yx7ik"]
+[ext_resource type="Script" uid="uid://ywr7jagxa5qp" path="res://level_elements/doors_locks/debris/door_debris.gd" id="1_yx7ik"]
 [ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="2_8f8sg"]
 [ext_resource type="Texture2D" uid="uid://dmmxdw3f5i6i5" path="res://level_elements/doors_locks/debris/glitch.png" id="3_stxu4"]
 

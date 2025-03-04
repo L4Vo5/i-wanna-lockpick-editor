@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cfwk45t0p1omu"]
 
-[ext_resource type="Script" path="res://editor/main_editor/invalid_level_load_window.gd" id="1_l1mht"]
+[ext_resource type="Script" uid="uid://tfar0jwijbgj" path="res://editor/main_editor/invalid_level_load_window.gd" id="1_l1mht"]
 
 [node name="InvalidLevelLoad" type="Window"]
 mode = 3

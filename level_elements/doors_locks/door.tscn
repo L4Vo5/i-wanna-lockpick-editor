@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://h5opptcugh0i"]
 
-[ext_resource type="Script" path="res://level_elements/doors_locks/door.gd" id="1_pj0ca"]
+[ext_resource type="Script" uid="uid://cfj16htyg3mkw" path="res://level_elements/doors_locks/door.gd" id="1_pj0ca"]
 [ext_resource type="PackedScene" uid="uid://dh6h46bjp6c2s" path="res://level_elements/doors_locks/curses/erosion.tscn" id="2_t0ev5"]
 [ext_resource type="PackedScene" uid="uid://bebv7glrk1www" path="res://level_elements/doors_locks/curses/paint.tscn" id="3_bjor7"]
 [ext_resource type="PackedScene" uid="uid://dnfyqi6rplh85" path="res://level_elements/doors_locks/curses/ice.tscn" id="4_cxymq"]

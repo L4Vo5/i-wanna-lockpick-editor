@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://dfdbfek8pb1n6"]
 
-[ext_resource type="Script" path="res://level_elements/transition.gd" id="1_lxgbb"]
+[ext_resource type="Script" uid="uid://cxhgcnnyeigl8" path="res://level_elements/transition.gd" id="1_lxgbb"]
 [ext_resource type="FontFile" uid="uid://8odieidrpvm8" path="res://fonts/level_id.fnt" id="2_vw8ei"]
 [ext_resource type="FontFile" uid="uid://dsdva0hlmiaan" path="res://fonts/level_name.fnt" id="3_vgy7d"]
-[ext_resource type="Script" path="res://rendering/outline_text.gd" id="4_6mbev"]
+[ext_resource type="Script" uid="uid://bn7ihkye0f18q" path="res://rendering/outline_text.gd" id="4_6mbev"]
 
 [node name="Transition" type="Node2D"]
 visible = false

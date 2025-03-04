@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://sn7s10qp37vo"]
 
-[ext_resource type="Script" path="res://level_elements/ui/warp_rod/warp_rod_node.gd" id="2_hsq32"]
+[ext_resource type="Script" uid="uid://1n6pt6w2whrn" path="res://level_elements/ui/warp_rod/warp_rod_node.gd" id="2_hsq32"]
 [ext_resource type="Texture2D" uid="uid://c8sbdkggwyf4u" path="res://level_elements/ui/warp_rod/node_outline.png" id="3_s6pn7"]
 [ext_resource type="Texture2D" uid="uid://caddvps13c2g0" path="res://level_elements/ui/warp_rod/node_unavailable.png" id="4_ngjbv"]
-[ext_resource type="Script" path="res://misc/node_dragger.gd" id="4_nngty"]
+[ext_resource type="Script" uid="uid://cr4hsb3bjlfp8" path="res://misc/node_dragger.gd" id="4_nngty"]
 
 [node name="WarpRodNode" type="NinePatchRect"]
 offset_right = 25.0

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://co8kt44378qlq"]
 
-[ext_resource type="Script" path="res://level_elements/goal/goal.gd" id="1_86jih"]
+[ext_resource type="Script" uid="uid://b6c600a46uxdn" path="res://level_elements/goal/goal.gd" id="1_86jih"]
 [ext_resource type="Texture2D" uid="uid://5je7lc0xwrl8" path="res://level_elements/goal/goal_sprites.png" id="2_ry2y7"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_shx3d"]

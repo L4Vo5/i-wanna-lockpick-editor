@@ -1,13 +1,13 @@
 [gd_scene load_steps=5 format=3 uid="uid://csr3jfybky0mf"]
 
-[ext_resource type="Shader" path="res://editor/misc/distance_fade.gdshader" id="1_nccmt"]
-[ext_resource type="Script" path="res://editor/misc/phantom_grid.gd" id="2_c80n1"]
-[ext_resource type="Script" path="res://editor/misc/phantom_grid_draw.gd" id="3_eawvh"]
+[ext_resource type="Shader" uid="uid://cacous6oo6wu7" path="res://editor/misc/distance_fade.gdshader" id="1_nccmt"]
+[ext_resource type="Script" uid="uid://3sau8gq8ql8d" path="res://editor/misc/phantom_grid.gd" id="2_c80n1"]
+[ext_resource type="Script" uid="uid://b2lcapvokuvm4" path="res://editor/misc/phantom_grid_draw.gd" id="3_eawvh"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7jdsh"]
 shader = ExtResource("1_nccmt")
-shader_parameter/dist_mult = null
-shader_parameter/center = null
+shader_parameter/dist_mult = 0.0
+shader_parameter/center = Vector2(0, 0)
 
 [node name="PhantomGrid" type="CanvasGroup"]
 material = SubResource("ShaderMaterial_7jdsh")

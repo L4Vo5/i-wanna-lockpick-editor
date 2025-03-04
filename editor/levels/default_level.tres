@@ -1,20 +1,30 @@
-[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3 uid="uid://duetyl1ll5edp"]
+[gd_resource type="Resource" script_class="LevelData" load_steps=6 format=3 uid="uid://duetyl1ll5edp"]
 
-[ext_resource type="Script" path="res://data/level_data.gd" id="5_ng5dl"]
+[ext_resource type="Script" uid="uid://wstyrkqelqko" path="res://data/door_data.gd" id="1_r3xgr"]
+[ext_resource type="Script" uid="uid://dd547we0o7au1" path="res://data/entry_data.gd" id="2_c7r1d"]
+[ext_resource type="Script" uid="uid://dupy2qcrkmdra" path="res://data/key_data.gd" id="3_o2rqi"]
+[ext_resource type="Script" uid="uid://fnl8lyd4w2uu" path="res://data/salvage_point_data.gd" id="4_25yot"]
+[ext_resource type="Script" uid="uid://botnjo0yg10rp" path="res://data/level_data.gd" id="5_ng5dl"]
 
 [resource]
 script = ExtResource("5_ng5dl")
-editor_version = ""
-doors = Array[Resource("res://data/door_data.gd")]([])
-keys = Array[Resource("res://data/key_data.gd")]([])
+doors = Array[ExtResource("1_r3xgr")]([])
+keys = Array[ExtResource("3_o2rqi")]([])
+entries = Array[ExtResource("2_c7r1d")]([])
+salvage_points = Array[ExtResource("4_25yot")]([])
+required_levels = null
+min_required_level_count = 0
+exitable = true
 size = Vector2i(800, 608)
 player_spawn_position = Vector2i(398, 448)
 goal_position = Vector2i(384, 352)
-custom_lock_arrangements = {}
 tiles = {
 Vector2i(11, 14): true,
 Vector2i(12, 14): true,
 Vector2i(13, 14): true
 }
 name = ""
+title = ""
+label = ""
 author = ""
+description = ""

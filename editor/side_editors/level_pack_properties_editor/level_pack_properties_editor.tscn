@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://dbw3g8lfbjbru"]
 
-[ext_resource type="Script" path="res://editor/side_editors/level_pack_properties_editor/level_pack_properties_editor.gd" id="1_0060c"]
+[ext_resource type="Script" uid="uid://brjgabt1x0m30" path="res://editor/side_editors/level_pack_properties_editor/level_pack_properties_editor.gd" id="1_0060c"]
 [ext_resource type="PackedScene" uid="uid://bq8lnotf0ys0p" path="res://editor/side_editors/level_properties_editor/level_properties_editor.tscn" id="3_jpvfh"]
-[ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_image_rect.gd" id="14_b8fnq"]
+[ext_resource type="Script" uid="uid://dog3ekfc71qv8" path="res://editor/side_editors/level_properties_editor/level_image_rect.gd" id="14_b8fnq"]
 
 [node name="LevelPackPropertiesEditor" type="MarginContainer"]
 offset_right = 398.0

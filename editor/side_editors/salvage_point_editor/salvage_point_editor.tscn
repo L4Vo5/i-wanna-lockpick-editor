@@ -1,13 +1,14 @@
-[gd_scene load_steps=14 format=3 uid="uid://bloqrx3o1b3c3"]
+[gd_scene load_steps=15 format=3 uid="uid://bloqrx3o1b3c3"]
 
-[ext_resource type="Script" path="res://editor/side_editors/salvage_point_editor/salvage_point_editor.gd" id="1_gotpp"]
-[ext_resource type="Script" path="res://data/salvage_point_data.gd" id="2_jrhgn"]
+[ext_resource type="Script" uid="uid://bvvwnw1gs4rpl" path="res://editor/side_editors/salvage_point_editor/salvage_point_editor.gd" id="1_gotpp"]
+[ext_resource type="Script" uid="uid://fnl8lyd4w2uu" path="res://data/salvage_point_data.gd" id="2_jrhgn"]
 [ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvage_points/salvage_point.tscn" id="3_ycw40"]
-[ext_resource type="Script" path="res://editor/property_editors/object_grid_chooser.gd" id="4_3pjd2"]
+[ext_resource type="Script" uid="uid://cehsj216olnbw" path="res://editor/property_editors/object_grid_chooser.gd" id="4_3pjd2"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="4_hhje5"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="6_p7ch7"]
+[ext_resource type="Script" uid="uid://dc0pk3a7q644l" path="res://data/complex_number.gd" id="6_p7ch7"]
 [ext_resource type="PackedScene" uid="uid://db8xfne3exmq5" path="res://rendering/mouseover_text.tscn" id="6_sxva7"]
-[ext_resource type="Script" path="res://data/door_data.gd" id="7_kq4ii"]
+[ext_resource type="Script" uid="uid://dwblpjwk8ghi" path="res://data/lock_data.gd" id="7_ijnct"]
+[ext_resource type="Script" uid="uid://wstyrkqelqko" path="res://data/door_data.gd" id="7_kq4ii"]
 
 [sub_resource type="Resource" id="Resource_v8gcj"]
 script = ExtResource("2_jrhgn")
@@ -36,7 +37,7 @@ imaginary_part = 0
 script = ExtResource("7_kq4ii")
 amount = SubResource("Resource_aurjo")
 outer_color = 1
-locks = Array[Resource("res://data/lock_data.gd")]([])
+locks = Array[ExtResource("7_ijnct")]([])
 position = Vector2i(0, 0)
 size = Vector2i(96, 96)
 _curses = {
@@ -46,7 +47,6 @@ _curses = {
 3: false
 }
 glitch_color = 13
-sid = -1
 
 [node name="SalvagePointEditor" type="MarginContainer"]
 offset_right = 212.0

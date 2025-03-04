@@ -1,6 +1,6 @@
 [gd_scene load_steps=37 format=3 uid="uid://wa0a5416mt10"]
 
-[ext_resource type="Script" path="res://level_elements/kid/kid.gd" id="1_ytpc6"]
+[ext_resource type="Script" uid="uid://bnkxftk1wxd1j" path="res://level_elements/kid/kid.gd" id="1_ytpc6"]
 [ext_resource type="Texture2D" uid="uid://ba3rni1j8cxj2" path="res://level_elements/kid/auras/spr_rgb_auras.png" id="2_rggjw"]
 [ext_resource type="Texture2D" uid="uid://clhkqdbb4xygc" path="res://level_elements/kid/auras/spr_brown_aura.png" id="3_qutdv"]
 [ext_resource type="Texture2D" uid="uid://cleh0e4h3gwca" path="res://level_elements/kid/fall.png" id="4_ty0xs"]
@@ -13,7 +13,7 @@
 [ext_resource type="AudioStream" uid="uid://cq7dau6jysyu8" path="res://level_elements/kid/master_unequip.wav" id="11_wa6iq"]
 [ext_resource type="Texture2D" uid="uid://d3ivkuvxae2ma" path="res://level_elements/kid/auras/spr_white_aura.png" id="11_yki3j"]
 [ext_resource type="AudioStream" uid="uid://d302bvepvw5no" path="res://level_elements/kid/master_anti_equip.wav" id="12_k1q47"]
-[ext_resource type="Script" path="res://level_elements/kid/white_aura.gd" id="12_ujqrp"]
+[ext_resource type="Script" uid="uid://cokm2wijb7krk" path="res://level_elements/kid/white_aura.gd" id="12_ujqrp"]
 [ext_resource type="Texture2D" uid="uid://b5gv2xg17yxyx" path="res://level_elements/kid/spr_player_shine.png" id="13_2esid"]
 [ext_resource type="Texture2D" uid="uid://bwhaubn3y72qr" path="res://level_elements/kid/spr_key_master_equip.png" id="14_skcwr"]
 [ext_resource type="Texture2D" uid="uid://brhuewom1ulsy" path="res://level_elements/kid/i_view.png" id="15_i0yau"]

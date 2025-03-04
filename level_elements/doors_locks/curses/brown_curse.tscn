@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://8b3sdv51pkn1"]
 
-[ext_resource type="Script" path="res://level_elements/doors_locks/curses/brown_curse.gd" id="1_dkia3"]
+[ext_resource type="Script" uid="uid://d1458xtxnfo0l" path="res://level_elements/doors_locks/curses/brown_curse.gd" id="1_dkia3"]
 
 [node name="BrownCurse" type="Control"]
 layout_mode = 3

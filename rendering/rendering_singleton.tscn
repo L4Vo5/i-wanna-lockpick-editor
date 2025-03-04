@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bb2ju4r34aur7"]
 
-[ext_resource type="Script" path="res://rendering/rendering_singleton.gd" id="1_ylnkg"]
+[ext_resource type="Script" uid="uid://bf1mdwg5oxm23" path="res://rendering/rendering_singleton.gd" id="1_ylnkg"]
 
 [node name="RenderingSingleton" type="Node2D"]
 process_priority = -500

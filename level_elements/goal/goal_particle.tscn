@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bhfllc1ju6lf7"]
 
 [ext_resource type="Texture2D" uid="uid://bfiax44upowp4" path="res://level_elements/goal/particle.png" id="1_6fhc6"]
-[ext_resource type="Script" path="res://level_elements/goal/goal_particle.gd" id="2_yuiet"]
+[ext_resource type="Script" uid="uid://bw1lm2e344dha" path="res://level_elements/goal/goal_particle.gd" id="2_yuiet"]
 
 [node name="goal_particle" type="Sprite2D"]
 scale = Vector2(0.04, 0.04)

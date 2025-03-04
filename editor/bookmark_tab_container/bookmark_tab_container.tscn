@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://biuhl87mkufly"]
 
-[ext_resource type="Script" path="res://editor/bookmark_tab_container/bookmark_tab_container.gd" id="1_frhv8"]
+[ext_resource type="Script" uid="uid://cfq664dvdqvq2" path="res://editor/bookmark_tab_container/bookmark_tab_container.gd" id="1_frhv8"]
 
 [node name="BookmarkTabContainer" type="Container"]
 anchors_preset = 15

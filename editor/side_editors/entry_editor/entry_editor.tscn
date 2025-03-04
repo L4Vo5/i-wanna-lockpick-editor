@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=3 uid="uid://hasnbvkv25y8"]
 
-[ext_resource type="Script" path="res://editor/side_editors/entry_editor/entry_editor.gd" id="1_xmuse"]
-[ext_resource type="Script" path="res://data/entry_data.gd" id="2_bsopw"]
+[ext_resource type="Script" uid="uid://c28q7ax81gy3y" path="res://editor/side_editors/entry_editor/entry_editor.gd" id="1_xmuse"]
+[ext_resource type="Script" uid="uid://dd547we0o7au1" path="res://data/entry_data.gd" id="2_bsopw"]
 [ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="2_ypxul"]
 [ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="4_7lve0"]
-[ext_resource type="Script" path="res://editor/side_editors/level_properties_editor/level_list.gd" id="5_nuru6"]
+[ext_resource type="Script" uid="uid://c8xmpcd22aet7" path="res://editor/side_editors/level_properties_editor/level_list.gd" id="5_nuru6"]
 
 [sub_resource type="Resource" id="Resource_ekiph"]
 script = ExtResource("2_bsopw")

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dnfyqi6rplh85"]
 
 [ext_resource type="Texture2D" uid="uid://bs8jkcglxbieq" path="res://level_elements/doors_locks/curses/spr_ice_frame.png" id="1_2gqcq"]
-[ext_resource type="Script" path="res://level_elements/doors_locks/curses/ice_shines.gd" id="2_xuh3h"]
+[ext_resource type="Script" uid="uid://byl0psy2bt6ab" path="res://level_elements/doors_locks/curses/ice_shines.gd" id="2_xuh3h"]
 
 [node name="Ice" type="MarginContainer"]
 modulate = Color(1, 1, 1, 0.705882)

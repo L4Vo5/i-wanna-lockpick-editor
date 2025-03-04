@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://ccum746wsrcl8"]
 
-[ext_resource type="Script" path="res://editor/side_editors/settings_editor/settings_editor.gd" id="1_kbdlw"]
+[ext_resource type="Script" uid="uid://db3fdqpnepqs4" path="res://editor/side_editors/settings_editor/settings_editor.gd" id="1_kbdlw"]
 [ext_resource type="PackedScene" uid="uid://dxh60ujhqy0q4" path="res://editor/misc/horizontal_separator.tscn" id="2_yvels"]
 
 [node name="SettingsEditor" type="MarginContainer"]

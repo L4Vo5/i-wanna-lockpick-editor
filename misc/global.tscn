@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cuhuiq34bfan7"]
 
-[ext_resource type="Script" path="res://misc/global.gd" id="1_387qh"]
+[ext_resource type="Script" uid="uid://cnibvok0ho4q0" path="res://misc/global.gd" id="1_387qh"]
 
 [node name="Global" type="Node2D"]
 process_priority = -99

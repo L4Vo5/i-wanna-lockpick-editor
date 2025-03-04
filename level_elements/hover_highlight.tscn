@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dh01y4njdul08"]
 
-[ext_resource type="Script" path="res://level_elements/hoverer.gd" id="1_miyah"]
+[ext_resource type="Script" uid="uid://boh71va7fcod" path="res://level_elements/hoverer.gd" id="1_miyah"]
 
 [node name="HoverHighlight" type="Node2D"]
 script = ExtResource("1_miyah")

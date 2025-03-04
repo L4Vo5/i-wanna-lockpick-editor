@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://cinkniexduuij"]
 
-[ext_resource type="Script" path="res://editor/property_editors/arrangement_chooser.gd" id="1_s7kw3"]
-[ext_resource type="Script" path="res://data/lock_data.gd" id="2_5bgyq"]
+[ext_resource type="Script" uid="uid://cn7yj2tg3dko6" path="res://editor/property_editors/arrangement_chooser.gd" id="1_s7kw3"]
+[ext_resource type="Script" uid="uid://dwblpjwk8ghi" path="res://data/lock_data.gd" id="2_5bgyq"]
 
 [sub_resource type="Resource" id="Resource_pqhkn"]
 script = ExtResource("2_5bgyq")

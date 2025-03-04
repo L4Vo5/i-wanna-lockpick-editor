@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://doxgx8n20sjl0"]
 
-[ext_resource type="Script" path="res://level_elements/gameplay_manager.gd" id="1_3up8c"]
+[ext_resource type="Script" uid="uid://bxfcl3p8egq3x" path="res://level_elements/gameplay_manager.gd" id="1_3up8c"]
 [ext_resource type="PackedScene" uid="uid://me5bp2qss0qj" path="res://level_elements/level.tscn" id="2_8pnk0"]
 [ext_resource type="PackedScene" uid="uid://dfdbfek8pb1n6" path="res://level_elements/transition.tscn" id="3_pbvyh"]
 

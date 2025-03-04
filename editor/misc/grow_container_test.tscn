@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://brprcm0mxnn6x"]
 
-[ext_resource type="Script" path="res://editor/misc/grow_container.gd" id="1_uuuwj"]
+[ext_resource type="Script" uid="uid://buaikgcghlycj" path="res://editor/misc/grow_container.gd" id="1_uuuwj"]
 
 [node name="GrowContainerTest" type="Container"]
 custom_minimum_size = Vector2(40, 53)

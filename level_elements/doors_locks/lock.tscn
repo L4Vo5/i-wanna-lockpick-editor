@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ds64ntew1oani"]
 
-[ext_resource type="Script" path="res://level_elements/doors_locks/lock.gd" id="1_tp0hg"]
+[ext_resource type="Script" uid="uid://bhlog71y87wbp" path="res://level_elements/doors_locks/lock.gd" id="1_tp0hg"]
 
 [node name="Lock" type="Control"]
 layout_mode = 3

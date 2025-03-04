@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dwjyhfrmfn08k"]
 
-[ext_resource type="Script" path="res://tests/autotiling_benchmark.gd" id="1_a85ki"]
+[ext_resource type="Script" uid="uid://ccvriyc2ltvgk" path="res://tests/autotiling_benchmark.gd" id="1_a85ki"]
 [ext_resource type="PackedScene" uid="uid://doxgx8n20sjl0" path="res://level_elements/gameplay.tscn" id="2_5g27j"]
 
 [node name="AutotilingBenchmark" type="Node2D"]
