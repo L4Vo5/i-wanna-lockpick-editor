@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://bxdex8vqdp141"]
+
+[ext_resource type="Script" path="res://level_elements/key_counters/key_counter.gd" id="1_jt1rr"]
+[ext_resource type="Texture2D" uid="uid://b6c62ka5j04e0" path="res://level_elements/key_counters/box.png" id="2_mjgu8"]
+
+[node name="KeyCounter" type="MarginContainer"]
+offset_right = 4.0
+offset_bottom = 4.0
+mouse_filter = 2
+script = ExtResource("1_jt1rr")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 2
+texture = ExtResource("2_mjgu8")
+region_rect = Rect2(0, 0, 122, 63)
+patch_margin_left = 2
+patch_margin_top = 2
+patch_margin_right = 2
+patch_margin_bottom = 2
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="Holder" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2

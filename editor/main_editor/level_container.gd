@@ -24,6 +24,9 @@ var level: Level:
 var collision_system: CollisionSystem:
 	get:
 		return level.collision_system
+var counter_editor: CounterEditor:
+	get:
+		return editor_data.counter_editor
 
 
 @export var editor: LockpickEditor
@@ -101,6 +104,7 @@ var selection_grid_size := Vector2i.ONE
 var grid_size_counts := {
 	Vector2i(16, 16): 0,
 	Vector2i(32, 32): 0,
+	Vector2i(2, 2): 0,
 }
 
 const OBJ_SIZE := Vector2(800, 608)
@@ -394,7 +398,7 @@ func update_currently_adding() -> void:
 		info.type = Enums.LevelElementTypes.Tile
 	elif editor_data.current_tab is LevelPackPropertiesEditor:
 		info.type = editor_data.current_tab.level_properties_editor.placing
-	elif editor_data.current_tab.name in [&"Doors", &"Keys", &"Entries", &"SalvagePoints"]:
+	elif editor_data.current_tab.name in [&"Doors", &"Keys", &"Entries", &"SalvagePoints", &"KeyCounters"]:
 		info.type = editor_data.current_tab.data.level_element_type
 		info.data = editor_data.current_tab.data.duplicated()
 	else:
@@ -599,7 +603,7 @@ func _update_preview() -> void:
 		danger_outline.hide()
 		return
 	var rect := currently_adding.get_rect()
-	if level.is_space_occupied(rect):
+	if level.is_space_occupied(rect, {}, currently_adding.type == Enums.LevelElementTypes.KeyCounter):
 		ghost_displayer.hide()
 		danger_outline.show()
 	else:

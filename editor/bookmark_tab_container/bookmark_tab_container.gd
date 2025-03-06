@@ -19,6 +19,7 @@ const name_to_icon := {
 	Entries = preload("res://editor/bookmark_tab_container/icons/entry.png"),
 	LevelPack = preload("res://editor/bookmark_tab_container/icons/level_pack.png"),
 	Settings = preload("res://editor/bookmark_tab_container/icons/settings.svg"),
+	KeyCounters = preload("res://editor/bookmark_tab_container/icons/wood.png"),
 }
 
 const BOOKMARK_FLAP = preload("res://editor/bookmark_tab_container/bookmark_flap.tscn")

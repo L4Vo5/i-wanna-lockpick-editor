@@ -117,3 +117,4 @@ func _save() -> void:
 	
 	_config_file.save(PATH)
 	is_save_queued = false
+

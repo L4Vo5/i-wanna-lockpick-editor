@@ -10,11 +10,13 @@ var info: NewLevelElementInfo:
 @onready var ghost_door: Door = %GhostDoor
 @onready var ghost_key: KeyElement = %GhostKey
 @onready var ghost_entry: Entry = %GhostEntry
+@onready var ghost_keycounter: KeyCounter = %GhostKeyCounter
 @onready var ghost_salvage_point: SalvagePoint = %GhostSalvagePoint
 
 @onready var ghosts: Dictionary = {
 	Enums.LevelElementTypes.Door: ghost_door,
 	Enums.LevelElementTypes.Key: ghost_key,
+	Enums.LevelElementTypes.KeyCounter: ghost_keycounter,
 	Enums.LevelElementTypes.Entry: ghost_entry,
 	Enums.LevelElementTypes.SalvagePoint: ghost_salvage_point,
 }
