@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=3 uid="uid://unxgweyash2b"]
+
+[ext_resource type="Texture2D" uid="uid://0mi8luxkglx1" path="res://level_elements/comment/spr_room_comment.png" id="2_swmv0"]
+[ext_resource type="FontFile" uid="uid://l76dtncdtd7r" path="res://fonts/ms_ui_gothic.fnt" id="3_adpyt"]
+[ext_resource type="FontFile" uid="uid://c514eieh0s58t" path="res://fonts/Transformers Movie.ttf" id="4_yx1oa"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_313wh"]
+line_spacing = 0.0
+font = ExtResource("3_adpyt")
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_2mt37"]
+font = ExtResource("4_yx1oa")
+font_size = 27
+font_color = Color(0.839216, 0.811765, 0.788235, 1)
+outline_size = 5
+outline_color = Color(0.25098, 0.188235, 0.12549, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_5oif2"]
+font = ExtResource("4_yx1oa")
+font_size = 27
+font_color = Color(0.54902, 0.313726, 0.784314, 1)
+outline_size = 5
+outline_color = Color(0.0901961, 0.0156863, 0.403922, 1)
+
+[node name="LevelComment" type="Node2D"]
+
+[node name="RoomComment" type="Sprite2D" parent="."]
+position = Vector2(400, 556)
+texture = ExtResource("2_swmv0")
+vframes = 3
+
+[node name="Comment" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 524.0
+offset_right = 673.0
+offset_bottom = 561.0
+text = "What's up?"
+label_settings = SubResource("LabelSettings_313wh")
+
+[node name="RoomType" type="Label" parent="."]
+offset_left = 683.0
+offset_top = 532.0
+offset_right = 784.0
+offset_bottom = 556.0
+text = "PUZZLE"
+label_settings = SubResource("LabelSettings_2mt37")
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="."]
+offset_left = 683.0
+offset_top = 562.0
+offset_right = 784.0
+offset_bottom = 586.0
+text = "1-1"
+label_settings = SubResource("LabelSettings_5oif2")
+horizontal_alignment = 1
