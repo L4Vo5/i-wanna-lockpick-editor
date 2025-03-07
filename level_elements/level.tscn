@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://me5bp2qss0qj"]
+[gd_scene load_steps=19 format=3 uid="uid://me5bp2qss0qj"]
 
 [ext_resource type="Script" uid="uid://cuc45obhlvb6x" path="res://level_elements/level.gd" id="1_ynu1q"]
 [ext_resource type="Script" uid="uid://84ijhsuwdyx5" path="res://level_elements/level_logic.gd" id="2_ufm7h"]
@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://wkjs6v6a35d" path="res://level_elements/ui/keypad/key_pad.tscn" id="10_hapwe"]
 [ext_resource type="PackedScene" uid="uid://db8xfne3exmq5" path="res://rendering/mouseover_text.tscn" id="11_j0wdo"]
 [ext_resource type="PackedScene" uid="uid://co2cgujysw6ei" path="res://level_elements/ui/warp_rod/warp_rod.tscn" id="11_pc6n5"]
+[ext_resource type="PackedScene" uid="uid://unxgweyash2b" path="res://level_elements/comment/level_comment.tscn" id="16_dh5ob"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_gtwjn"]
 
@@ -124,6 +125,9 @@ color = Color(1, 1, 1, 0.74902)
 unique_name_in_owner = true
 
 [node name="GoalParent" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="LevelComment" parent="." instance=ExtResource("16_dh5ob")]
 unique_name_in_owner = true
 
 [node name="Mouseover" parent="." instance=ExtResource("11_j0wdo")]

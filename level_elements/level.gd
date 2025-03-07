@@ -65,6 +65,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var hover_highlight: HoverHighlight = %HoverHighlight
 var hovering_over: int = -1
 @onready var mouseover: Node2D = %Mouseover
+@onready var level_comment: LevelComment = %LevelComment
 
 var collision_system: CollisionSystem
 # a LevelData "element" (the original data in the case of doors and stuff)
@@ -109,6 +110,7 @@ func _notification(what: int) -> void:
 
 func _ready() -> void:
 	logic.level = self
+	level_comment.level = self
 	reset()
 	hover_highlight.adapted_to.connect(_on_hover_adapted_to)
 	hover_highlight.stopped_adapting.connect(_on_hover_adapted_to.bind(null))
