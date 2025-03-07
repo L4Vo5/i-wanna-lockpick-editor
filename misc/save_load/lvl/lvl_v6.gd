@@ -1,9 +1,7 @@
 extends SaveLoadVersionLVL
 
-# Differences from V4:
-# Level title and name are stored separately
-# Level author, description, and label are stored
-# Level pack description is stored
+# Differences from V5:
+# Key Counters
 
 static func convert_dict(dict: Dictionary) -> Dictionary:
 	# Nothing to do yet!
@@ -69,7 +67,7 @@ static func save_level(level: LevelData, data: ByteAccess) -> void:
 	# Counters
 	data.store_u32(level.keycounters.size())
 	for counter in level.keycounters:
-		save_counter(data, counter)
+		save_key_counter(data, counter)
 	# Entries
 	data.store_u32(level.entries.size())
 	for entry in level.entries:
@@ -130,16 +128,16 @@ static func save_entry(data: ByteAccess, entry: EntryData) -> void:
 	data.store_u8(entry.skin)
 	data.store_u16(entry.leads_to)
 
-static func save_counter(data: ByteAccess, counter: CounterData) -> void:
+static func save_key_counter(data: ByteAccess, counter: CounterData) -> void:
 	data.store_u32(counter.position.x)
 	data.store_u32(counter.position.y)
 	data.store_u32(counter.length)
 	
 	data.store_u16(counter.colors.size())
 	for color in counter.colors:
-		save_counter_part(data, color)
+		save_key_counter_part(data, color)
 
-static func save_counter_part(data: ByteAccess, counterpart: CounterPartData) -> void:
+static func save_key_counter_part(data: ByteAccess, counterpart: CounterPartData) -> void:
 	data.store_u8(counterpart.color)
 
 static func save_salvage_point(data: ByteAccess, salvage_point: SalvagePointData) -> void:
@@ -221,7 +219,7 @@ static func load_level(data: ByteAccess) -> LevelData:
 	level.keycounters.resize(counter_amount)
 	for i in counter_amount:
 		if data.reached_eof(): return
-		level.keycounters[i] = load_counter(data)
+		level.keycounters[i] = load_key_counter(data)
 	
 	var entry_amount := data.get_u32()
 	if SaveLoad.PRINT_LOAD: print("entry count is %d" % entry_amount)
@@ -293,26 +291,27 @@ static func load_lock(data: ByteAccess) -> LockData:
 	
 	return lock
 
-static func load_counter(data: ByteAccess) -> CounterData:
-	var door := CounterData.new()
+static func load_key_counter(data: ByteAccess) -> CounterData:
+	var key_counter := CounterData.new()
 	
-	door.position = Vector2i(data.get_u32(), data.get_u32())
-	door.length = data.get_u32()
+	key_counter.position = Vector2i(data.get_u32(), data.get_u32())
+	key_counter.length = data.get_u32()
 	
-	var lock_amount := data.get_u16()
-	if lock_amount > MAX_ARRAY_SIZE: return
-	door.colors.resize(lock_amount)
-	for i in lock_amount:
+	var colors_amount := data.get_u16()
+	if colors_amount > MAX_ARRAY_SIZE: return
+	key_counter.colors.resize(colors_amount)
+	for i in colors_amount:
 		if data.reached_eof(): return
-		door.colors[i] = load_counterpart(data, i)
-	return door
+		key_counter.colors[i] = load_key_counter_part(data, i)
+	
+	return key_counter
 
-static func load_counterpart(data: ByteAccess, number: int) -> CounterPartData:
-	var lock := CounterPartData.new()
-	lock.color = data.get_u8()
-	lock.position = number
-		
-	return lock
+static func load_key_counter_part(data: ByteAccess, number: int) -> CounterPartData:
+	var key_counter_part := CounterPartData.new()
+	key_counter_part.color = data.get_u8()
+	key_counter_part.position = number
+	
+	return key_counter_part
 
 static func load_entry(data: ByteAccess) -> EntryData:
 	var entry := EntryData.new()
