@@ -86,14 +86,6 @@ var has_goal := true:
 		author = val
 		changed.emit()
 
-## Used to determine how many entries need to be cleared in a world for it to be cleared.
-## Will not be a world if set to 0.
-@export var world_clear := 0:
-	set(val):
-		if world_clear == val: return
-		world_clear = val
-		changed.emit()
-
 func _init() -> void:
 	changed_player_spawn_position.connect(emit_changed)
 	changed_goal_position.connect(emit_changed)
@@ -106,7 +98,6 @@ func duplicated() -> LevelData:
 	dupe.tiles = tiles.duplicate(true)
 	dupe.name = name
 	dupe.title = title
-	dupe.world_clear = world_clear
 	for door in doors:
 		dupe.doors.push_back(door.duplicated())
 	for key in keys:
