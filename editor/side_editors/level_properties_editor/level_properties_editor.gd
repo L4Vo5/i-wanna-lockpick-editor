@@ -40,6 +40,8 @@ var placing := Enums.LevelElementTypes.Goal
 @onready var level_name: LineEdit = %LevelName
 @onready var level_title: LineEdit = %LevelTitle
 @onready var level_author: LineEdit = %LevelAuthor
+@onready var level_label: LineEdit = %LevelLabel
+@onready var level_comment: TextEdit = %LevelComment
 @onready var width: SpinBox = %Width
 @onready var height: SpinBox = %Height
 
@@ -89,6 +91,8 @@ func _ready() -> void:
 	level_name.text_changed.connect(_on_set_name)
 	level_title.text_changed.connect(_on_set_title)
 	level_author.text_changed.connect(_on_set_author)
+	level_label.text_changed.connect(_on_set_label)
+	level_comment.text_changed.connect(_on_set_comment)
 	width.value_changed.connect(_on_size_changed.unbind(1))
 	height.value_changed.connect(_on_size_changed.unbind(1))
 	remove_goal.pressed.connect(_on_remove_goal_button_pressed)
@@ -153,6 +157,10 @@ func _set_to_level_data() -> void:
 		level_title.text = _level_data.title
 	if level_author.text != _level_data.author:
 		level_author.text = _level_data.author
+	if level_label.text != _level_data.label:
+		level_label.text = _level_data.label
+	if level_comment.text != _level_data.comment:
+		level_comment.text = _level_data.comment
 	exitable.button_pressed = _level_data.exitable
 	_setting_to_data = false
 
@@ -186,6 +194,17 @@ func _on_set_author(new_author: String) -> void:
 	if _level_data.author == new_author: return
 	_level_data.author = new_author
 	if DEBUG: print_debug("Level author: " + new_author)
+
+func _on_set_label(new_label: String) -> void:
+	if _setting_to_data: return
+	if _level_data.label == new_label: return
+	_level_data.label = new_label
+
+func _on_set_comment() -> void:
+	var new_comment: String = level_comment.text
+	if _setting_to_data: return
+	if _level_data.comment == new_comment: return
+	_level_data.comment = new_comment
 
 func _set_level_number(level_index: int) -> void:
 	var level_id := _level_pack_data.level_order[level_index]

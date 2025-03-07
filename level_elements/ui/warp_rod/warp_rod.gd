@@ -52,7 +52,7 @@ func disconnect_pack_data() -> void:
 	if not pack_data: return
 	pack_data.added_level.disconnect(on_level_added)
 	pack_data.deleted_level.disconnect(on_level_removed)
-	pack_data.level_changed.connect(on_level_changed)
+	pack_data.level_changed.disconnect(on_level_changed)
 
 func connect_level_data(level: LevelData) -> void:
 	level.changed.connect(on_level_changed)
