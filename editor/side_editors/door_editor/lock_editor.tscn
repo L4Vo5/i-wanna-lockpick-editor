@@ -88,7 +88,6 @@ size_flags_vertical = 10
 
 [node name="Lock" parent="VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer/TheLock" instance=ExtResource("4_iioui")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
 lock_data = SubResource("Resource_sgiyv")
 ignore_position = true
@@ -107,6 +106,7 @@ text = "Color:"
 
 [node name="ColorChoice" parent="VBoxContainer/Color" instance=ExtResource("5_nb06o")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(14, 336)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -115,7 +115,7 @@ layout_mode = 2
 
 [node name="LockTypeChoice" parent="VBoxContainer/Type" instance=ExtResource("5_nb06o")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(18, 28)
+custom_minimum_size = Vector2(18, 112)
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("6_2b2ww")

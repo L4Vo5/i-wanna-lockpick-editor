@@ -1,28 +1,28 @@
 [gd_scene load_steps=37 format=3 uid="uid://ddjn4lk6mcp3k"]
 
-[ext_resource type="Script" path="res://editor/main_editor/editor.gd" id="1_n4qnf"]
-[ext_resource type="Script" path="res://editor/main_editor/scroll_container_improver.gd" id="2_jw8xc"]
-[ext_resource type="Script" path="res://editor/main_editor/level_container.gd" id="2_kqd34"]
+[ext_resource type="Script" uid="uid://o10ni5i7lpcx" path="res://editor/main_editor/editor.gd" id="1_n4qnf"]
+[ext_resource type="Script" uid="uid://rfnc3a4i30mk" path="res://editor/main_editor/scroll_container_improver.gd" id="2_jw8xc"]
+[ext_resource type="Script" uid="uid://qvtp6cjuiyuy" path="res://editor/main_editor/level_container.gd" id="2_kqd34"]
 [ext_resource type="PackedScene" uid="uid://doxgx8n20sjl0" path="res://level_elements/gameplay.tscn" id="4_a2tib"]
 [ext_resource type="PackedScene" uid="uid://csr3jfybky0mf" path="res://editor/misc/phantom_grid.tscn" id="6_i4nvv"]
 [ext_resource type="PackedScene" uid="uid://cu0sc2p0wg16c" path="res://ghost_displayer.tscn" id="6_x3b2w"]
 [ext_resource type="PackedScene" uid="uid://dqsf6y71ncn36" path="res://editor/side_editors/door_editor/door_editor.tscn" id="8_5qjay"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="9_0kc5k"]
-[ext_resource type="Script" path="res://editor/main_editor/level_outline.gd" id="9_r4glf"]
-[ext_resource type="Script" path="res://data/lock_data.gd" id="10_f1apr"]
-[ext_resource type="Script" path="res://data/door_data.gd" id="11_psli5"]
+[ext_resource type="Script" uid="uid://dc0pk3a7q644l" path="res://data/complex_number.gd" id="9_0kc5k"]
+[ext_resource type="Script" uid="uid://baxflwfhevex8" path="res://editor/main_editor/level_outline.gd" id="9_r4glf"]
+[ext_resource type="Script" uid="uid://dwblpjwk8ghi" path="res://data/lock_data.gd" id="10_f1apr"]
+[ext_resource type="Script" uid="uid://wstyrkqelqko" path="res://data/door_data.gd" id="11_psli5"]
 [ext_resource type="PackedScene" uid="uid://qk8x2wvdqp7i" path="res://editor/side_editors/key_editor/key_editor.tscn" id="12_cr7ft"]
-[ext_resource type="Script" path="res://editor/misc/selection_outline.gd" id="13_621va"]
-[ext_resource type="Script" path="res://data/key_data.gd" id="13_tk2t1"]
+[ext_resource type="Script" uid="uid://e1yq42srxcd7" path="res://editor/misc/selection_outline.gd" id="13_621va"]
+[ext_resource type="Script" uid="uid://dupy2qcrkmdra" path="res://data/key_data.gd" id="13_tk2t1"]
 [ext_resource type="PackedScene" uid="uid://cfwk45t0p1omu" path="res://editor/main_editor/invalid_level_load_window.tscn" id="16_ayc8p"]
 [ext_resource type="PackedScene" uid="uid://dtomtok1up4fn" path="res://editor/side_editors/key_counter_editor/counter_editor.tscn" id="16_vko0l"]
-[ext_resource type="Script" path="res://data/counter_part_data.gd" id="17_ir1fv"]
+[ext_resource type="Script" uid="uid://dojndwe1l1l2f" path="res://data/counter_part_data.gd" id="17_ir1fv"]
 [ext_resource type="PackedScene" uid="uid://hasnbvkv25y8" path="res://editor/side_editors/entry_editor/entry_editor.tscn" id="17_ncfu0"]
-[ext_resource type="Script" path="res://data/key_counter_data.gd" id="18_8cyth"]
+[ext_resource type="Script" uid="uid://cpoml66s8ld3f" path="res://data/key_counter_data.gd" id="18_8cyth"]
 [ext_resource type="PackedScene" uid="uid://biuhl87mkufly" path="res://editor/bookmark_tab_container/bookmark_tab_container.tscn" id="20_4gm0f"]
 [ext_resource type="PackedScene" uid="uid://bloqrx3o1b3c3" path="res://editor/side_editors/salvage_point_editor/salvage_point_editor.tscn" id="21_ieeor"]
-[ext_resource type="Script" path="res://data/entry_data.gd" id="21_uoxo3"]
-[ext_resource type="Script" path="res://data/salvage_point_data.gd" id="22_djptt"]
+[ext_resource type="Script" uid="uid://dd547we0o7au1" path="res://data/entry_data.gd" id="21_uoxo3"]
+[ext_resource type="Script" uid="uid://fnl8lyd4w2uu" path="res://data/salvage_point_data.gd" id="22_djptt"]
 [ext_resource type="PackedScene" uid="uid://dbw3g8lfbjbru" path="res://editor/side_editors/level_pack_properties_editor/level_pack_properties_editor.tscn" id="24_ff8pk"]
 [ext_resource type="PackedScene" uid="uid://ccum746wsrcl8" path="res://editor/side_editors/settings_editor/settings_editor.tscn" id="24_hjg5q"]
 
@@ -101,7 +101,6 @@ script = ExtResource("21_uoxo3")
 position = Vector2i(0, 0)
 leads_to = 0
 skin = 0
-require = Array[int]([])
 
 [sub_resource type="Resource" id="Resource_sx8pd"]
 script = ExtResource("22_djptt")
@@ -302,7 +301,7 @@ custom_minimum_size = Vector2(362, 0)
 layout_mode = 2
 
 [node name="BookmarkTabContainer" parent="HSplitContainer/RightDock" instance=ExtResource("20_4gm0f")]
-custom_minimum_size = Vector2(357, 0)
+custom_minimum_size = Vector2(360, 0)
 layout_mode = 2
 
 [node name="Doors" parent="HSplitContainer/RightDock/BookmarkTabContainer" instance=ExtResource("8_5qjay")]
@@ -361,5 +360,5 @@ show_hidden_files = true
 
 [node name="InvalidLevelLoad" parent="." instance=ExtResource("16_ayc8p")]
 position = Vector2i(10, 35)
-size = Vector2i(477, 1332)
+size = Vector2i(477, 956)
 visible = false

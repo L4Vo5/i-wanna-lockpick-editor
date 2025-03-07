@@ -1,10 +1,10 @@
 [gd_scene load_steps=11 format=3 uid="uid://cu0sc2p0wg16c"]
 
-[ext_resource type="Script" path="res://editor/main_editor/ghost_displayer.gd" id="1_83ry1"]
+[ext_resource type="Script" uid="uid://c8xgn27pcyrrb" path="res://editor/main_editor/ghost_displayer.gd" id="1_83ry1"]
 [ext_resource type="PackedScene" uid="uid://h5opptcugh0i" path="res://level_elements/doors_locks/door.tscn" id="2_tjjht"]
 [ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="3_c4sjt"]
-[ext_resource type="Script" path="res://data/complex_number.gd" id="4_jtslk"]
-[ext_resource type="Script" path="res://data/key_data.gd" id="5_grgip"]
+[ext_resource type="Script" uid="uid://dc0pk3a7q644l" path="res://data/complex_number.gd" id="4_jtslk"]
+[ext_resource type="Script" uid="uid://dupy2qcrkmdra" path="res://data/key_data.gd" id="5_grgip"]
 [ext_resource type="PackedScene" uid="uid://d4bjx48o6bjgf" path="res://level_elements/entries/entry.tscn" id="6_hw71d"]
 [ext_resource type="PackedScene" uid="uid://ctxog6bj0oha7" path="res://level_elements/salvage_points/salvage_point.tscn" id="7_agfe6"]
 [ext_resource type="PackedScene" uid="uid://bxdex8vqdp141" path="res://level_elements/key_counters/key_counter.tscn" id="8_0ubak"]
