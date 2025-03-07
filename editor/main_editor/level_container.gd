@@ -18,15 +18,15 @@ var entry_editor: EntryEditor:
 var salvage_point_editor: SalvagePointEditor:
 	get:
 		return editor_data.salvage_point_editor
+var counter_editor: CounterEditor:
+	get:
+		return editor_data.counter_editor
 var level: Level:
 	get:
 		return gameplay.level
 var collision_system: CollisionSystem:
 	get:
 		return level.collision_system
-var counter_editor: CounterEditor:
-	get:
-		return editor_data.counter_editor
 
 
 @export var editor: LockpickEditor

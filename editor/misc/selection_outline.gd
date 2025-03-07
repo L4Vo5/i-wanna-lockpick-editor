@@ -4,7 +4,7 @@ class_name SelectionOutline
 var tiles := {}
 var outline_tiles := {}
 
-@export var tile_size: int = 2
+@export var tile_size: int = 16
 @export var width: float = 3:
 	set(val):
 		if width == val: return
