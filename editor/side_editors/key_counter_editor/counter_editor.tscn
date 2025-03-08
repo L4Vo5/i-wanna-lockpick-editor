@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://dtomtok1up4fn"]
+[gd_scene load_steps=8 format=3 uid="uid://dtomtok1up4fn"]
 
 [ext_resource type="Script" uid="uid://bige4v5sxjgs1" path="res://editor/side_editors/key_counter_editor/counter_editor.gd" id="1_0o3e2"]
 [ext_resource type="Script" uid="uid://b4e8dvinnv2ar" path="res://editor/misc/minimum_size_container.gd" id="5_aprrx"]
 [ext_resource type="Script" uid="uid://dojndwe1l1l2f" path="res://data/counter_part_data.gd" id="5_swv3w"]
 [ext_resource type="Script" uid="uid://cpoml66s8ld3f" path="res://data/key_counter_data.gd" id="6_20q1v"]
-[ext_resource type="Script" uid="uid://buaikgcghlycj" path="res://editor/misc/grow_container.gd" id="6_35klv"]
 [ext_resource type="PackedScene" uid="uid://bxdex8vqdp141" path="res://level_elements/key_counters/key_counter.tscn" id="7_q7xrt"]
 
 [sub_resource type="Resource" id="Resource_yi3cb"]
@@ -44,31 +43,17 @@ text = "Key Counter Editor"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MinimumSizeContainer" type="Container" parent="ScrollContainer/VBoxContainer"]
-layout_mode = 2
-script = ExtResource("5_aprrx")
-vertical = true
-
-[node name="GrowContainer" type="Container" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer"]
-custom_minimum_size = Vector2(0, 63)
-layout_mode = 2
-script = ExtResource("6_35klv")
-
-[node name="ScrollContainer" type="ScrollContainer" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer"]
-custom_minimum_size = Vector2(0, 82)
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="TheDoor" type="CenterContainer" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer"]
+[node name="PreviewCounter" type="CenterContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer/TheDoor"]
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/PreviewCounter"]
 layout_mode = 2
-theme_override_constants/margin_top = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_bottom = 8
 
-[node name="MinimumSizeContainer" type="Container" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer/TheDoor/MarginContainer"]
+[node name="MinimumSizeContainer" type="Container" parent="ScrollContainer/VBoxContainer/PreviewCounter/MarginContainer"]
 layout_mode = 2
 script = ExtResource("5_aprrx")
 vertical = true
@@ -76,7 +61,7 @@ horizontal = true
 child_size_to_own_size = false
 metadata/_custom_type_script = "uid://b4e8dvinnv2ar"
 
-[node name="KeyCounter" parent="ScrollContainer/VBoxContainer/MinimumSizeContainer/GrowContainer/ScrollContainer/TheDoor/MarginContainer/MinimumSizeContainer" instance=ExtResource("7_q7xrt")]
+[node name="KeyCounter" parent="ScrollContainer/VBoxContainer/PreviewCounter/MarginContainer/MinimumSizeContainer" instance=ExtResource("7_q7xrt")]
 unique_name_in_owner = true
 layout_mode = 2
 ignore_position = true
