@@ -10,7 +10,6 @@
 [sub_resource type="Resource" id="Resource_yi3cb"]
 script = ExtResource("5_swv3w")
 color = 14
-position = 0
 
 [sub_resource type="Resource" id="Resource_i3u77"]
 script = ExtResource("6_20q1v")
@@ -97,7 +96,7 @@ layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
-tooltip_text = "However long the key counter will be. 32 is 1 tile."
+tooltip_text = "Width of the key counter in pixels."
 min_value = 32.0
 max_value = 500.0
 step = 8.0

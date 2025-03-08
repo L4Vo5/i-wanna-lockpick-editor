@@ -12,7 +12,7 @@ static var level_element_type := Enums.LevelElementTypes.KeyCounter
 		data = val
 		_connect_data()
 
-const COUNTERPART := preload("res://level_elements/key_counters/counter_part.tscn")
+const COUNTER_PART := preload("res://level_elements/key_counters/counter_part.tscn")
 const KEY_START := Vector2i(20, 20)
 const KEY_DIFF := Vector2i(204, 68) - KEY_START
 const WOOD := preload("res://level_elements/key_counters/box.png")
@@ -37,14 +37,18 @@ func _ready() -> void:
 	
 func _enter_tree():
 	if not is_node_ready(): return
-	update_size()
+	update_size.call_deferred()
 	
 	# reset collisions
 	update_visuals()
 
+func _exit_tree() -> void:
+	remove_counter_parts()
+
 func _connect_data() -> void:
 	if not is_instance_valid(data): return
 	data.changed.connect(update_visuals)
+	update_size()
 	
 	if not is_inside_tree(): return
 	update_visuals()
@@ -71,35 +75,26 @@ func update_visuals() -> void:
 
 func update_size() -> void:
 	# Vertical size is updated by the minimum size of the color counters
-	size = Vector2i(data.length, 0)
+	custom_minimum_size = Vector2(data.length, 0)
+	size = custom_minimum_size
 
 func update_position() -> void:
 	if not ignore_position:
 		position = data.position
 
+func remove_counter_parts() -> void:
+	for counter_part in part_holder.get_children():
+		part_holder.remove_child(counter_part)
+		NodePool.return_node(counter_part)
+
 func update_counter_parts() -> void:
 	if not is_instance_valid(data): return
 	assert(PerfManager.start(&"Counter::update_counter_parts"))
-	
-	var needed_counter_parts := data.colors.size()
-	var current_counter_parts := part_holder.get_child_count()
-	# redo the current ones
-	for i in mini(needed_counter_parts, current_counter_parts):
-		var counter_part := part_holder.get_child(i)
-		counter_part.level = level
-		counter_part.data = data.colors[i]
-	# shave off the rest
-	if current_counter_parts > needed_counter_parts:
-		for _i in current_counter_parts - needed_counter_parts:
-			var counter_part := part_holder.get_child(-1)
-			part_holder.remove_child(counter_part)
-			NodePool.return_node(counter_part)
-	# or add them
-	else:
-		for i in range(current_counter_parts, needed_counter_parts):
-			var new_counter_part: CounterPart = NodePool.pool_node(COUNTERPART)
-			new_counter_part.level = level
-			new_counter_part.data = data.colors[i]
-			part_holder.add_child(new_counter_part)
+	remove_counter_parts()
+	for part_data in data.colors:
+		var new_counter_part: CounterPart = NodePool.pool_node(COUNTER_PART)
+		new_counter_part.level = level
+		new_counter_part.data = part_data
+		part_holder.add_child(new_counter_part)
 	
 	assert(PerfManager.end(&"Counter::update_counter_parts"))

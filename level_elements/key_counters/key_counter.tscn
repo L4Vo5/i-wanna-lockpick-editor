@@ -4,12 +4,13 @@
 [ext_resource type="Texture2D" uid="uid://b6c62ka5j04e0" path="res://level_elements/key_counters/box.png" id="2_mjgu8"]
 
 [node name="KeyCounter" type="MarginContainer"]
-offset_right = 200.0
-offset_bottom = 297.0
+offset_right = 12.0
+offset_bottom = 17.0
 mouse_filter = 2
 script = ExtResource("1_jt1rr")
 
 [node name="MarginContainer2" type="MarginContainer" parent="."]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 2
 theme_override_constants/margin_top = 2
