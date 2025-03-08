@@ -10,24 +10,12 @@ static var level_element_type := Enums.LevelElementTypes.KeyCounter
 
 @export var position := Vector2i(0, 0)
 
-var glitch_color := Enums.Colors.Glitch
-
 func add_counter(data: CounterPartData) -> void:
 	colors.push_back(data)
 	changed.emit()
 
 func remove_color_at(pos: int) -> void:
 	colors.remove_at(pos)
-	changed.emit()
-
-func set_star(val: bool, color: Enums.Colors) -> void:
-	var change := []
-	for counter in colors:
-		if counter.color == color:
-			change.push_front(counter.position)
-			break
-	if change.is_empty(): return
-	for counter in change: counter.is_starred = val
 	changed.emit()
 
 func duplicated() -> CounterData:
@@ -43,7 +31,7 @@ func has_point(point: Vector2i) -> bool:
 	return get_rect().has_point(point)
 
 func get_rect() -> Rect2i:
-	return Rect2i(position, Vector2i(length, 17 + colors.size() * 49))
+	return Rect2i(position, Vector2i(length, 17 + colors.size() * 40))
 
 ## Returns true if the door has a given color (taking glitch and curses into account)
 func has_color(color: Enums.Colors) -> bool:

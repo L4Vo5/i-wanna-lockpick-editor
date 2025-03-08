@@ -17,7 +17,7 @@ script = ExtResource("5_14ye1")
 amount = SubResource("Resource_2rgmq")
 is_infinite = false
 type = 0
-color = 1
+color = 2
 position = Vector2i(0, 0)
 
 [sub_resource type="LabelSettings" id="LabelSettings_oxx1d"]

@@ -3,23 +3,28 @@
 [ext_resource type="Script" uid="uid://bvbvplqyqd6k2" path="res://level_elements/key_counters/key_counter.gd" id="1_jt1rr"]
 [ext_resource type="Texture2D" uid="uid://b6c62ka5j04e0" path="res://level_elements/key_counters/box.png" id="2_mjgu8"]
 
-[node name="KeyCounter" type="MarginContainer"]
-offset_right = 12.0
-offset_bottom = 17.0
+[node name="KeyCounter" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 137.0
 mouse_filter = 2
 script = ExtResource("1_jt1rr")
+metadata/_edit_horizontal_guides_ = [12.0, 43.0, 52.0, 83.0, 92.0, 123.0, 137.0]
+metadata/_edit_vertical_guides_ = [12.0]
 
-[node name="MarginContainer2" type="MarginContainer" parent="."]
-visible = false
-layout_mode = 2
-theme_override_constants/margin_left = 2
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_right = -2
-theme_override_constants/margin_bottom = -2
-
-[node name="Shadow" type="NinePatchRect" parent="MarginContainer2"]
+[node name="Shadow" type="NinePatchRect" parent="."]
 modulate = Color(0.5, 0.5, 0.5, 1)
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("2_mjgu8")
 region_rect = Rect2(0, 0, 122, 63)
 patch_margin_left = 2
@@ -30,7 +35,12 @@ axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("2_mjgu8")
 region_rect = Rect2(0, 0, 122, 63)
 patch_margin_left = 2
@@ -40,13 +50,16 @@ patch_margin_bottom = 2
 axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_bottom = 5
-
-[node name="Holder" type="VBoxContainer" parent="MarginContainer"]
+[node name="Holder" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 12.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
