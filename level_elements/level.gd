@@ -41,6 +41,7 @@ var level_data: LevelData = null:
 const DOOR := preload("res://level_elements/doors_locks/door.tscn")
 const KEY := preload("res://level_elements/keys/key.tscn")
 const ENTRY := preload("res://level_elements/entries/entry.tscn")
+const KEY_COUNTER := preload("res://level_elements/key_counters/key_counter.tscn")
 const SALVAGE_POINT := preload("res://level_elements/salvage_points/salvage_point.tscn")
 const PLAYER := preload("res://level_elements/kid/kid.tscn")
 const GOAL := preload("res://level_elements/goal/goal.tscn")
@@ -50,6 +51,7 @@ const GOAL := preload("res://level_elements/goal/goal.tscn")
 @onready var keys: Node2D = %Keys
 @onready var entries: Node2D = %Entries
 @onready var salvage_points: Node2D = %SalvagePoints
+@onready var key_counters: Node2D = %KeyCounters
 @onready var player_parent: Node2D = %PlayerParent
 @onready var goal_parent: Node2D = %GoalParent
 @onready var tile_map: TileMap = %TileMap
@@ -81,6 +83,7 @@ var original_data_to_node := {}
 @onready var level_element_type_to_container := {
 	Enums.LevelElementTypes.Door: doors,
 	Enums.LevelElementTypes.Key: keys,
+	Enums.LevelElementTypes.KeyCounter: key_counters,
 	Enums.LevelElementTypes.Entry: entries,
 	Enums.LevelElementTypes.SalvagePoint: salvage_points,
 }
@@ -88,6 +91,7 @@ var original_data_to_node := {}
 const LEVEL_ELEMENT_TO_SCENE := {
 	Enums.LevelElementTypes.Door: DOOR,
 	Enums.LevelElementTypes.Key: KEY,
+	Enums.LevelElementTypes.KeyCounter: KEY_COUNTER,
 	Enums.LevelElementTypes.Entry: ENTRY,
 	Enums.LevelElementTypes.SalvagePoint: SALVAGE_POINT,
 };
@@ -188,9 +192,11 @@ func reset() -> void:
 	# doors and salvage points may change, so we'll duplicate. for the others no need currently
 	var elem_doors := level_data.doors.duplicate()
 	var elem_salvage_points := level_data.salvage_points.duplicate()
+	var elem_counters := level_data.keycounters.duplicate()
 	var elements := {
 		Enums.LevelElementTypes.Door: elem_doors,
 		Enums.LevelElementTypes.Key: level_data.keys,
+		Enums.LevelElementTypes.KeyCounter: elem_counters,
 		Enums.LevelElementTypes.Entry: level_data.entries,
 		Enums.LevelElementTypes.SalvagePoint: elem_salvage_points,
 	}
@@ -443,7 +449,7 @@ func update_mouseover() -> void:
 	assert(PerfManager.start("Level::update_mouseover"))
 	mouseover.hide()
 	var obj := hover_highlight.current_obj
-	if obj and allow_hovering:
+	if obj and allow_hovering and not obj is KeyCounter:
 		mouseover.text = obj.get_mouseover_text()
 		mouseover.show()
 	assert(PerfManager.end("Level::update_mouseover"))
@@ -517,7 +523,7 @@ func add_element(element: NewLevelElementInfo) -> int:
 			id = _place_goal(element.position)
 		Enums.LevelElementTypes.Tile:
 			id = _place_tile(element.position)
-		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
+		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint, Enums.LevelElementTypes.KeyCounter:
 			element.data.position = element.position
 			id = _add_node_element(element.data.duplicated())
 		_:
@@ -528,7 +534,7 @@ func add_element(element: NewLevelElementInfo) -> int:
 
 func _place_tile(pos: Vector2i, custom_id := -1) -> int:
 	var tile_coord := pos / 32
-	if is_space_occupied(Rect2i(pos, Vector2i(32, 32))):
+	if is_space_occupied(Rect2i(pos, Vector2i(32, 32)), {}, false):
 		return -1
 	level_data.tiles[tile_coord] = true
 	update_tile_and_neighbors(tile_coord)
@@ -539,7 +545,7 @@ func _place_tile(pos: Vector2i, custom_id := -1) -> int:
 
 func _add_node_element(data) -> int:
 	var type = data.level_element_type
-	if is_space_occupied(data.get_rect()): return -1
+	if is_space_occupied(data.get_rect(), {}, type == Enums.LevelElementTypes.KeyCounter): return -1
 	if type == Enums.LevelElementTypes.Door:
 		if not data.check_valid(level_data, true): return -1
 	level_data.get_container_for_elem_type(type).push_back(data)
@@ -552,14 +558,14 @@ func _add_node_element(data) -> int:
 
 func _place_player_spawn(coord: Vector2i) -> int:
 	var id: int = elem_to_collision_system_id[Enums.LevelElementTypes.PlayerSpawn]
-	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}):
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}, false):
 		return -1
 	level_data.player_spawn_position = coord + Vector2i(14, 32)
 	return id
 
 func _place_goal(coord: Vector2i) -> int:
 	var id: int = elem_to_collision_system_id.get(Enums.LevelElementTypes.Goal, -1)
-	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}):
+	if is_space_occupied(Rect2i(coord, Vector2i(32, 32)), {id: true}, false):
 		return -1
 	level_data.goal_position = coord
 	# setting goal_position will call _update_goal_position() and make the id valid if it wasn't
@@ -583,7 +589,7 @@ func remove_element(id: int) -> void:
 			level_data.has_goal = false
 		Enums.LevelElementTypes.Tile:
 			_remove_tile(element * 32)
-		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
+		Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint, Enums.LevelElementTypes.KeyCounter:
 			_remove_node_element(element)
 		_:
 			assert(false)
@@ -623,7 +629,7 @@ func move_elements(ids: Dictionary, relative_pos: Vector2i) -> bool:
 	for id in ids:
 		var rect := collision_system.get_rect(id)
 		rect.position += relative_pos
-		if is_space_occupied(rect, ids):
+		if is_space_occupied(rect, ids, get_node_by_id(id) is KeyCounter):
 			return false
 	# They can all be moved!
 	# This should preserve id, to keep the current selection valid.
@@ -644,7 +650,7 @@ func move_elements(ids: Dictionary, relative_pos: Vector2i) -> bool:
 				tiles.push_back(id)
 				tiles.push_back(new_pos.x)
 				tiles.push_back(new_pos.y)
-			Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
+			Enums.LevelElementTypes.Door, Enums.LevelElementTypes.Key, Enums.LevelElementTypes.KeyCounter, Enums.LevelElementTypes.Entry, Enums.LevelElementTypes.SalvagePoint:
 				_move_node_element(data, new_pos)
 			_:
 				assert(false)
@@ -681,14 +687,17 @@ func is_rect_inside(rect: Rect2i) -> bool:
 
 ## Returns true if there's an element in the given rect, or if the rect falls outside the level boundaries.
 ## excluded_ids are from the collision_system
-func is_space_occupied(rect: Rect2i, excluded_ids := {}) -> bool:
+func is_space_occupied(rect: Rect2i, excluded_ids := {}, is_key_counter := false) -> bool:
 	if not is_rect_inside(rect):
 		return true
-	if excluded_ids.is_empty():
-		return collision_system.rect_has_collision_in_grid(rect)
+	if is_key_counter:
+		var dict: Dictionary = collision_system.get_rects_intersecting_rect_in_grid(rect)
+		for id in dict.keys():
+			if (not excluded_ids.has(id)) and get_node_by_id(id) is KeyCounter:
+				return true
 	else:
 		var dict: Dictionary = collision_system.get_rects_intersecting_rect_in_grid(rect)
 		for id in dict.keys():
-			if not excluded_ids.has(id):
+			if (not excluded_ids.has(id)) and not get_node_by_id(id) is KeyCounter:
 				return true
 	return false

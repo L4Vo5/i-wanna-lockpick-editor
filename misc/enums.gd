@@ -47,7 +47,7 @@ enum Curse {
 enum KeyTypes {
 	Add, Exact,
 	Star, Unstar,
-	Flip, Rotor, RotorFlip
+	Flip, Rotor, RotorFlip,
 }
 
 enum LockTypes {
@@ -61,6 +61,7 @@ enum LevelElementTypes {
 	None,
 	Door,
 	Key,
+	KeyCounter,
 	Entry,
 	SalvagePoint,
 	Tile,
@@ -72,6 +73,7 @@ enum LevelElementTypes {
 const NODE_LEVEL_ELEMENTS := [
 	LevelElementTypes.Door,
 	LevelElementTypes.Key,
+	LevelElementTypes.KeyCounter,
 	LevelElementTypes.Entry,
 	LevelElementTypes.SalvagePoint
 ]

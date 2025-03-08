@@ -37,6 +37,7 @@ var level: Level:
 			level.changed_level_data.connect(emit_changed_level_data)
 var door_editor: DoorEditor
 var key_editor: KeyEditor
+var counter_editor: CounterEditor
 var tile_editor: MarginContainer
 var side_tabs: BookmarkTabContainer
 var level_properties_editor: LevelPropertiesEditor

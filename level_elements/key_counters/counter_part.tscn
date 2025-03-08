@@ -1,0 +1,64 @@
+[gd_scene load_steps=10 format=3 uid="uid://nodch2sylesx"]
+
+[ext_resource type="Script" uid="uid://bbkd1loaghsx3" path="res://level_elements/key_counters/counter_part.gd" id="1_oeaf5"]
+[ext_resource type="Texture2D" uid="uid://h5qkvwwocm35" path="res://level_elements/key_counters/counterstar.png" id="2_igaj3"]
+[ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="3_e7nju"]
+[ext_resource type="Script" uid="uid://dc0pk3a7q644l" path="res://data/complex_number.gd" id="4_2rgmq"]
+[ext_resource type="Script" uid="uid://dupy2qcrkmdra" path="res://data/key_data.gd" id="5_14ye1"]
+[ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="9_b5kq7"]
+
+[sub_resource type="Resource" id="Resource_2rgmq"]
+script = ExtResource("4_2rgmq")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_14ye1"]
+script = ExtResource("5_14ye1")
+amount = SubResource("Resource_2rgmq")
+is_infinite = false
+type = 0
+color = 1
+position = Vector2i(0, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_oxx1d"]
+font = ExtResource("9_b5kq7")
+font_size = 26
+font_color = Color(0.172549, 0.133333, 0.109804, 1)
+outline_size = 3
+outline_color = Color(0.172549, 0.133333, 0.109804, 1)
+
+[node name="CounterPart" type="Control"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("1_oeaf5")
+
+[node name="Star" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 0.705882, 1)
+position = Vector2(16, 16)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("2_igaj3")
+
+[node name="key" parent="." instance=ExtResource("3_e7nju")]
+unique_name_in_owner = true
+data = SubResource("Resource_14ye1")
+hide_shadow = true
+
+[node name="Amount" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 40.0
+offset_top = 4.0
+offset_right = 56.0
+offset_bottom = 41.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("9_b5kq7")
+theme_override_font_sizes/font_size = 31
+text = "x 0"
+label_settings = SubResource("LabelSettings_oxx1d")

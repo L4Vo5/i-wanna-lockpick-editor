@@ -7,6 +7,7 @@ class_name LockpickEditor
 @export var side_tabs: BookmarkTabContainer
 @export var door_editor: DoorEditor
 @export var key_editor: KeyEditor
+@export var counter_editor: CounterEditor
 @export var tile_editor: Control
 @export var level_pack_properties_editor: LevelPackPropertiesEditor
 @export var entry_editor: EntryEditor
@@ -15,6 +16,7 @@ class_name LockpickEditor
 @onready var level_element_editors: Dictionary = {
 	Enums.LevelElementTypes.Door: door_editor,
 	Enums.LevelElementTypes.Key: key_editor,
+	Enums.LevelElementTypes.KeyCounter: counter_editor,
 	Enums.LevelElementTypes.Entry: entry_editor,
 	Enums.LevelElementTypes.SalvagePoint: salvage_point_editor,
 }
@@ -76,6 +78,7 @@ func _ready() -> void:
 	door_editor.editor_data = data
 	data.key_editor = key_editor
 	data.tile_editor = tile_editor
+	data.counter_editor = counter_editor
 	data.level_pack_properties_editor = level_pack_properties_editor
 	data.entry_editor = entry_editor
 	data.salvage_point_editor = salvage_point_editor

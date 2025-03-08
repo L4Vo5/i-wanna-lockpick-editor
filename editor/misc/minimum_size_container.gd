@@ -2,7 +2,7 @@
 extends Container
 class_name MinimumSizeContainer
 ## A node that sets its minimum size to its children's size.
-## It also sets its children's size to its own size.
+## It also optionally sets its children's size to its own size.
 
 @export var vertical := false:
 	set(val):
@@ -10,8 +10,9 @@ class_name MinimumSizeContainer
 		queue_sort()
 @export var horizontal := false:
 	set(val):
-		vertical = val
+		horizontal = val
 		queue_sort()
+@export var child_size_to_own_size := true
 
 func _init() -> void:
 	sort_children.connect(_sort_children)
@@ -27,7 +28,7 @@ func _on_child_exiting_tree(child: Node) -> void:
 		child.resized.disconnect(_sort_children)
 
 func _sort_children() -> void:
-	if horizontal or vertical:
+	if child_size_to_own_size and (horizontal or vertical):
 		for child in get_children():
 			if not horizontal:
 				child.size.x = size.x

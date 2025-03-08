@@ -5,6 +5,8 @@ class_name LevelData
 
 @export var keys: Array[KeyData] = []
 
+@export var keycounters: Array[CounterData] = []
+
 @export var entries: Array[EntryData] = []
 
 @export var salvage_points: Array[SalvagePointData] = []
@@ -100,6 +102,8 @@ func duplicated() -> LevelData:
 		dupe.doors.push_back(door.duplicated())
 	for key in keys:
 		dupe.keys.push_back(key.duplicated())
+	for counter in keycounters:
+		dupe.keycounters.push_back(counter.duplicated())
 	for entry in entries:
 		dupe.entries.push_back(entry.duplicated())
 	for salvage_point in salvage_points:
@@ -115,6 +119,7 @@ func get_container_for_elem_type(type: Enums.LevelElementTypes):
 	match type:
 		Enums.LevelElementTypes.Door: return doors
 		Enums.LevelElementTypes.Key: return keys
+		Enums.LevelElementTypes.KeyCounter: return keycounters
 		Enums.LevelElementTypes.SalvagePoint: return salvage_points
 		Enums.LevelElementTypes.Entry: return entries
 		Enums.LevelElementTypes.Tile: return tiles
@@ -131,6 +136,8 @@ func get_collision_system() -> CollisionSystem:
 		collision_system.add_rect(door.get_rect(), door)
 	for key in keys:
 		collision_system.add_rect(key.get_rect(), key)
+	for counter in keycounters:
+		collision_system.add_rect(counter.get_rect(), counter)
 	for entry in entries:
 		collision_system.add_rect(entry.get_rect(), entry)
 	for salvage_point in salvage_points:
@@ -151,6 +158,8 @@ static func get_element_type(elem: Variant) -> Enums.LevelElementTypes:
 static func get_element_grid_size(type: Enums.LevelElementTypes) -> Vector2i:
 	if type == Enums.LevelElementTypes.Tile:
 		return Vector2i(32, 32)
+	elif type == Enums.LevelElementTypes.KeyCounter:
+		return Vector2i(2, 2)
 	else:
 		return Vector2i(16, 16)
 
@@ -246,6 +255,8 @@ func check_valid(should_correct: bool) -> void:
 		door.check_valid(self, should_correct)
 	for salvage_point in salvage_points:
 		salvage_point.check_valid(self, should_correct)
+	for counter in keycounters:
+		counter.check_valid(self, should_correct)
 
 func get_screenshot() -> Image:
 	var viewport := SubViewport.new()
