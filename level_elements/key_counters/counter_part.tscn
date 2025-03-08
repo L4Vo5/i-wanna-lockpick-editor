@@ -17,10 +17,11 @@ outline_size = 3
 outline_color = Color(0.172549, 0.133333, 0.109804, 1)
 
 [node name="CounterPart" type="Control"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_right = 40.0
+offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("1_oeaf5")
 

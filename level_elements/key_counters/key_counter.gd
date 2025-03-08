@@ -37,13 +37,10 @@ func _ready() -> void:
 	
 func _enter_tree():
 	if not is_node_ready(): return
+	update_size()
 	
 	# reset collisions
 	update_visuals()
-
-func _exit_tree():
-	# in case that problem ever would appear on doors as well
-	custom_minimum_size = Vector2(0, 0)
 
 func _connect_data() -> void:
 	if not is_instance_valid(data): return
@@ -67,20 +64,18 @@ func update_visuals() -> void:
 	if not is_instance_valid(data): return
 	assert(PerfManager.start(&"Counter::update_visuals"))
 	update_position()
-	update_textures()
 	update_counter_parts()
 	
 	assert(PerfManager.end(&"Counter::update_visuals"))
+
+func update_size() -> void:
+	# Vertical size is updated by the minimum size of the color counters
+	size = Vector2i(data.length, 0)
 
 func update_position() -> void:
 	if not ignore_position:
 		position = data.position
 
-func update_textures() -> void:
-	if not is_node_ready(): return
-	if not is_instance_valid(data): return
-	custom_minimum_size = Vector2i(data.length, 17 + data.colors.size() * 49)
-	
 func update_counter_parts() -> void:
 	if not is_instance_valid(data): return
 	assert(PerfManager.start(&"Counter::update_counter_parts"))
