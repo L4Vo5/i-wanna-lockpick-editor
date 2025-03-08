@@ -14,7 +14,7 @@ class_name CounterEditor
 @onready var add_counter: Button = %AddCounter
 @onready var counter_part_editor_parent: BoxContainer = %CounterPartEditors
 
-const counter_part_editor := preload("res://editor/side_editors/key_counter_editor/counter_part_editor.tscn")
+const COUNTER_PART_EDITOR := preload("res://editor/side_editors/key_counter_editor/counter_part_editor.tscn")
 var editor_data: EditorData
 
 func _init() -> void:
@@ -45,27 +45,24 @@ func _set_to_counter_data() -> void:
 
 func _update_counter_width() -> void:
 	if _setting_to_data: return
-	data.length = length.value
+	data.length = length.value as int
 	data.emit_changed()
 
 func _regen_counter_part_editors() -> void:
 	for child in counter_part_editor_parent.get_children():
 		child.queue_free()
 	for counter_part_data in data.colors:
-		var counter_part_editor: CounterPartEditor = counter_part_editor.instantiate()
+		var counter_part_editor: CounterPartEditor = COUNTER_PART_EDITOR.instantiate()
 		counter_part_editor.counter_part_data = counter_part_data
 		counter_part_editor.delete.connect(_delete_counter_part_editor.bind(counter_part_editor))
 		counter_part_editor_parent.add_child(counter_part_editor)
 
 func _add_new_counter_part() -> void:
 	var new_counter_part := CounterPartData.new()
-	new_counter_part.color = Enums.Colors.Stone
+	new_counter_part.color = Enums.Colors.White
 	data.add_counter(new_counter_part)
 	
-	var counter_part_editor: CounterPartEditor = counter_part_editor.instantiate()
-	counter_part_editor.editor_data = editor_data
-	var i := counter_part_editor_parent.get_child_count() + 1
-	counter_part_editor.counter_part_number = i
+	var counter_part_editor: CounterPartEditor = COUNTER_PART_EDITOR.instantiate()
 	counter_part_editor.counter_part_data = new_counter_part
 	counter_part_editor.delete.connect(_delete_counter_part_editor.bind(counter_part_editor))
 	counter_part_editor_parent.add_child(counter_part_editor)
@@ -73,9 +70,6 @@ func _add_new_counter_part() -> void:
 	add_counter.text = "Add another Counter"
 
 func _delete_counter_part_editor(which: CounterPartEditor) -> void:
-	var i := which.counter_part_number - 1
+	var i := which.get_index()
 	data.remove_color_at(i)
-	var counter_part_editors := counter_part_editor_parent.get_children()
-	counter_part_editors[i].queue_free()
-	for j in range(i+1, counter_part_editors.size()):
-		counter_part_editors[j].counter_part_number = j
+	which.queue_free()
