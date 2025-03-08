@@ -9,6 +9,25 @@ offset_bottom = 297.0
 mouse_filter = 2
 script = ExtResource("1_jt1rr")
 
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = -2
+theme_override_constants/margin_bottom = -2
+
+[node name="Shadow" type="NinePatchRect" parent="MarginContainer2"]
+modulate = Color(0.5, 0.5, 0.5, 1)
+layout_mode = 2
+texture = ExtResource("2_mjgu8")
+region_rect = Rect2(0, 0, 122, 63)
+patch_margin_left = 2
+patch_margin_top = 2
+patch_margin_right = 2
+patch_margin_bottom = 2
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
 layout_mode = 2
 texture = ExtResource("2_mjgu8")
