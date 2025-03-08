@@ -95,7 +95,7 @@ func update_visual() -> void:
 		fill.modulate = Rendering.key_colors[data.color]
 	
 	text.show()
-	set_position(Vector2(16, 17 + 49 * data.position))
+	#set_position(Vector2(16, 17 + 49 * data.position))
 	star.rotation_degrees += 1.1
 	
 	if level:
@@ -104,14 +104,3 @@ func update_visual() -> void:
 			star.show()
 	else:
 		text.text = "0"
-
-func undo() -> void:
-	# HACK: fix for undoing at the same time that key is picked up making the key be picked up again after undoing
-	await get_tree().physics_frame
-	show()
-	data.is_spent = false
-
-func redo() -> void:
-	if not data.is_infinite:
-		data.is_spent = true
-	hide()

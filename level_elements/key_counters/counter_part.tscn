@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://nodch2sylesx"]
+[gd_scene load_steps=10 format=3 uid="uid://nodch2sylesx"]
 
 [ext_resource type="Script" uid="uid://bbkd1loaghsx3" path="res://level_elements/key_counters/counter_part.gd" id="1_oeaf5"]
 [ext_resource type="Texture2D" uid="uid://h5qkvwwocm35" path="res://level_elements/key_counters/counterstar.png" id="2_igaj3"]
@@ -9,19 +9,12 @@
 [ext_resource type="Texture2D" uid="uid://b6k20y7s4yqy7" path="res://level_elements/keys/spr_key_master.png" id="7_0d5al"]
 [ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="9_b5kq7"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_mwwfn"]
-font = ExtResource("9_b5kq7")
-font_size = 32
-font_color = Color(0, 0, 0, 1)
-outline_size = 4
-outline_color = Color(0, 0, 0, 1)
-
 [sub_resource type="LabelSettings" id="LabelSettings_oxx1d"]
 font = ExtResource("9_b5kq7")
-font_size = 32
-font_color = Color(0, 0, 0, 1)
-outline_size = 4
-outline_color = Color(0, 0, 0, 1)
+font_size = 26
+font_color = Color(0.172549, 0.133333, 0.109804, 1)
+outline_size = 3
+outline_color = Color(0.172549, 0.133333, 0.109804, 1)
 
 [node name="CounterPart" type="Control"]
 layout_mode = 3
@@ -62,29 +55,31 @@ hframes = 4
 
 [node name="AmountX" type="Label" parent="."]
 layout_mode = 0
-offset_left = 36.0
-offset_right = 52.0
-offset_bottom = 37.0
+offset_left = 40.0
+offset_top = 4.0
+offset_right = 56.0
+offset_bottom = 41.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_fonts/font = ExtResource("9_b5kq7")
 theme_override_font_sizes/font_size = 31
 text = "x"
-label_settings = SubResource("LabelSettings_mwwfn")
+label_settings = SubResource("LabelSettings_oxx1d")
 
 [node name="Amount" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 55.0
-offset_right = 655.0
-offset_bottom = 37.0
+offset_left = 59.0
+offset_top = 4.0
+offset_right = 659.0
+offset_bottom = 41.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_fonts/font = ExtResource("9_b5kq7")
 theme_override_font_sizes/font_size = 31
-text = "1"
+text = "0"
 label_settings = SubResource("LabelSettings_oxx1d")
 
 [node name="Special" type="Sprite2D" parent="."]

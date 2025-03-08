@@ -18,7 +18,7 @@ const KEY_DIFF := Vector2i(204, 68) - KEY_START
 const WOOD := preload("res://level_elements/key_counters/box.png")
 const STAR := preload("res://level_elements/key_counters/counterstar.png")
 
-@onready var lock_holder := %Holder as Control
+@onready var part_holder := %Holder as Control
 
 var using_i_view_colors := false
 var level: Level = null:
@@ -100,17 +100,17 @@ func update_locks() -> void:
 	assert(PerfManager.start(&"Counter::update_locks"))
 	
 	var needed_locks := data.colors.size()
-	var current_locks := lock_holder.get_child_count()
+	var current_locks := part_holder.get_child_count()
 	# redo the current ones
 	for i in mini(needed_locks, current_locks):
-		var lock := lock_holder.get_child(i)
+		var lock := part_holder.get_child(i)
 		lock.level = level
 		lock.data = data.colors[i]
 	# shave off the rest
 	if current_locks > needed_locks:
 		for _i in current_locks - needed_locks:
-			var lock := lock_holder.get_child(-1)
-			lock_holder.remove_child(lock)
+			var lock := part_holder.get_child(-1)
+			part_holder.remove_child(lock)
 			NodePool.return_node(lock)
 	# or add them
 	else:
@@ -118,7 +118,7 @@ func update_locks() -> void:
 			var new_lock: CounterPart = NodePool.pool_node(COUNTERPART)
 			new_lock.level = level
 			new_lock.data = data.colors[i]
-			lock_holder.add_child(new_lock)
+			part_holder.add_child(new_lock)
 	
 	assert(PerfManager.end(&"Counter::update_locks"))
 #var wood: RID
