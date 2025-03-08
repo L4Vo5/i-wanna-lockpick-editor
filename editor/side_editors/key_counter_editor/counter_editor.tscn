@@ -75,23 +75,23 @@ layout_mode = 2
 ignore_position = true
 data = SubResource("Resource_i3u77")
 
-[node name="BaseDoor" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="CounterEdit" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Size" type="MarginContainer" parent="ScrollContainer/VBoxContainer/BaseDoor"]
+[node name="Size" type="MarginContainer" parent="ScrollContainer/VBoxContainer/CounterEdit"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/BaseDoor/Size"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/CounterEdit/Size"]
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/BaseDoor/Size/HBoxContainer"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/CounterEdit/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Width:"
 vertical_alignment = 1
 
-[node name="Width" type="SpinBox" parent="ScrollContainer/VBoxContainer/BaseDoor/Size/HBoxContainer"]
+[node name="Width" type="SpinBox" parent="ScrollContainer/VBoxContainer/CounterEdit/Size/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
@@ -104,17 +104,17 @@ step = 8.0
 value = 200.0
 alignment = 1
 
-[node name="Label3" type="Label" parent="ScrollContainer/VBoxContainer/BaseDoor/Size/HBoxContainer"]
+[node name="Label3" type="Label" parent="ScrollContainer/VBoxContainer/CounterEdit/Size/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "pixels"
 vertical_alignment = 1
 
-[node name="LockEditors" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="CounterPartEditors" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="AddLock" type="Button" parent="ScrollContainer/VBoxContainer"]
+[node name="AddCounter" type="Button" parent="ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Add another Counter"

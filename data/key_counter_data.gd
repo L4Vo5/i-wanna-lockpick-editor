@@ -2,8 +2,6 @@
 extends Resource
 class_name CounterData
 
-## Contains a door's logical data
-
 static var level_element_type := Enums.LevelElementTypes.KeyCounter
 
 @export var length := 200
@@ -14,11 +12,11 @@ static var level_element_type := Enums.LevelElementTypes.KeyCounter
 
 var glitch_color := Enums.Colors.Glitch
 
-func add_counter(lock: CounterPartData) -> void:
-	colors.push_back(lock)
+func add_counter(data: CounterPartData) -> void:
+	colors.push_back(data)
 	changed.emit()
 
-func remove_lock_at(pos: int) -> void:
+func remove_color_at(pos: int) -> void:
 	colors.remove_at(pos)
 	changed.emit()
 
