@@ -2,12 +2,23 @@
 
 [ext_resource type="Script" uid="uid://bbkd1loaghsx3" path="res://level_elements/key_counters/counter_part.gd" id="1_oeaf5"]
 [ext_resource type="Texture2D" uid="uid://h5qkvwwocm35" path="res://level_elements/key_counters/counterstar.png" id="2_igaj3"]
-[ext_resource type="Material" uid="uid://b1go7gviuk2jc" path="res://rendering/glitch.material" id="3_iuf43"]
-[ext_resource type="Texture2D" uid="uid://dr8mnidwq7oss" path="res://level_elements/keys/spr_glitch.png" id="4_en8p1"]
-[ext_resource type="Texture2D" uid="uid://c3yg2n17xq0nk" path="res://level_elements/keys/spr_key_fill.png" id="5_bffne"]
-[ext_resource type="Texture2D" uid="uid://krj3m6t0k1jc" path="res://level_elements/keys/spr_key_outline.png" id="6_tsbxy"]
-[ext_resource type="Texture2D" uid="uid://b6k20y7s4yqy7" path="res://level_elements/keys/spr_key_master.png" id="7_0d5al"]
+[ext_resource type="PackedScene" uid="uid://b0dwb73yoj3sr" path="res://level_elements/keys/key.tscn" id="3_e7nju"]
+[ext_resource type="Script" uid="uid://dc0pk3a7q644l" path="res://data/complex_number.gd" id="4_2rgmq"]
+[ext_resource type="Script" uid="uid://dupy2qcrkmdra" path="res://data/key_data.gd" id="5_14ye1"]
 [ext_resource type="FontFile" uid="uid://8u15l8k5v28c" path="res://fonts/KhmerUI.ttf" id="9_b5kq7"]
+
+[sub_resource type="Resource" id="Resource_2rgmq"]
+script = ExtResource("4_2rgmq")
+real_part = 1
+imaginary_part = 0
+
+[sub_resource type="Resource" id="Resource_14ye1"]
+script = ExtResource("5_14ye1")
+amount = SubResource("Resource_2rgmq")
+is_infinite = false
+type = 0
+color = 1
+position = Vector2i(0, 0)
 
 [sub_resource type="LabelSettings" id="LabelSettings_oxx1d"]
 font = ExtResource("9_b5kq7")
@@ -32,27 +43,10 @@ position = Vector2(16, 16)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("2_igaj3")
 
-[node name="SprGlitch" type="Sprite2D" parent="."]
+[node name="key" parent="." instance=ExtResource("3_e7nju")]
 unique_name_in_owner = true
-visible = false
-material = ExtResource("3_iuf43")
-texture = ExtResource("4_en8p1")
-centered = false
-hframes = 4
-
-[node name="Fill" type="Sprite2D" parent="."]
-unique_name_in_owner = true
-modulate = Color(0.839216, 0.811765, 0.788235, 1)
-texture = ExtResource("5_bffne")
-centered = false
-hframes = 4
-vframes = 2
-
-[node name="Outline" type="Sprite2D" parent="."]
-unique_name_in_owner = true
-texture = ExtResource("6_tsbxy")
-centered = false
-hframes = 4
+data = SubResource("Resource_14ye1")
+hide_shadow = true
 
 [node name="Amount" type="Label" parent="."]
 unique_name_in_owner = true
@@ -68,11 +62,3 @@ theme_override_fonts/font = ExtResource("9_b5kq7")
 theme_override_font_sizes/font_size = 31
 text = "x 0"
 label_settings = SubResource("LabelSettings_oxx1d")
-
-[node name="Special" type="Sprite2D" parent="."]
-unique_name_in_owner = true
-visible = false
-texture = ExtResource("7_0d5al")
-centered = false
-hframes = 4
-vframes = 4

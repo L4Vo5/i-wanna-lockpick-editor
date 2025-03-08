@@ -65,6 +65,7 @@ func update_visuals() -> void:
 	assert(PerfManager.start(&"Counter::update_visuals"))
 	update_position()
 	update_counter_parts()
+	update_size()
 	
 	assert(PerfManager.end(&"Counter::update_visuals"))
 
