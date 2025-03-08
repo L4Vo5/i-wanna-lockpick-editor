@@ -53,7 +53,8 @@ texture = ExtResource("6_tsbxy")
 centered = false
 hframes = 4
 
-[node name="AmountX" type="Label" parent="."]
+[node name="Amount" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 40.0
 offset_top = 4.0
@@ -64,22 +65,7 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_fonts/font = ExtResource("9_b5kq7")
 theme_override_font_sizes/font_size = 31
-text = "x"
-label_settings = SubResource("LabelSettings_oxx1d")
-
-[node name="Amount" type="Label" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 59.0
-offset_top = 4.0
-offset_right = 659.0
-offset_bottom = 41.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
-theme_override_fonts/font = ExtResource("9_b5kq7")
-theme_override_font_sizes/font_size = 31
-text = "0"
+text = "x 0"
 label_settings = SubResource("LabelSettings_oxx1d")
 
 [node name="Special" type="Sprite2D" parent="."]

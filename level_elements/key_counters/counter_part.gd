@@ -94,13 +94,12 @@ func update_visual() -> void:
 		outline.show()
 		fill.modulate = Rendering.key_colors[data.color]
 	
-	text.show()
 	#set_position(Vector2(16, 17 + 49 * data.position))
 	star.rotation_degrees += 1.1
 	
 	if level:
-		text.text = str(level.logic.key_counts[data.color])
+		text.text = "x " + str(level.logic.key_counts[data.color])
 		if level.logic.star_keys[data.color]:
 			star.show()
 	else:
-		text.text = "0"
+		text.text = "x 0"
