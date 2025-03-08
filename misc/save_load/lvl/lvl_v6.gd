@@ -302,14 +302,13 @@ static func load_key_counter(data: ByteAccess) -> CounterData:
 	key_counter.colors.resize(colors_amount)
 	for i in colors_amount:
 		if data.reached_eof(): return
-		key_counter.colors[i] = load_key_counter_part(data, i)
+		key_counter.colors[i] = load_key_counter_part(data)
 	
 	return key_counter
 
-static func load_key_counter_part(data: ByteAccess, number: int) -> CounterPartData:
+static func load_key_counter_part(data: ByteAccess) -> CounterPartData:
 	var key_counter_part := CounterPartData.new()
 	key_counter_part.color = data.get_u8()
-	key_counter_part.position = number
 	
 	return key_counter_part
 

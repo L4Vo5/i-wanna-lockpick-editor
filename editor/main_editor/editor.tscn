@@ -88,7 +88,6 @@ position = Vector2i(0, 0)
 [sub_resource type="Resource" id="Resource_3ttes"]
 script = ExtResource("17_ir1fv")
 color = 14
-position = 0
 
 [sub_resource type="Resource" id="Resource_506ni"]
 script = ExtResource("18_8cyth")

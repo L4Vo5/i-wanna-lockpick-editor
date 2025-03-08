@@ -17,7 +17,6 @@ signal delete
 		if not is_node_ready(): await ready
 		counter_part_number = val
 		counter_part_n.text = "Counter %d" % counter_part_number
-		counter_part_data.position = counter_part_number - 1
 
 var editor_data: EditorData
 
@@ -27,7 +26,6 @@ func _ready() -> void:
 	color_choice.changed_color.connect(_update_counter_part_color)
 	
 	counter_part_n.text = "Counter %d" % counter_part_number
-	counter_part_data.position = 0
 	
 	_set_to_counter_part_data()
 

@@ -29,20 +29,11 @@ var level: Level = null:
 
 func _ready() -> void:
 	assert(PerfManager.start("Counter::_ready"))
-	#_create_canvas_items()
 	
 	if is_instance_valid(level):
 		assert(visible)
 	update_visuals()
 	assert(PerfManager.end("Counter::_ready"))
-
-#func _create_canvas_items() -> void:
-	#wood = RenderingServer.canvas_item_create()
-	#RenderingServer.canvas_item_set_parent(wood, get_canvas_item())
-#	RenderingServer.canvas_item_set_draw_index(door_base, 0)
-
-#func _destroy_canvas_items() -> void:
-	#RenderingServer.free_rid(wood)
 	
 func _enter_tree():
 	if not is_node_ready(): return
@@ -60,8 +51,6 @@ func _connect_data() -> void:
 	
 	if not is_inside_tree(): return
 	update_visuals()
-	# look.... ok?
-	# TODO: maybe not make the door show() itself? this is the only time it happens
 	show()
 
 func _disconnect_data() -> void:
@@ -79,10 +68,7 @@ func update_visuals() -> void:
 	assert(PerfManager.start(&"Counter::update_visuals"))
 	update_position()
 	update_textures()
-	update_locks()
-	#_draw_base()
-	#_draw_keys()
-	#_draw_counts()
+	update_counter_parts()
 	
 	assert(PerfManager.end(&"Counter::update_visuals"))
 
@@ -95,40 +81,29 @@ func update_textures() -> void:
 	if not is_instance_valid(data): return
 	custom_minimum_size = Vector2i(data.length, 17 + data.colors.size() * 49)
 	
-func update_locks() -> void:
+func update_counter_parts() -> void:
 	if not is_instance_valid(data): return
-	assert(PerfManager.start(&"Counter::update_locks"))
+	assert(PerfManager.start(&"Counter::update_counter_parts"))
 	
-	var needed_locks := data.colors.size()
-	var current_locks := part_holder.get_child_count()
+	var needed_counter_parts := data.colors.size()
+	var current_counter_parts := part_holder.get_child_count()
 	# redo the current ones
-	for i in mini(needed_locks, current_locks):
-		var lock := part_holder.get_child(i)
-		lock.level = level
-		lock.data = data.colors[i]
+	for i in mini(needed_counter_parts, current_counter_parts):
+		var counter_part := part_holder.get_child(i)
+		counter_part.level = level
+		counter_part.data = data.colors[i]
 	# shave off the rest
-	if current_locks > needed_locks:
-		for _i in current_locks - needed_locks:
-			var lock := part_holder.get_child(-1)
-			part_holder.remove_child(lock)
-			NodePool.return_node(lock)
+	if current_counter_parts > needed_counter_parts:
+		for _i in current_counter_parts - needed_counter_parts:
+			var counter_part := part_holder.get_child(-1)
+			part_holder.remove_child(counter_part)
+			NodePool.return_node(counter_part)
 	# or add them
 	else:
-		for i in range(current_locks, needed_locks):
-			var new_lock: CounterPart = NodePool.pool_node(COUNTERPART)
-			new_lock.level = level
-			new_lock.data = data.colors[i]
-			part_holder.add_child(new_lock)
+		for i in range(current_counter_parts, needed_counter_parts):
+			var new_counter_part: CounterPart = NodePool.pool_node(COUNTERPART)
+			new_counter_part.level = level
+			new_counter_part.data = data.colors[i]
+			part_holder.add_child(new_counter_part)
 	
-	assert(PerfManager.end(&"Counter::update_locks"))
-#var wood: RID
-
-#func _draw_base() -> void:
-	#if not is_instance_valid(data): return
-	#assert(PerfManager.start("Counter:_draw_base"))
-	#RenderingServer.canvas_item_clear(wood)
-	##var rect := Rect2(data.position, Vector2i(data.length + 36, 17 + data.colors.size() * 49))
-	#
-	##RenderingServer.canvas_item_add_nine_patch(wood, rect, Rect2(0,0,63,63), WOOD, Vector2(31, 31), Vector2(31,31), RenderingServer.NINE_PATCH_STRETCH, RenderingServer.NINE_PATCH_STRETCH)
-	#
-	#assert(PerfManager.end("Counter:_draw_base"))
+	assert(PerfManager.end(&"Counter::update_counter_parts"))

@@ -4,9 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://b6c62ka5j04e0" path="res://level_elements/key_counters/box.png" id="2_mjgu8"]
 
 [node name="KeyCounter" type="MarginContainer"]
-custom_minimum_size = Vector2(200, 164)
-offset_right = 200.0
-offset_bottom = 164.0
+offset_right = 33.0
+offset_bottom = 12.0
 mouse_filter = 2
 script = ExtResource("1_jt1rr")
 metadata/_edit_horizontal_guides_ = [12.0, 43.0, 52.0, 92.0]

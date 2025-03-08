@@ -61,4 +61,6 @@ func check_valid(level_data: LevelData, should_correct: bool) -> bool:
 			var stone := CounterPartData.new()
 			stone.color = Enums.Colors.Stone
 			add_counter(stone)
+	for color in colors:
+		color.check_valid(level_data, should_correct)
 	return is_valid
