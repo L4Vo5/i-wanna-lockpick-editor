@@ -9,7 +9,7 @@
 
 [sub_resource type="Resource" id="Resource_yi3cb"]
 script = ExtResource("5_swv3w")
-color = 14
+color = 1
 
 [sub_resource type="Resource" id="Resource_i3u77"]
 script = ExtResource("6_20q1v")

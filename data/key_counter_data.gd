@@ -46,9 +46,9 @@ func check_valid(level_data: LevelData, should_correct: bool) -> bool:
 		level_data.add_invalid_reason("Key Counter has no Counters", true)
 		is_valid = is_valid and should_correct
 		if should_correct:
-			var stone := CounterPartData.new()
-			stone.color = Enums.Colors.Stone
-			add_counter(stone)
+			var default := CounterPartData.new()
+			default.color = Enums.Colors.White
+			add_counter(default)
 	for color in colors:
 		color.check_valid(level_data, should_correct)
 	return is_valid

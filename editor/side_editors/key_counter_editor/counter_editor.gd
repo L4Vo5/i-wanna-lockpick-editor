@@ -59,7 +59,15 @@ func _regen_counter_part_editors() -> void:
 
 func _add_new_counter_part() -> void:
 	var new_counter_part := CounterPartData.new()
-	new_counter_part.color = Enums.Colors.White
+	var new_color := Enums.Colors.White
+	var non_used_colors := Enums.Colors.values()
+	non_used_colors.erase(Enums.Colors.None)
+	non_used_colors.erase(Enums.Colors.Gate)
+	for part in data.colors:
+		non_used_colors.erase(part.color)
+	if not non_used_colors.is_empty():
+		new_color = non_used_colors[0]
+	new_counter_part.color = new_color
 	data.add_counter(new_counter_part)
 	
 	var counter_part_editor: CounterPartEditor = COUNTER_PART_EDITOR.instantiate()
